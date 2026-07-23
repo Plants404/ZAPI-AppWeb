@@ -23,7 +23,10 @@
   --container: 1180px;
 }
 
-*,
+* {
+  box-sizing: border-box;
+  transition: all .2s ease;
+}
 *::before,
 *::after {
   box-sizing: border-box;
@@ -111,7 +114,7 @@ section>* {
   margin-right: auto;
 }
 
-/* HEADER + NAV */
+/* HEADER/NAV */
 header {
   position: sticky;
   top: 0;
