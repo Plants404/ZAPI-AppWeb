@@ -113,7 +113,12 @@ section>* {
   margin-left: auto;
   margin-right: auto;
 }
-
+/*LOGO*/
+.logo {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
 /* HEADER/NAV */
 header {
   position: sticky;
