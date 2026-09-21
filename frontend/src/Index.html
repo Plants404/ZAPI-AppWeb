@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZAPI</title>
-  <link rel="stylesheet" href="./css/styles.css">
+  <title>ZAPI - Soluciones Agroecológicas</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./navigation.js" defer></script>
 </head>
 
 <body>
@@ -13,36 +14,36 @@
   <!-- header -->
   <header>
     <!--logo--> 
-    <section class="logo">
-    <article class="logo-items-text">
-      <h4>ZAPI</h4> 
-    </article>
-    <article class="logo-items-img">
-     <img src="../src/components/logo.jpg" alt="ZAPI brand logo with stylized green leaf elements representing plant care and sustainability"> 
-   </article>
-    </section>
+    <div class="logo" data-section="inicio" role="button" tabindex="0" aria-label="Ir a inicio" style="cursor: pointer;">
+      <article class="logo-items-text">
+        <h4>ZAPI</h4> 
+      </article>
+      <article class="logo-items-img">
+        <img src="./asset/img/logo.jpg" alt="ZAPI brand logo with stylized green leaf elements representing plant care and sustainability"> 
+      </article>
+    </div>
     <!--nav bar -->
-    <nav class="nav-bar">
+    <nav class="nav-bar" aria-label="Navegación principal">
       <ul>
-        <li><a class="nav-link" href="#Transformamos en espacios con naturaleza.">Inicio</a></li>
-        <li><a class="nav-link" href="#Descubrí nuestro catálogo">Catálogo</a></li>
-        <li><a class="nav-link" href="#Soluciones para cada proyecto">Servicios</a></li>
-        <li><a class="nav-link" href="#Testimonios">Blog</a></li>
-        <li><a class="nav-link" href="#Beneficios">Nosotros</a></li>
-        <li><a class="nav-link" href="#Call to actions">contacto</a></li>
+        <li><button type="button" class="nav-link active" data-section="inicio" aria-current="page">Inicio</button></li>
+        <li><button type="button" class="nav-link" data-section="catalogo">Catálogo</button></li>
+        <li><button type="button" class="nav-link" data-section="servicios">Servicios</button></li>
+        <li><button type="button" class="nav-link" data-section="blog">Blog</button></li>
+        <li><button type="button" class="nav-link" data-section="nosotros">Nosotros</button></li>
+        <li><button type="button" class="nav-link" data-section="contacto">Contacto</button></li>
       </ul>
     </nav>
   </header>
  
   <main>
     <!-- hero section -->
-    <section class="hero">
+    <section class="section hero" id="inicio">
       <h1>Transformamos en espacios con naturaleza. </h1>
 
       <h3>ZAPI es una plataforma especializada en soluciones agroecológicas que conecta a las personas con la naturaleza
         mediante plantas de calidad, asesoramiento profesional y herramientas inteligentes para facilitar su cuidado.
       </h3>
-      <img src="../src/asset/img/plants hero.jpg" alt="Lush green houseplants arranged in a bright interior setting conveying a calm natural atmosphere and inspiration for plant care">
+      <img src="./asset/img/plants hero.jpg" alt="Lush green houseplants arranged in a bright interior setting conveying a calm natural atmosphere and inspiration for plant care">
 
       <h2>Nuestra misión es ayudar a hogares, empresas e instituciones a crear y mantener espacios verdes saludables.
         Combinamos productos cuidadosamente seleccionados con conocimiento técnico y una experiencia digital diseñada
@@ -51,12 +52,12 @@
       </h2>
 
       <!--buttons-->
-      <button>Explorar Catálogo</button>
-      <button>Conocer nuestros serrvicios</button>
+      <button type="button" data-section="catalogo">Explorar Catálogo</button>
+      <button type="button" data-section="servicios">Conocer nuestros servicios</button>
     </section>
 
     <!-- catalog section -->
-    <section class="catalog">
+    <section class="section catalog hidden" id="catalogo">
       <h2>Descubrí nuestro catálogo</h2>
       <p>
         Explorá una amplia variedad de plantas e insumos cuidadosamente seleccionados para transformar cualquier espacio
@@ -93,51 +94,65 @@
       </div>
     </section>
 
-    <!--service section-->
-    <section id="service" class="service">
-      <h2>Soluciones para cada proyecto</h2>
-      <p>
-        Además de ofrecer productos, brindamos servicios especializados que ayudan a nuestros clientes a planificar,
-        desarrollar y mantener espacios verdes de forma eficiente.
-      </p>
-      <h3>Servicios</h3>
+    <!-- services section -->
+    <section class="section services-view hidden" id="servicios">
+      <!--service section-->
+      <div id="service" class="service">
+        <h2>Soluciones para cada proyecto</h2>
+        <p>
+          Además de ofrecer productos, brindamos servicios especializados que ayudan a nuestros clientes a planificar,
+          desarrollar y mantener espacios verdes de forma eficiente.
+        </p>
+        <h3>Servicios</h3>
 
-      <!--service items-->
-      <article class="service-items">
+        <!--service items-->
+        <article class="service-items">
+          <ul>
+            <li>Asesoramiento personalizado.</li>
+            <li>Diseño de jardines.</li>
+            <li>Diseño de huertas familiares.</li>
+            <li>Selección de especies.</li>
+            <li>Mantenimiento de espacios verdes.</li>
+            <li>Proyectos para empresas.</li>
+            <li>Capacitaciones y talleres.</li>
+          </ul>
+        </article>
+      </div>
+
+      <!--service ia-->
+      <div id="service-ia" class="service-ia">
+        <h2>Tu asistente inteligente</h2>
+        <p>La plataforma incorpora inteligencia artificial para brindar asistencia personalizada durante toda la
+          experiencia
+          del usuario. El asistente está disponible para responder consultas, recomendar plantas según las características
+          del
+          espacio, generar planes de cuidado y resolver dudas relacionadas con el cultivo y mantenimiento.</p>
+        <h3>Funcionalidades</h3>
         <ul>
-          <li>Asesoramiento personalizado.</li>
-          <li>Diseño de jardines.</li>
-          <li>Diseño de huertas familiares.</li>
-          <li>Selección de especies.</li>
-          <li>Mantenimiento de espacios verdes.</li>
-          <li>Proyectos para empresas.</li>
-          <li>Capacitaciones y talleres.</li>
+          <li>Recomendación automática de especies.</li>
+          <li>Planes personalizados de riego.</li>
+          <li>Diagnóstico básico de problemas frecuentes.</li>
+          <li>Asistencia durante la compra.</li>
+          <li>Consultas disponibles a las 24 hr.</li>
+          <li>Generación de recordatorios para el cuidado de las plantas.
+          </li>
         </ul>
-      </article>
+      </div>
     </section>
 
-    <!--service ia-->
-    <section id="service-ia" class="service-ia">
-      <h2>Tu asistente inteligente</h2>
-      <p>La plataforma incorpora inteligencia artificial para brindar asistencia personalizada durante toda la
-        experiencia
-        del usuario. El asistente está disponible para responder consultas, recomendar plantas según las características
-        del
-        espacio, generar planes de cuidado y resolver dudas relacionadas con el cultivo y mantenimiento.</p>
-      <h3>Funcionalidades</h3>
-      <ul>
-        <li>Recomendación automática de especies.</li>
-        <li>Planes personalizados de riego.</li>
-        <li>Diagnóstico básico de problemas frecuentes.</li>
-        <li>Asistencia durante la compra.</li>
-        <li>Consultas disponibles a las 24 hr.</li>
-        <li>Generación de recordatorios para el cuidado de las plantas.
-        </li>
-      </ul>
+    <!-- testimonials & blog section -->
+    <section class="section testimonials hidden" id="blog">
+      <h2>Testimonios</h2>
+      <p> Lo que dicen nuestros clientes</p>
+
+      <!--blog items-->
+      <div class="blog-items">
+        <p>Aprendé con nosotros</p>
+      </div>
     </section>
 
-    <!---Benefits section-->
-    <section class="benefits">
+    <!---Benefits / nosotros section-->
+    <section class="section benefits hidden" id="nosotros">
       <h2>Beneficios</h2>
       <article class="benefits-items">
         <h3>¿Por qué elegir ZAPI?
@@ -154,7 +169,8 @@
           <li>Sostenibilidad</li>
           <p>
             Promovemos prácticas responsables con el ambiente.
-            <li>Innovación</li>
+          </p>
+          <li>Innovación</li>
           <p>
             Integramos tecnología para mejorar la experiencia de nuestros clientes.
           </p>
@@ -166,26 +182,18 @@
       </article>
     </section>
 
-    <!--Testimonials section-->
-    <section class="testimonials">
-      <h2>Testimonios</h2>
-      <p> Lo que dicen nuestros clientes</p>
-
-      <!--blog items-->
-      <section class="blog-items">
-        <p>Aprendé con nosotros</p>
-      </section>
-
-      <!--call to actions section-->
-      <section class="call-to-actions">
+    <!--contacto section-->
+    <section class="section call-to-actions-view hidden" id="contacto">
+      <div class="call-to-actions">
         <h2>Empezá hoy a transformar tus espacios
         </h2>
         <p>Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada
           etapa del proceso.
           Los botones de acción se dirigirán al catálogo y al formulario de contacto.</p>
-        <button>Explorar Catálogo</button>
-        <button>Conocer nuestros serrvicios</button>
-      </section>
+        <button type="button" data-section="catalogo">Explorar Catálogo</button>
+        <button type="button" data-section="servicios">Conocer nuestros servicios</button>
+      </div>
+    </section>
   </main>
   <footer>
     <P>ZAPI © 2026. Todos los derechos reservados.
