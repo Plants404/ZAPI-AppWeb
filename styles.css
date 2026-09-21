@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 :root {
   --forest: #1f3a2e;
   --moss: #3d6b4f;
@@ -17,7 +16,7 @@
   --shadow-md: 0 12px 30px rgba(31, 58, 46, .10);
   --shadow-lg: 0 24px 60px rgba(31, 58, 46, .18);
 
-  --serif: 'Cormorant Garamond', Georgia, serif;
+  --serif: 'Bebas Neue', Georgia, serif;
   --sans: 'Inter', system-ui, -apple-system, sans-serif;
 
   --container: 1180px;
