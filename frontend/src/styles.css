@@ -113,6 +113,34 @@ section>* {
   margin-left: auto;
   margin-right: auto;
 }
+
+/* ==========================================================================
+   Sistema de Navegación por Secciones (SPA)
+   ========================================================================== */
+.hidden {
+  display: none !important;
+}
+
+.section {
+  animation: fadeIn 0.35s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section {
+    animation: none;
+  }
+}
 /*LOGO*/
 .logo {
   display: flex;
@@ -157,16 +185,25 @@ header img {
   align-items: center;
 }
 
-.nav-bar li a {
+.nav-bar li a,
+.nav-bar li .nav-link {
   position: relative;
+  font-family: inherit;
   font-size: .92rem;
   font-weight: 500;
   color: var(--ink);
+  background: none;
+  border: none;
+  cursor: pointer;
   padding: .4rem 0;
   text-transform: capitalize;
+  text-decoration: none;
+  display: inline-block;
+  line-height: 1.5;
 }
 
-.nav-bar li a::after {
+.nav-bar li a::after,
+.nav-bar li .nav-link::after {
   content: "";
   position: absolute;
   left: 0;
@@ -177,12 +214,23 @@ header img {
   transition: width .3s ease;
 }
 
-.nav-bar li a:hover {
+.nav-bar li a:hover,
+.nav-bar li .nav-link:hover,
+.nav-bar li .nav-link.active {
   color: var(--forest);
+  font-weight: 600;
 }
 
-.nav-bar li a:hover::after {
+.nav-bar li a:hover::after,
+.nav-bar li .nav-link:hover::after,
+.nav-bar li .nav-link.active::after {
   width: 100%;
+}
+
+.nav-bar li .nav-link:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 /* HERO */
