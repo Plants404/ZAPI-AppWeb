@@ -5,37 +5,44 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZAPI</title>
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
 
 <body>
 
   <!-- header -->
   <header>
-    <h4>ZAPI</h4>
-    <img src="" alt="logo de zapi">
-
+    <!--logo--> 
+    <section class="logo">
+    <article class="logo-items-text">
+      <h4>ZAPI</h4> 
+    </article>
+    <article class="logo-items-img">
+     <img src="../src/components/logo.jpg" alt="ZAPI brand logo with stylized green leaf elements representing plant care and sustainability"> 
+   </article>
+    </section>
     <!--nav bar -->
     <nav class="nav-bar">
       <ul>
-        <li><a href="#">Inicio</a></li>
-        <li><a href="#">Catálogo</a></li>
-        <li><a href="#">Servicios</a></li>
-        <li><a href="#">Blog</a></li>
-        <li><a href="#">Nosotros</a></li>
-        <li><a href="#">contacto</a></li>
+        <li><a class="nav-link" href="#Transformamos en espacios con naturaleza.">Inicio</a></li>
+        <li><a class="nav-link" href="#Descubrí nuestro catálogo">Catálogo</a></li>
+        <li><a class="nav-link" href="#Soluciones para cada proyecto">Servicios</a></li>
+        <li><a class="nav-link" href="#Testimonios">Blog</a></li>
+        <li><a class="nav-link" href="#Beneficios">Nosotros</a></li>
+        <li><a class="nav-link" href="#Call to actions">contacto</a></li>
       </ul>
     </nav>
   </header>
-  <!--main content-->
+ 
   <main>
     <!-- hero section -->
     <section class="hero">
-      <h1>Transformamos espacios con naturaleza. </h1>
+      <h1>Transformamos en espacios con naturaleza. </h1>
 
       <h3>ZAPI es una plataforma especializada en soluciones agroecológicas que conecta a las personas con la naturaleza
         mediante plantas de calidad, asesoramiento profesional y herramientas inteligentes para facilitar su cuidado.
       </h3>
-      <img src="./img/hero.jpg" alt="plantas">
+      <img src="../src/asset/img/plants hero.jpg" alt="Lush green houseplants arranged in a bright interior setting conveying a calm natural atmosphere and inspiration for plant care">
 
       <h2>Nuestra misión es ayudar a hogares, empresas e instituciones a crear y mantener espacios verdes saludables.
         Combinamos productos cuidadosamente seleccionados con conocimiento técnico y una experiencia digital diseñada
@@ -87,7 +94,7 @@
     </section>
 
     <!--service section-->
-    <section class="service">
+    <section id="service" class="service">
       <h2>Soluciones para cada proyecto</h2>
       <p>
         Además de ofrecer productos, brindamos servicios especializados que ayudan a nuestros clientes a planificar,
@@ -96,7 +103,7 @@
       <h3>Servicios</h3>
 
       <!--service items-->
-      <div class="service-items">
+      <article class="service-items">
         <ul>
           <li>Asesoramiento personalizado.</li>
           <li>Diseño de jardines.</li>
@@ -106,11 +113,11 @@
           <li>Proyectos para empresas.</li>
           <li>Capacitaciones y talleres.</li>
         </ul>
-      </div>
+      </article>
     </section>
 
     <!--service ia-->
-    <section class="service-ia">
+    <section id="service-ia" class="service-ia">
       <h2>Tu asistente inteligente</h2>
       <p>La plataforma incorpora inteligencia artificial para brindar asistencia personalizada durante toda la
         experiencia
@@ -132,7 +139,7 @@
     <!---Benefits section-->
     <section class="benefits">
       <h2>Beneficios</h2>
-      <div class="benefits-items">
+      <article class="benefits-items">
         <h3>¿Por qué elegir ZAPI?
         </h3>
         <ul>
@@ -156,7 +163,7 @@
             Construimos relaciones de largo plazo mediante un servicio cercano y transparente.
           </p>
         </ul>
-      </div>
+      </article>
     </section>
 
     <!--Testimonials section-->
