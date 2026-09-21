@@ -136,6 +136,10 @@ section>* {
   }
 }
 
+.services-view {
+  padding: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .section {
     animation: none;
