@@ -3,28 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Carrito | ZAPI Vivero Agroecológico</title>
+
+    <!-- Google Material Symbols -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
- <!-- CSS principal -->
+
+    <!-- Tu CSS principal -->
     <link rel="stylesheet" href="/styles.css">
-<!-- CSS del carrito -->
+
+    <!-- CSS del carrito -->
     <link rel="stylesheet" href="/stylecarrito.css">
 </head>
+
 <body>
+
     <!-- HEADER -->
 
     <header class="cart-header">
+
         <a href="index.html" class="logo">
             <span class="material-symbols-outlined">
                 arrow_back
             </span>
+
             <h4>ZAPI</h4>
         </a>
+
         <div class="cart-title">
             <span class="material-symbols-outlined">
                 shopping_bag
             </span>
+
             <h1>Tu carrito</h1>
         </div>
+
     </header>
+
+
+    <!-- CONTENIDO -->
+
+    <main class="cart-page">
+
+        <!-- CARRITO -->
+
+        <section class="cart-content">
+
+            <div class="cart-heading">
+
+                <div>
+                    <span class="cart-eyebrow">
+                        TU SELECCIÓN
+                    </span>
+
+                    <h2>Productos seleccionados</h2>
+                </div>
+
+                <button
+                    class="clear-cart"
+                    id="clearCart">
+
+                    <span class="material-symbols-outlined">
+                        delete_sweep
+                    </span>
+
+                    Vaciar carrito
+
+                </button>
+
+            </div>
+
+
+            <!-- PRODUCTOS -->
+
+            <div id="cartItems" class="cart-items">
+                <!-- JavaScript genera los productos -->
+            </div>
+
+
+            <!-- CARRITO VACÍO -->
+
+            <div id="emptyCart" class="empty-cart hidden">
+
+                <span class="material-symbols-outlined">
+                    shopping_basket
+                </span>
+
+                <h3>Tu carrito está vacío</h3>
+
+                <p>
+                    Todavía no agregaste ningún producto.
+                    Explorá nuestro catálogo y encontrá
+                    algo para tu jardín o huerta.
+                </p>
+
+                <a href="index.html" class="primary-button">
+
+                    <span class="material-symbols-outlined">
+                        eco
+                    </span>
+
+                    Explorar catálogo
+
+                </a>
+
+            </div>
+
+        </section>
+<!-- RESUMEN -->
+
+        <aside class="cart-summary">
+
+            <div class="summary-header">
+
+                <span class="cart-eyebrow">
+                    RESUMEN
+                </span>
+
+                <h2>Tu pedido</h2>
+
+            </div>
+
+
+            <div class="summary-lines">
+
+                <div>
+                    <span>Productos</span>
+                    <strong id="subtotal">$0</strong>
+                </div>
+
+                <div>
+                    <span>Envío</span>
+                    <strong id="shipping">$0</strong>
+                </div>
+
+            </div>
+
+
+            <div class="summary-total">
+
+                <span>Total</span>
+
+                <strong id="total">
+                    $0
+                </strong>
+
+            </div>
+
+
+            <!-- DATOS DE ENTREGA -->
+
+            <div class="delivery-box">
+
+                <span class="material-symbols-outlined">
+                    local_shipping
+                </span>
+
+                <div>
+                    <strong>Entrega</strong>
+
+                    <p>
+                        Coordinaremos el envío
+                        contigo por WhatsApp.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- WHATSAPP -->
+
+           <button
+    type="button"
+    class="btn-whatsapp"
+    id="whatsappButton"
+>
+    <span class="material-symbols-outlined">
+        chat
+    </span>
+
+    Enviar pedido por WhatsApp
+</button>
+
+
+            <p class="secure-message">
+
+                <span class="material-symbols-outlined">
+                    verified_user
+                </span>
+
+                Tu pedido será confirmado
+                directamente con ZAPI.
+
+            </p>
+
+        </aside>
+
+    </main>
+
+
+    <script src="/carrito.js"></script>
+
+</body>
+</html>
