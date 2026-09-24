@@ -1,0 +1,974 @@
+/* ==========================================================
+   CARRITO ZAPI
+   ========================================================== */
+
+.cart-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 1rem 2.5rem;
+
+    background: rgba(247, 244, 236, .88);
+
+    backdrop-filter: saturate(140%) blur(14px);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+
+    border-bottom: 1px solid rgba(31, 58, 46, .08);
+}
+
+
+/* LOGO */
+
+.cart-header .logo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+
+    color: var(--forest);
+}
+
+.cart-header .logo .material-symbols-outlined {
+    font-size: 22px;
+}
+
+.cart-header h4 {
+    margin: 0;
+}
+
+
+/* TÍTULO */
+
+.cart-title {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+}
+
+.cart-title h1 {
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+.cart-title .material-symbols-outlined {
+    font-size: 26px;
+}
+
+
+/* ==========================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================== */
+
+.cart-page {
+
+    width: min(1180px, calc(100% - 3rem));
+
+    margin: 0 auto;
+
+    padding: 4rem 0 6rem;
+
+    display: grid;
+
+    grid-template-columns: 1fr 380px;
+
+    gap: 3rem;
+
+    align-items: start;
+}
+
+
+/* ==========================================================
+   CABECERA DEL CARRITO
+   ========================================================== */
+
+.cart-heading {
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 2rem;
+
+    margin-bottom: 2rem;
+}
+
+
+.cart-eyebrow {
+
+    display: block;
+
+    margin-bottom: .4rem;
+
+    font-family: var(--sans);
+
+    font-size: .72rem;
+
+    font-weight: 600;
+
+    letter-spacing: .22em;
+
+    color: var(--leaf);
+}
+
+
+.cart-heading h2,
+.summary-header h2 {
+
+    margin: 0;
+
+    font-size: clamp(2rem, 4vw, 2.8rem);
+}
+
+
+/* ==========================================================
+   BOTÓN VACIAR
+   ========================================================== */
+
+.clear-cart {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .4rem;
+
+    background: transparent;
+
+    color: var(--muted);
+
+    font-size: .85rem;
+
+    padding: .5rem;
+
+}
+
+
+.clear-cart:hover {
+
+    color: #9a3d3d;
+
+}
+
+
+.clear-cart .material-symbols-outlined {
+
+    font-size: 19px;
+
+}
+
+
+/* ==========================================================
+   PRODUCTOS
+   ========================================================== */
+
+.cart-items {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+}
+
+
+.cart-item {
+
+    display: grid;
+
+    grid-template-columns: 100px 1fr auto;
+
+    gap: 1.25rem;
+
+    align-items: center;
+
+    padding: 1.2rem;
+
+    background: var(--white);
+
+    border-radius: var(--radius);
+
+    border: 1px solid rgba(31, 58, 46, .07);
+
+    box-shadow: var(--shadow-sm);
+
+    animation: cartItemIn .45s cubic-bezier(.22, 1, .36, 1);
+
+}
+
+
+@keyframes cartItemIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(15px) scale(.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+
+    }
+
+}
+
+
+/* IMAGEN */
+
+.cart-item-image {
+
+    width: 100px;
+
+    height: 100px;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    background: var(--sand);
+}
+
+
+.cart-item-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform .45s ease;
+
+}
+
+
+.cart-item:hover .cart-item-image img {
+
+    transform: scale(1.06);
+
+}
+
+
+/* INFORMACIÓN */
+
+.cart-item-info h3 {
+
+    margin: 0 0 .3rem;
+
+    font-family: var(--serif);
+
+    font-size: 1.4rem;
+
+    color: var(--forest);
+
+}
+
+
+.cart-item-category {
+
+    margin-bottom: .7rem;
+
+    font-size: .78rem;
+
+    color: var(--muted);
+
+}
+
+
+/* PRECIO */
+
+.cart-item-price {
+
+    font-weight: 600;
+
+    color: var(--moss);
+
+}
+
+
+/* ==========================================================
+   CONTROLES DE CANTIDAD
+   ========================================================== */
+
+.quantity-control {
+
+    display: flex;
+
+    align-items: center;
+
+    width: fit-content;
+
+    margin-top: .6rem;
+
+    border: 1px solid rgba(31, 58, 46, .15);
+
+    border-radius: 999px;
+
+    overflow: hidden;
+
+}
+
+
+.quantity-control button {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: grid;
+
+    place-items: center;
+
+    background: transparent;
+
+    color: var(--forest);
+
+}
+
+
+.quantity-control button:hover {
+
+    background: var(--sand);
+
+}
+
+
+.quantity-control button .material-symbols-outlined {
+
+    font-size: 18px;
+
+}
+
+
+.quantity-control span {
+
+    min-width: 34px;
+
+    text-align: center;
+
+    font-size: .9rem;
+
+    font-weight: 600;
+
+}
+
+
+/* ==========================================================
+   TOTAL DEL ITEM
+   ========================================================== */
+
+.cart-item-total {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: .7rem;
+
+}
+
+
+.cart-item-total strong {
+
+    font-family: var(--serif);
+
+    font-size: 1.3rem;
+
+    color: var(--forest);
+
+}
+
+
+.remove-item {
+
+    width: 34px;
+
+    height: 34px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: var(--muted);
+
+}
+
+
+.remove-item:hover {
+
+    background: rgba(154, 61, 61, .08);
+
+    color: #9a3d3d;
+
+    transform: rotate(8deg);
+
+}
+
+
+.remove-item .material-symbols-outlined {
+
+    font-size: 19px;
+
+}
+
+
+/* ==========================================================
+   RESUMEN
+   ========================================================== */
+
+.cart-summary {
+
+    position: sticky;
+
+    top: 105px;
+
+    padding: 2rem;
+
+    background: var(--white);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow-md);
+
+    border-top: 4px solid var(--leaf);
+
+    animation: summaryIn .55s ease;
+
+}
+
+
+@keyframes summaryIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateX(20px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateX(0);
+
+    }
+
+}
+
+
+.summary-header {
+
+    margin-bottom: 2rem;
+
+}
+
+
+.summary-lines {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1rem;
+
+    padding-bottom: 1.5rem;
+
+    border-bottom: 1px solid rgba(31, 58, 46, .1);
+
+}
+
+
+.summary-lines div {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    color: var(--muted);
+
+    font-size: .9rem;
+
+}
+
+
+.summary-lines strong {
+
+    color: var(--ink);
+
+}
+
+
+/* TOTAL */
+
+.summary-total {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 1.5rem 0;
+
+}
+
+
+.summary-total span {
+
+    font-size: 1rem;
+
+    color: var(--muted);
+
+}
+
+
+.summary-total strong {
+
+    font-family: var(--serif);
+
+    font-size: 2rem;
+
+    color: var(--forest);
+
+}
+
+
+/* ==========================================================
+   ENTREGA
+   ========================================================== */
+
+.delivery-box {
+
+    display: flex;
+
+    gap: .8rem;
+
+    padding: 1rem;
+
+    margin-bottom: 1.2rem;
+
+    background: var(--cream);
+
+    border-radius: 10px;
+
+}
+
+
+.delivery-box > .material-symbols-outlined {
+
+    color: var(--leaf);
+
+    font-size: 23px;
+
+}
+
+
+.delivery-box strong {
+
+    display: block;
+
+    margin-bottom: .2rem;
+
+    color: var(--forest);
+
+    font-size: .9rem;
+
+}
+
+
+.delivery-box p {
+
+    margin: 0;
+
+    font-size: .78rem;
+
+    line-height: 1.5;
+
+}
+
+
+/* ==========================================================
+   WHATSAPP
+   ========================================================== */
+
+.btn-whatsapp {
+
+    width: 100%;
+
+    min-height: 54px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .6rem;
+
+    padding: 1rem;
+
+    border-radius: 999px;
+
+    background: linear-gradient(135deg, #25D366, #128C7E);
+
+    color: #ffffff;
+
+    font-size: .95rem;
+
+    font-weight: 700;
+
+    letter-spacing: .02em;
+
+    box-shadow: 0 8px 22px rgba(37, 211, 102, .35);
+
+    transition: transform .2s ease, box-shadow .2s ease;
+
+    animation: whatsappPulse 2.2s ease-in-out infinite;
+
+}
+
+
+@keyframes whatsappPulse {
+
+    0%, 100% {
+
+        box-shadow: 0 8px 22px rgba(37, 211, 102, .30);
+
+    }
+
+    50% {
+
+        box-shadow: 0 8px 30px rgba(37, 211, 102, .55);
+
+    }
+
+}
+
+
+.btn-whatsapp:hover {
+
+    transform: translateY(-3px) scale(1.02);
+
+    background: linear-gradient(135deg, #2ee070, #139a8a);
+
+    box-shadow: 0 14px 34px rgba(37, 211, 102, .55);
+
+    animation: none;
+
+}
+
+
+.btn-whatsapp:hover .material-symbols-outlined {
+
+    animation: whatsappWiggle .5s ease;
+
+}
+
+
+@keyframes whatsappWiggle {
+
+    0%, 100% { transform: rotate(0); }
+
+    25% { transform: rotate(-14deg); }
+
+    75% { transform: rotate(10deg); }
+
+}
+
+
+.btn-whatsapp:active {
+
+    transform: translateY(-1px) scale(.97);
+
+    animation: none;
+
+}
+
+
+.btn-whatsapp .material-symbols-outlined {
+
+    font-size: 22px;
+
+}
+
+
+.secure-message {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .3rem;
+
+    margin: 1rem 0 0;
+
+    font-size: .7rem;
+
+    text-align: center;
+
+}
+
+
+.secure-message .material-symbols-outlined {
+
+    font-size: 16px;
+
+    color: var(--leaf);
+
+}
+
+
+/* ==========================================================
+   CARRITO VACÍO
+   ========================================================== */
+
+.empty-cart {
+
+    min-height: 400px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 3rem;
+
+    text-align: center;
+
+    background: var(--white);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow-sm);
+
+    animation: emptyIn .5s ease;
+
+}
+
+
+@keyframes emptyIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: scale(.96);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: scale(1);
+
+    }
+
+}
+
+
+.empty-cart > .material-symbols-outlined {
+
+    margin-bottom: 1rem;
+
+    font-size: 54px;
+
+    color: var(--sage);
+
+}
+
+
+.empty-cart h3 {
+
+    margin-bottom: .5rem;
+
+}
+
+
+.empty-cart p {
+
+    max-width: 450px;
+
+    font-size: .9rem;
+
+}
+
+
+/* ==========================================================
+   BOTÓN PRINCIPAL
+   ========================================================== */
+
+.primary-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .5rem;
+
+    margin-top: 1rem;
+
+    padding: .9rem 1.5rem;
+
+    border-radius: 999px;
+
+    background: var(--forest);
+
+    color: var(--cream);
+
+    font-size: .9rem;
+
+    font-weight: 500;
+
+}
+
+
+.primary-button:hover {
+
+    background: var(--moss);
+
+    transform: translateY(-2px);
+
+    box-shadow: var(--shadow-md);
+
+}
+
+
+/* ==========================================================
+   UTILIDAD
+   ========================================================== */
+
+.hidden {
+
+    display: none !important;
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 850px) {
+
+    .cart-page {
+
+        grid-template-columns: 1fr;
+
+        width: min(680px, calc(100% - 2rem));
+
+        padding-top: 2.5rem;
+
+    }
+
+
+    .cart-summary {
+
+        position: static;
+
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .cart-header {
+
+        padding: .9rem 1rem;
+
+    }
+
+
+    .cart-title h1 {
+
+        font-size: 1.3rem;
+
+    }
+
+
+    .cart-heading {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: .8rem;
+
+    }
+
+
+    .cart-item {
+
+        grid-template-columns: 75px 1fr;
+
+        gap: 1rem;
+
+    }
+
+
+    .cart-item-image {
+
+        width: 75px;
+
+        height: 75px;
+
+    }
+
+
+    .cart-item-total {
+
+        grid-column: 2;
+
+        align-items: flex-start;
+
+        flex-direction: row;
+
+        justify-content: space-between;
+
+        width: 100%;
+
+    }
+
+
+    .cart-item-info h3 {
+
+        font-size: 1.2rem;
+
+    }
+
+
+    .cart-summary {
+
+        padding: 1.5rem;
+
+    }
+
+}
