@@ -1,19 +1,10 @@
-/**
- * ==========================================================================
- * ZAPI - Sistema de Navegación Profesional por Secciones (SPA Vanilla)
- * ==========================================================================
- * Permite alternar vistas entre secciones sin recargar la página, gestionando
- * clases de visibilidad, estados activos en el menú y accesibilidad.
- */
 
 // Inicialización cuando el DOM está completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
   inicializarNavegacion();
 });
 
-/**
- * Configura los escuchadores de eventos y determina la sección inicial.
- */
+//Configura los escuchadores de eventos y determina la sección inicial.
 function inicializarNavegacion() {
   // Delegación de eventos para cualquier elemento con el atributo data-section
   document.addEventListener('click', (event) => {
@@ -76,17 +67,15 @@ function mostrarSeccion(id, actualizarHistorial = true) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/**
- * Actualiza la clase 'active' y los atributos ARIA (aria-current) en los controles de navegación.
- * @param {string} idActivo - Identificador de la sección actualmente visible.
- */
+// Actualiza la clase 'active' y los atributos ARIA (aria-current) en los controles de navegación.
+// @param {string} idActivo - Identificador de la sección actualmente visible.
 function actualizarNavegacionActiva(idActivo) {
   const controles = document.querySelectorAll('[data-section]');
 
   controles.forEach((control) => {
     const esActivo = control.getAttribute('data-section') === idActivo;
 
-    // Solo aplicamos la clase active a elementos de navegación (dentro del menú o con clase nav-link)
+    // Solo aplicamos la clase active a elementos de navegación 
     if (control.classList.contains('nav-link') || control.closest('.nav-bar')) {
       control.classList.toggle('active', esActivo);
 
