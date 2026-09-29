@@ -4,7 +4,6 @@
 
         .catalog {
             background: var(--sand);
-            padding-top: 4rem;
         }
 
         .catalog-header {
@@ -47,10 +46,10 @@
         }
 
         .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 1.5rem;
-            align-items: start;
+            align-items: flex-start;
         }
 
         .product-card {
@@ -62,11 +61,44 @@
             transition: transform .3s ease, box-shadow .3s ease;
             display: flex;
             flex-direction: column;
+
+            /* 4 columnas en escritorio. El basis reparte
+               (100% - 3 huecos) / 4, asi la fila suma justo el
+               ancho del contenedor. El flex-grow 0 es lo que evita
+               que la ultima fila estire una tarjeta a todo el
+               ancho, que es el defecto clasico de flex-wrap con
+               "flex: 1 1 250px" sin tope. */
+            flex: 0 1 calc(25% - 1.125rem);
+            min-width: 0;
         }
 
         .product-card:hover {
             transform: translateY(-6px);
             box-shadow: var(--shadow-md);
+        }
+
+        /* Cuantas columnas entran segun el ancho. Cada base suma
+           (100% - huecos) / n, asi la fila siempre llena exacto el
+           contenedor. Los cortes reproducen los que daba el grid
+           anterior con minmax(250px, 1fr), con los mismos anchos
+           practicos: 4 hasta 1119, 3 hasta 845, 2 hasta 571 y 1 en
+           telefono. */
+        @media (max-width: 1119px) {
+            .product-card {
+                flex-basis: calc(33.333% - 1rem);
+            }
+        }
+
+        @media (max-width: 845px) {
+            .product-card {
+                flex-basis: calc(50% - .75rem);
+            }
+        }
+
+        @media (max-width: 571px) {
+            .product-card {
+                flex-basis: 100%;
+            }
         }
 
         .product-visual {
@@ -188,15 +220,6 @@
             color: var(--forest);
         }
 
-        .product-price .current.tick {
-            animation: priceTick .5s ease;
-        }
-
-        @keyframes priceTick {
-            0% { color: var(--leaf); transform: scale(1.08); }
-            100% { color: var(--forest); transform: scale(1); }
-        }
-
         .product-price .since {
             font-size: .75rem;
             color: var(--muted);
@@ -226,38 +249,94 @@
             background: var(--leaf);
         }
 
-        .last-updated {
-            text-align: center;
-            margin-top: 2.25rem;
-            font-size: .85rem;
-            color: var(--muted);
+        /* ==========================================================
+           BOTÓN VER CARRITO · FLOTANTE (abajo izquierda)
+           ========================================================== */
+
+        .cart-link-text {
+
+            text-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+
         }
 
-        .last-updated strong {
-            color: var(--forest);
-        }
+        .cart-link-float {
 
-        .cart-link {
             position: fixed;
-            right: 1.5rem;
+
+            left: 1.5rem;
+
             bottom: 1.5rem;
+
             z-index: 60;
+
             display: inline-flex;
+
             align-items: center;
+
             gap: .6rem;
+
             padding: .9rem 1.4rem;
+
             border-radius: 999px;
+
             background: var(--leaf);
+
             color: var(--white);
+
             font-weight: 600;
+
             font-size: .92rem;
+
             box-shadow: var(--shadow-lg);
-            transition: transform .2s ease, background .2s ease;
+
+            animation: floatCartBob 3.4s ease-in-out infinite;
+
+            transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+
         }
 
-        .cart-link:hover {
+        .cart-link-float:hover {
+
             background: var(--moss);
-            transform: translateY(-3px);
+
+            transform: translateY(-3px) scale(1.04);
+
+            box-shadow: 0 18px 40px rgba(31, 58, 46, .35);
+
+            animation: none;
+
+        }
+
+        @keyframes floatCartBob {
+
+            0%, 100% { transform: translateY(0); }
+
+            50% { transform: translateY(-7px); }
+
+        }
+
+        .cart-link-float .material-symbols-outlined {
+
+            font-size: 21px;
+
+        }
+
+        /* Rebote del ícono al agregar un producto */
+
+        .cart-link-float.animado .material-symbols-outlined {
+
+            animation: cartWiggle .6s ease;
+
+        }
+
+        @keyframes cartWiggle {
+
+            0%, 100% { transform: rotate(0) scale(1); }
+
+            25% { transform: rotate(-12deg) scale(1.15); }
+
+            75% { transform: rotate(10deg) scale(1.15); }
+
         }
 
         .cart-count {
@@ -272,4 +351,732 @@
             font-size: .8rem;
             font-weight: 700;
             padding: 0 .35rem;
+            transition: transform .3s ease, background .5s ease, color .35s ease;
+        }
+
+        /* Con productos en el carrito el contador queda rojo.
+           Al vaciarse se lo quita y el color vuelve solo. */
+
+        .cart-count.con-productos {
+            background: #c14a3c;
+            color: var(--white);
+        }
+
+        /* Globo del header. Va en la esquina del enlace y solo
+           aparece con productos: lo decide la misma clase
+           .con-productos, no hace falta JavaScript extra.
+           Estas reglas repiten background, color y font-weight
+           porque .nav-bar li a tiene especificidad (0,1,2) y le
+           ganaría a .cart-count (0,1,0), dejando el globo
+           transparente y con el color del enlace. */
+
+        .cart-count.cart-count-header {
+            position: absolute;
+            top: -.15rem;
+            right: -.8rem;
+            min-width: 1.15rem;
+            height: 1.15rem;
+            padding: 0 .3rem;
+            font-size: .68rem;
+            font-weight: 700;
+            background: var(--white);
+            color: var(--leaf);
+            border: 2px solid var(--white);
+            display: none;
+        }
+
+        .cart-count.cart-count-header.con-productos {
+            display: inline-flex;
+            background: #c14a3c;
+            color: var(--white);
+        }
+
+        .cart-count.pop {
+
+            animation: countPop .45s ease;
+
+        }
+
+        /* Destello al agregar: rojo vivo que se va suavizando
+           hasta el tono con el que se queda. */
+
+        .cart-count.destello {
+
+            animation: destelloContador .75s ease;
+
+        }
+
+        @keyframes destelloContador {
+
+            0% { background: #ef6a4c; box-shadow: 0 0 0 0 rgba(239, 106, 76, .6); }
+
+            45% { background: #e0806a; box-shadow: 0 0 0 10px rgba(239, 106, 76, 0); }
+
+            100% { background: #c14a3c; box-shadow: 0 0 0 0 rgba(239, 106, 76, 0); }
+
+        }
+
+        @keyframes countPop {
+
+            0% { transform: scale(1); }
+
+            40% { transform: scale(1.5); }
+
+            100% { transform: scale(1); }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .cart-link-float {
+
+                left: 1rem;
+
+                bottom: 1rem;
+
+            }
+
+            .cart-link-float .cart-link-text {
+
+                display: none;
+
+            }
+
+            .cart-link-float {
+
+                padding: .8rem 1rem;
+
+            }
+
+        }
+
+        /* ==========================================================
+           VENTANA FLOTANTE DE PRODUCTO
+           Modal con carrusel de fotos, detalle y agregar al carrito.
+           ========================================================== */
+
+        body.modal-abierto {
+
+            overflow: hidden;
+
+        }
+
+        .modal-producto {
+
+            position: fixed;
+
+            inset: 0;
+
+            /* por encima del chat, que vive en 9999 */
+            z-index: 10000;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 1.5rem;
+
+            /* Sin "visibility": el sitio aplica transition: all a todos
+               los elementos, y al heredarse cada descendiente abre su
+               propia transición y queda invisible. El estado se maneja
+               con [hidden] y con opacity, que no se hereda. */
+            opacity: 0;
+
+            transition: opacity .25s ease;
+
+        }
+
+        .modal-producto[hidden] {
+
+            display: none;
+
+        }
+
+        .modal-producto.abierto {
+
+            opacity: 1;
+
+        }
+
+        /* Mientras se desvanece no debe seguir robando clicks */
+
+        .modal-producto.cerrando {
+
+            pointer-events: none;
+
+        }
+
+        .modal-fondo {
+
+            position: absolute;
+
+            inset: 0;
+
+            background: rgba(31, 58, 46, .58);
+
+            backdrop-filter: blur(4px);
+
+            -webkit-backdrop-filter: blur(4px);
+
+        }
+
+        .modal-caja {
+
+            position: relative;
+
+            display: flex;
+
+            /* El alto lo impone el max-height de abajo. Con flex las dos
+               columnas se estiran a la misma altura y el detalle scrollea
+               solo; el min-height: 0 de cada una es lo que deja recortar
+               la columna en vez de empujar el boton de agregar fuera de
+               la caja. */
+            width: min(940px, 100%);
+
+            max-height: min(88vh, 720px);
+
+            background: var(--white);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow-lg);
+
+            overflow: hidden;
+
+            /* Sin transform en el estado cerrado: el offset hacia abajo
+               empujaba la caja fuera del viewport en movil y dejaba el
+               boton de agregar debajo del borde. La entrada es solo el
+               fade del contenedor, que no depende de la transicion de
+               transform para ser correcta. */
+
+        }
+
+        .modal-caja:focus {
+
+            outline: none;
+
+        }
+
+        .modal-cerrar {
+
+            position: absolute;
+
+            top: .8rem;
+
+            right: .8rem;
+
+            z-index: 3;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            width: 2.2rem;
+
+            height: 2.2rem;
+
+            border-radius: 50%;
+
+            background: rgba(247, 244, 236, .94);
+
+            color: var(--forest);
+
+            box-shadow: var(--shadow-sm);
+
+            transition: background .2s ease, transform .2s ease;
+
+        }
+
+        .modal-cerrar:hover {
+
+            background: var(--white);
+
+            transform: rotate(90deg);
+
+        }
+
+        .modal-cerrar .material-symbols-outlined {
+
+            font-size: 1.3rem;
+
+        }
+
+        /* ---------- Carrusel ---------- */
+
+        .modal-carrusel {
+
+            display: flex;
+
+            flex-direction: column;
+
+            /* 52.5% = 1.05 de las 2 partes del reparto original
+               (1.05 / 2). Se usa base en porcentaje y no flex-grow
+               porque el reparto por grow no daba 1.05 exacto con
+               basis 0: midia 463/477 en vez de 493/446. */
+            flex: 0 0 52.5%;
+
+            min-height: 0;
+
+            min-width: 0;
+
+            background: var(--sand);
+
+        }
+
+        .carrusel-marco {
+
+            position: relative;
+
+            flex: 1;
+
+            min-height: 0;
+
+            overflow: hidden;
+
+        }
+
+        .carrusel-img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+
+        }
+
+        .carrusel-flecha {
+
+            position: absolute;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            z-index: 2;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            width: 2.4rem;
+
+            height: 2.4rem;
+
+            border-radius: 50%;
+
+            background: rgba(247, 244, 236, .92);
+
+            color: var(--forest);
+
+            box-shadow: var(--shadow-sm);
+
+            transition: background .2s ease, transform .2s ease;
+
+        }
+
+        .carrusel-flecha:hover {
+
+            background: var(--white);
+
+        }
+
+        .carrusel-prev {
+
+            left: .7rem;
+
+        }
+
+        .carrusel-next {
+
+            right: .7rem;
+
+        }
+
+        .carrusel-prev:hover {
+
+            transform: translateY(-50%) translateX(-2px);
+
+        }
+
+        .carrusel-next:hover {
+
+            transform: translateY(-50%) translateX(2px);
+
+        }
+
+        .carrusel-flecha .material-symbols-outlined {
+
+            font-size: 1.5rem;
+
+        }
+
+        .carrusel-contador {
+
+            position: absolute;
+
+            right: .8rem;
+
+            bottom: .8rem;
+
+            z-index: 2;
+
+            padding: .25rem .6rem;
+
+            border-radius: 999px;
+
+            background: rgba(31, 58, 46, .72);
+
+            color: var(--cream);
+
+            font-size: .75rem;
+
+            font-weight: 600;
+
+            letter-spacing: .04em;
+
+        }
+
+        .carrusel-miniaturas {
+
+            display: flex;
+
+            gap: .45rem;
+
+            padding: .7rem;
+
+            flex-shrink: 0;
+
+            overflow-x: auto;
+
+        }
+
+        .carrusel-miniatura {
+
+            flex: 0 0 auto;
+
+            width: 52px;
+
+            height: 66px;
+
+            border-radius: 8px;
+
+            overflow: hidden;
+
+            border: 2px solid transparent;
+
+            opacity: .5;
+
+            transition: opacity .2s ease, border-color .2s ease;
+
+        }
+
+        .carrusel-miniatura img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+            display: block;
+
+        }
+
+        .carrusel-miniatura:hover {
+
+            opacity: .85;
+
+        }
+
+        .carrusel-miniatura.activa {
+
+            opacity: 1;
+
+            border-color: var(--leaf);
+
+        }
+
+        /* con una sola foto no hay carrusel que mostrar */
+
+        .modal-carrusel.sin-carrusel .carrusel-flecha,
+
+        .modal-carrusel.sin-carrusel .carrusel-contador,
+
+        .modal-carrusel.sin-carrusel .carrusel-miniaturas {
+
+            display: none;
+
+        }
+
+        /* ---------- Detalle ---------- */
+
+        .modal-detalle {
+
+            display: flex;
+
+            flex-direction: column;
+
+            /* la parte restante, .95 del reparto original */
+            flex: 1 1 0;
+
+            padding: 2.1rem 1.8rem 1.8rem;
+
+            overflow-y: auto;
+
+            min-height: 0;
+
+            min-width: 0;
+
+        }
+
+        .modal-categoria {
+
+            align-self: flex-start;
+
+            padding: .3rem .7rem;
+
+            border-radius: 999px;
+
+            background: rgba(74, 124, 89, .12);
+
+            color: var(--moss);
+
+            font-size: .7rem;
+
+            font-weight: 600;
+
+            letter-spacing: .06em;
+
+            text-transform: uppercase;
+
+            margin-bottom: .8rem;
+
+        }
+
+        .modal-titulo {
+
+            font-family: var(--serif);
+
+            font-size: 2.1rem;
+
+            color: var(--forest);
+
+            text-transform: uppercase;
+
+            margin-bottom: .4rem;
+
+        }
+
+        .modal-descripcion {
+
+            font-size: .95rem;
+
+            color: var(--muted);
+
+            margin-bottom: 1.1rem;
+
+        }
+
+        .modal-info {
+
+            list-style: none;
+
+            padding: 0;
+
+            margin: 0 0 1.3rem;
+
+            border-top: 1px dashed rgba(74, 124, 89, .35);
+
+            padding-top: 1rem;
+
+        }
+
+        .modal-info li {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: .55rem;
+
+            font-size: .88rem;
+
+            line-height: 1.4;
+
+            margin-bottom: .5rem;
+
+        }
+
+        .modal-info li:last-child {
+
+            margin-bottom: 0;
+
+        }
+
+        .modal-info li .material-symbols-outlined {
+
+            font-size: 1.05rem;
+
+            color: var(--leaf);
+
+            flex-shrink: 0;
+
+            margin-top: 1px;
+
+        }
+
+        .modal-precio {
+
+            display: flex;
+
+            align-items: baseline;
+
+            gap: .6rem;
+
+            margin-bottom: 1.1rem;
+
+        }
+
+        .modal-precio .current {
+
+            font-family: var(--serif);
+
+            font-size: 2.1rem;
+
+            font-weight: 700;
+
+            color: var(--forest);
+
+        }
+
+        .modal-precio .since {
+
+            font-size: .75rem;
+
+            color: var(--muted);
+
+        }
+
+        .modal-agregar {
+
+            margin-top: auto;
+
+            width: 100%;
+
+            padding: .9rem 1.25rem;
+
+        }
+
+        /* Foco visible solo para teclado */
+
+        .modal-producto :focus-visible {
+
+            outline: 2px solid var(--leaf);
+
+            outline-offset: 2px;
+
+        }
+
+        @media (max-width: 820px) {
+
+            .modal-producto {
+
+                padding: 0;
+
+                align-items: flex-end;
+
+            }
+
+              .modal-caja {
+
+                  flex-direction: column;
+
+                  width: 100%;
+
+                max-height: 94vh;
+
+                border-radius: var(--radius) var(--radius) 0 0;
+
+                /* Sin translateY en el estado cerrado: la caja queda
+                   pegada abajo ycorrecta, y el offset empujaba el
+                   boton de agregar fuera del viewport. */
+
+            }
+
+              .carrusel-marco {
+
+                  flex: none;
+
+                  /* en vez de aspect-ratio: una imagen muy alta deja
+                     sin lugar al detalle en pantallas chicas */
+                  height: min(38vh, 300px);
+
+              }
+
+              /* en columna el flex-basis pasa a ser alto, asi que la
+                 imagen se queda con su alto de contenido y el detalle
+                 toma lo que sobra */
+              .modal-carrusel {
+
+                  flex: none;
+
+              }
+
+              .modal-detalle {
+
+                  /* el detalle se come el alto restante y scrollea solo */
+                  flex: 1 1 auto;
+
+                  padding: 1.4rem 1.3rem 0;
+
+              }
+
+            .modal-titulo {
+
+                font-size: 1.8rem;
+
+            }
+
+            /* El agregar queda siempre visible: es la accion
+               principal y no puede quedar buried en un scroll. */
+
+            .modal-agregar {
+
+                position: sticky;
+
+                bottom: 0;
+
+                margin-top: 1.2rem;
+
+                box-shadow: 0 -12px 18px rgba(255, 255, 255, .92);
+
+            }
+
+            .modal-detalle {
+
+                padding-bottom: 1.2rem;
+
+            }
+
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .modal-producto,
+
+            .modal-caja {
+
+                transition: none;
+
+            }
+
         }
