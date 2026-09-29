@@ -1,18 +1,76 @@
 /* ==========================================================
    CATÁLOGO ZAPI
    ------------------------------------------------------------
-   Página de catálogo: arma las tarjetas de producto, las
-   agrega al carrito, actualiza el contador flotante y abre
-   la ventana de detalle al tocar una tarjeta.
+   Dibuja las tarjetas de producto, las agrega al carrito,
+   actualiza el contador flotante y abre la ventana de detalle
+   al tocar una tarjeta.
 
-   Guarda en localStorage lo mismo que el carrito
-   ({id, precio, cantidad}); de los datos mas rico se
-   encarga el listener de "modal:agregar" de abajo.
+   La suma y el guardado del carrito viven en productos.js, que
+   es el unico que escribe en "zapiCart". Aca solo se decide que
+   tarjetas se dibujan y que filtro esta activo.
 
-   Depende de productos.js (PRODUCTOS, precios,
-   formatearPrecio y actualizarContador) y de modal.js.
-   catalogo.html los carga en ese orden.
+   Depende de productos.js (PRODUCTOS, precios, formatearPrecio,
+   actualizarContador y agregarProductoAlCarrito) y de modal.js.
    ========================================================== */
+
+
+/* ==========================================================
+   FILTRAR POR CATEGORÍA
+   ------------------------------------------------------------
+   Los botones se arman con las categorias que existen en
+   PRODUCTOS, no con una lista escrita a mano: asi el filtro
+   nunca queda con una categoria sin productos. "Todas" es el
+   estado inicial, y volver a esa categoria lo deja vacio.
+   ========================================================== */
+
+let categoriaActual = "";
+
+
+/* Devuelve las categorias presentes en el catalogo, sin
+   repetir y en el orden en que aparecen los productos. */
+
+function categoriasDelCatalogo() {
+
+    return [...new Set(PRODUCTOS.map(producto => producto.categoria))];
+
+}
+
+
+function renderFiltros() {
+
+    const contenedor = document.getElementById("catalogFilters");
+
+    if (!contenedor) return;
+
+    const categorias = categoriasDelCatalogo();
+
+    const botones = [{ valor: "", texto: "Todas" }, ...categorias.map(categoria => ({ valor: categoria, texto: categoria }))];
+
+    contenedor.innerHTML = botones.map(({ valor, texto }) => `
+
+            <button class="catalog-filter${valor === categoriaActual ? " activo" : ""}"
+                type="button" data-categoria="${valor}"
+                aria-pressed="${valor === categoriaActual}">
+                ${texto}
+            </button>
+
+    `).join("");
+
+}
+
+
+document.addEventListener("click", function (event) {
+
+    const boton = event.target.closest(".catalog-filter");
+
+    if (!boton) return;
+
+    categoriaActual = boton.dataset.categoria;
+
+    renderFiltros();
+    renderCatalog();
+
+});
 
 
 /* ==========================================================
@@ -28,7 +86,31 @@ function renderCatalog() {
 
     const grid = document.getElementById("productGrid");
 
-    grid.innerHTML = PRODUCTOS.map(producto => {
+    if (!grid) return;
+
+    const productos = categoriaActual
+        ? PRODUCTOS.filter(producto => producto.categoria === categoriaActual)
+        : PRODUCTOS;
+
+    /* El filtro puede dejar la grilla vacia (por ejemplo si se
+       borra un producto de esa categoria). Se avisa en vez de
+       mostrar un hueco sin explicación. */
+
+    if (productos.length === 0) {
+
+        grid.innerHTML = `
+
+            <p class="catalog-empty">
+                Todavia no hay productos en esta categoria.
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+    grid.innerHTML = productos.map(producto => {
 
         return `
             <article class="product-card" data-id="${producto.id}"
@@ -99,37 +181,18 @@ function renderCatalog() {
 
   }
 
-  /* El "pop" de al sumar lo pone sonidoAgregar, en productos.js,
-     que es donde vive ahora. Ver la seccion CONFIRMACION SONORA
-     de ese archivo. */
+  /* El rebote del botón flotante va por suscripción y no
+     dentro de agregarProductoAlCarrito porque ese rebote es
+     propio del catálogo: el carrito y el chat suman sin él.
+     Así, con las dos páginas cargadas en index.html, el
+     catálogo se entera igual de las sumas que llegan desde la
+     tarjeta de recomendación o desde la ventana de detalle. */
 
-  function agregarAlCarrito(id) {
+  suscribirAlCarrito(function () {
 
-    const producto = PRODUCTOS.find(p => p.id == id);
-
-    if (!producto) return;
-
-    let carrito = obtenerCarrito();
-
-    const existente = carrito.find(item => item.id == id);
-
-    if (existente) {
-        existente.cantidad += 1;
-    } else {
-        carrito.push({
-            id: producto.id,
-            nombre: producto.nombre,
-            categoria: producto.categoria,
-            imagen: producto.imagen,
-            precio: precios[producto.id],
-            cantidad: 1
-        });
-    }
-
-      guardarCarrito(carrito);
       refrescarContadores(true);
-      sonidoAgregar();
-  }
+
+  });
 
 
 /* Boton "Agregar al carrito" de la tarjeta.
@@ -143,12 +206,13 @@ document.addEventListener("click", function (event) {
 
     if (!button) return;
 
-    /* El boton de la ventana flotante lo lleva modal.js:
-       si se atendiera aqui se sumaria dos veces. */
+    /* El boton de la ventana flotante lo lleva productos.js,
+       que es el unico que escucha "modal:agregar": si se
+       atendiera tambien aqui se sumaria dos veces. */
 
     if (button.closest(".modal-producto")) return;
 
-    agregarAlCarrito(Number(button.dataset.id));
+    agregarProductoAlCarrito(Number(button.dataset.id));
 
     button.classList.add("added");
 
@@ -200,22 +264,14 @@ document.addEventListener("keydown", function (event) {
 
 });
 
-/* Al agregar desde la ventana flotante, esta pagina
-   suma el producto con su sonido y actualiza el contador. */
-
-document.addEventListener("modal:agregar", function (event) {
-
-    agregarAlCarrito(event.detail.id);
-
-});
-
 /* ==========================================================
    INICIALIZAR
    ------------------------------------------------------------
-   Se dibujan los productos y se pone el contador al dia con
-   lo que ya habia en el carrito (sin animarlo: todavia no
-   hizo nada el visitante).
+   Se dibujan los filtros y los productos, y se pone el
+   contador al dia con lo que ya habia en el carrito (sin
+   animarlo: todavia no hizo nada el visitante).
    ========================================================== */
 
+renderFiltros();
 renderCatalog();
 refrescarContadores(false);

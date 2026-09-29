@@ -10,9 +10,16 @@
      - arma el texto del pedido y lo manda a WhatsApp,
        que es el checkout real de la tienda.
 
-   Depende de productos.js (PRODUCTOS, precios y
-   formatearPrecio) y de modal.js (ventana de detalle).
-   carrito.html los carga en ese orden.
+   El guardado y la suma de productos viven en productos.js, el
+   unico que escribe en "zapiCart". Aca solo se dibuja el pedido
+   y se ATIENDE lo que avise productos.js cuando el carrito
+   cambia, para que el catalogo que esta en la misma pagina
+   (index.html) y esta lista no queden desfasados entre si.
+
+   Depende de productos.js (PRODUCTOS, precios,
+   formatearPrecio, obtenerCarrito, guardarCarrito,
+   actualizarContador y agregarProductoAlCarrito) y de
+   modal.js (ventana de detalle).
    ========================================================== */
 
 
@@ -41,20 +48,21 @@ const SHIPPING_COST = 0;
    ------------------------------------------------------------
    El carrito se lee de localStorage al cargar la pagina, de
    modo que sigue ahi si el visitante recarga o vuelve otro
-   dia. El "|| []" cubre la primera visita, cuando todavia
-   no hay nada guardado.
+   dia. La lectura pasa por obtenerCarrito, en productos.js, que
+   ademas completa los datos que le falten a cada item con los
+   del catalogo: asi un pedido guardado por una version vieja
+   del sitio no se dibuja con la imagen rota o sin nombre.
    ========================================================== */
 
-let cart = JSON.parse(
-    localStorage.getItem("zapiCart")
-) || [];
+let cart = obtenerCarrito();
 
 
 /* ==========================================================
    GUARDAR CARRITO
    ------------------------------------------------------------
-   Toda modificacion del pedido termina pasando por aqui:
-   se escribe el carrito entero como texto en "zapiCart".
+   Toda modificacion del pedido termina pasando por confirmar:
+   se escribe el carrito entero como texto en "zapiCart" y se
+   redibujan la lista, el resumen y las recomendaciones.
    ========================================================== */
 
 function saveCart() {
@@ -63,6 +71,25 @@ function saveCart() {
         "zapiCart",
         JSON.stringify(cart)
     );
+
+}
+
+
+/* Unico punto de salida de los cambios del pedido.
+
+   Dibuja la lista y actualiza el contador del nav. El contador
+   se refresca sin animacion a proposito: el "pop" y el sonido
+   los pone agregarProductoAlCarrito en productos.js, que es el
+   camino de las sumas. Aqui se trata de cambiar cantidades o
+   borrar, que no suenan. */
+
+function confirmarCarrito() {
+
+    saveCart();
+
+    renderCart();
+
+    actualizarContador(false);
 
 }
 
@@ -314,6 +341,13 @@ function renderCart() {
     const emptyCart =
         document.getElementById("emptyCart");
 
+    /* Esta pagina se carga sola en carrito.html, pero tambien
+       dentro de index.html. Si el bloque del carrito no esta en
+       el DOM no hay nada que dibujar y se sale, en vez de fallar
+       al buscar la lista vacia. */
+
+    if (!container || !emptyCart) return;
+
 
     /* Carrito vacío */
 
@@ -528,9 +562,7 @@ function changeQuantity(id, amount) {
     }
 
 
-    saveCart();
-
-    renderCart();
+    confirmarCarrito();
 
 }
 
@@ -567,9 +599,7 @@ function removeProduct(id) {
             product => product.id != id
         );
 
-        saveCart();
-
-        renderCart();
+        confirmarCarrito();
 
     }, 220);
 
@@ -579,60 +609,20 @@ function removeProduct(id) {
 /* ==========================================================
    AGREGAR DESDE RECOMENDACIÓN
    ------------------------------------------------------------
-   A diferencia de catalogo.js, aqui el producto se guarda
-   completo (nombre, categoria e imagen) porque el carrito
-   despues necesita dibujarlos dentro del pedido.
+   La suma la hace agregarProductoAlCarrito, en productos.js:
+   es el mismo camino que usa el boton de la tarjeta del
+   catalogo y el de la ventana de detalle, asi que el contador,
+   el sonido y el guardado salen identicos en los tres casos.
+   Esta lista se redibuja sola, porque esta pagina esta
+   suscrita a los cambios del carrito.
 
    La tarjeta que se toco sale de la lista al sumarla: esa
-   es la confirmacion de que se agrego. El "pop" va aparte,
-   con la misma funcion que usa el catalogo (productos.js).
+   es la confirmacion de que se agrego.
    ========================================================== */
 
 function sumarAlCarrito(id) {
 
-    const producto = PRODUCTOS.find(p => p.id == id);
-
-    if (!producto) return;
-
-
-    const existente =
-        cart.find(item => item.id == id);
-
-
-    if (existente) {
-
-        existente.cantidad += 1;
-
-    } else {
-
-        cart.push({
-
-            id: producto.id,
-
-            nombre: producto.nombre,
-
-            categoria: producto.categoria,
-
-            imagen: producto.imagen,
-
-            precio: precios[id] || producto.precioBase,
-
-            cantidad: 1
-
-        });
-
-    }
-
-
-    saveCart();
-
-    renderCart();
-
-    /* El "pop" va aca y no en el manejador del boton: asi
-       suena igual se sume desde la tarjeta de recomendacion o
-       desde la ventana flotante, que entran por acá. */
-
-    sonidoAgregar();
+    agregarProductoAlCarrito(id);
 
 }
 
@@ -640,8 +630,11 @@ function sumarAlCarrito(id) {
 /* ==========================================================
    VENTANA FLOTANTE DE PRODUCTO
    El mecanismo esta en modal.js, compartido con el catalogo.
-   Desde aqui solo se le pasa el producto y se escucha el
-   "modal:agregar" que dispara su boton.
+   Desde aqui solo se le pasa el producto desde las tarjetas de
+   recomendacion. El boton "Agregar al carrito" de la ventana
+   dispara "modal:agregar" y lo escucha productos.js, una sola
+   vez: con catalogo.js tambien cargado en index.html, tener el
+   listener en los dos sumaba dos unidades por clic.
    ========================================================== */
 
 document.addEventListener(
@@ -694,18 +687,6 @@ document.addEventListener(
             return;
 
         }
-
-    }
-);
-
-
-/* Agregar desde la ventana flotante */
-
-document.addEventListener(
-    "modal:agregar",
-    function(event) {
-
-        sumarAlCarrito(event.detail.id);
 
     }
 );
@@ -832,9 +813,7 @@ if (clearCartButton) {
 
             cart = [];
 
-            saveCart();
-
-            renderCart();
+            confirmarCarrito();
 
         }
     );
@@ -989,8 +968,25 @@ Gracias.`;
 /* ==========================================================
    INICIALIZAR
    ------------------------------------------------------------
-   Con solo renderizar el carrito la pagina queda lista:
-   el resumen y las recomendaciones se actualizan desde ahi.
+   Primero se relee el carrito guardado: esta pagina guarda su
+   propia copia en "cart" para dibujar el pedido, y esa copia
+   tiene que volver a leerse de "zapiCart" cada vez que otra
+   parte de la pagina (el catalogo, el chat, la ventana de
+   detalle) suma o borra algo. Con las dos paginas en
+   index.html, sin esto el carrito mostraba el pedido de antes
+   de la suma.
    ========================================================== */
+
+suscribirAlCarrito(function () {
+
+    cart = obtenerCarrito();
+
+    renderCart();
+
+});
+
+
+/* Con solo renderizar el carrito la pagina queda lista:
+   el resumen y las recomendaciones se actualizan desde ahi. */
 
 renderCart();
