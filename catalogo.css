@@ -147,14 +147,25 @@
 
         .product-visual {
             position: relative;
-            aspect-ratio: 4 / 3;
+
+            /* 2:3, que es la proporción de las fotos de producto
+               (798 x 1200). Con el 4:3 de antes la imagen se
+               recortaba por arriba y por abajo y se perdía la
+               planta entera. El fondo va porque el kit de huerta
+               es cuadrado: con "contain" completa y las bandas
+               laterales caen sobre blanco, que es el mismo fondo
+               de la foto. */
+            aspect-ratio: 2 / 3;
+
             overflow: hidden;
+
+            background: var(--white);
         }
 
         .product-visual img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
             transition: transform .5s ease;
         }
 
