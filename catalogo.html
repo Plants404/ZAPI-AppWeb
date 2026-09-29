@@ -6,6 +6,13 @@
 
     <title>Catálogo | ZAPI Vivero Agroecológico</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Google Fonts: tipografia del sitio -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
+
     <!-- Google Material Symbols -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
@@ -14,25 +21,33 @@
     <link rel="stylesheet" href="/styles.css">
 
     <link rel="stylesheet" href="catalogo.css">
+    <link rel="stylesheet" href="zapi-bot.css">
 </head>
 
 <body>
 
     <header>
         <a href="catalogo.html" class="logo">
+            
+            <article class="logo-items-img">
+                <img src="./asset/img/logo.svg" alt="Marca de ZAPI: ilustración de una planta" width="200" height="284">
+            </article>
             <article class="logo-items-text">
                 <h4>ZAPI</h4>
-            </article>
-            <article class="logo-items-img">
-                <img src="./asset/img/logo.jpg" alt="ZAPI brand logo with stylized green leaf elements representing plant care and sustainability">
             </article>
         </a>
 
         <nav class="nav-bar" aria-label="Navegación principal">
             <ul>
-                <li><a class="nav-link active" href="catalogo.html" aria-current="page" data-section="inicio">Inicio</a></li>
-                <li><a class="nav-link" href="#catalogo" data-section="catalogo">Catálogo</a></li>
-                <li><a class="nav-link" href="carrito.html" data-section="carrito">Carrito</a></li>
+                <li><a class="nav-link active" href="catalogo.html" aria-current="page">Inicio</a></li>
+                <li><a class="nav-link" href="#catalogo">Catálogo</a></li>
+                <li>
+                    <a class="nav-link nav-link-carrito" href="carrito.html"
+                        id="navLinkCarrito">Carrito
+                        <span class="cart-count cart-count-header" id="cartCountHeader"
+                            data-cart-count aria-hidden="true">0</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </header>
@@ -42,16 +57,17 @@
         <section class="catalog" id="catalogo">
 
             <div class="catalog-header">
-                <span class="catalog-eyebrow">Precios dinámicos</span>
+                <span class="catalog-eyebrow">Catálogo ZAPI</span>
                 <h2>Catálogo vivo</h2>
                 <p>
-                    Nuestros precios se ajustan según disponibilidad
-                    y temporada, y se actualizan automáticamente.
+                    Explorá nuestra selección de plantas e insumos
+                    seleccionados para transformar cualquier espacio
+                    en un ambiente más natural y saludable.
                 </p>
 
                 <span class="price-note">
-                    <span class="material-symbols-outlined">sync</span>
-                    Los precios se actualizan cada pocos segundos
+                    <span class="material-symbols-outlined">verified</span>
+                    Precios fijos · sujetos a disponibilidad
                 </span>
             </div>
 
@@ -59,25 +75,82 @@
                 <!-- JavaScript genera los productos -->
             </div>
 
-            <p class="last-updated" id="lastUpdated">
-                Precios actualizados a las <strong>--:--:--</strong>
-            </p>
-
         </section>
 
     </main>
 
-    <a class="cart-link" href="carrito.html">
+    <!-- Ventana flotante de detalle de producto -->
+    <div class="modal-producto" id="modalProducto" hidden>
+
+        <div class="modal-fondo" data-cerrar-modal></div>
+
+        <div class="modal-caja" role="dialog" aria-modal="true"
+            aria-labelledby="modalTitulo" tabindex="-1">
+
+            <button class="modal-cerrar" type="button" data-cerrar-modal
+                aria-label="Cerrar detalle del producto">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+
+            <div class="modal-carrusel" id="modalCarrusel">
+
+                <div class="carrusel-marco">
+                    <img class="carrusel-img" id="carruselImg" src="" alt="">
+                    <button class="carrusel-flecha carrusel-prev" type="button"
+                        aria-label="Foto anterior">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+
+                    <button class="carrusel-flecha carrusel-next" type="button"
+                        aria-label="Foto siguiente">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
+
+                    <span class="carrusel-contador" id="carruselContador"
+                        aria-live="polite"></span>
+                </div>
+
+                <div class="carrusel-miniaturas" id="carruselMiniaturas"
+                    aria-label="Miniaturas del producto"></div>
+            </div>
+
+            <div class="modal-detalle">
+                <span class="modal-categoria" id="modalCategoria"></span>
+
+                <h3 class="modal-titulo" id="modalTitulo"></h3>
+
+                <p class="modal-descripcion" id="modalDescripcion"></p>
+
+                <ul class="modal-info" id="modalInfo"></ul>
+
+                <div class="modal-precio">
+                    <span class="current" id="modalPrecio"></span>
+                    <span class="since">precio por unidad</span>
+                </div>
+
+                <button class="add-cart modal-agregar" type="button" id="modalAgregar"
+                    data-id="">
+                    <span class="material-symbols-outlined">add_shopping_cart</span>
+                    Agregar al carrito
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <a class="cart-link-float" href="carrito.html" id="cartLinkFloat">
         <span class="material-symbols-outlined">shopping_bag</span>
-        Ver carrito
-        <span id="cartCount" class="cart-count">0</span>
+        <span class="cart-link-text">Ver carrito</span>
+        <span id="cartCountFloat" class="cart-count" data-cart-count>0</span>
     </a>
 
     <footer>
         <p>ZAPI · Vivero Agroecológico · Precios sujetos a disponibilidad</p>
     </footer>
 
-    <script src="catalogo.js" defer></script>
+<script src="productos.js" defer></script>
+<script src="modal.js" defer></script>
+<script src="catalogo.js" defer></script>
+    <script src="zapi-bot.js" defer></script>
 
 </body>
 </html>

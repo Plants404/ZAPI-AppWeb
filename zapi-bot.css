@@ -1,0 +1,1387 @@
+/* ==========================================================
+   ZAPI BOT · WIDGET
+   ========================================================== */
+
+.zapi-bot {
+
+    /* Medidas de referencia del widget.
+
+       --site-header-h: alto real de las barras fijas del sitio.
+       Se declara acá como fallback y lo sobrescribe el JS
+       (initZapiBot) leyendo el DOM, así que nunca queda en 0
+       si el sitio tiene header. */
+
+    --site-header-h: 0px;
+
+    /* --zapi-edge se cuenta UNA sola vez: es el margen
+       inferior. La zona superior la cubre --zapi-top-offset. */
+
+    --zapi-gap: .85rem;
+
+    --zapi-edge: 1.5rem;
+
+    --zapi-toggle-size: 66px;
+
+    /* Separación entre el panel y la barra del sitio */
+
+    --zapi-top-gap: .75rem;
+
+    /* Cuánto se reserva abajo (botón) + arriba (header del sitio) */
+
+    --zapi-top-offset: calc(var(--site-header-h) + var(--zapi-top-gap));
+
+    --zapi-reserve: calc(
+        var(--zapi-edge) + var(--zapi-toggle-size) + var(--zapi-gap)
+        + var(--zapi-top-offset)
+    );
+
+    position: fixed;
+
+    right: var(--zapi-edge);
+
+    bottom: var(--zapi-edge);
+
+    /* 9999 > 70 (barra carrito) > 60 (carrito flotante)
+       > 50 (header/nav): el chat siempre queda arriba, y
+       este puntero inactivo deja clickear el sitio con
+       el chat cerrado. El toggle y el panel abierto lo
+       reactivan. */
+
+    z-index: 9999;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    gap: var(--zapi-gap);
+
+    max-width: 100vw;
+
+    /* El contenedor no captura clics: solo lo hacen
+       el botón y el panel abierto */
+
+    pointer-events: none;
+
+    font-family: var(--sans);
+
+}
+
+
+/* Neutraliza `section > *` de styles.css
+   (max-width: var(--container) + márgenes auto), que
+   restringiría el ancho de las secciones internas */
+
+.zapi-panel > * {
+
+    max-width: none;
+
+    margin-left: 0;
+
+    margin-right: 0;
+
+}
+
+
+/* CONTRATO FLEX DE LA VENTANA (columna):
+
+   .zapi-header      → flex: 0 0 auto  (altura propia, no cede)
+   .zapi-messages    → flex: 1 1 auto + min-height: 0  (ABSORBE el resto)
+   .zapi-chips       → flex: 0 0 auto  (solo lo que necesita)
+   .zapi-input-area  → flex: 0 0 auto  (siempre visible)
+
+   La ventana no scrollea: solo la conversación. */
+
+.zapi-panel {
+
+    order: 1;
+
+}
+
+.zapi-toggle {
+
+    /* Único lugar donde se declara el orden:
+       el panel va arriba y el botón flotante abajo */
+
+    order: 2;
+
+    width: var(--zapi-toggle-size);
+
+    height: var(--zapi-toggle-size);
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: linear-gradient(135deg, var(--leaf), var(--moss));
+
+    color: var(--cream);
+
+    display: grid;
+
+    place-items: center;
+
+    box-shadow: 0 10px 30px rgba(31, 58, 46, .3);
+
+    position: relative;
+
+    /* Único elemento clickeable con el chat cerrado */
+
+    pointer-events: auto;
+
+    transition: transform .25s ease, box-shadow .25s ease, opacity .2s ease;
+
+    animation: zapiFloat 3.2s ease-in-out infinite;
+
+    touch-action: manipulation;
+
+    cursor: pointer;
+
+}
+
+
+.zapi-toggle:focus-visible {
+
+    outline: 3px solid var(--cream);
+
+    outline-offset: 3px;
+
+}
+
+
+/* Halo pulsante alrededor del botón */
+
+.zapi-toggle::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50%;
+
+    background: rgba(74, 124, 89, .5);
+
+    z-index: -1;
+
+    animation: zapiHalo 2.4s ease-out infinite;
+
+}
+
+
+@keyframes zapiHalo {
+
+    0% { transform: scale(1); opacity: .6; }
+
+    100% { transform: scale(1.9); opacity: 0; }
+
+}
+
+
+@keyframes zapiFloat {
+
+    0%, 100% { transform: translateY(0); }
+
+    50% { transform: translateY(-6px); }
+
+}
+
+
+.zapi-toggle:hover {
+
+    transform: scale(1.08) translateY(-3px);
+
+    box-shadow: 0 14px 38px rgba(31, 58, 46, .4);
+
+    animation: none;
+
+}
+
+
+.zapi-toggle .material-symbols-outlined {
+
+    font-size: 28px;
+
+}
+
+
+.zapi-toggle .zapi-close,
+
+.zapi-toggle[aria-expanded="true"] .zapi-chat-icon {
+
+    display: none;
+
+}
+
+
+.zapi-toggle[aria-expanded="true"] .zapi-close {
+
+    display: block;
+
+}
+
+
+/* Burbuja de notificación */
+
+.zapi-badge {
+
+    position: absolute;
+
+    top: -2px;
+
+    right: -2px;
+
+    min-width: 22px;
+
+    height: 22px;
+
+    padding: 0 6px;
+
+    border-radius: 999px;
+
+    background: #d9484b;
+
+    color: #fff;
+
+    font-size: .7rem;
+
+    font-weight: 700;
+
+    display: grid;
+
+    place-items: center;
+
+    border: 2px solid var(--cream);
+
+}
+
+
+.zapi-toggle[aria-expanded="true"] .zapi-badge {
+
+    display: none;
+
+}
+
+
+/* ==========================================================
+   PANEL
+   ========================================================== */
+
+.zapi-panel {
+
+    order: 1;
+
+    position: relative;
+
+    /* El alto se calcula contra el espacio REAL libre:
+       viewport - botón flotante - header del sitio.
+       --zapi-reserve ya descuenta --site-header-h, que
+       inyecta el JS, así que el panel nunca invade la
+       barra "VER CARRITO" ni el header. */
+
+    width: min(480px, calc(100vw - 2rem));
+
+    max-width: calc(100vw - 2rem);
+
+    height: min(720px, calc(100vh - var(--zapi-reserve)));
+
+    max-height: calc(100vh - var(--zapi-reserve));
+
+    background: var(--cream);
+
+    border-radius: 20px;
+
+    border: 1px solid rgba(31, 58, 46, .1);
+
+    box-shadow: 0 30px 80px rgba(31, 58, 46, .35);
+
+    display: flex;
+
+    flex-direction: column;
+
+    /* CRÍTICO: styles.css aplica `section { padding: 6rem 1.5rem }`
+       y el panel es un <section>. Sin neutralizarlo se pierden
+       192px de alto (96px arriba + 96px abajo) y la conversación
+       queda comprimida. Acá no se usa padding: todo el alto
+       se reparte entre las cuatro secciones. */
+
+    padding: 0;
+
+    margin: 0;
+
+    /* La ventana no scrollea: solo la conversación */
+
+    overflow: hidden;
+
+    overscroll-behavior: contain;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform: translateY(22px) scale(.94);
+
+    pointer-events: none;
+
+    transition: opacity .32s ease, transform .38s cubic-bezier(.22, 1, .36, 1),
+        visibility .32s;
+
+    transform-origin: bottom right;
+
+}
+
+
+/* Alturas seguras: dvh evita que la barra de
+   direcciones del móvil tape el input */
+
+@supports (height: 100dvh) {
+
+    .zapi-panel {
+
+        height: min(720px, calc(100dvh - var(--zapi-reserve)));
+
+        max-height: calc(100dvh - var(--zapi-reserve));
+
+    }
+
+}
+
+
+.zapi-panel.open {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform: translateY(0) scale(1);
+
+    pointer-events: auto;
+
+}
+
+
+/* Brillo que recorre el panel al abrir */
+
+.zapi-panel::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+    background: linear-gradient(
+        115deg,
+        transparent 30%,
+        rgba(247, 244, 236, .18) 50%,
+        transparent 70%
+    );
+
+    background-size: 250% 100%;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+}
+
+
+.zapi-panel.open::after {
+
+    animation: zapiShine .9s ease-out;
+
+}
+
+
+@keyframes zapiShine {
+
+    0% { opacity: 1; background-position: 180% 0; }
+
+    100% { opacity: 0; background-position: -60% 0; }
+
+}
+
+
+/* CABECERA */
+
+.zapi-header {
+
+    /* Ocupa solo su altura natural: nunca crece
+       ni se encoge, para no comerse la
+       conversación */
+
+    flex: 0 0 auto;
+
+    background: linear-gradient(135deg, var(--forest), var(--moss));
+
+    color: var(--cream);
+
+    padding: .7rem .9rem;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .7rem;
+
+    position: relative;
+
+}
+
+
+.zapi-avatar {
+
+    width: 38px;
+
+    height: 38px;
+
+    border-radius: 50%;
+
+    background: rgba(247, 244, 236, .16);
+
+    border: 1px solid rgba(247, 244, 236, .3);
+
+    display: grid;
+
+    place-items: center;
+
+    flex-shrink: 0;
+
+    position: relative;
+
+}
+
+
+.zapi-avatar .zapi-sprout {
+
+    width: 28px;
+
+    height: 28px;
+
+    display: block;
+
+}
+
+
+.zapi-sprout-stem {
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 2;
+
+    stroke-linecap: round;
+
+}
+
+
+.zapi-sprout-leaf {
+
+    fill: currentColor;
+
+}
+
+
+.zapi-avatar::after {
+
+    content: "";
+
+    position: absolute;
+
+    bottom: 1px;
+
+    right: 1px;
+
+    width: 10px;
+
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: #4ade80;
+
+    border: 2px solid var(--forest);
+
+}
+
+
+/* Permite que el nombre y el estado
+   cedan espacio sin desbordar */
+
+.zapi-header-text {
+
+    min-width: 0;
+
+    flex: 1;
+
+}
+
+
+.zapi-header-text h4 {
+
+    margin: 0;
+
+    font-family: var(--serif);
+
+    font-size: 1.2rem;
+
+    color: var(--cream);
+
+    letter-spacing: .03em;
+
+    line-height: 1.1;
+
+}
+
+
+.zapi-status {
+
+    font-size: .78rem;
+
+    color: rgba(247, 244, 236, .92);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .3rem;
+
+    flex-wrap: wrap;
+
+    line-height: 1.3;
+
+}
+
+
+.zapi-status-dot {
+
+    font-size: .6rem;
+
+    color: #4ade80;
+
+}
+
+
+.zapi-header-close {
+
+    margin-left: auto;
+
+    flex-shrink: 0;
+
+    background: transparent;
+
+    color: rgba(247, 244, 236, .85);
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 50%;
+
+    display: grid;
+
+    place-items: center;
+
+    cursor: pointer;
+
+    transition: background .2s ease, color .2s ease;
+
+}
+
+
+.zapi-header-close:hover {
+
+    background: rgba(255, 255, 255, .14);
+
+    color: var(--cream);
+
+}
+
+
+.zapi-header-close:focus-visible {
+
+    outline: 2px solid var(--cream);
+
+    outline-offset: -2px;
+
+}
+
+
+.zapi-header-close .material-symbols-outlined {
+
+    font-size: 20px;
+
+}
+
+
+/* ==========================================================
+   MENSAJES
+   ========================================================== */
+
+.zapi-messages {
+
+    /* El único elemento que absorbe el espacio libre.
+
+       min-height: 0 es imprescindible: por defecto
+       vale "auto" y la conversación crecería hasta
+       la altura de su contenido, empujando atajos
+       e input fuera de la ventana. */
+
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    overscroll-behavior: contain;
+
+    /* scrollbar-gutter reserva el canal de la barra
+       siempre: el texto no salta cuando aparece y la
+       barra queda dentro del padding, sin comerse la
+       curva del border-radius del panel.
+
+       Fallback: scrollbar-width/color para Firefox y
+       las reglas ::-webkit-scrollbar para Chrome, Edge
+       y Safari, que ignoran scrollbar-gutter si no. */
+
+    scrollbar-gutter: stable;
+
+    scrollbar-width: thin;
+
+    scrollbar-color: rgba(31, 58, 46, .28) transparent;
+
+    padding: 1rem;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .75rem;
+
+    background: var(--sand);
+
+    scroll-behavior: smooth;
+
+}
+
+
+.zapi-messages::-webkit-scrollbar {
+
+    width: 6px;
+
+    height: 6px;
+
+}
+
+
+.zapi-messages::-webkit-scrollbar-track {
+
+    background: transparent;
+
+}
+
+
+.zapi-messages::-webkit-scrollbar-thumb {
+
+    background: rgba(31, 58, 46, .26);
+
+    border-radius: 999px;
+
+    /* Borde del panel a 1px: la barra nunca
+       se superpone al de --cream del panel */
+
+    border: 1px solid var(--sand);
+
+}
+
+
+.zapi-messages::-webkit-scrollbar-thumb:hover {
+
+    background: rgba(31, 58, 46, .45);
+
+}
+
+
+.zapi-msg {
+
+    max-width: 85%;
+
+    min-width: 0;
+
+    padding: .8rem 1rem;
+
+    border-radius: 18px;
+
+    font-size: 1rem;
+
+    line-height: 1.5;
+
+    animation: zapiMsgIn .38s cubic-bezier(.22, 1, .36, 1) both;
+
+    overflow-wrap: break-word;
+
+    word-break: normal;
+
+}
+
+
+@keyframes zapiMsgIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(8px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+
+    }
+
+}
+
+
+.zapi-msg.bot {
+
+    background: var(--white);
+
+    color: var(--ink);
+
+    border: 1px solid rgba(31, 58, 46, .08);
+
+    border-bottom-left-radius: 5px;
+
+    align-self: flex-start;
+
+}
+
+
+.zapi-msg.user {
+
+    background: var(--forest);
+
+    color: var(--cream);
+
+    border-bottom-right-radius: 5px;
+
+    align-self: flex-end;
+
+}
+
+
+.zapi-msg ul {
+
+    margin: .4rem 0 0;
+
+    padding-left: 1.1rem;
+
+    list-style: none;
+
+}
+
+
+.zapi-msg li {
+
+    margin-bottom: .35rem;
+
+    line-height: 1.55;
+
+    position: relative;
+
+}
+
+
+.zapi-msg li::before {
+
+    content: "❋";
+
+    color: var(--leaf);
+
+    margin-right: .35rem;
+
+    font-size: .8rem;
+
+}
+
+
+.zapi-msg a {
+
+    color: var(--leaf);
+
+    font-weight: 600;
+
+    text-decoration: underline;
+
+}
+
+
+.zapi-msg.user a {
+
+    color: var(--cream);
+
+}
+
+
+/* Indicador de escritura */
+
+.zapi-typing {
+
+    align-self: flex-start;
+
+    display: flex;
+
+    gap: 4px;
+
+    padding: .8rem 1rem;
+
+    background: var(--white);
+
+    border-radius: 16px;
+
+    border-bottom-left-radius: 5px;
+
+}
+
+
+.zapi-typing span {
+
+    width: 7px;
+
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--sage);
+
+    animation: zapiDot 1.3s infinite;
+
+}
+
+
+.zapi-typing span:nth-child(2) { animation-delay: .18s; }
+
+.zapi-typing span:nth-child(3) { animation-delay: .36s; }
+
+
+@keyframes zapiDot {
+
+    0%, 60%, 100% { transform: translateY(0); opacity: .45; }
+
+    30% { transform: translateY(-5px); opacity: 1; }
+
+}
+
+
+/* ==========================================================
+   ATAJOS
+   ========================================================== */
+
+.zapi-chips {
+
+    /* Sin max-height ni scroll propio: los atajos
+       fluyen en 2-3 filas y nunca roban espacio
+       a la conversación */
+
+    flex: 0 0 auto;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: .4rem;
+
+    padding: .6rem .9rem;
+
+    background: var(--cream);
+
+    border-top: 1px solid rgba(31, 58, 46, .08);
+
+}
+
+
+.zapi-chip {
+
+    padding: .45rem .8rem;
+
+    border-radius: 999px;
+
+    background: var(--white);
+
+    border: 1px solid rgba(74, 124, 89, .35);
+
+    color: var(--moss);
+
+    font-family: inherit;
+
+    font-size: .82rem;
+
+    font-weight: 500;
+
+    line-height: 1.2;
+
+    max-width: 100%;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+
+    transition: background .2s ease, color .2s ease, transform .2s ease;
+
+    animation: zapiMsgIn .3s ease both;
+
+}
+
+
+.zapi-chip:focus-visible {
+
+    outline: 2px solid var(--leaf);
+
+    outline-offset: 2px;
+
+}
+
+
+.zapi-chip:hover {
+
+    background: var(--leaf);
+
+    color: var(--cream);
+
+    transform: translateY(-2px) scale(1.04);
+
+    box-shadow: 0 6px 16px rgba(74, 124, 89, .3);
+
+}
+
+
+.zapi-chip:active {
+
+    transform: scale(.96);
+
+}
+
+
+/* ==========================================================
+   INPUT
+   ========================================================== */
+
+.zapi-input-area {
+
+    /* Siempre visible al pie: altura propia,
+       nunca se encoge ni se desplaza con
+       los mensajes */
+
+    flex: 0 0 auto;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .5rem;
+
+    padding: .7rem .9rem;
+
+    /* 1rem de aire mínimo + safe-area en iPhone.
+       Antes (.7rem) quedaba pegado al borde inferior
+       en cualquier pantalla donde inset-bottom da 0. */
+
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+
+    background: var(--cream);
+
+    border-top: 1px solid rgba(31, 58, 46, .08);
+
+}
+
+
+.zapi-input-area input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    padding: .8rem 1.1rem;
+
+    border-radius: 999px;
+
+    border: 1px solid rgba(31, 58, 46, .18);
+
+    background: var(--white);
+
+    font-family: inherit;
+
+    /* 16px es el mínimo en iOS: por debajo
+       el navegador hace zoom al escribir */
+
+    font-size: 1rem;
+
+    color: var(--ink);
+
+    transition: border-color .2s ease, box-shadow .2s ease;
+
+}
+
+
+.zapi-input-area input:focus {
+
+    outline: none;
+
+    border-color: var(--leaf);
+
+    box-shadow: 0 0 0 3px rgba(74, 124, 89, .15);
+
+}
+
+
+.zapi-send {
+
+    width: 46px;
+
+    height: 46px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: var(--leaf);
+
+    color: var(--cream);
+
+    display: grid;
+
+    place-items: center;
+
+    cursor: pointer;
+
+    touch-action: manipulation;
+
+    transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+
+}
+
+
+.zapi-send:focus-visible {
+
+    outline: 2px solid var(--leaf);
+
+    outline-offset: 2px;
+
+}
+
+
+.zapi-send:hover {
+
+    background: var(--moss);
+
+    transform: scale(1.1) rotate(8deg);
+
+    box-shadow: 0 6px 18px rgba(74, 124, 89, .45);
+
+}
+
+
+.zapi-send:active {
+
+    transform: scale(.92);
+
+}
+
+
+.zapi-send .material-symbols-outlined {
+
+    font-size: 21px;
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+/* ---------- TABLET (601px a 1024px) ---------- */
+
+@media (min-width: 601px) and (max-width: 1024px) {
+
+    .zapi-panel {
+
+        width: min(90vw, 500px);
+
+        max-width: min(90vw, 500px);
+
+        height: min(680px, calc(100vh - var(--zapi-reserve)));
+
+    }
+
+    @supports (height: 100dvh) {
+
+        .zapi-panel {
+
+            height: min(680px, calc(100dvh - var(--zapi-reserve)));
+
+        }
+
+    }
+
+}
+
+
+/* ---------- MOBILE (hasta 600px) ---------- */
+
+@media (max-width: 600px) {
+
+    .zapi-bot {
+
+        --zapi-edge: .625rem;
+
+        --zapi-toggle-size: 56px;
+
+        right: var(--zapi-edge);
+
+        bottom: var(--zapi-edge);
+
+    }
+
+    /* El panel ocupa casi toda la pantalla, pero arranca
+       POR DEBAJO del header del sitio: en mobile la barra
+       "VER CARRITO" + header ocupan ~90-110px y el panel
+       no puede pisarlos. */
+
+    .zapi-panel {
+
+        position: fixed;
+
+        top: calc(var(--zapi-top-offset) + 10px);
+
+        right: 10px;
+
+        bottom: 10px;
+
+        left: 10px;
+
+        width: calc(100vw - 20px);
+
+        max-width: none;
+
+        height: calc(100vh - var(--zapi-top-offset) - 20px);
+
+        max-height: calc(100vh - var(--zapi-top-offset) - 20px);
+
+        border-radius: 20px;
+
+    }
+
+    @supports (height: 100dvh) {
+
+        .zapi-panel {
+
+            height: calc(100dvh - var(--zapi-top-offset) - 20px);
+
+            max-height: calc(100dvh - var(--zapi-top-offset) - 20px);
+
+        }
+
+    }
+
+    /* Con el panel abierto el botón flotante estorba:
+       el cierre ya está en el header del chat */
+
+    .zapi-bot.is-open .zapi-toggle {
+
+        opacity: 0;
+
+        visibility: hidden;
+
+        pointer-events: none;
+
+        animation: none;
+
+        transform: scale(.8);
+
+    }
+
+    .zapi-toggle {
+
+        width: var(--zapi-toggle-size);
+
+        height: var(--zapi-toggle-size);
+
+    }
+
+    .zapi-msg {
+
+        max-width: 88%;
+
+    }
+
+}
+
+
+/* ---------- PANTALLAS MUY ALTAS ---------- */
+
+@media (min-width: 1025px) and (min-height: 1000px) {
+
+    .zapi-panel {
+
+        height: min(760px, calc(100vh - var(--zapi-reserve)));
+
+    }
+
+}
+
+
+/* ---------- PANTALLAS BAJAS (laptops 768px de alto) ----------
+
+   No hace falta tocar height: el max-height de la regla
+   base ya descuenta --zapi-reserve (que incluye el header
+   del sitio). Acá solo se compacta el header. */
+
+@media (max-height: 700px) {
+
+    .zapi-header {
+
+        padding: .55rem .85rem;
+
+    }
+
+    .zapi-avatar {
+
+        width: 34px;
+
+        height: 34px;
+
+    }
+
+}
+
+
+/* ---------- ALTO ESCASO: la conversación gana terreno ----------
+
+   Cuando falta altura, lo primero que se compacta son los
+   atajos y los paddings: el input y el header se mantienen
+   porque son elementos de uso obligatorio. */
+
+@media (max-height: 820px) {
+
+    .zapi-messages {
+
+        padding: .85rem .9rem;
+
+    }
+
+    .zapi-chips {
+
+        gap: .3rem;
+
+        padding: .5rem .9rem;
+
+    }
+
+    .zapi-chip {
+
+        padding: .4rem .7rem;
+
+        font-size: .8rem;
+
+    }
+
+    .zapi-msg {
+
+        padding: .7rem .9rem;
+
+    }
+
+}
+
+
+/* ---------- MUY POCA ALTURA (ventanas bajas, landscape) ------ */
+
+@media (max-height: 620px) {
+
+    /* El estado NO se oculta: solo se compacta
+       el resto para no perder texto */
+
+    .zapi-header-text h4 {
+
+        font-size: 1.1rem;
+
+    }
+
+    .zapi-messages {
+
+        padding: .7rem .85rem;
+
+        gap: .6rem;
+
+    }
+
+    .zapi-chips {
+
+        gap: .25rem;
+
+        padding: .4rem .85rem;
+
+    }
+
+    .zapi-chip {
+
+        padding: .32rem .6rem;
+
+        font-size: .78rem;
+
+    }
+
+    .zapi-input-area {
+
+        padding: .5rem .85rem;
+
+        padding-bottom: calc(.85rem + env(safe-area-inset-bottom, 0px));
+
+    }
+
+}
+
+
+/* ---------- ACCESIBILIDAD: menos movimiento ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .zapi-toggle,
+
+    .zapi-panel,
+
+    .zapi-msg,
+
+    .zapi-chip,
+
+    .zapi-typing span,
+
+    .zapi-toggle::before {
+
+        animation: none;
+
+        transition: opacity .2s ease, transform .2s ease;
+
+    }
+
+    .zapi-msg {
+
+        opacity: 1;
+
+        transform: none;
+
+    }
+
+}
