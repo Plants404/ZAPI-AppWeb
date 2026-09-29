@@ -71,13 +71,24 @@
 
     padding: 4rem 0 6rem;
 
-    display: grid;
+    display: flex;
 
-    grid-template-columns: 1fr 380px;
+    flex-wrap: wrap;
 
     gap: 3rem;
 
-    align-items: start;
+    align-items: flex-start;
+}
+
+/* La columna de productos toma lo que sobra del resumen, que se
+   queda en 380px. basis 0 + min-width 0 dejan que encoja de verdad
+   en vez de desbordar cuando la pantalla achica. */
+.cart-content {
+
+    flex: 1 1 0;
+
+    min-width: 0;
+
 }
 
 
@@ -127,7 +138,7 @@
 
 
 /* ==========================================================
-   BOTÓN VACIAR
+   BOTÃ“N VACIAR
    ========================================================== */
 
 .clear-cart {
@@ -179,13 +190,13 @@
 
 .cart-item {
 
-    display: grid;
+    display: flex;
 
-    grid-template-columns: 100px 1fr auto;
-
-    gap: 1.25rem;
+    flex-wrap: wrap;
 
     align-items: center;
+
+    gap: 1.25rem;
 
     padding: 1.2rem;
 
@@ -227,6 +238,9 @@
 
 .cart-item-image {
 
+    /* columna 1 del reparto anterior: 100px fijos, sin encogerse */
+    flex: 0 0 100px;
+
     width: 100px;
 
     height: 100px;
@@ -259,7 +273,19 @@
 }
 
 
-/* INFORMACIÓN */
+/* La columna del medio: se estira con flex-grow 1 y deja el total a
+   la derecha. min-width: 0 deja que el texto encoja en vez de
+   desbordar la fila. */
+.cart-item-info {
+
+    flex: 1 1 0;
+
+    min-width: 0;
+
+}
+
+
+/* INFORMACIÃ“N */
 
 .cart-item-info h3 {
 
@@ -377,6 +403,9 @@
 
     gap: .7rem;
 
+    /* columna 3 del reparto anterior: la que se ajusta al contenido */
+    flex: 0 0 auto;
+
 }
 
 
@@ -437,6 +466,10 @@
     position: sticky;
 
     top: 105px;
+
+    /* la columna lateral: 380px fijos y el resto es para los
+       productos (ver .cart-content) */
+    flex: 0 0 380px;
 
     padding: 2rem;
 
@@ -741,6 +774,745 @@
 
 
 /* ==========================================================
+   RECOMENDACIONES
+   ------------------------------------------------------------
+   La atencion se pide por el FONDO: tres manchas de color
+   (salvia, verde gris y un verde muy claro) que derivan
+   lentamente sobre una base crema y, encima, laten.
+   ========================================================== */
+
+/* --------------------------------------------------
+   LATIDO DEL FONDO
+   --------------------------------------------------
+   Las manchas no solo derivan: tambien laten. La
+   intensidad sale de una sola variable, --pulso, que va
+   de 0 a 1 y se declara aca con @property.
+
+   @property es lo que hace que funcione: sin el, una
+   variable "--pulso" corriente es solo texto y el
+   navegador no la podria interpolar. Con ella declarada,
+   el valor pasa de un numero a otro y el degrade se
+   vuelve a pintar en cada paso. Si el navegador no
+   soporta @property se ignora esta seccion y las alfa
+   fijas de abajo dejan el fondo igual que antes: sin
+   latido, pero igual de legible.
+
+   El costo es el que ya pagaba el fondo al derivar: se
+   repinta la banda una vez por cuadro. Las tarjetas son
+   translucidas, asi que el latido se ve a traves de ellas.
+   -------------------------------------------------- */
+
+@property --pulso {
+
+    syntax: "<number>";
+
+    inherits: false;
+
+    initial-value: 0;
+
+}
+
+
+/* --------------------------------------------------
+   FONDO DE LA BANDA
+   --------------------------------------------------
+   Se anima background-position, que es lo unico que se
+   mueve ademas del latido: nada de transform ni de
+   filtros, para no costar repintados ni tocar el layout.
+
+   Importante: el ancho de la lista no se toca. A 1280 y 1440
+   mide 656px justos, que es 3 tarjetas de 13rem mas dos gaps
+   de 16px: cualquier relleno horizontal sacaria la tercera
+   tarjeta de la fila. Por eso el padding es solo vertical y
+   los halos van en box-shadow, que no ocupan lugar.
+   ========================================================== */
+
+.recommendations {
+
+    position: relative;
+
+    isolation: isolate;
+
+    margin-top: 3rem;
+
+    /* Solo vertical: el ancho de la lista queda intacto */
+    padding: 2.3rem 0 2.4rem;
+
+    border-radius: calc(var(--radius) + 6px);
+
+    /* La banda solo lleva la base crema. Las manchas de color
+       viven todas en ::after: si estuvieran aqui tambien, las dos
+       capas se sumarian y el fondo saldria el doble de saturado
+       de lo que pide --pulso. */
+
+    background-image:
+
+        linear-gradient(
+
+            180deg,
+
+            rgba(250, 248, 241, .96),
+
+            rgba(238, 231, 214, .92)
+
+        );
+
+    background-size: 100% 100%;
+
+    background-repeat: no-repeat;
+
+    box-shadow:
+
+        0 0 0 1px rgba(74, 124, 89, .18),
+
+        /* El halo que antes vivia en ::after entra aqui: los
+           shadows no ocupan lugar, asi que sigue sin poder
+           romper el ancho de la lista. */
+        0 0 0 7px rgba(143, 174, 145, .12),
+
+        0 22px 44px -30px rgba(31, 58, 46, .55);
+
+}
+
+
+/* Las tres manchas: derivan con el tiempo y laten con --pulso.
+   Con "alternate" van y vienen sin el salto del reinicio. */
+@keyframes recomendacionesFondo {
+
+    0% {
+
+        background-position: 8% 26%, 92% 8%, 50% 100%, 0 0;
+
+    }
+
+    100% {
+
+        background-position: 30% 0%, 68% 54%, 56% 66%, 0 0;
+
+    }
+
+}
+
+
+/* Un latido, no un vaiven: dos golpes, el segundo mas suave.
+   El "ease-out" de cada subida la hace rapida y el "linear"
+   del 39% al 56% la deja bajar sola, que es como se oye un
+   corazon. Los topes en 0% y 100% cierran el ciclo sin salto. */
+@keyframes recomendacionesPulso {
+
+    0%, 100% {
+
+        --pulso: 0;
+
+        animation-timing-function: ease-out;
+
+    }
+
+    13% {
+
+        --pulso: 1;
+
+        animation-timing-function: ease-out;
+
+    }
+
+    27% {
+
+        --pulso: .12;
+
+        animation-timing-function: ease-out;
+
+    }
+
+    39% {
+
+        --pulso: .72;
+
+        animation-timing-function: linear;
+
+    }
+
+    56% {
+
+        --pulso: 0;
+
+    }
+
+}
+
+
+/* Capa de adelante: aqui viven las tres manchas.
+
+   Van sobre "transparent", sin la base crema: asi se ve la base
+   que esta debajo y el color queda controlado por un solo lugar
+   (si las manchas estuvieran tambien en .recommendations, las dos
+   capas se sumarian y el fondo se veria el doble de saturado).
+
+   Cada mancha es mas grande que la caja (150-190%) para que al
+   desplazarla el color entre y salga por el otro lado en vez de
+   dejar un borde vacio.
+
+   La intensidad sale de --pulso: cada mancha sube y baja entre
+   su piso y su tope. El primer numero es el tope, el segundo el
+   piso, y el punto y coma separa los canales rgba.
+
+   Va antes que las tarjetas por el "z-index: -1", y para que
+   eso no lo empuje todavia mas hacia atras, la banda declara
+   "isolation: isolate" y forma su propio contexto de
+   apilamiento. Por eso el latido se ve a traves de las
+   tarjetas y no las tinte.
+
+   El selector es ::after y no ::before porque ::before ya lo
+   usa el filete de color del borde superior. */
+.recommendations::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: -1;
+
+    border-radius: inherit;
+
+    /* La banda no hereda --pulso (@property lo declara con
+       "inherits: false", a proposito), asi que la capa tiene que
+       declarar su propio valor. El que manda es el de la
+       animacion; este solo define el estado en reposo. */
+    --pulso: 0;
+
+    pointer-events: none;
+
+    background-image:
+
+        radial-gradient(
+
+            46% 58% at 16% 24%,
+
+            rgba(143, 174, 145, calc(.26 + .16 * var(--pulso))),
+
+            rgba(143, 174, 145, 0) 68%
+
+        ),
+
+        radial-gradient(
+
+            44% 54% at 84% 16%,
+
+            rgba(122, 168, 140, calc(.20 + .14 * var(--pulso))),
+
+            rgba(122, 168, 140, 0) 70%
+
+        ),
+
+        radial-gradient(
+
+            62% 66% at 58% 98%,
+
+            rgba(206, 222, 194, calc(.42 + .18 * var(--pulso))),
+
+            rgba(206, 222, 194, 0) 70%
+
+        );
+
+    background-size: 165% 165%, 175% 175%, 190% 190%;
+
+    background-repeat: no-repeat;
+
+    background-position: 8% 26%, 92% 8%, 50% 100%, 0 0;
+
+    animation:
+        recomendacionesFondo 18s ease-in-out infinite alternate,
+        recomendacionesPulso 4.4s ease-in-out infinite;
+
+}
+
+/* Filete de color en el borde superior */
+.recommendations::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 3px;
+
+    border-radius: 3px 3px 0 0;
+
+    background:
+
+        linear-gradient(
+
+            90deg,
+
+            transparent,
+
+            var(--leaf) 32%,
+
+            var(--sage) 50%,
+
+            var(--leaf) 68%,
+
+            transparent
+
+        );
+
+}
+
+
+.recommendations-header {
+
+    position: relative;
+
+    margin-bottom: 1.5rem;
+
+    /* Hueco para el punto que late */
+    padding-left: .95rem;
+
+}
+
+
+/* Subrayado de color bajo el titulo */
+.recommendations-header h2::after {
+
+    content: "";
+
+    display: block;
+
+    width: 3.5rem;
+
+    height: 3px;
+
+    margin-top: .55rem;
+
+    border-radius: 2px;
+
+    background: linear-gradient(90deg, var(--leaf), var(--sage));
+
+}
+
+
+/* El punto late. Va en .cart-eyebrow y no en la clase suelta
+   porque el catalogo tambien la usa.
+
+   Aqui el eyebrow se pone en --forest, no en --leaf ni en
+   --moss: el texto va directo sobre la banda y el fondo pasa
+   de crema a un verde claro. Medido sobre los pixeles de la
+   pagina en cuatro momentos del ciclo, con --moss bajaba a
+   4,13:1 y con --forest queda en 8,3:1. */
+.recommendations .cart-eyebrow {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .5rem;
+
+    color: var(--forest);
+
+}
+
+
+.recommendations .cart-eyebrow::before {
+
+    content: "";
+
+    width: .5rem;
+
+    height: .5rem;
+
+    border-radius: 50%;
+
+    background: var(--leaf);
+
+    animation: recommendationsLatido 2s ease-out infinite;
+
+}
+
+
+@keyframes recommendationsLatido {
+
+    0% {
+        box-shadow: 0 0 0 0 rgba(74, 124, 89, .5);
+    }
+
+    70% {
+        box-shadow: 0 0 0 .55rem rgba(74, 124, 89, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(74, 124, 89, 0);
+    }
+
+}
+
+
+.recommendations-list {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 1rem;
+
+    align-items: flex-start;
+
+}
+
+
+/* La lista trae como maximo 3 tarjetas. Sin basis fijo el grow
+   repartia el ancho y la tercera de la fila se estiraba al tope
+   (199/199/352), y con basis en porcentaje se angostaba a 91px y el
+   overflow hidden de la tarjeta recortaba el boton Agregar. Se usa
+   un ancho uniforme de 13rem: tres entran en fila en pantallas anchas,
+   en las estrechas bajan a 2 o 1 y todas miden igual. El boton nunca
+   se deforma porque el pie puede partirse en dos lineas.
+
+   El fondo translucido y la franja de arriba son los que hacen
+   que el bloque se lea como una recomendacion y no como otra fila
+   del carrito. La tarjeta es semitransparente a proposito: deja
+   pasar el fondo animado que hay detras. Por eso el blanco es
+   rgba y no un color solido; el 80% mantiene el texto legible
+   aunque la mancha de color pase por debajo (medido: 4,66:1 en el
+   peor momento del ciclo). La entrada se escalona con --i, que es
+   la posicion que escribe renderRecommendations en cada tarjeta. */
+.recommendation-card {
+
+    flex: 0 1 13rem;
+
+    min-width: 0;
+
+    cursor: pointer;
+
+    position: relative;
+
+    background: rgba(255, 255, 255, .8);
+
+    -webkit-backdrop-filter: blur(10px) saturate(1.15);
+
+    backdrop-filter: blur(10px) saturate(1.15);
+
+    border-radius: var(--radius);
+
+    overflow: hidden;
+
+    border: 1px solid rgba(74, 124, 89, .28);
+
+    box-shadow: 0 10px 22px -16px rgba(31, 58, 46, .5);
+
+    transition:
+
+        transform .25s ease,
+
+        box-shadow .25s ease,
+
+        border-color .25s ease;
+
+    animation: recommendationIn .5s cubic-bezier(.2, .8, .3, 1) both;
+
+    /* Escalonado: cada tarjeta entra despues que la anterior */
+    animation-delay: calc(var(--i, 0) * 110ms);
+
+}
+
+
+/* Franja de color en el borde superior de la tarjeta */
+.recommendation-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 4px;
+
+    z-index: 2;
+
+    background: linear-gradient(90deg, var(--leaf), var(--sage) 60%, var(--sand));
+
+}
+
+
+@keyframes recommendationIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(14px) scale(.96);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0) scale(1);
+
+    }
+
+}
+
+
+.recommendation-card:hover {
+
+    transform: translateY(-4px);
+
+    border-color: rgba(74, 124, 89, .6);
+
+    box-shadow:
+
+        0 18px 30px -18px rgba(31, 58, 46, .6),
+
+        0 0 0 4px rgba(143, 174, 145, .25);
+
+}
+
+
+/* Tarjeta enfocada con teclado: mismo realce que el hover */
+.recommendation-card:focus-visible {
+
+    outline: none;
+
+    border-color: var(--leaf);
+
+    box-shadow:
+
+        0 18px 30px -18px rgba(31, 58, 46, .6),
+
+        0 0 0 3px rgba(74, 124, 89, .45);
+
+}
+
+
+.recommendation-image {
+
+    aspect-ratio: 16 / 10;
+
+    overflow: hidden;
+
+    background: var(--sand);
+
+}
+
+
+.recommendation-image img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    transition: transform .4s ease;
+
+}
+
+
+.recommendation-card:hover .recommendation-image img {
+
+    transform: scale(1.06);
+
+}
+
+
+.recommendation-info {
+
+    padding: 1rem 1.1rem 1.2rem;
+
+}
+
+
+/* La categoria va como pastilla de color: es otra marca visual
+   de que la tarjeta es una sugerencia y no un producto pedido.
+
+   El texto usa --moss y no --leaf a proposito: el verde claro
+   de la pastilla dejaba el texto en 4,08:1 y queda por debajo
+   del 4,5:1 que pide WCAG AA. Con --moss sube a 5,16:1. */
+.recommendation-category {
+
+    display: inline-block;
+
+    font-size: .68rem;
+
+    font-weight: 600;
+
+    letter-spacing: .16em;
+
+    text-transform: uppercase;
+
+    color: var(--moss);
+
+    background: rgba(143, 174, 145, .22);
+
+    border-radius: 999px;
+
+    padding: .2rem .6rem;
+
+    margin-bottom: .5rem;
+
+}
+
+
+.recommendation-info h3 {
+
+    margin: 0 0 .35rem;
+
+    font-family: var(--serif);
+
+    font-size: 1.3rem;
+
+    color: var(--forest);
+
+}
+
+
+.recommendation-info p {
+
+    font-size: .82rem;
+
+    line-height: 1.5;
+
+    margin-bottom: 1rem;
+
+}
+
+
+.recommendation-footer {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: .75rem;
+
+}
+
+
+.recommendation-footer strong {
+
+    font-family: var(--serif);
+
+    font-size: 1.4rem;
+
+    color: var(--forest);
+
+}
+
+
+.recommendation-add {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    margin-left: auto;
+
+    min-height: 2.5rem;
+
+    gap: .35rem;
+
+    padding: .55rem 1rem;
+
+    border-radius: 999px;
+
+    background: var(--forest);
+
+    color: var(--cream);
+
+    font-size: .8rem;
+
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    box-shadow: 0 6px 14px -7px rgba(31, 58, 46, .8);
+
+    transition:
+
+        background .2s ease,
+
+        transform .2s ease,
+
+        box-shadow .2s ease;
+
+}
+
+
+.recommendation-add:hover {
+
+    background: var(--moss);
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 18px -8px rgba(31, 58, 46, .85);
+
+}
+
+
+.recommendation-add.added {
+
+    background: var(--leaf);
+
+}
+
+
+.recommendation-add .material-symbols-outlined {
+
+    font-size: 17px;
+
+}
+
+
+/* Con "reducir movimiento" en el sistema se apagan el fondo
+   animado, el latido y la entrada escalonada: el color se
+   mantiene, porque informa igual que la animacion. */
+@media (prefers-reduced-motion: reduce) {
+
+    /* El latido y la deriva viven los dos en ::after. Si se
+       apagara solo la banda, el fondo seguiria respirando a
+       traves de las tarjetas translucidas. */
+
+    .recommendations::after,
+
+    .recommendations .cart-eyebrow::before,
+
+    .recommendation-card {
+
+        animation: none;
+
+    }
+
+
+    .recommendation-card {
+
+        animation-delay: 0s;
+
+    }
+
+}
+
+
+/* ==========================================================
    CARRITO VACÍO
    ========================================================== */
 
@@ -820,7 +1592,7 @@
 
 
 /* ==========================================================
-   BOTÓN PRINCIPAL
+   BOTÃ“N PRINCIPAL
    ========================================================== */
 
 .primary-button {
@@ -880,7 +1652,12 @@
 
     .cart-page {
 
-        grid-template-columns: 1fr;
+        /* el resumen pasa debajo de los productos. En columna el
+           flex-basis pasa a ser alto, asi que el nowrap evita que
+           un carrito largo se desborde hacia un lado. */
+        flex-direction: column;
+
+        flex-wrap: nowrap;
 
         width: min(680px, calc(100% - 2rem));
 
@@ -889,14 +1666,38 @@
     }
 
 
+    /* en columna los dos bloques vuelven a su alto de contenido */
+    .cart-content {
+
+        flex: 0 0 auto;
+
+        width: 100%;
+
+    }
+
     .cart-summary {
 
         position: static;
+
+        flex: 0 0 auto;
+
+        width: 100%;
 
     }
 
 }
 
+
+/* en pantallas de telefono la recomendacion ocupa el ancho entero */
+@media (max-width: 487px) {
+
+    .recommendation-card {
+
+        flex-basis: 100%;
+
+    }
+
+}
 
 @media (max-width: 600px) {
 
@@ -927,14 +1728,14 @@
 
     .cart-item {
 
-        grid-template-columns: 75px 1fr;
-
         gap: 1rem;
 
     }
 
 
     .cart-item-image {
+
+        flex: 0 0 75px;
 
         width: 75px;
 
@@ -945,15 +1746,19 @@
 
     .cart-item-total {
 
-        grid-column: 2;
+        /* baja a su propia fila y arranca alineado con la info: el
+           equivalente del grid-column: 2, con 75px de imagen + 1rem */
+        flex: 1 1 100%;
+
+        margin-left: 91px;
+
+        min-width: 0;
 
         align-items: flex-start;
 
         flex-direction: row;
 
         justify-content: space-between;
-
-        width: 100%;
 
     }
 
