@@ -5,21 +5,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZAPI - Soluciones Agroecológicas</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Google Fonts: tipografia del sitio -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
+
+  <!-- Google Material Symbols: los iconos de las tarjetas,
+       del carrito, de la ventana de detalle y del chat -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+
+  <!-- El orden importa: styles.css pone las secciones del index,
+       stylecarrito.css el carrito, catalogo.css la grilla de
+       productos, la ventana de detalle y el boton flotante, y
+       asi el modal gana sobre los estilos del carrito. -->
   <link rel="stylesheet" href="./styles.css">
-  <script src="./navigation.js" defer></script>
+  <link rel="stylesheet" href="./stylecarrito.css">
+  <link rel="stylesheet" href="./catalogo.css">
+  <link rel="stylesheet" href="./zapi-bot.css">
 </head>
 
 <body>
 
   <!-- header -->
   <header>
-    <!--logo--> 
+    <!--logo-->
     <div class="logo" data-section="inicio" role="button" tabindex="0" aria-label="Ir a inicio" style="cursor: pointer;">
       <article class="logo-items-text">
-        <h4>ZAPI</h4> 
+        <h4>ZAPI</h4>
       </article>
       <article class="logo-items-img">
-        <img src="./asset/img/logo.jpg" alt="ZAPI brand logo with stylized green leaf elements representing plant care and sustainability"> 
+        <img src="./asset/img/logo.svg" alt="Marca de ZAPI: ilustración de una planta">
       </article>
     </div>
     <!--nav bar -->
@@ -31,10 +50,21 @@
         <li><button type="button" class="nav-link" data-section="blog">Blog</button></li>
         <li><button type="button" class="nav-link" data-section="nosotros">Nosotros</button></li>
         <li><button type="button" class="nav-link" data-section="contacto">Contacto</button></li>
+
+        <!-- El id y el data-cart-count los necesita productos.js:
+             el id para el aria-label y el atributo para pintar
+             la cantidad. El boton usa data-section para que el
+             router de navigation.js lo trate como el resto. -->
+        <li>
+          <button type="button" class="nav-link nav-link-carrito" data-section="carrito" id="navLinkCarrito">
+            Carrito
+            <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
+          </button>
+        </li>
       </ul>
     </nav>
   </header>
- 
+
   <main>
     <!-- hero section -->
     <section class="section hero" id="inicio">
@@ -43,7 +73,10 @@
       <h3>ZAPI es una plataforma especializada en soluciones agroecológicas que conecta a las personas con la naturaleza
         mediante plantas de calidad, asesoramiento profesional y herramientas inteligentes para facilitar su cuidado.
       </h3>
-      <img src="./asset/img/plants hero.jpg" alt="Lush green houseplants arranged in a bright interior setting conveying a calm natural atmosphere and inspiration for plant care">
+      <!-- El espacio en el nombre del archivo va codificado como %20:
+           sin esto el servidor corta la URL en el primer espacio. -->
+      <img src="./asset/img/plants-hero.opt.jpg"
+        alt="Lush green houseplants arranged in a bright interior setting conveying a calm natural atmosphere and inspiration for plant care">
 
       <h2>Nuestra misión es ayudar a hogares, empresas e instituciones a crear y mantener espacios verdes saludables.
         Combinamos productos cuidadosamente seleccionados con conocimiento técnico y una experiencia digital diseñada
@@ -58,43 +91,175 @@
 
     <!-- catalog section -->
     <section class="section catalog hidden" id="catalogo">
-      <h2>Descubrí nuestro catálogo</h2>
-      <p>
-        Explorá una amplia variedad de plantas e insumos cuidadosamente seleccionados para transformar cualquier espacio
-        en un ambiente más natural y saludable.
-      </p>
-      <div class="catalog-items">
-        <ul>
-          <li>
-      <button type="button" class="nav-link" onclick="window.location.href='../ZAPI-AppWeb/catalogo.html'">Catálogo</button>
-    </li>
-          <li> Plantas de interior
-            <p>Especies ideales para hogares y oficinas, seleccionadas por su belleza, adaptabilidad y facilidad de
-              mantenimiento.
-            </p>
-          </li>
-          <li> Plantas de exterior
-            <p>Opciones resistentes para jardines, balcones y terrazas.
-            </p>
-          </li>
-          <li>Árboles y frutales
-            <p> Especies destinadas a proyectos de mayor escala, producción doméstica y paisajismo.
-            </p>
-          </li>
-          <li> Huerta
-            <p>Plantines y variedades pensadas para el cultivo de alimentos frescos en el hogar.
-            </p>
-          </li>
-          <li> Aromáticas
-            <p>Especies culinarias y medicinales que aportan aroma, sabor y bienestar.
-            </p>
-          </li>
-          <li> Sustratos y fertilizantes
-            <p>Productos desarrollados para favorecer el crecimiento saludable de las plantas.
-            </p>
-          </li>
-        </ul>
+      <div class="catalog-header">
+        <span class="catalog-eyebrow">Catálogo ZAPI</span>
+        <h2>Catálogo vivo</h2>
+        <p>
+          Explorá nuestra selección de plantas e insumos
+          seleccionados para transformar cualquier espacio
+          en un ambiente más natural y saludable.
+        </p>
+
+        <span class="price-note">
+          <span class="material-symbols-outlined">verified</span>
+          Precios fijos · sujetos a disponibilidad
+        </span>
       </div>
+
+      <!-- Los botones de categoría los dibuja catalogo.js a partir
+           de los productos reales, para que nunca quede una
+           categoría sin productos. -->
+      <div class="catalog-filters" id="catalogFilters" role="group" aria-label="Filtrar productos por categoría">
+        <!-- JavaScript genera los filtros -->
+      </div>
+
+      <div id="productGrid" class="catalog-grid">
+        <!-- JavaScript genera los productos -->
+      </div>
+    </section>
+
+    <!-- cart section. El markup es el de carrito.html, dentro de una
+         sección para que navigation.js la enrute como las demás. -->
+    <section class="section cart-page hidden" id="carrito">
+
+      <div class="cart-content">
+
+        <div class="cart-heading">
+
+          <div>
+            <span class="cart-eyebrow">
+              TU SELECCIÓN
+            </span>
+
+            <h2>Productos seleccionados</h2>
+          </div>
+
+          <button class="clear-cart" type="button" id="clearCart">
+            <span class="material-symbols-outlined">
+              delete_sweep
+            </span>
+
+            Vaciar carrito
+          </button>
+
+        </div>
+
+        <!-- PRODUCTOS -->
+        <div id="cartItems" class="cart-items">
+          <!-- JavaScript genera los productos -->
+        </div>
+
+        <!-- CARRITO VACÍO -->
+        <div id="emptyCart" class="empty-cart hidden">
+          <span class="material-symbols-outlined">
+            shopping_basket
+          </span>
+
+          <h3>Tu carrito está vacío</h3>
+
+          <p>
+            Todavía no agregaste ningún producto.
+            Explorá nuestro catálogo y encontrá
+            algo para tu jardín o huerta.
+          </p>
+
+          <button type="button" class="primary-button" data-section="catalogo">
+            <span class="material-symbols-outlined">
+              eco
+            </span>
+
+            Explorar catálogo
+          </button>
+
+        </div>
+
+        <!-- RECOMENDACIONES -->
+        <section class="recommendations" id="recommendations" hidden>
+
+          <div class="recommendations-header">
+            <span class="cart-eyebrow">
+              TE PUEDE INTERESAR
+            </span>
+
+            <h2>Recomendamos para tu compra</h2>
+          </div>
+
+          <div id="recommendationsList" class="recommendations-list">
+            <!-- JavaScript genera las recomendaciones -->
+          </div>
+
+        </section>
+
+      </div>
+
+      <!-- RESUMEN -->
+      <aside class="cart-summary">
+
+        <div class="summary-header">
+          <span class="cart-eyebrow">
+            RESUMEN
+          </span>
+
+          <h2>Tu pedido</h2>
+        </div>
+
+        <div class="summary-lines">
+
+          <div>
+            <span>Productos</span>
+            <strong id="subtotal">$0</strong>
+          </div>
+
+          <div>
+            <span>Envío</span>
+            <strong id="shipping">$0</strong>
+          </div>
+
+        </div>
+
+        <div class="summary-total">
+          <span>Total</span>
+
+          <strong id="total">
+            $0
+          </strong>
+        </div>
+
+        <!-- DATOS DE ENTREGA -->
+        <div class="delivery-box">
+          <span class="material-symbols-outlined">
+            local_shipping
+          </span>
+
+          <div>
+            <strong>Entrega</strong>
+
+            <p>
+              Coordinaremos el envío
+              contigo por WhatsApp.
+            </p>
+          </div>
+        </div>
+
+        <!-- WHATSAPP -->
+        <button type="button" class="btn-whatsapp" id="whatsappButton">
+          <span class="material-symbols-outlined">
+            chat
+          </span>
+
+          Enviar pedido por WhatsApp
+        </button>
+
+        <p class="secure-message">
+          <span class="material-symbols-outlined">
+            verified_user
+          </span>
+
+          Tu pedido será confirmado
+          directamente con ZAPI.
+        </p>
+
+      </aside>
 
     </section>
 
@@ -178,10 +343,85 @@
       </div>
     </section>
   </main>
+
+  <!-- Ventana flotante de detalle de producto. Va una sola vez por
+       pagina: catalogo.html y carrito.html tienen cada una su copia
+       y por eso el modal solo se activaba en la primera. -->
+  <div class="modal-producto" id="modalProducto" hidden>
+
+    <div class="modal-fondo" data-cerrar-modal></div>
+
+    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" tabindex="-1">
+
+      <button class="modal-cerrar" type="button" data-cerrar-modal aria-label="Cerrar detalle del producto">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <div class="modal-carrusel" id="modalCarrusel">
+
+        <div class="carrusel-marco">
+          <img class="carrusel-img" id="carruselImg" src="" alt="">
+          <button class="carrusel-flecha carrusel-prev" type="button" aria-label="Foto anterior">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+
+          <button class="carrusel-flecha carrusel-next" type="button" aria-label="Foto siguiente">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+
+          <span class="carrusel-contador" id="carruselContador" aria-live="polite"></span>
+        </div>
+
+        <div class="carrusel-miniaturas" id="carruselMiniaturas" aria-label="Miniaturas del producto"></div>
+      </div>
+
+      <div class="modal-detalle">
+        <span class="modal-categoria" id="modalCategoria"></span>
+
+        <h3 class="modal-titulo" id="modalTitulo"></h3>
+
+        <p class="modal-descripcion" id="modalDescripcion"></p>
+
+        <ul class="modal-info" id="modalInfo"></ul>
+
+        <div class="modal-precio">
+          <span class="current" id="modalPrecio"></span>
+          <span class="since">precio por unidad</span>
+        </div>
+
+        <button class="add-cart modal-agregar" type="button" id="modalAgregar" data-id="">
+          <span class="material-symbols-outlined">add_shopping_cart</span>
+          Agregar al carrito
+        </button>
+      </div>
+    </div>
+  </div>
+
   <footer>
-    <P>ZAPI © 2026. Todos los derechos reservados.
-    </P>
+    <p>ZAPI © 2026. Todos los derechos reservados.</p>
+
+    <!-- El sitio vive en una sola pagina (esta), pero catalogo.html
+         y carrito.html se siguen manteniendo como accesos directos
+         y se dejan enlazados entre si. -->
+    <nav aria-label="Páginas del sitio">
+      <a href="./index.html">Inicio</a>
+      <a href="./catalogo.html">Catálogo</a>
+      <a href="./carrito.html">Carrito</a>
+    </nav>
   </footer>
+
+  <!-- El orden importa: productos.js define PRODUCTOS, precios y el
+       carrito compartido; modal.js engancha la ventana de detalle a
+       esos datos; despues los dos scripts que dibujan, que se
+       registran como suscriptores del carrito; y navigation.js
+       enruta las secciones en el DOMContentLoaded. -->
+  <script src="./productos.js" defer></script>
+  <script src="./modal.js" defer></script>
+  <script src="./catalogo.js" defer></script>
+  <script src="./carrito.js" defer></script>
+  <script src="./zapi-bot.js" defer></script>
+  <script src="./navigation.js" defer></script>
+
 </body>
 
 </html>

@@ -14,9 +14,9 @@ const PRODUCTOS = [
         id: 1,
         nombre: "Albahaca",
         categoria: "Aromáticas",
-        imagen: "./asset/img/albahaca.JPG",
+        imagen: "./asset/img/albahaca.opt.jpg",
         imagenes: [
-            "./asset/img/albahaca.JPG"
+            "./asset/img/albahaca.opt.jpg"
         ],
         descripcion: "Fresca y perfumada, ideal para huertas en macetas.",
         precioBase: 150,
@@ -30,9 +30,9 @@ const PRODUCTOS = [
         id: 2,
         nombre: "Rúcula",
         categoria: "Hortalizas",
-        imagen: "./asset/img/ruucula.JPG",
+        imagen: "./asset/img/ruucula.opt.jpg",
         imagenes: [
-            "./asset/img/ruucula.JPG"
+            "./asset/img/ruucula.opt.jpg"
         ],
         descripcion: "Tierna y picante, lista para tus ensaladas.",
         precioBase: 120,
@@ -46,17 +46,17 @@ const PRODUCTOS = [
         id: 3,
         nombre: "Suculenta",
         categoria: "Plantas de interior",
-        imagen: "./asset/img/suculenta1.JPG",
+        imagen: "./asset/img/suculenta1.opt.jpg",
         imagenes: [
-            "./asset/img/suculenta1.JPG",
-            "./asset/img/suculenta4.2.JPG",
-            "./asset/img/suculenta4.1.JPG",
-            "./asset/img/suculenta4.JPG",
-            "./asset/img/suculenta3.2.JPG",
-            "./asset/img/suculenta3.1.JPG",
-            "./asset/img/suculenta3.JPG",
-            "./asset/img/suculenta2.JPG",
-            "./asset/img/suculentas2.1.JPG"
+            "./asset/img/suculenta1.opt.jpg",
+            "./asset/img/suculenta4.2.opt.jpg",
+            "./asset/img/suculenta4.1.opt.jpg",
+            "./asset/img/suculenta4.opt.jpg",
+            "./asset/img/suculenta3.2.opt.jpg",
+            "./asset/img/suculenta3.1.opt.jpg",
+            "./asset/img/suculenta3.opt.jpg",
+            "./asset/img/suculenta2.opt.jpg",
+            "./asset/img/suculentas2.1.opt.jpg"
         ],
         descripcion: "Resistente, ideal para interiores luminosos.",
         precioBase: 180,
@@ -70,13 +70,13 @@ const PRODUCTOS = [
         id: 4,
         nombre: "Cactus",
         categoria: "Plantas de interior",
-        imagen: "./asset/img/cactus1.JPG",
+        imagen: "./asset/img/cactus1.opt.jpg",
         imagenes: [
-            "./asset/img/cactus1.JPG",
-            "./asset/img/cactus4.JPG",
-            "./asset/img/cactus5.JPG",
-            "./asset/img/cactus3.JPG",
-            "./asset/img/cactus2.JPG"
+            "./asset/img/cactus1.opt.jpg",
+            "./asset/img/cactus4.opt.jpg",
+            "./asset/img/cactus5.opt.jpg",
+            "./asset/img/cactus3.opt.jpg",
+            "./asset/img/cactus2.opt.jpg"
         ],
         descripcion: "Decorativo y de fácil mantenimiento.",
         precioBase: 220,
@@ -90,10 +90,10 @@ const PRODUCTOS = [
         id: 5,
         nombre: "Suculentas mix",
         categoria: "Combo",
-        imagen: "./asset/img/almacigosuculentas.JPG",
+        imagen: "./asset/img/almacigosuculentas.opt.jpg",
         imagenes: [
-            "./asset/img/almacigosuculentas.JPG",
-            "./asset/img/almacigosuculentas2.JPG"
+            "./asset/img/almacigosuculentas.opt.jpg",
+            "./asset/img/almacigosuculentas2.opt.jpg"
         ],
         descripcion: "Una selección de suculentas para tu hogar.",
         precioBase: 90,
@@ -107,9 +107,9 @@ const PRODUCTOS = [
         id: 6,
         nombre: "Cretona",
         categoria: "Plantas de interior",
-        imagen: "./asset/img/cretona.JPG",
+        imagen: "./asset/img/cretona.opt.jpg",
         imagenes: [
-            "./asset/img/cretona.JPG"
+            "./asset/img/cretona.opt.jpg"
         ],
         descripcion: "Hojas coloridas para espacios con luz indirecta.",
         precioBase: 320,
@@ -123,9 +123,13 @@ const PRODUCTOS = [
         id: 7,
         nombre: "Kit de huerta sustentable",
         categoria: "Kits",
-        imagen: "./asset/img/kit_de_huerta_zapi.jpg",
+        imagen: "./asset/img/kit_de_huerta_zapi.opt.jpg",
         imagenes: [
-            "./asset/img/kit_de_huerta_zapi.jpg"
+            "./asset/img/kit_de_huerta_zapi.opt.jpg",
+            "./asset/img/kit_de_huerta_zapi_2.opt.jpg",
+            "./asset/img/kit_de_huerta_zapi3.opt.jpg",
+            "./asset/img/kit_de_huerta_zapi4.opt.jpg",
+            "./asset/img/kit_de_huerta_zapi5.opt.jpg"
         ],
         descripcion: "Semillas, sustrato y guía para tu primera huerta.",
         precioBase: 650,
@@ -160,22 +164,127 @@ function formatearPrecio(value) {
 /* ==========================================================
    CARRITO COMPARTIDO
    ------------------------------------------------------------
-   Lectura y escritura de "zapiCart", la misma clave que usa
-   carrito.js. Vive aca para que las dos paginas compartan una
-   sola definicion de como se guarda un producto.
-
-   Cada pagina guarda lo que necesita: el catalogo solo id,
-   precio y cantidad; el carrito ademas nombre, categoria e
-   imagen para poder dibujar el pedido.
+   Aca vive la unica definicion de como se lee, se modifica y
+   se guarda "zapiCart". Cuando catalogo y carrito conviven en
+   la misma pagina (index.html) cada uno tiene su propia vista
+   de los datos; si cada uno escribiera por su cuenta, el
+   ultimo en guardar pisaria lo que sumo el otro. Por eso solo
+   este archivo escribe, y el resto se avisa con
+   suscribirAlCarrito.
    ========================================================== */
 
-function obtenerCarrito() {
-    return JSON.parse(localStorage.getItem("zapiCart")) || [];
-}
+   /* Recupera el item guardado a partir del catalogo. Las
+      versiones anteriores del sitio guardaban solo {id, precio,
+      cantidad} y con rutas de imagen viejas, asi que los datos
+      que faltan o quedaron desactualizados se completan con los
+      del producto en vez de romper la pagina. */
 
-function guardarCarrito(carrito) {
-    localStorage.setItem("zapiCart", JSON.stringify(carrito));
-}
+   function normalizarCarrito(carrito) {
+
+       return carrito.map(item => {
+
+           const producto = PRODUCTOS.find(p => p.id == item.id);
+
+           if (!producto) return item;
+
+           return {
+               id: producto.id,
+               nombre: producto.nombre,
+               categoria: producto.categoria,
+               imagen: producto.imagen,
+               precio: item.precio ?? precios[producto.id] ?? producto.precioBase,
+               cantidad: Number(item.cantidad) || 1
+           };
+
+       });
+
+   }
+
+   function obtenerCarrito() {
+       return normalizarCarrito(
+           JSON.parse(localStorage.getItem("zapiCart")) || []
+       );
+   }
+
+   function guardarCarrito(carrito) {
+       localStorage.setItem("zapiCart", JSON.stringify(carrito));
+   }
+
+
+/* ==========================================================
+   AVISAR QUE CAMBIO EL CARRITO
+   ------------------------------------------------------------
+   Quien dibuja una lista de productos (el carrito) se
+   suscribe para redibujarse; quien solo muestra un numero
+   alcanza con la llamada directa a actualizarContador.
+   ========================================================== */
+
+   const suscriptoresDelCarrito = [];
+
+   function suscribirAlCarrito(fn) {
+       suscriptoresDelCarrito.push(fn);
+   }
+
+   function avisarCambioDelCarrito() {
+       suscriptoresDelCarrito.forEach(fn => fn());
+   }
+
+
+/* ==========================================================
+   SUMAR UN PRODUCTO
+   ------------------------------------------------------------
+   El camino unico para agregar, para que el boton de la
+   tarjeta, el de la recomendacion y el de la ventana de
+   detalle hagan exactamente lo mismo. Suma la unidad, deja el
+   contador al dia, suena y avisa a los suscriptores.
+   ========================================================== */
+
+   function agregarProductoAlCarrito(id) {
+
+       const producto = PRODUCTOS.find(p => p.id == id);
+
+       if (!producto) return;
+
+       const carrito = obtenerCarrito();
+
+       const existente = carrito.find(item => item.id == producto.id);
+
+       if (existente) {
+
+           existente.cantidad += 1;
+
+       } else {
+
+           carrito.push({
+               id: producto.id,
+               nombre: producto.nombre,
+               categoria: producto.categoria,
+               imagen: producto.imagen,
+               precio: precios[producto.id] ?? producto.precioBase,
+               cantidad: 1
+           });
+
+       }
+
+       guardarCarrito(carrito);
+
+       actualizarContador(true);
+       sonidoAgregar();
+       avisarCambioDelCarrito();
+
+   }
+
+
+/* El boton de la ventana de detalle dispara "modal:agregar".
+   Se escucha una sola vez, aca, y no en cada pagina: con las dos
+   paginas cargadas en index.html un solo clic sumaba dos
+   unidades. */
+
+document.addEventListener("modal:agregar", function (evento) {
+
+    agregarProductoAlCarrito(evento.detail.id);
+
+});
   function actualizarContador(animar) {
 
       const total = obtenerCarrito().reduce(

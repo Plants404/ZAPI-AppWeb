@@ -2,6 +2,20 @@
    CARRITO ZAPI
    ========================================================== */
 
+/* styles.css centra con "margin-inline: auto" a todo hijo
+   directo de un <section>, una regla pensada para las secciones
+   de una sola columna del index. El carrito es de dos columnas,
+   asi que esos margenes se comen el espacio libre y separan el
+   resumen lateral de la lista. En carrito.html no pasaba nada
+   porque ahi .cart-content y .cart-summary son hijos de <main>,
+   no de un <section>; al meter el carrito como una seccion mas
+   del index hay que neutralizarlo. */
+
+.section.cart-page>* {
+    max-width: none;
+    margin-inline: 0;
+}
+
 .cart-header {
     position: sticky;
     top: 0;
@@ -40,6 +54,36 @@
     margin: 0;
 }
 
+/* Enlaces a las otras paginas. El sitio ya vive entero en
+   index.html; esta pagina y catalogo.html quedan como accesos
+   directos, enlazados entre si. */
+.cart-nav {
+    display: flex;
+    gap: 1.25rem;
+}
+
+.cart-nav a {
+    color: var(--forest);
+    text-decoration: none;
+    font-size: .95rem;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: all .2s ease;
+}
+
+.cart-nav a:hover,
+.cart-nav a:focus-visible {
+    border-bottom-color: var(--leaf);
+}
+
+.cart-footer {
+    background: var(--ink);
+    color: rgba(247, 244, 236, .7);
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    font-size: .9rem;
+}
+
 
 /* TÍTULO */
 
@@ -74,7 +118,6 @@
     display: flex;
 
     flex-wrap: wrap;
-
     gap: 3rem;
 
     align-items: flex-start;
