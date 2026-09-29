@@ -1,0 +1,996 @@
+/* ==========================================================
+   CARRITO ZAPI
+   ------------------------------------------------------------
+   Toda la logica del carrito de compras:
+
+     - guarda lo que el visitante eligio en localStorage
+       para que el pedido sobreviva a una recarga;
+     - dibuja los items, el resumen y las recomendaciones;
+     - propone productos que van bien con lo ya comprado;
+     - arma el texto del pedido y lo manda a WhatsApp,
+       que es el checkout real de la tienda.
+
+   Depende de productos.js (PRODUCTOS, precios y
+   formatearPrecio) y de modal.js (ventana de detalle).
+   carrito.html los carga en ese orden.
+   ========================================================== */
+
+
+/* ==========================================================
+   CONFIGURACIÓN
+   ========================================================== */
+
+// WhatsApp REAL de ZAPI
+// Formato internacional, SIN +, espacios ni guiones.
+// Uruguay: 598 + número sin el 0 inicial
+// 098 268 560  ->  59898268560
+const WHATSAPP_NUMBER = "59898268560";
+
+
+/*
+    Costo fijo de envío.
+
+    Si el costo se coordina directamente
+    por WhatsApp, dejar en 0.
+*/
+const SHIPPING_COST = 0;
+
+
+/* ==========================================================
+   OBTENER CARRITO
+   ------------------------------------------------------------
+   El carrito se lee de localStorage al cargar la pagina, de
+   modo que sigue ahi si el visitante recarga o vuelve otro
+   dia. El "|| []" cubre la primera visita, cuando todavia
+   no hay nada guardado.
+   ========================================================== */
+
+let cart = JSON.parse(
+    localStorage.getItem("zapiCart")
+) || [];
+
+
+/* ==========================================================
+   GUARDAR CARRITO
+   ------------------------------------------------------------
+   Toda modificacion del pedido termina pasando por aqui:
+   se escribe el carrito entero como texto en "zapiCart".
+   ========================================================== */
+
+function saveCart() {
+
+    localStorage.setItem(
+        "zapiCart",
+        JSON.stringify(cart)
+    );
+
+}
+
+
+/* ==========================================================
+   AFINIDAD ENTRE PRODUCTOS
+   Define qué productos combinan bien entre sí.
+   ========================================================== */
+
+      const AFINIDAD = {
+
+          /* El kit de huerta combina con todo lo que se cultiva en
+             maceta o en jardín, por eso "Kits" figura como compatible
+             con todas las categorías. Sin esto el kit puntuaba 0
+             contra cualquier carrito y el filtro lo descartaba
+             siempre, por más productos que hubiera. */
+
+          "Hortalizas": ["Aromáticas", "Combo", "Kits"],
+          "Aromáticas": ["Hortalizas", "Combo", "Kits"],
+          "Plantas de interior": ["Plantas de interior", "Combo", "Kits"],
+          "Combo": ["Plantas de interior", "Hortalizas", "Aromáticas", "Kits"],
+          "Kits": ["Hortalizas", "Aromáticas", "Plantas de interior", "Combo"]
+
+      };
+
+
+/* ==========================================================
+   OBTENER RECOMENDACIONES
+   Excluye lo que ya está en el carrito y
+   prioriza productos de categorías compatibles.
+   ========================================================== */
+
+function obtenerRecomendaciones() {
+
+    const enCarrito = cart.map(item => item.id);
+
+    /* El carrito guardado en localStorage solo trae
+       {id, precio, cantidad}: la categoría no viaja con el item, así
+       que hay que buscarla en el catálogo. Sin esto ninguna afinidad
+       empataba nunca, el filtro de puntaje se quedaba sin nada y la
+       sección quedaba oculta para siempre. */
+
+    const categoriasEnCarrito = cart
+
+        .map(item => {
+
+            const producto = PRODUCTOS.find(
+                p => p.id === item.id
+            );
+
+            return producto ? producto.categoria : null;
+
+        })
+
+        .filter(Boolean);
+
+    const candidatos = PRODUCTOS.filter(
+        producto => !enCarrito.includes(producto.id)
+    );
+
+    const conAfinidad = candidatos
+
+        .map(producto => {
+
+            /* Puntaje por afinidad de categoría */
+
+            const afinidad = categoriasEnCarrito.reduce(
+                (total, categoria) => {
+
+                    const compatibles =
+                        AFINIDAD[categoria] || [];
+
+                    return total +
+                        (compatibles.includes(producto.categoria) ? 2 : 0);
+
+                },
+                0
+            );
+
+            return {
+                producto,
+                puntaje: afinidad
+            };
+
+        })
+
+        .filter(item => item.puntaje > 0)
+
+        .sort((a, b) => b.puntaje - a.puntaje)
+
+        .map(item => item.producto);
+
+    if (conAfinidad.length > 0) {
+
+        return conAfinidad.slice(0, 3);
+
+    }
+
+    /* Si no hay coincidencia por categoría,
+       mostrar los más económicos como sugerencia */
+
+    return candidatos
+
+        .slice()
+
+        .sort((a, b) => a.precioBase - b.precioBase)
+
+        .slice(0, 3);
+
+}
+
+
+/* ==========================================================
+   RENDERIZAR RECOMENDACIONES
+   ========================================================== */
+
+function renderRecommendations() {
+
+    const seccion = document.getElementById("recommendations");
+
+    const lista = document.getElementById("recommendationsList");
+
+    if (!seccion || !lista) return;
+
+
+    const recomendaciones = obtenerRecomendaciones();
+
+
+    /* Sin recomendaciones: ocultar la sección */
+
+    if (recomendaciones.length === 0) {
+
+        seccion.hidden = true;
+        lista.innerHTML = "";
+
+        /* Se olvida la lista anterior para que la proxima vez que
+           haya productos la animacion de entrada vuelva a correr. */
+
+        lista.dataset.ids = "";
+        return;
+
+    }
+
+
+    seccion.hidden = false;
+
+
+    /* Solo se reescribe la lista cuando cambian los productos.
+
+       Si se reescribiera en cada cambio de cantidad, las tarjetas
+       se recrearian y la animacion de entrada volveria a empezar
+       una y otra vez. Ademas, al no reescribir, el foco del
+       teclado no se pierde. Con --i cada tarjeta entra
+       escalonada: 0 la primera, 110ms la segunda, 220ms la
+       tercera. */
+
+    const ids = recomendaciones.map(p => p.id).join(",");
+
+    if (lista.dataset.ids === ids) return;
+
+    lista.dataset.ids = ids;
+
+
+    lista.innerHTML = recomendaciones.map((producto, indice) => {
+
+        const precio = precios[producto.id] || producto.precioBase;
+
+        return `
+
+            <article
+                class="recommendation-card"
+                style="--i: ${indice}"
+                data-id="${producto.id}"
+                tabindex="0"
+                aria-haspopup="dialog"
+            >
+
+                <div class="recommendation-image">
+
+                    <img
+                        src="${producto.imagen}"
+                        alt="${producto.nombre}"
+                        loading="lazy"
+                    >
+
+                </div>
+
+                <div class="recommendation-info">
+
+                    <div class="recommendation-category">
+                        ${producto.categoria}
+                    </div>
+
+                    <h3>
+                        ${producto.nombre}
+                    </h3>
+
+                    <p>
+                        ${producto.descripcion}
+                    </p>
+
+                    <div class="recommendation-footer">
+
+                        <strong>
+                            ${formatearPrecio(precio)}
+                        </strong>
+
+                        <button
+                            class="recommendation-add"
+                            type="button"
+                            data-id="${producto.id}"
+                            aria-label="Agregar ${producto.nombre} al carrito"
+                        >
+
+                            <span class="material-symbols-outlined">
+                                add_shopping_cart
+                            </span>
+
+                            Agregar
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+        `;
+
+    }).join("");
+
+}
+
+
+/* ==========================================================
+   RENDERIZAR CARRITO
+   ------------------------------------------------------------
+   Reconstruye la lista de items y ademas refresca el
+   resumen y las recomendaciones, para que las tres zonas
+   de la pagina nunca queden desactualizadas entre si.
+   ========================================================== */
+
+function renderCart() {
+
+    const container =
+        document.getElementById("cartItems");
+
+    const emptyCart =
+        document.getElementById("emptyCart");
+
+
+    /* Carrito vacío */
+
+        if (cart.length === 0) {
+
+            container.innerHTML = "";
+
+            emptyCart.classList.remove("hidden");
+
+            updateSummary();
+
+            renderRecommendations();
+
+            return;
+
+        }
+
+
+    emptyCart.classList.add("hidden");
+
+
+    container.innerHTML = cart.map(item => {
+
+        const itemTotal =
+            item.precio * item.cantidad;
+
+
+        return `
+
+            <article
+                class="cart-item"
+                data-id="${item.id}"
+            >
+
+                <div class="cart-item-image">
+
+                    <img
+                        src="${item.imagen}"
+                        alt="${item.nombre}"
+                    >
+
+                </div>
+
+
+                <div class="cart-item-info">
+
+                    <h3>
+                        ${item.nombre}
+                    </h3>
+
+                    <div class="cart-item-category">
+                        ${item.categoria || "Producto ZAPI"}
+                    </div>
+
+                    <div class="cart-item-price">
+                        ${formatearPrecio(item.precio)}
+                    </div>
+
+
+                    <div class="quantity-control">
+
+                        <button
+                            class="quantity-minus"
+                            data-id="${item.id}"
+                            aria-label="Disminuir cantidad"
+                            type="button"
+                        >
+
+                            <span class="material-symbols-outlined">
+                                remove
+                            </span>
+
+                        </button>
+
+
+                        <span>
+                            ${item.cantidad}
+                        </span>
+
+
+                        <button
+                            class="quantity-plus"
+                            data-id="${item.id}"
+                            aria-label="Aumentar cantidad"
+                            type="button"
+                        >
+
+                            <span class="material-symbols-outlined">
+                                add
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="cart-item-total">
+
+                    <strong>
+                        ${formatearPrecio(itemTotal)}
+                    </strong>
+
+
+                    <button
+                        class="remove-item"
+                        data-id="${item.id}"
+                        aria-label="Eliminar producto"
+                        type="button"
+                    >
+
+                        <span class="material-symbols-outlined">
+                            delete
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </article>
+
+        `;
+
+    }).join("");
+
+
+    updateSummary();
+
+    renderRecommendations();
+
+}
+
+
+/* ==========================================================
+   ACTUALIZAR RESUMEN
+   ------------------------------------------------------------
+   Subtotal, envio y total. El envio se cobra solo cuando
+   hay productos en el carrito, para que el resumen de un
+   carrito vacio muestre 0 en las tres columnas.
+   ========================================================== */
+
+function updateSummary() {
+
+    const subtotal =
+        cart.reduce(
+
+            (total, item) => {
+
+                return total +
+                    (item.precio * item.cantidad);
+
+            },
+
+            0
+
+        );
+
+
+    const shipping =
+        cart.length > 0
+            ? SHIPPING_COST
+            : 0;
+
+
+    const total =
+        subtotal + shipping;
+
+
+    document.getElementById("subtotal")
+        .textContent = formatearPrecio(subtotal);
+
+
+    document.getElementById("shipping")
+        .textContent = formatearPrecio(shipping);
+
+
+    document.getElementById("total")
+        .textContent = formatearPrecio(total);
+
+}
+
+
+/* ==========================================================
+   CAMBIAR CANTIDAD
+   ------------------------------------------------------------
+   Suma o resta unidades. Bajar de 1 elimina el producto en
+   lugar de dejarlo en cero, para que el boton de disminuir
+   nunca produzca un item vacio.
+   ========================================================== */
+
+function changeQuantity(id, amount) {
+
+    const item =
+        cart.find(product => product.id == id);
+
+
+    if (!item) return;
+
+
+    item.cantidad += amount;
+
+
+    /* No permitir cantidades menores a 1 */
+
+    if (item.cantidad <= 0) {
+
+        cart = cart.filter(
+            product => product.id != id
+        );
+
+    }
+
+
+    saveCart();
+
+    renderCart();
+
+}
+
+
+/* ==========================================================
+   ELIMINAR PRODUCTO
+   ------------------------------------------------------------
+   Primero anima la fila que se va y recien despues la saca
+   del carrito. Se ve que producto desaparecio, en vez de
+   borrarse de golpe.
+   ========================================================== */
+
+function removeProduct(id) {
+
+    const itemElement =
+        document.querySelector(
+            `.cart-item[data-id="${id}"]`
+        );
+
+
+    if (itemElement) {
+
+        itemElement.style.opacity = "0";
+
+        itemElement.style.transform =
+            "translateX(30px) scale(.96)";
+
+    }
+
+
+    setTimeout(() => {
+
+        cart = cart.filter(
+            product => product.id != id
+        );
+
+        saveCart();
+
+        renderCart();
+
+    }, 220);
+
+}
+
+
+/* ==========================================================
+   AGREGAR DESDE RECOMENDACIÓN
+   ------------------------------------------------------------
+   A diferencia de catalogo.js, aqui el producto se guarda
+   completo (nombre, categoria e imagen) porque el carrito
+   despues necesita dibujarlos dentro del pedido.
+
+   La tarjeta que se toco sale de la lista al sumarla: esa
+   es la confirmacion de que se agrego. El "pop" va aparte,
+   con la misma funcion que usa el catalogo (productos.js).
+   ========================================================== */
+
+function sumarAlCarrito(id) {
+
+    const producto = PRODUCTOS.find(p => p.id == id);
+
+    if (!producto) return;
+
+
+    const existente =
+        cart.find(item => item.id == id);
+
+
+    if (existente) {
+
+        existente.cantidad += 1;
+
+    } else {
+
+        cart.push({
+
+            id: producto.id,
+
+            nombre: producto.nombre,
+
+            categoria: producto.categoria,
+
+            imagen: producto.imagen,
+
+            precio: precios[id] || producto.precioBase,
+
+            cantidad: 1
+
+        });
+
+    }
+
+
+    saveCart();
+
+    renderCart();
+
+    /* El "pop" va aca y no en el manejador del boton: asi
+       suena igual se sume desde la tarjeta de recomendacion o
+       desde la ventana flotante, que entran por acá. */
+
+    sonidoAgregar();
+
+}
+
+
+/* ==========================================================
+   VENTANA FLOTANTE DE PRODUCTO
+   El mecanismo esta en modal.js, compartido con el catalogo.
+   Desde aqui solo se le pasa el producto y se escucha el
+   "modal:agregar" que dispara su boton.
+   ========================================================== */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const tarjeta =
+            event.target.closest(".recommendation-card");
+
+
+        /* El boton de agregar manda: no abrir el detalle */
+
+        if (tarjeta &&
+            !event.target.closest(".recommendation-add")) {
+
+            window.abrirModalProducto(
+                Number(tarjeta.dataset.id),
+                tarjeta
+            );
+
+            return;
+
+        }
+
+    }
+);
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        const objetivo =
+            event.target instanceof Element ? event.target : null;
+
+        const tarjeta = objetivo
+            ? objetivo.closest(".recommendation-card")
+            : null;
+
+        if (tarjeta &&
+            !objetivo.closest(".recommendation-add") &&
+            (event.key === "Enter" || event.key === " ")) {
+
+            event.preventDefault();
+
+            window.abrirModalProducto(
+                Number(tarjeta.dataset.id),
+                tarjeta
+            );
+
+            return;
+
+        }
+
+    }
+);
+
+
+/* Agregar desde la ventana flotante */
+
+document.addEventListener(
+    "modal:agregar",
+    function(event) {
+
+        sumarAlCarrito(event.detail.id);
+
+    }
+);
+
+
+/* ==========================================================
+   EVENTOS DEL CARRITO
+   ------------------------------------------------------------
+   Un solo listener sobre el documento en vez de uno por
+   boton: como renderCart() redibuja la lista en cada cambio,
+   los botones se recrean en cada dibujado y habria que
+   volver a engancharlos.
+
+   Cada rama corta con return porque un unico clic solo debe
+   disparar una accion.
+   ========================================================== */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+
+        /* Agregar desde recomendación.
+           La tarjeta sale de la lista al sumarla, asi que
+           ver como desaparece es la confirmacion. */
+
+        const addRecommendation =
+            event.target.closest(".recommendation-add");
+
+
+        if (addRecommendation) {
+
+            sumarAlCarrito(
+                Number(addRecommendation.dataset.id)
+            );
+
+            return;
+
+        }
+
+
+        /* Aumentar */
+
+        const plus =
+            event.target.closest(".quantity-plus");
+
+
+        if (plus) {
+
+            changeQuantity(
+                plus.dataset.id,
+                1
+            );
+
+            return;
+
+        }
+
+
+        /* Disminuir */
+
+        const minus =
+            event.target.closest(".quantity-minus");
+
+
+        if (minus) {
+
+            changeQuantity(
+                minus.dataset.id,
+                -1
+            );
+
+            return;
+
+        }
+
+
+        /* Eliminar */
+
+        const remove =
+            event.target.closest(".remove-item");
+
+
+        if (remove) {
+
+            removeProduct(
+                remove.dataset.id
+            );
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   VACIAR CARRITO
+   ------------------------------------------------------------
+   Pide confirmacion antes de borrar: un pedido completo
+   guardado no se puede recuperar, no hay historial.
+   ========================================================== */
+
+const clearCartButton =
+    document.getElementById("clearCart");
+
+
+if (clearCartButton) {
+
+    clearCartButton.addEventListener(
+        "click",
+        function() {
+
+            if (cart.length === 0) return;
+
+
+            const confirmClear =
+                confirm(
+                    "¿Querés vaciar el carrito?"
+                );
+
+
+            if (!confirmClear) return;
+
+
+            cart = [];
+
+            saveCart();
+
+            renderCart();
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   WHATSAPP
+   ------------------------------------------------------------
+   Este es el checkout de la tienda. No hay pasarela de pago:
+   se arma el pedido como texto y se abre una conversacion
+   con ZAPI, donde se confirman stock, precio y entrega.
+   ========================================================== */
+
+const whatsappButton =
+    document.getElementById("whatsappButton");
+
+
+if (whatsappButton) {
+
+    whatsappButton.addEventListener(
+        "click",
+        function() {
+
+            /* Verificar carrito */
+
+            if (cart.length === 0) {
+
+                alert(
+                    "Agregá al menos un producto al carrito."
+                );
+
+                return;
+
+            }
+
+
+            /* Calcular subtotal */
+
+            const subtotal =
+                cart.reduce(
+                    (total, item) => {
+
+                        return total +
+                            (item.precio * item.cantidad);
+
+                    },
+
+                    0
+                );
+
+
+            /* Calcular envío */
+
+            const shipping =
+                SHIPPING_COST;
+
+
+            /* Calcular total */
+
+            const total =
+                subtotal + shipping;
+
+
+            /* ==================================================
+               CONSTRUIR DETALLE DE PRODUCTOS
+               Una linea por producto: nombre, unidades y el
+               total de esa linea (precio x cantidad).
+               ================================================== */
+
+            const productsText =
+                cart.map(item => {
+
+                    const itemTotal =
+                        item.precio *
+                        item.cantidad;
+
+
+                    return (
+                        `• ${item.nombre} x${item.cantidad} — ` +
+                        `${formatearPrecio(itemTotal)}`
+                    );
+
+                }).join("\n");
+
+
+            /* ==================================================
+               CREAR MENSAJE
+               El texto tal cual lo va a leer el cliente en
+               WhatsApp: pedido, totales y la pregunta por la
+               entrega.
+               ================================================== */
+
+            const message = `Hola ZAPI 🌱
+
+Quiero realizar el siguiente pedido:
+
+${productsText}
+
+━━━━━━━━━━━━━━━━━━
+
+Subtotal: ${formatearPrecio(subtotal)}
+Envío: ${formatearPrecio(shipping)}
+
+TOTAL: ${formatearPrecio(total)}
+
+¿Podrían confirmarme la disponibilidad y coordinar la entrega?
+
+Gracias.`;
+
+
+            /* ==================================================
+               CODIFICAR MENSAJE
+               El mensaje va dentro de la URL, asi que hay que
+               escapar los saltos de linea, el simbolo $ y los
+               acentos. Sin esto WhatsApp lo cortaria a la
+               primera linea.
+               ================================================== */
+
+            const encodedMessage =
+                encodeURIComponent(message);
+
+
+            /* ==================================================
+               CREAR ENLACE ESTÁNDAR DE WHATSAPP
+               ================================================== */
+
+            const whatsappURL =
+                `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+
+            /* ==================================================
+               ABRIR WHATSAPP
+               Pestana nueva para no perder el carrito, y
+               noopener/noreferrer para que la pagina no
+               reciba acceso a la ventana abierta.
+               ================================================== */
+
+            window.open(
+                whatsappURL,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   INICIALIZAR
+   ------------------------------------------------------------
+   Con solo renderizar el carrito la pagina queda lista:
+   el resumen y las recomendaciones se actualizan desde ahi.
+   ========================================================== */
+
+renderCart();
