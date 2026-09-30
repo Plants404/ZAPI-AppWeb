@@ -706,19 +706,30 @@ function initZapiBot() {
     function scrollAbajo() {
         messages.scrollTop = messages.scrollHeight;
     }
+    /* El bot escribe marcado propio (<strong>, <br>), asi que
+       sus respuestas pueden ir por innerHTML. Lo que escribe el
+       visitante no: va como texto plano, porque al pasarlo por
+       innerHTML un "<img onerror=...>" se ejecutaba. Por eso el
+       parametro es explicito y no se deduce del tipo. */
 
-    function agregarMensaje(texto, tipo) {
+    function agregarMensaje(texto, tipo, esHTML = true) {
 
         const div = document.createElement("div");
 
         div.className = `zapi-msg ${tipo}`;
-        div.innerHTML = texto;
+
+        if (esHTML) {
+            div.innerHTML = texto;
+        } else {
+            div.textContent = texto;
+        }
 
         messages.appendChild(div);
 
         scrollAbajo();
 
         return div;
+
     }
 
     function mostrarEscribiendo() {
@@ -754,7 +765,7 @@ function initZapiBot() {
 
     function responder(texto) {
 
-        agregarMensaje(texto, "user");
+        agregarMensaje(texto, "user", false);
 
         mostrarEscribiendo();
 

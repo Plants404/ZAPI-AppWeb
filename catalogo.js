@@ -15,15 +15,61 @@
 
 
 /* ==========================================================
-   FILTRAR POR CATEGORÍA
+   FILTRAR POR CATEGORÍA Y POR TEXTO
    ------------------------------------------------------------
    Los botones se arman con las categorias que existen en
    PRODUCTOS, no con una lista escrita a mano: asi el filtro
    nunca queda con una categoria sin productos. "Todas" es el
    estado inicial, y volver a esa categoria lo deja vacio.
+
+   El texto viene del buscador del header (buscador.js) y se
+   combina con la categoria: los dos filtros se aplican juntos,
+   no uno en lugar del otro.
    ========================================================== */
 
 let categoriaActual = "";
+let busquedaActual = "";
+
+
+/* Quita acentos y pasa a minuscula, para que "plantas" y
+   "Plántas" finds lo mismo. Hay que pasar por NFD porque
+   solo con toLowerCase el acento queda pegado a la letra. */
+
+function normalizarTexto(texto) {
+
+    return texto
+        .toString()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+}
+
+
+/* Un producto entra si pasa los dos filtros. Todos los campos
+   de texto van juntos en una sola cadena y se busca dentro, para
+   que "kit cactus" encuentre el kit de cactus sin tener que
+   adivinar en que campo estaba cada palabra. */
+
+function coincideBusqueda(producto) {
+
+    if (!busquedaActual) return true;
+
+    const texto = normalizarTexto([
+        producto.nombre,
+        producto.categoria,
+        producto.descripcion,
+        producto.infoDeVenta.join(" "),
+    ].join(" "));
+
+    /* Todas las palabras tiene que aparecer. Asi "kit cactus"
+       no trae el kit de huerta, que solo coincide con "kit". */
+    return normalizarTexto(busquedaActual)
+        .split(/\s+/)
+        .filter(Boolean)
+        .every(palabra => texto.includes(palabra));
+
+}
 
 
 /* Devuelve las categorias presentes en el catalogo, sin
@@ -88,20 +134,42 @@ function renderCatalog() {
 
     if (!grid) return;
 
-    const productos = categoriaActual
-        ? PRODUCTOS.filter(producto => producto.categoria === categoriaActual)
-        : PRODUCTOS;
+    const productos = PRODUCTOS.filter(producto =>
+        (!categoriaActual || producto.categoria === categoriaActual)
+        && coincideBusqueda(producto)
+    );
 
-    /* El filtro puede dejar la grilla vacia (por ejemplo si se
-       borra un producto de esa categoria). Se avisa en vez de
-       mostrar un hueco sin explicación. */
+    /* El filtro puede dejar la grilla vacia: por una categoria
+       sin productos, o porque el texto buscado no coincide con
+       nada. Son dos motivos distintos y el mensaje va distinto,
+       con un atajo para limpiar solo la causa. */
 
     if (productos.length === 0) {
+
+        const buscando = busquedaActual.length > 0;
+        const conCategoria = categoriaActual.length > 0;
+
+        let mensaje = "Todavia no hay productos en esta categoria.";
+        let sugerencia = "";
+
+        if (buscando) {
+            mensaje = `No encontramos productos para "${escaparHTML(busquedaActual)}".`;
+            sugerencia = `
+                <button class="catalog-empty-clear" type="button" data-limpiar-busqueda>
+                    Limpiar busqueda
+                </button>`;
+        } else if (conCategoria) {
+            sugerencia = `
+                <button class="catalog-empty-clear" type="button" data-ver-todas>
+                    Ver todas las categorias
+                </button>`;
+        }
 
         grid.innerHTML = `
 
             <p class="catalog-empty">
-                Todavia no hay productos en esta categoria.
+                ${mensaje}
+                ${sugerencia}
             </p>
 
         `;
@@ -263,6 +331,70 @@ document.addEventListener("keydown", function (event) {
     }
 
 });
+
+/* Los botones de "Limpiar busqueda" y "Ver todas las
+   categorias" que aparecen cuando el filtro deja la grilla
+   vacia. Se atienden por delegacion porque los dos botones
+   se dibujan dentro del innerHTML de renderCatalog. */
+
+document.addEventListener("click", function (event) {
+
+    if (event.target.closest("[data-limpiar-busqueda]")) {
+
+        busquedaActual = "";
+        renderCatalog();
+        actualizarBuscadorHeader();
+        return;
+
+    }
+
+    if (event.target.closest("[data-ver-todas]")) {
+
+        categoriaActual = "";
+        renderFiltros();
+        renderCatalog();
+
+    }
+
+});
+
+/* Cuantos productos hay visibles ahora, para el aviso del
+   buscador. Cuenta lo que hay en la grilla, no lo que dice
+   el filtro, asi que si algo falla al dibujar, el numero
+   sigue siendo el correcto. */
+
+function productosVisibles() {
+
+    return document.querySelectorAll("#productGrid .product-card").length;
+
+}
+
+/* El buscador del header y el filtro de catalogo comparten el
+   texto. este es el punto de entrada que usa buscador.js: deja
+   el estado, redibuja y avisa. Devuelve cuantos quedaron, que
+   es lo que buscador.js lee para el aria-live. */
+
+window.aplicarBusqueda = function (texto) {
+
+    busquedaActual = texto.trim();
+    renderCatalog();
+    return productosVisibles();
+
+};
+
+
+/* El boton "limpiar" del header vacia el campo por lo mismo que
+   el atajo del estado vacio, pero ademas devuelve el foco al
+   input, que desde el boton se ha ido. */
+
+function actualizarBuscadorHeader() {
+
+    if (typeof window.refrescarCampoBuscador === "function") {
+        window.refrescarCampoBuscador(busquedaActual);
+    }
+
+}
+
 
 /* ==========================================================
    INICIALIZAR
