@@ -183,8 +183,8 @@ function renderCatalog() {
         return `
             <article class="product-card" data-id="${producto.id}">
                 <div class="product-visual">
-                    <span class="product-badge">${producto.categoria}</span>
-                    <img src="${producto.imagen}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
+                    <span class="product-badge">${escaparHTML(producto.categoria)}</span>
+                    <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
                 </div>
                 <div class="product-body">
                     <h3 class="product-name">

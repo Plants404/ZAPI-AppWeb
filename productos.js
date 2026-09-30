@@ -614,3 +614,55 @@ const precios = {};
 PRODUCTOS.forEach(producto => {
     precios[producto.id] = producto.precioBase;
 });
+
+
+/* ==========================================================
+   IMAGENES QUE NO CARGAN
+   ------------------------------------------------------------
+   Un producto puede quedar con una foto que ya no esta en el
+   servidor, o con una ruta mal escrita. Antes eso dejaba el
+   icono de imagen rota del navegador adentro del marco, con el
+   fondo gris y el texto alt al lado.
+
+   Se escucha el evento "error" de forma global y se cambia la
+   foto por un marcador con los colores de la marca. Va con
+   data: URI para no sumar un request a un archivo que solo se
+   usa cuando algo ya salio mal.
+
+   El evento "error" no burbujea, asi que hace falta capturarlo
+   en la fase de captura: un listener comun en <img> o en su
+   contenedor padre no lo veria.
+   ========================================================== */
+
+const IMAGEN_FALLBACK = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150" ' +
+    'preserveAspectRatio="xMidYMid meet">' +
+    '<rect width="120" height="150" fill="#f7f4ec"/>' +
+    '<path d="M60 96V58" stroke="#4a7c59" stroke-width="3" stroke-linecap="round"/>' +
+    '<path d="M60 74c-16 0-24-10-24-24 14-2 24 6 24 24Z" fill="#4a7c59"/>' +
+    '<path d="M60 84c16 0 24-10 24-24-14-2-24 6-24 24Z" fill="#2f5c3c"/>' +
+    '<path d="M36 116h48" stroke="#2f5c3c" stroke-width="3" stroke-linecap="round"/>' +
+    '</svg>'
+);
+
+document.addEventListener("error", (evento) => {
+
+    const imagen = evento.target;
+
+    if (!(imagen instanceof HTMLImageElement)) return;
+
+    /* La marca evita el bucle: si el propio marcador fallara,
+       el evento vuelve a disparar el handler. */
+
+    if (imagen.dataset.fallbackImagen === "si") return;
+
+    imagen.dataset.fallbackImagen = "si";
+
+    imagen.src = IMAGEN_FALLBACK;
+
+    /* Si la foto original no tenia texto alternativo, el marcador
+       no aporta nada, asi que se deja claro que no hay imagen. */
+
+    if (!imagen.alt) imagen.alt = "Imagen no disponible";
+
+}, true);

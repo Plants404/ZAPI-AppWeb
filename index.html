@@ -499,10 +499,16 @@
        enruta las secciones en el DOMContentLoaded. -->
   <script src="./productos.js" defer></script>
   <script src="./modal.js" defer></script>
-  <script src="./catalogo.js" defer></script>
-  <script src="./carrito.js" defer></script>
-  <script src="./zapi-bot.js" defer></script>
-  <script src="./navigation.js" defer></script>
+<script src="./catalogo.js" defer></script>
+<script src="./carrito.js" defer></script>
+<!-- buscador.js y menu.js faltaban aca: el buscador del header y el
+     panel de navegacion estan en el HTML de index, pero sin estos dos
+     scripts no respondian. El buscador necesita a catalogo.js, que
+     expone window.aplicarBusqueda. -->
+<script src="./buscador.js" defer></script>
+<script src="./zapi-bot.js" defer></script>
+<script src="./navigation.js" defer></script>
+<script src="./menu.js" defer></script>
 
 </body>
 
