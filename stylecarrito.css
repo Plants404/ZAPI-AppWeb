@@ -76,6 +76,63 @@
     border-bottom-color: var(--leaf);
 }
 
+/* El interruptor de sonido comparte la forma de los links del
+   header del carrito, pero como es un boton necesita sus propios
+   estados: el foco por teclado y el color cuando esta apagado. */
+.cart-sonido {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 44px;
+
+    height: 44px;
+
+    margin-left: .25rem;
+
+    color: var(--forest);
+
+    background: none;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    transition: background .2s ease, color .2s ease;
+
+}
+
+.cart-sonido:hover {
+
+    background: rgba(74, 124, 89, .10);
+
+}
+
+.cart-sonido:focus-visible {
+
+    outline: 2px solid var(--leaf-texto);
+
+    outline-offset: 2px;
+
+}
+
+.cart-sonido .material-symbols-outlined {
+
+    font-size: 1.25rem;
+
+}
+
+.sonido-off .cart-sonido {
+
+    color: var(--muted-texto);
+
+}
+
 .cart-footer {
     background: var(--ink);
     color: rgba(247, 244, 236, .7);
@@ -173,7 +230,7 @@
 
     letter-spacing: .22em;
 
-    color: var(--leaf);
+    color: var(--leaf-texto);
 }
 
 
@@ -302,8 +359,6 @@
        parte de arriba y de abajo de la planta. El fondo hace que
        las bandas laterales queden como parte de la foto. */
     background: var(--sand);
-
-    background: var(--sand);
 }
 
 
@@ -399,11 +454,13 @@
 }
 
 
+/* 44px es el piso practico en movil para que el boton no se
+   equivoque con el que esta al lado. Antes media 34px. */
 .quantity-control button {
 
-    width: 34px;
+    width: 44px;
 
-    height: 34px;
+    height: 44px;
 
     display: grid;
 
@@ -476,9 +533,11 @@
 
 .remove-item {
 
-    width: 34px;
+    /* La papelera tambien sube a 44px: estaba en 34px y es el
+       control mas importante de la fila. */
+    width: 44px;
 
-    height: 34px;
+    height: 44px;
 
     display: grid;
 
@@ -717,7 +776,12 @@
 
     border-radius: 999px;
 
-    background: linear-gradient(135deg, #25D366, #128C7E);
+    /* El verde oficial de WhatsApp con texto blanco daba 1.99:1:
+       era el boton de checkout, el CTA mas importante del
+       carrito, y era practicamente ilegible. Se usa el verde
+       profundo de la marca (#075E54) con sus tintes, que si
+       llega a 4.5:1 conservando la identidad del canal. */
+    background: linear-gradient(135deg, #0A7B6E, #075E54);
 
     color: #ffffff;
 
@@ -1435,6 +1499,42 @@
     font-size: 1.3rem;
 
     color: var(--forest);
+
+}
+
+/* El nombre abre el detalle del producto. Hereda la tipografia
+   del h3 para que la tarjeta no cambie de aspecto. */
+.recommendation-link {
+
+    font: inherit;
+
+    color: inherit;
+
+    text-align: left;
+
+    background: none;
+
+    border: 0;
+
+    padding: 0;
+
+    cursor: pointer;
+
+}
+
+.recommendation-link:hover {
+
+    color: var(--moss);
+
+}
+
+.recommendation-link:focus-visible {
+
+    outline: 2px solid var(--leaf-texto);
+
+    outline-offset: 3px;
+
+    border-radius: 4px;
 
 }
 
