@@ -61,16 +61,18 @@ let cart = obtenerCarrito();
    GUARDAR CARRITO
    ------------------------------------------------------------
    Toda modificacion del pedido termina pasando por confirmar:
-   se escribe el carrito entero como texto en "zapiCart" y se
-   redibujan la lista, el resumen y las recomendaciones.
+   se guarda el carrito entero y se redibujan la lista, el
+   resumen y las recomendaciones.
+
+   La escritura se delega a guardarCarrito, en productos.js, que
+   es el unico punto que toca localStorage. Esta copia estaba
+   escribiendo directo y tiraba toda la pagina en modo privado o
+   con la cuota llena.
    ========================================================== */
 
 function saveCart() {
 
-    localStorage.setItem(
-        "zapiCart",
-        JSON.stringify(cart)
-    );
+    guardarCarrito(cart);
 
 }
 
@@ -268,7 +270,7 @@ function renderRecommendations() {
                 <div class="recommendation-image">
 
                     <img
-                        src="${producto.imagen}"
+                        src="${escaparHTML(producto.imagen)}"
                         alt="${escaparHTML(producto.nombre)}"
                         loading="lazy"
                     >
@@ -302,7 +304,7 @@ function renderRecommendations() {
                             class="recommendation-add"
                             type="button"
                             data-id="${producto.id}"
-                            aria-label="Agregar ${producto.nombre} al carrito"
+                            aria-label="Agregar ${escaparHTML(producto.nombre)} al carrito"
                         >
 
                             <span class="material-symbols-outlined">
@@ -386,7 +388,7 @@ function renderCart() {
                 <div class="cart-item-image">
 
                     <img
-                        src="${item.imagen}"
+                        src="${escaparHTML(item.imagen)}"
                         alt="${escaparHTML(item.nombre)}"
                         loading="lazy"
                         decoding="async"
@@ -398,11 +400,11 @@ function renderCart() {
                 <div class="cart-item-info">
 
                     <h3>
-                        ${item.nombre}
+                        ${escaparHTML(item.nombre)}
                     </h3>
 
                     <div class="cart-item-category">
-                        ${item.categoria || "Producto ZAPI"}
+                        ${escaparHTML(item.categoria) || "Producto ZAPI"}
                     </div>
 
                     <div class="cart-item-price">

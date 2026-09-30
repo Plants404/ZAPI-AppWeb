@@ -320,13 +320,13 @@ header img {
   outline-offset: 3px;
 }
 
-/* Con el menu abierto el header sube por encima del fondo y del
-   panel (55 y 60) para que la cruz siga siendo alcanzable: si
-   quedara debajo, el fondo oscuro la taparia y no habria forma
-   de cerrar el menu con el mouse. El fondo del header lo hace el
-   ::before de arriba, y se apaga para no tapar el panel. */
+/* Con el menu abierto el header sube por encima del velo (200) y del
+   panel (210) para que la cruz siga siendo alcanzable: si quedara
+   debajo, el panel lo taparia y no habria forma de cerrar el menu.
+   El fondo del header lo hace el ::before de arriba, y se apaga para
+   no tapar el panel. */
 header.menu-abierto {
-  z-index: 65;
+  z-index: 220;
 }
 
 header.menu-abierto::before {
@@ -457,14 +457,14 @@ header.menu-abierto::before {
   position: fixed;
   top: 0;
   right: 0;
-  /* 210, por encima del velo (200) y del widget del chat (100). */
+  /* 210, por encima del velo (200) y del widget del chat (100), pero
+     por debajo del header abierto (220) para no taparle la cruz. */
   z-index: 210;
   width: min(320px, 85vw);
   height: 100vh;
   height: 100dvh;
 
-  /* El header queda por encima del panel (z-index 65 contra 60)
-     para que la cruz siga siendo alcanzable, asi que el panel tiene
+  /* El header queda por encima del panel, asi que el panel tiene
      que empezar debajo de el. 8.5rem es un poco mas que el alto
      del header en el telefono: 12px de padding + 44px del buscador
      + 12px de hueco + 44px de la fila del logo y la cruz + 12px de
@@ -483,11 +483,11 @@ header.menu-abierto::before {
   transform: translateX(0);
 }
 
-/* El fondo oscurecido va por debajo del panel (55 contra 60) y
-   por encima del contenido de la pagina. */
-/* El velo sube a 200 y el panel a 210 para tapar el boton
-   flotante del carrito (60) y el widget del chat (100), que antes
-   quedaban clickeables por encima del menu abierto. */
+/* El velo tapa el contenido de la pagina y sube a 200 para cubrir el
+   boton flotante del carrito (60) y el widget del chat (100), que
+   antes quedaban clickeables por encima del menu abierto. El panel
+   va a 210 y el header abierto a 220, asi el orden de arriba hacia
+   abajo es: cruz del header, panel, velo, contenido. */
 .nav-backdrop {
   position: fixed;
   inset: 0;
@@ -1014,7 +1014,7 @@ footer nav a:focus-visible {
   }
 
   /* El panel ya no existe, asi que el header recupera su fondo y
-     baja del 65 al 50 de z-index. */
+     baja del 220 al 50 de z-index. */
   header.menu-abierto {
     z-index: 50;
   }
