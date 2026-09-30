@@ -38,6 +38,54 @@
         }
     }
 
+    /* Lo que se puede enfocar mientras el menu esta abierto: los
+       controles del panel mas los del header, que quedan por encima
+       del velo y por lo tanto se siguen viendo y usando (la cruz de
+       cerrar y el buscador). */
+    function elementosEnfocables() {
+        const selector = 'a[href], button:not([disabled]), input:not([disabled]),' +
+            ' [tabindex]:not([tabindex="-1"])';
+        const zonas = [header, nav].filter(zona => zona);
+
+        return zonas.flatMap(zona =>
+            Array.from(zona.querySelectorAll(selector))
+        ).filter(elemento =>
+            /* offsetParent es null en un panel con visibility:hidden,
+               asi que el filtro saca los links del menu cerrado. */
+            elemento.offsetParent !== null
+        );
+    }
+
+    /* Sin esto, el Tab sale del panel y se mete en el contenido de
+       la pagina que esta detras del velo: el foco se pierde en algo
+       que no se ve. El ciclo incluye el header, asi que la cruz y el
+       buscador siguen siendo alcanzables. */
+    function atraparFoco(evento) {
+        if (evento.key !== 'Tab' || !abierto) return;
+
+        const focusables = elementosEnfocables();
+
+        if (!focusables.length) return;
+
+        const primero = focusables[0];
+        const ultimo = focusables[focusables.length - 1];
+        const actual = document.activeElement;
+
+        if (!focusables.includes(actual)) {
+            evento.preventDefault();
+            primero.focus({ preventScroll: true });
+            return;
+        }
+
+        if (evento.shiftKey && actual === primero) {
+            evento.preventDefault();
+            ultimo.focus({ preventScroll: true });
+        } else if (!evento.shiftKey && actual === ultimo) {
+            evento.preventDefault();
+            primero.focus({ preventScroll: true });
+        }
+    }
+
     function abrir() {
         if (abierto) return;
         abierto = true;
@@ -109,9 +157,19 @@
     // el fondo. El buscador corta la propagacion cuando tiene
     // algo escrito, porque ahi Escape limpia el campo.
     document.addEventListener('keydown', function (evento) {
-        if (evento.key !== 'Escape' || !abierto) return;
-        evento.preventDefault();
-        cerrar();
+        if (!abierto) return;
+
+        if (evento.key === 'Escape') {
+            evento.preventDefault();
+            cerrar();
+            return;
+        }
+
+        /* El Tab se atiende de forma sincrona, sin aplazar con
+           requestAnimationFrame: el preventDefault tiene que correr
+           antes de que el navegador mueva el foco, y para cuando
+           corriera un frame el cambio ya habria pasado. */
+        if (evento.key === 'Tab') atraparFoco(evento);
     });
 
     // Al elegir un destino el menu se cierra. Se escucha en el nav

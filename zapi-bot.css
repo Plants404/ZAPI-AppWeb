@@ -924,6 +924,17 @@
 
     padding: .45rem .8rem;
 
+    /* Con el padding solo (.45rem) el chip queda en 32px de alto,
+       por debajo de los 44px que piden las guidelines de area
+       tactil. min-height mas el centrado resuelven sin estirar el
+       texto ni romper la pastilla. */
+
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
     border-radius: 999px;
 
     background: var(--white);

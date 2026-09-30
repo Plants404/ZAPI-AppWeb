@@ -54,7 +54,9 @@
 
 <body>
 
-  <!-- header. El orden de las piezas esta pensado para mobile:
+    <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+
+    <!-- header. El orden de las piezas esta pensado para mobile:
        el buscador va arriba, el logo y el boton de menu abajo,
        y de 900px para arriba se acomodan en una sola fila. -->
   <header>
@@ -144,7 +146,7 @@
        inserta junto al texto nuevo no lo anunciaria. -->
   <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
 
-  <main>
+  <main id="contenido" tabindex="-1">
     <!-- hero section -->
     <section class="section hero" id="inicio">
       <h1>Transformamos en espacios con naturaleza. </h1>
@@ -475,6 +477,12 @@
           <span class="material-symbols-outlined">add_shopping_cart</span>
           Agregar al carrito
         </button>
+
+        <!-- Enlace a la pagina estatica del producto, que es la que
+             pueden indexar los buscadores. El href lo completa
+             modal.js con el slug de cada producto; sin JavaScript
+             queda como texto, no como un link roto. -->
+        <a class="modal-ficha" id="modalFicha" hidden></a>
       </div>
     </div>
   </div>

@@ -73,9 +73,31 @@ for (const f of HTML) {
    markup (alt, textContent, value, src): ahi el navegador
    escribe texto. */
 console.log('\nXSS');
-const INTERP = /\$\{([a-zA-Z_$][\w$]*(?:\.[a-zA-Z_$][\w$]*)+)\}/g;
+const INTERP = /\$\{([a-zA-Z_$][\w$]*(?:\.[a-zA-Z_$][\w$]*)*)\}/g;
 const NUMERICO = /\.(id|cantidad|precio|precioBase|indice|total|subtotal|length)$/;
-const DATOS_FIJOS = /^(ZAPI_PROMOS|p|c)\./;
+const DATOS_FIJOS = /^(ZAPI_[A-Z_]+|p|c)(\.|$)/;
+
+/* Nombres sueltos que solo pueden ser un numero: indices de un
+   forEach o de un map, y cuentas que arma el bot. */
+const NUMEROS = /^(i|j|idx|indice|indiceActual|n|pos|total|cantidad|unidades|totalCarrito)$/;
+
+/* Variables que guardan HTML a proposito y se declaran o se
+   reasignan con una plantilla que tiene una etiqueta adentro
+   (sugerencia = `<button ...`). Es el caso de los botones que el
+   sitio se dibuja a si mismo. No es lo mismo que un texto que se
+   te escapo: se reconoce por como se arma la variable, no por una
+   lista escrita a mano. El lookbehind saltea "grid.innerHTML =",
+   que tambien es una asignacion pero no una variable. */
+const htmlPropias = new Set();
+
+for (const f of JS) {
+    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
+    const re = /(?<![.\w$])([a-zA-Z_$][\w$]*)\s*=\s*`([\s\S]*?)`/g;
+
+    for (const m of s.matchAll(re)) {
+        if (/<[a-zA-Z/]/.test(m[2])) htmlPropias.add(m[1]);
+    }
+}
 const ETIQUETA = /<[a-zA-Z/]/;
 const ACENTO = /(?<!\\)`/g;
 
@@ -150,8 +172,8 @@ function revisarBloqueHTML(archivo, bloque) {
 
         for (const m of texto.matchAll(INTERP)) {
             const expr = m[1];
-            if (NUMERICO.test(expr)) continue;
-            if (DATOS_FIJOS.test(expr)) continue;
+            if (NUMERICO.test(expr) || NUMEROS.test(expr)) continue;
+            if (DATOS_FIJOS.test(expr) || htmlPropias.has(expr)) continue;
             if (texto.includes('escaparHTML(' + expr)) continue;
             if (texto.includes('formatearPrecio(' + expr)) continue;
             fuera.push(archivo + ':' + n + '  ${' + expr + '} sin escapar: ' + texto.trim());
@@ -231,6 +253,265 @@ for (const f of HTML) {
     }
 
     if (!fallos) ok(f + ': ' + cargados.size + ' scripts, todos los que hacen falta');
+}
+
+/* --- 8. Animaciones infinitas sin respeta de reduced motion ---
+   Una animacion con "infinite" no se detiene nunca: es justo lo que
+   una persona con prefers-reduced-motion pide que no pase. Se
+   recorren los bloques de las hojas, se anotan las que repiten y se
+   cruzan con los selectores que, dentro de un
+   @media (prefers-reduced-motion: reduce), ponen animation: none. */
+console.log('\nReduced motion');
+
+const infinitas = [];
+const apagadas = new Set();
+
+/* Se recorre el CSS caracter a caracter apilando las llaves: hace
+   falta saber la profundidad para no cortar un bloque de @media en
+   su primer "}" y para separar el selector de las declaraciones
+   que lo preceden. */
+function recorrerBloques(css, archivo) {
+    const pila = [];
+    const reduced = [];
+    let profundidad = 0;
+    let desde = 0;
+    let i = 0;
+
+    while (i < css.length) {
+        if (css[i] === '{') {
+            const bruto = css.slice(desde, i);
+            const selector = bruto.slice(bruto.lastIndexOf(';') + 1)
+                .replace(/\s+/g, ' ').trim();
+            const abre = selector.replace(/\s+/g, ' ');
+
+            pila.push({ abre, cuerpo: desde + 1 });
+            if (/prefers-reduced-motion/.test(abre)) reduced.push(profundidad);
+
+            profundidad++;
+            desde = i + 1;
+            i++;
+            continue;
+        }
+
+        if (css[i] === '}') {
+            const bloque = pila.pop();
+            profundidad--;
+
+            if (bloque) {
+                const cuerpo = css.slice(bloque.cuerpo, i);
+                const esKeyframes = /^@(-webkit-)?keyframes/.test(bloque.abre);
+                const dentroDeReduced = reduced.length > 0;
+
+                if (!esKeyframes && /animation\s*:[^;]*\binfinite\b/.test(cuerpo)) {
+                    infinitas.push({ archivo, selector: bloque.abre });
+                }
+
+                if (!esKeyframes && dentroDeReduced && /animation(-name)?\s*:\s*none/.test(cuerpo)) {
+                    /* Un mismo bloque suele apagar varios selectores
+                       a la vez, separados por comas. */
+                    bloque.abre.split(',').forEach(sel => apagadas.add(sel.trim()));
+                }
+            }
+
+            while (reduced.length && reduced[reduced.length - 1] >= profundidad) reduced.pop();
+
+            desde = i + 1;
+            i++;
+            continue;
+        }
+
+        i++;
+    }
+}
+
+for (const f of CSS) {
+    recorrerBloques(fs.readFileSync(path.join(raiz, f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, ''), f);
+}
+
+/* Un selector apagado cubre tambien a los que lo extienden:
+   ".nav-bar" apagado cubre ".nav-bar li .nav-link". */
+const cubre = sel => {
+    if (apagadas.has(sel) || apagadas.has('*')) return true;
+
+    return [...apagadas].some(a =>
+        a !== sel &&
+        (sel.startsWith(a + ' ') || sel.startsWith(a + '>') || sel.startsWith(a + ':') || sel.startsWith(a + '.'))
+    );
+};
+
+const sinCubrir = infinitas.filter(a => !cubre(a.selector));
+
+if (sinCubrir.length === 0) {
+    ok(infinitas.length + ' animacion(es) infinite, todas apagadas con reduced motion');
+} else {
+    for (const a of sinCubrir) {
+        avisar(a.archivo + ': "' + a.selector + '" se repite para siempre y no se apaga con prefers-reduced-motion');
+    }
+}
+
+/* --- 9. Paginas de producto generadas ---
+   Se corre el generador primero, asi que ademas de validar lo
+   que hay en disco esto deja las paginas al dia con productos.js.
+   De cada pagina se mira que el JSON-LD parse, que el canonical
+   apunte a la pagina misma, y que las imagenes y los enlaces que
+   usa existan de verdad. */
+console.log('\nPaginas de producto');
+
+const gen = path.join(raiz, 'tools', 'generar-productos.js');
+
+if (!fs.existsSync(gen)) {
+    avisar('falta tools/generar-productos.js');
+} else {
+    try {
+        execFileSync('node', [gen], { cwd: raiz, stdio: 'pipe' });
+    } catch (e) {
+        avisar('el generador fallo: ' + String(e.stderr || e.message).trim().split('\n').pop());
+    }
+
+    const carpeta = path.join(raiz, 'productos');
+    const paginas = fs.existsSync(carpeta)
+        ? fs.readdirSync(carpeta).filter(f => f.endsWith('.html'))
+        : [];
+
+    if (!paginas.length) {
+        avisar('no hay paginas en productos/');
+    }
+
+    let malas = 0;
+
+    for (const f of paginas) {
+        const s = fs.readFileSync(path.join(carpeta, f), 'utf8');
+        const donde = 'productos/' + f;
+
+        /* JSON-LD: tiene que parsear, y si no se puede leer, el
+           buscador lo ignora en silencio. */
+        const bloques = Array.from(s.matchAll(
+            /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g
+        ), m => m[1]);
+
+        if (!bloques.length) {
+            avisar(donde + ': no tiene JSON-LD');
+            malas++;
+        }
+
+        for (const b of bloques) {
+            try {
+                const datos = JSON.parse(b);
+
+                if (datos['@context'] !== 'https://schema.org') {
+                    avisar(donde + ': el @context no es schema.org');
+                    malas++;
+                }
+            } catch (e) {
+                avisar(donde + ': JSON-LD que no parsea: ' + e.message);
+                malas++;
+            }
+        }
+
+        /* El canonical tiene que ser esta pagina, no la home. */
+        const canonical = s.match(/<link rel="canonical" href="([^"]+)"/);
+
+        if (!canonical) {
+            avisar(donde + ': sin canonical');
+            malas++;
+        } else if (!canonical[1].endsWith('/productos/' + f)) {
+            avisar(donde + ': el canonical no apunta a si misma (' + canonical[1] + ')');
+            malas++;
+        }
+
+        /* Imagenes y enlaces locales existen. La pagina vive en
+           productos/, asi que "../asset/..." se resuelve desde
+           esa carpeta y no desde la raiz del repo. */
+        for (const m of s.matchAll(/(?:src|href)="(\.\.\/[^"#?]+)"/g)) {
+            if (!fs.existsSync(path.resolve(carpeta, m[1]))) {
+                avisar(donde + ': no existe ' + m[1]);
+                malas++;
+            }
+        }
+
+        for (const m of s.matchAll(/href="(\.\/[a-z0-9-]+\.html)"/g)) {
+            if (!fs.existsSync(path.join(carpeta, m[1].replace('./', '')))) {
+                avisar(donde + ': link a otra pagina que no existe: ' + m[1]);
+                malas++;
+            }
+        }
+    }
+
+    /* El modal enlaza a productos/<slugDe(nombre)>.html con su propio
+       slugDe (modal.js), y el generador nombra los archivos con su
+       slug (herramienta aparte). Si alguna vez se tocan distinto,
+       el enlace cae en una pagina que no existe: se prueban las dos
+       implementaciones contra los nombres reales. */
+    function extraerFuncion(archivo, nombre) {
+        const s = fs.readFileSync(path.join(raiz, archivo), 'utf8');
+        const ini = s.indexOf('function ' + nombre + '(');
+        if (ini < 0) return null;
+
+        const abrio = s.indexOf('{', ini);
+        let prof = 0;
+        let entre = null; /* ', ", `, /, * o \n: saltar literales, regex y comentarios */
+        let i = abrio;
+
+        for (; i < s.length; i++) {
+            const c = s[i];
+
+            if (entre) {
+                if (c === '\\') { i++; continue; }
+                if (entre !== '*' && c === entre) entre = null;
+                if (entre === '*' && c === '/' && s[i - 1] === '*') entre = null;
+                if (entre === '\n') entre = null;
+                continue;
+            }
+            if (c === '"' || c === "'" || c === '`') { entre = c; continue; }
+            if (c === '/' && s[i + 1] === '/') { entre = '\n'; i++; continue; }
+            if (c === '/' && s[i + 1] === '*') { entre = '*'; i++; continue; }
+            if (c === '/' && s[i + 1] !== '=') { entre = '/'; continue; }
+            if (c === '{') prof++;
+            else if (c === '}') { prof--; if (prof === 0) return s.slice(abrio + 1, i); }
+        }
+        return null;
+    }
+
+    const cuerpoGen = extraerFuncion('tools/generar-productos.js', 'slug');
+    const cuerpoModal = extraerFuncion('modal.js', 'slugDe');
+
+    if (!cuerpoGen || !cuerpoModal) {
+        avisar('no se encontro slug() del generador o slugDe() de modal.js');
+        malas++;
+    } else {
+        const slugGen = new Function('texto', cuerpoGen);
+        const slugModal = new Function('texto', cuerpoModal);
+
+        /* El catalogo es un literal JS (claves sin comillas), no
+           JSON: se evalua tal cual. */
+        const fuente = fs.readFileSync(path.join(raiz, 'productos.js'), 'utf8');
+        const literal = fuente.match(/const PRODUCTOS = (\[[\s\S]*?\n\]);/);
+        const nombres = literal ? new Function('return ' + literal[1])() : null;
+
+        if (!nombres) {
+            avisar('no se pudo leer PRODUCTOS de productos.js');
+            malas++;
+        } else {
+            for (const p of nombres) {
+                if (!p || !p.nombre) continue;
+
+                const a = slugGen(p.nombre);
+                const b = slugModal(p.nombre);
+                const existe = fs.existsSync(path.join(carpeta, a + '.html'));
+
+                if (a !== b) {
+                    avisar('slug desincronizado para "' + p.nombre + '": generador=' + a + ' modal=' + b);
+                    malas++;
+                }
+                if (!existe) {
+                    avisar('no existe productos/' + a + '.html (el modal enlazara ahi)');
+                    malas++;
+                }
+            }
+        }
+    }
+
+    if (!malas) ok(paginas.length + ' paginas generadas, con JSON-LD, canonical e imagenes');
 }
 
 console.log('\n' + (problemas ? problemas + ' problema(s)' : 'Sin problemas'));

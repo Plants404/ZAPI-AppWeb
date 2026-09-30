@@ -1753,7 +1753,11 @@
 
     font-size: 54px;
 
-    color: var(--sage);
+    /* Era var(--sage), que sobre blanco da 2.43:1 y no llega al 3:1
+       que pide WCAG. Aunque sea un icono, es lo unico que dibuja el
+       estado vacio. --moss mantiene el tono apagado y cumple con 6:1. */
+
+    color: var(--moss);
 
 }
 
