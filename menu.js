@@ -51,6 +51,10 @@
         // del header, que se moveria con el scroll.
         header?.classList.add('menu-abierto');
         body.classList.add('no-scroll');
+        // Al HTML, no al body, para poder bajar el chat y el boton
+        // flotante del carrito y que no queden clickeables por
+        // encima del velo del menu.
+        document.documentElement.classList.add('menu-abierto');
 
         // El fondo se muestra primero y la clase al frame siguiente:
         // si se pusieran las dos cosas en el mismo tick, el navegador
@@ -72,6 +76,7 @@
         nav.classList.remove('esta-abierto');
         header?.classList.remove('menu-abierto');
         body.classList.remove('no-scroll');
+        document.documentElement.classList.remove('menu-abierto');
 
         if (backdrop) {
             backdrop.classList.remove('esta-activo');

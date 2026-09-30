@@ -241,17 +241,42 @@ if (modalProducto) {
         const primero = focuses[0];
         const ultimo = focuses[focuses.length - 1];
 
-        if (evento.shiftKey && document.activeElement === primero) {
+        /* El foco al abrir queda en el contenedor del dialogo, que
+           no es ninguno de los dos extremos. Con Shift+Tab desde
+           ahi el trap no interceptaba nada y el foco se iba al
+           contenido de atras del velo. Ahora se compara contra
+           el borde en la direccion del tab, no contra la
+           identidad del elemento. */
 
-            evento.preventDefault();
-            ultimo.focus();
+        if (evento.shiftKey) {
 
-        } else if (!evento.shiftKey && document.activeElement === ultimo) {
+            const enBorde = document.activeElement === primero ||
+                document.activeElement === modalCaja ||
+                !focoDentroDeModal();
+
+            if (enBorde) {
+
+                evento.preventDefault();
+                ultimo.focus();
+
+            }
+
+        } else if (document.activeElement === ultimo || !focoDentroDeModal()) {
 
             evento.preventDefault();
             primero.focus();
 
         }
+
+    }
+
+    /* El foco actual sigue dentro de la ventana? Si ya salio
+       (por un click en el fondo o porque el navegador lo perdio),
+       la proxima pulsacion de Tab tiene que devolverlo adentro. */
+
+    function focoDentroDeModal() {
+
+        return modalCaja.contains(document.activeElement);
 
     }
 

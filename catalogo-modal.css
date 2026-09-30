@@ -1,0 +1,703 @@
+/* Archivo generado. No editar a mano.
+   Fuente: catalogo.css   Generar: node tools/extraer-modal-css.js */
+
+/* Boton agregar: lo usan las tarjetas del catalogo y el modal,
+   que tambien esta en carrito.html. Por eso viaja en las dos
+   mitades de la hoja. */
+
+.add-cart {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+gap: .5rem;
+padding: .75rem 1.25rem;
+border-radius: 999px;
+background: var(--forest);
+color: var(--cream);
+font-size: .92rem;
+font-weight: 500;
+transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+/* ==========================================================
+VENTANA FLOTANTE DE PRODUCTO
+Modal con carrusel de fotos, detalle y agregar al carrito.
+========================================================== */
+
+body.modal-abierto {
+
+overflow: hidden;
+
+}
+
+.modal-producto {
+
+position: fixed;
+
+inset: 0;
+
+/* por encima del chat, que vive en 9999 */
+z-index: 10000;
+
+display: flex;
+
+/* Mobile first: en el telefono el modal se pega abajo y
+ocupa todo el ancho. De 821px para arriba vuelve a ser
+una caja centrada con aire alrededor. */
+align-items: flex-end;
+
+justify-content: center;
+
+padding: 0;
+
+/* Sin "visibility": el sitio aplica transition: all a todos
+los elementos, y al heredarse cada descendiente abre su
+propia transición y queda invisible. El estado se maneja
+con [hidden] y con opacity, que no se hereda. */
+opacity: 0;
+
+transition: opacity .25s ease;
+
+}
+
+.modal-producto[hidden] {
+
+display: none;
+
+}
+
+.modal-producto.abierto {
+
+opacity: 1;
+
+}
+
+/* Mientras se desvanece no debe seguir robando clicks */
+
+.modal-producto.cerrando {
+
+pointer-events: none;
+
+}
+
+.modal-fondo {
+
+position: absolute;
+
+inset: 0;
+
+background: rgba(31, 58, 46, .58);
+
+backdrop-filter: blur(4px);
+
+-webkit-backdrop-filter: blur(4px);
+
+}
+
+.modal-caja {
+
+position: relative;
+
+display: flex;
+
+/* Mobile first: columna, pegada abajo, con esquinas
+solo arriba. De 821px para arriba pasa a fila
+centrada de ancho fijo. */
+flex-direction: column;
+
+width: 100%;
+
+/* El alto lo impone el max-height de abajo. Con flex las dos
+columnas se estiran a la misma altura y el detalle scrollea
+solo; el min-height: 0 de cada una es lo que deja recortar
+la columna en vez de empujar el boton de agregar fuera de
+la caja. */
+max-height: 94vh;
+
+background: var(--white);
+
+/* Sin translateY en el estado cerrado: la caja queda
+pegada abajo y correcta, y el offset empujaba el
+boton de agregar fuera del viewport. */
+border-radius: var(--radius) var(--radius) 0 0;
+
+box-shadow: var(--shadow-lg);
+
+overflow: hidden;
+
+/* Sin transform en el estado cerrado: el offset hacia abajo
+empujaba la caja fuera del viewport en movil y dejaba el
+boton de agregar debajo del borde. La entrada es solo el
+fade del contenedor, que no depende de la transicion de
+transform para ser correcta. */
+
+}
+
+.modal-caja:focus {
+
+outline: none;
+
+}
+
+.modal-cerrar {
+
+position: absolute;
+
+top: .8rem;
+
+right: .8rem;
+
+z-index: 3;
+
+display: inline-flex;
+
+align-items: center;
+
+justify-content: center;
+
+width: 44px;
+
+height: 44px;
+
+border-radius: 50%;
+
+background: rgba(247, 244, 236, .94);
+
+color: var(--forest);
+
+box-shadow: var(--shadow-sm);
+
+transition: background .2s ease, transform .2s ease;
+
+}
+
+.modal-cerrar:hover {
+
+background: var(--white);
+
+transform: rotate(90deg);
+
+}
+
+.modal-cerrar .material-symbols-outlined {
+
+font-size: 1.3rem;
+
+}
+
+/* ---------- Carrusel ---------- */
+
+.modal-carrusel {
+
+display: flex;
+
+flex-direction: column;
+
+/* Mobile first: en columna el flex-basis pasa a ser alto,
+asi que la imagen se queda con el alto de abajo y el
+detalle toma lo que sobra. De 821px para arriba vuelve
+a ser una columna con ancho fijo. */
+flex: none;
+
+min-height: 0;
+
+min-width: 0;
+
+background: var(--sand);
+
+}
+
+.carrusel-marco {
+
+position: relative;
+
+/* Mobile first: alto fijo en vez de aspect-ratio, porque
+una imagen muy alta deja sin lugar al detalle en
+pantallas chicas. De 821px para arriba vuelve a
+flex: 1, que reparte la columna con el detalle. */
+flex: none;
+
+height: min(38vh, 300px);
+
+min-height: 0;
+
+overflow: hidden;
+
+}
+
+.carrusel-img {
+
+width: 100%;
+
+height: 100%;
+
+/* "contain" y no "cover" para que se vea la foto
+entera. El marco es mas ancho que alto y las fotos
+son verticales, asi que con "cover" se perdia la
+parte de arriba y de abajo. Las bandas que quedan
+caen sobre el fondo arena de .modal-carrusel. */
+object-fit: contain;
+
+display: block;
+
+}
+
+.carrusel-flecha {
+
+position: absolute;
+
+top: 50%;
+
+transform: translateY(-50%);
+
+z-index: 2;
+
+display: inline-flex;
+
+align-items: center;
+
+justify-content: center;
+
+width: 44px;
+
+height: 44px;
+
+border-radius: 50%;
+
+background: rgba(247, 244, 236, .92);
+
+color: var(--forest);
+
+box-shadow: var(--shadow-sm);
+
+transition: background .2s ease, transform .2s ease;
+
+}
+
+.carrusel-flecha:hover {
+
+background: var(--white);
+
+}
+
+.carrusel-prev {
+
+left: .7rem;
+
+}
+
+.carrusel-next {
+
+right: .7rem;
+
+}
+
+.carrusel-prev:hover {
+
+transform: translateY(-50%) translateX(-2px);
+
+}
+
+.carrusel-next:hover {
+
+transform: translateY(-50%) translateX(2px);
+
+}
+
+.carrusel-flecha .material-symbols-outlined {
+
+font-size: 1.5rem;
+
+}
+
+.carrusel-contador {
+
+position: absolute;
+
+right: .8rem;
+
+bottom: .8rem;
+
+z-index: 2;
+
+padding: .25rem .6rem;
+
+border-radius: 999px;
+
+background: rgba(31, 58, 46, .72);
+
+color: var(--cream);
+
+font-size: .75rem;
+
+font-weight: 600;
+
+letter-spacing: .04em;
+
+}
+
+.carrusel-miniaturas {
+
+display: flex;
+
+gap: .45rem;
+
+padding: .7rem;
+
+flex-shrink: 0;
+
+overflow-x: auto;
+
+}
+
+.carrusel-miniatura {
+
+flex: 0 0 auto;
+
+width: 52px;
+
+height: 66px;
+
+border-radius: 8px;
+
+overflow: hidden;
+
+border: 2px solid transparent;
+
+opacity: .5;
+
+transition: opacity .2s ease, border-color .2s ease;
+
+}
+
+.carrusel-miniatura img {
+
+width: 100%;
+
+height: 100%;
+
+object-fit: cover;
+
+display: block;
+
+}
+
+.carrusel-miniatura:hover {
+
+opacity: .85;
+
+}
+
+.carrusel-miniatura.activa {
+
+opacity: 1;
+
+border-color: var(--leaf);
+
+}
+
+/* con una sola foto no hay carrusel que mostrar */
+
+.modal-carrusel.sin-carrusel .carrusel-flecha,
+
+.modal-carrusel.sin-carrusel .carrusel-contador,
+
+.modal-carrusel.sin-carrusel .carrusel-miniaturas {
+
+display: none;
+
+}
+
+/* ---------- Detalle ---------- */
+
+.modal-detalle {
+
+display: flex;
+
+flex-direction: column;
+
+/* Mobile first: el detalle se come el alto restante y
+scrollea solo. */
+flex: 1 1 auto;
+
+padding: 1.4rem 1.3rem 1.2rem;
+
+overflow-y: auto;
+
+min-height: 0;
+
+min-width: 0;
+
+}
+
+.modal-categoria {
+
+align-self: flex-start;
+
+padding: .3rem .7rem;
+
+border-radius: 999px;
+
+background: rgba(74, 124, 89, .12);
+
+color: var(--moss);
+
+font-size: .7rem;
+
+font-weight: 600;
+
+letter-spacing: .06em;
+
+text-transform: uppercase;
+
+margin-bottom: .8rem;
+
+}
+
+.modal-titulo {
+
+font-family: var(--serif);
+
+/* Mobile first: 1.8rem en el telefono, 2.1rem de 821px
+para arriba (ver la capa responsive del modal). */
+font-size: 1.8rem;
+
+color: var(--forest);
+
+text-transform: uppercase;
+
+margin-bottom: .4rem;
+
+}
+
+.modal-descripcion {
+
+font-size: .95rem;
+
+color: var(--muted);
+
+margin-bottom: 1.1rem;
+
+}
+
+.modal-info {
+
+list-style: none;
+
+padding: 0;
+
+margin: 0 0 1.3rem;
+
+border-top: 1px dashed rgba(74, 124, 89, .35);
+
+padding-top: 1rem;
+
+}
+
+.modal-info li {
+
+display: flex;
+
+align-items: flex-start;
+
+gap: .55rem;
+
+font-size: .88rem;
+
+line-height: 1.4;
+
+margin-bottom: .5rem;
+
+}
+
+.modal-info li:last-child {
+
+margin-bottom: 0;
+
+}
+
+.modal-info li .material-symbols-outlined {
+
+font-size: 1.05rem;
+
+color: var(--leaf);
+
+flex-shrink: 0;
+
+margin-top: 1px;
+
+}
+
+.modal-precio {
+
+display: flex;
+
+align-items: baseline;
+
+gap: .6rem;
+
+margin-bottom: 1.1rem;
+
+}
+
+.modal-precio .current {
+
+font-family: var(--serif);
+
+font-size: 2.1rem;
+
+font-weight: 700;
+
+color: var(--forest);
+
+}
+
+.modal-precio .since {
+
+font-size: .75rem;
+
+color: var(--muted);
+
+}
+
+/* Mobile first: el agregar queda sticky abajo, porque es la
+accion principal y no puede quedar escondido en un scroll. */
+.modal-agregar {
+
+position: sticky;
+
+bottom: 0;
+
+width: 100%;
+
+padding: .9rem 1.25rem;
+
+margin-top: 1.2rem;
+
+box-shadow: 0 -12px 18px rgba(255, 255, 255, .92);
+
+}
+
+/* Foco visible solo para teclado */
+
+.modal-producto :focus-visible {
+
+outline: 2px solid var(--leaf);
+
+outline-offset: 2px;
+
+}
+
+
+/* ==========================================================
+RESPONSIVE DEL MODAL (mobile first)
+------------------------------------------------------------
+Todo lo de arriba es la version telefono: hoja pegada
+abajo, carrusel de alto fijo y agregar sticky. Aca, de
+821px para arriba, vuelve a ser la caja de dos columnas.
+========================================================== */
+
+@media (min-width: 821px) {
+
+.modal-producto {
+
+padding: 1.5rem;
+
+align-items: center;
+
+}
+
+.modal-caja {
+
+flex-direction: row;
+
+width: min(940px, 100%);
+
+max-height: min(88vh, 720px);
+
+border-radius: var(--radius);
+
+}
+
+.carrusel-marco {
+
+flex: 1;
+
+height: auto;
+
+}
+
+/* 52.5% = 1.05 de las 2 partes del reparto original
+(1.05 / 2). Se usa base en porcentaje y no flex-grow
+porque el reparto por grow no daba 1.05 exacto con
+basis 0: midia 463/477 en vez de 493/446. */
+.modal-carrusel {
+
+flex: 0 0 52.5%;
+
+}
+
+/* la parte restante, .95 del reparto original */
+.modal-detalle {
+
+flex: 1 1 0;
+
+padding: 2.1rem 1.8rem 1.8rem;
+
+}
+
+.modal-titulo {
+
+font-size: 2.1rem;
+
+}
+
+.modal-agregar {
+
+position: static;
+
+margin-top: auto;
+
+box-shadow: none;
+
+}
+
+}
+
+/* prefers-reduced-motion: apagar los loops infinitos del
+boton flotante y los destellos del contador. Antes solo
+se frenaban las transiciones del modal, y el boton
+seguía flotando y el contador seguía parpadeando. */
+
+@media (prefers-reduced-motion: reduce) {
+
+.modal-producto,
+
+.modal-caja {
+
+transition: none;
+
+}
+
+.cart-link-float {
+
+animation: none;
+
+}
+
+.cart-count {
+
+animation: none;
+
+}
+
+.cart-item,
+
+.cart-summary {
+
+animation: none;
+
+}
+
+}
+

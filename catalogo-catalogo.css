@@ -1,0 +1,596 @@
+/* Archivo generado. No editar a mano.
+   Fuente: catalogo.css   Generar: node tools/extraer-modal-css.js */
+
+﻿/* ==========================================================
+INDICE DE ESTA HOJA
+------------------------------------------------------------
+catalogo.html necesita el catalogo entero (grilla, filtros,
+boton flotante) y la ventana de producto.
+carrito.html solo usa la ventana de producto, asi que en esa
+pagina se carga catalogo-modal.css, que son los ultimos
+~40 KB: la grilla del catalogo nunca se dibuja ahi.
+
+Los bloques van marcados con [CAT] o [MODAL] para poder
+partir la hoja sin romper el orden de las cascadas.
+========================================================== */
+
+
+/* ==========================================================
+CATÁLOGO   [CAT]
+========================================================== */
+
+.catalog {
+background: var(--sand);
+}
+
+.catalog-header {
+text-align: center;
+max-width: 780px;
+margin: 0 auto 2rem;
+}
+
+.catalog-filters {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: .5rem;
+margin-bottom: 2rem;
+}
+
+.catalog-filter {
+border: 1px solid rgba(61, 107, 79, .25);
+background: var(--white);
+color: var(--ink);
+/* min-height en vez de padding fijo: el filtro queda en
+44px de alto sin que el texto se descentre. */
+min-height: 44px;
+padding: .45rem 1.1rem;
+border-radius: 999px;
+font-size: .95rem;
+font-weight: 500;
+cursor: pointer;
+box-shadow: var(--shadow-sm);
+transition: all .2s ease;
+white-space: nowrap;
+}
+
+/* El hover y el foco por teclado se separan: antes el foco
+no mostraba nada (un verde al 8% es casi invisible), y
+con teclado no se distinguia el filtro elegido. */
+.catalog-filter:hover {
+background: rgba(74, 124, 89, .10);
+border-color: var(--leaf-texto);
+}
+
+.catalog-filter:focus-visible {
+outline: 2px solid var(--leaf-texto);
+outline-offset: 2px;
+}
+
+.catalog-filter.activo {
+background: var(--leaf);
+border-color: var(--leaf);
+color: #fff;
+box-shadow: 0 6px 20px -12px rgba(74, 124, 89, .6);
+}
+
+.catalog-empty {
+width: 100%;
+text-align: center;
+padding: 2rem 0;
+color: var(--moss);
+font-weight: 500;
+}
+
+/* Atajo que aparece en el estado vacio, para no obligar a
+al visitante a encontrar el boton de limpiar del header.
+Se muestra en bloque para que la linea del mensaje y la
+del boton no queden pegadas. */
+.catalog-empty-clear {
+display: block;
+margin: 1rem auto 0;
+padding: .5rem 1.2rem;
+font-family: inherit;
+font-size: .95rem;
+font-weight: 500;
+color: var(--forest);
+background: var(--white);
+border: 1px solid rgba(61, 107, 79, .3);
+border-radius: 999px;
+cursor: pointer;
+}
+
+.catalog-empty-clear:hover {
+background: var(--leaf);
+border-color: var(--leaf);
+color: var(--white);
+}
+
+.catalog-empty-clear:focus-visible {
+outline: 2px solid var(--leaf);
+outline-offset: 3px;
+}
+
+.catalog-eyebrow {
+display: inline-block;
+font-size: .78rem;
+text-transform: uppercase;
+letter-spacing: .25em;
+color: var(--leaf-texto);
+border: 1px solid var(--leaf-texto);
+padding: .35rem .9rem;
+border-radius: 999px;
+margin-bottom: 1rem;
+}
+
+.catalog-header p {
+font-size: 1.05rem;
+}
+
+.price-note {
+display: inline-flex;
+align-items: center;
+gap: .5rem;
+margin-top: .5rem;
+padding: .5rem 1rem;
+background: rgba(74, 124, 89, .12);
+color: var(--moss);
+border-radius: 999px;
+font-size: .85rem;
+font-weight: 500;
+}
+
+.price-note .material-symbols-outlined {
+font-size: 1.1rem;
+}
+
+.catalog-grid {
+display: flex;
+flex-wrap: wrap;
+gap: 1.5rem;
+align-items: flex-start;
+justify-content: center;
+}
+
+.product-card {
+background: var(--white);
+border-radius: var(--radius);
+overflow: hidden;
+box-shadow: var(--shadow-sm);
+border-top: 3px solid var(--leaf);
+transition: transform .3s ease, box-shadow .3s ease;
+display: flex;
+flex-direction: column;
+
+/* Mobile first: una sola columna en el telefono. El
+flex-grow 0 evita que una fila con una sola tarjeta
+la estire a todo el ancho, que es el defecto clasico
+de flex-wrap con "flex: 1 1 250px" sin tope. */
+flex: 0 1 100%;
+min-width: 0;
+}
+
+.product-card:hover {
+transform: translateY(-6px);
+box-shadow: var(--shadow-md);
+}
+
+/* Cuantas columnas entran segun el ancho, de ahi para
+arriba. Cada base suma (100% - huecos) / n, asi la fila
+siempre llena exacto el contenedor. Los cortes son los
+que daba el grid anterior con minmax(250px, 1fr). */
+@media (min-width: 572px) {
+.product-card {
+flex-basis: calc(50% - .75rem);
+}
+}
+
+@media (min-width: 846px) {
+.product-card {
+flex-basis: calc(33.333% - 1rem);
+}
+}
+
+@media (min-width: 1120px) {
+.product-card {
+/* 4 columnas en escritorio. El basis reparte
+(100% - 3 huecos) / 4, asi la fila suma justo el
+ancho del contenedor. */
+flex-basis: calc(25% - 1.125rem);
+}
+}
+
+.product-visual {
+position: relative;
+
+/* 2:3, que es la proporción de las fotos de producto
+(798 x 1200). Con el 4:3 de antes la imagen se
+recortaba por arriba y por abajo y se perdía la
+planta entera. El fondo va porque el kit de huerta
+es cuadrado: con "contain" completa y las bandas
+laterales caen sobre blanco, que es el mismo fondo
+de la foto. */
+aspect-ratio: 2 / 3;
+
+overflow: hidden;
+
+background: var(--white);
+}
+
+.product-visual img {
+width: 100%;
+height: 100%;
+object-fit: contain;
+transition: transform .5s ease;
+}
+
+.product-card:hover .product-visual img {
+transform: scale(1.06);
+}
+
+.product-badge {
+position: absolute;
+top: .8rem;
+left: .8rem;
+padding: .3rem .7rem;
+border-radius: 999px;
+background: rgba(247, 244, 236, .92);
+color: var(--moss);
+font-size: .72rem;
+font-weight: 600;
+letter-spacing: .04em;
+text-transform: uppercase;
+}
+
+.product-body {
+padding: 1.25rem 1.4rem 0;
+display: flex;
+flex-direction: column;
+flex: 1;
+}
+
+.product-info-wrap {
+display: grid;
+grid-template-rows: 0fr;
+transition: grid-template-rows .4s ease;
+}
+
+.product-card:hover .product-info-wrap,
+.product-card:focus-within .product-info-wrap {
+grid-template-rows: 1fr;
+}
+
+.product-info {
+overflow: hidden;
+min-height: 0;
+}
+
+.product-info ul {
+list-style: none;
+padding: 0;
+margin: 0;
+border-top: 1px dashed rgba(74, 124, 89, .35);
+margin-top: .9rem;
+padding-top: .9rem;
+}
+
+.product-info li {
+display: flex;
+align-items: flex-start;
+gap: .55rem;
+font-size: .86rem;
+color: var(--ink);
+margin-bottom: .45rem;
+line-height: 1.35;
+}
+
+.product-info li:last-child {
+margin-bottom: 0;
+}
+
+.product-info li .material-symbols-outlined {
+font-size: 1.05rem;
+color: var(--leaf);
+flex-shrink: 0;
+margin-top: 1px;
+}
+
+.product-footer {
+padding: 1.25rem 1.4rem 1.5rem;
+}
+
+.product-name {
+font-family: var(--serif);
+font-size: 1.75rem;
+letter-spacing: .02em;
+color: var(--forest);
+margin-bottom: .25rem;
+text-transform: uppercase;
+}
+
+/* El nombre es el boton que abre el detalle. Hereda la
+tipografia del h3 para que la tarjeta se vea igual que
+antes, y el foco se ve como el de los otros botones. */
+.product-link {
+font: inherit;
+letter-spacing: inherit;
+color: inherit;
+text-transform: inherit;
+text-align: left;
+background: none;
+border: 0;
+padding: 0;
+cursor: pointer;
+}
+
+.product-link:hover {
+color: var(--moss);
+}
+
+.product-link:focus-visible {
+outline: 2px solid var(--leaf-texto);
+outline-offset: 3px;
+border-radius: 4px;
+}
+
+.product-desc {
+font-size: .9rem;
+color: var(--muted);
+margin-bottom: 1rem;
+flex: 1;
+}
+
+.product-price {
+display: flex;
+align-items: baseline;
+gap: .6rem;
+margin-bottom: 1rem;
+}
+
+.product-price .current {
+font-family: var(--serif);
+font-size: 1.9rem;
+font-weight: 700;
+letter-spacing: .03em;
+color: var(--forest);
+}
+
+.product-price .since {
+font-size: .75rem;
+color: var(--muted);
+}
+
+/* El boton agregar vive en dos paginas: las tarjetas del
+catalogo y el modal, que tambien esta en el carrito. Por
+eso la base va en un bloque compartido, no dentro de la
+seccion [CAT]: si se quedara alla, el boton del modal
+aparecia sin fondo ni forma en carrito.html. */
+
+.add-cart:hover {
+background: var(--moss);
+transform: translateY(-2px);
+box-shadow: var(--shadow-md);
+}
+
+.add-cart.added {
+background: var(--leaf);
+}
+
+/* ==========================================================
+BOTÓN VER CARRITO · FLOTANTE (abajo izquierda)
+========================================================== */
+
+.cart-link-text {
+
+text-shadow: 0 1px 3px rgba(0, 0, 0, .25);
+
+}
+
+/* Mobile first: en el telefono el boton va pegado a las
+esquinas, solo con el ícono, para no tapar el
+contenido. De 600px para arriba aparece la etiqueta y
+se separa de los bordes. */
+
+.cart-link-float {
+
+position: fixed;
+
+left: 1rem;
+
+bottom: 1rem;
+
+z-index: 60;
+
+/* Igual que el chat: con el menu lateral abierto el
+boton flotante del carrito baja por debajo del
+velo, para que no se pueda clickear a traves de el. */
+:root.menu-abierto & {
+z-index: 0;
+}
+
+display: inline-flex;
+
+align-items: center;
+
+gap: .6rem;
+
+padding: .8rem 1rem;
+
+border-radius: 999px;
+
+background: var(--leaf);
+
+color: var(--white);
+
+font-weight: 600;
+
+font-size: .92rem;
+
+box-shadow: var(--shadow-lg);
+
+animation: floatCartBob 3.4s ease-in-out infinite;
+
+transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+
+}
+
+/* En el telefono solo el ícono: la pastilla con texto
+ocupa media pantalla y tapa las tarjetas de abajo. */
+
+.cart-link-float .cart-link-text {
+
+display: none;
+
+}
+
+.cart-link-float:hover {
+
+background: var(--moss);
+
+transform: translateY(-3px) scale(1.04);
+
+box-shadow: 0 18px 40px rgba(31, 58, 46, .35);
+
+animation: none;
+
+}
+
+@keyframes floatCartBob {
+
+0%, 100% { transform: translateY(0); }
+
+50% { transform: translateY(-7px); }
+
+}
+
+.cart-link-float .material-symbols-outlined {
+
+font-size: 21px;
+
+}
+
+/* Rebote del ícono al agregar un producto */
+
+.cart-link-float.animado .material-symbols-outlined {
+
+animation: cartWiggle .6s ease;
+
+}
+
+@keyframes cartWiggle {
+
+0%, 100% { transform: rotate(0) scale(1); }
+
+25% { transform: rotate(-12deg) scale(1.15); }
+
+75% { transform: rotate(10deg) scale(1.15); }
+
+}
+
+.cart-count {
+background: var(--white);
+color: var(--leaf);
+border-radius: 999px;
+min-width: 1.6rem;
+height: 1.6rem;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-size: .8rem;
+font-weight: 700;
+padding: 0 .35rem;
+transition: transform .3s ease, background .5s ease, color .35s ease;
+}
+
+/* Con productos en el carrito el contador queda rojo.
+Al vaciarse se lo quita y el color vuelve solo. */
+
+.cart-count.con-productos {
+background: #c14a3c;
+color: var(--white);
+}
+
+/* Globo del header. Va en la esquina del enlace y solo
+aparece con productos: lo decide la misma clase
+.con-productos, no hace falta JavaScript extra.
+Estas reglas repiten background, color y font-weight
+porque .nav-bar li a tiene especificidad (0,1,2) y le
+ganaría a .cart-count (0,1,0), dejando el globo
+transparente y con el color del enlace. */
+
+.cart-count.cart-count-header {
+position: absolute;
+top: -.15rem;
+right: -.8rem;
+min-width: 1.15rem;
+height: 1.15rem;
+padding: 0 .3rem;
+font-size: .68rem;
+font-weight: 700;
+background: var(--white);
+color: var(--leaf);
+border: 2px solid var(--white);
+display: none;
+}
+
+.cart-count.cart-count-header.con-productos {
+display: inline-flex;
+background: #c14a3c;
+color: var(--white);
+}
+
+.cart-count.pop {
+
+animation: countPop .45s ease;
+
+}
+
+/* Destello al agregar: rojo vivo que se va suavizando
+hasta el tono con el que se queda. */
+
+.cart-count.destello {
+
+animation: destelloContador .75s ease;
+
+}
+
+@keyframes destelloContador {
+
+0% { background: #ef6a4c; box-shadow: 0 0 0 0 rgba(239, 106, 76, .6); }
+
+45% { background: #e0806a; box-shadow: 0 0 0 10px rgba(239, 106, 76, 0); }
+
+100% { background: #c14a3c; box-shadow: 0 0 0 0 rgba(239, 106, 76, 0); }
+
+}
+
+@keyframes countPop {
+
+0% { transform: scale(1); }
+
+40% { transform: scale(1.5); }
+
+100% { transform: scale(1); }
+
+}
+
+@media (min-width: 601px) {
+
+.cart-link-float {
+
+left: 1.5rem;
+
+bottom: 1.5rem;
+
+padding: .9rem 1.4rem;
+
+}
+
+.cart-link-float .cart-link-text {
+
+display: inline;
+
+}
+
+}
+

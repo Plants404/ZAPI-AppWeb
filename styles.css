@@ -10,6 +10,15 @@
   --muted: #6a6f65;
   --white: #ffffff;
 
+  /* Variantes oscuras para texto y bordes.
+     El verde claro original no llegaba a 4.5:1 sobre crema ni
+     arena, y el borde del buscador quedaba en 2.4:1, casi
+     invisible. Estos tintes son el mismo verdefamily pero
+     oscurecidos hasta pasar el contraste AA. */
+  --leaf-texto: #2f5c3c;      /* 6.1:1 sobre crema y arena */
+  --muted-texto: #5b6058;     /* 6.2:1 sobre crema y arena */
+  --borde-input: #6f8f75;     /* 3.2:1 sobre blanco */
+
   --radius: 14px;
   --shadow-sm: 0 2px 10px rgba(31, 58, 46, .06);
   --shadow-md: 0 12px 30px rgba(31, 58, 46, .10);
@@ -83,6 +92,10 @@ h1 {
   font-size: clamp(2.4rem, 5vw, 4rem);
 }
 
+/* catalogo.html usa un h1 en el encabezado del catalogo, asi que
+   h1 y h2 comparten escala para que la pagina no cambie de
+   tamanho al ritmo que index.html. */
+h1,
 h2 {
   font-size: clamp(1.8rem, 3.4vw, 2.6rem);
 }
@@ -97,9 +110,12 @@ h4 {
   font-size: 1.4rem;
 }
 
+/* El color de parrafo base. --muted daba 4.10:1 sobre arena, y
+   el texto de introduccion del catalogo esta sobre arena, asi que
+   aca va la variante que si pasa AA en crema y en arena. */
 p {
   margin: 0 0 1em;
-  color: var(--muted);
+  color: var(--muted-texto);
 }
 
 /* Mobile first: el aire vertical es corto en el telefono y
@@ -341,12 +357,14 @@ header.menu-abierto::before {
   width: 100%;
   min-width: 0;
   height: 44px;
-  padding: 0 2.4rem 0 2.5rem;
+  /* El boton de limpiar ahora mide 44px, asi que el campo tiene
+     que reservar ese ancho a la derecha o se superponen. */
+  padding: 0 2.75rem 0 2.5rem;
   font-family: inherit;
   font-size: .95rem;
   color: var(--ink);
   background: var(--white);
-  border: 2px solid var(--sage);
+  border: 2px solid var(--borde-input);
   border-radius: 999px;
   -webkit-appearance: none;
   appearance: none;
@@ -371,17 +389,19 @@ header.menu-abierto::before {
   pointer-events: none;
 }
 
+/* El boton de limpiar estaba en 32px. Se sube a 44px para que
+   sea alcanzable igual que el campo. */
 .header-search-limpiar {
   position: absolute;
-  right: .4rem;
+  right: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   font-size: 1.15rem;
-  color: var(--muted);
+  color: var(--muted-texto);
   background: none;
   border-radius: 50%;
 }
@@ -417,11 +437,11 @@ header.menu-abierto::before {
 @keyframes buscadorPulso {
   0%,
   100% {
-    border-color: var(--sage);
+    border-color: var(--borde-input);
     box-shadow: 0 0 0 0 rgba(74, 124, 89, .40);
   }
   50% {
-    border-color: var(--leaf);
+    border-color: var(--leaf-texto);
     box-shadow: 0 0 0 7px rgba(74, 124, 89, 0);
   }
 }
@@ -437,7 +457,8 @@ header.menu-abierto::before {
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 60;
+  /* 210, por encima del velo (200) y del widget del chat (100). */
+  z-index: 210;
   width: min(320px, 85vw);
   height: 100vh;
   height: 100dvh;
@@ -464,10 +485,13 @@ header.menu-abierto::before {
 
 /* El fondo oscurecido va por debajo del panel (55 contra 60) y
    por encima del contenido de la pagina. */
+/* El velo sube a 200 y el panel a 210 para tapar el boton
+   flotante del carrito (60) y el widget del chat (100), que antes
+   quedaban clickeables por encima del menu abierto. */
 .nav-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 55;
+  z-index: 200;
   background: rgba(31, 58, 46, .45);
   opacity: 0;
   transition: opacity .3s ease;
@@ -475,6 +499,28 @@ header.menu-abierto::before {
 
 .nav-backdrop.esta-activo {
   opacity: 1;
+}
+
+/* Interruptor de sonido. En movil se ve solo el icono para no
+   sumar otro renglon al menu, y el texto queda solo en escritorio. */
+.nav-link-sonido {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+}
+
+.nav-sonido-texto {
+  display: none;
+}
+
+.nav-sonido-icono {
+  font-size: 1.1rem;
+}
+
+/* Cuando el sonido esta apagado el icono cambia de nombre; el
+   boton guarda el estado en aria-pressed. */
+.sonido-off .nav-sonido-icono {
+  color: var(--muted-texto);
 }
 
 .nav-bar ul {
@@ -591,9 +637,10 @@ body.no-scroll {
   margin-bottom: 2rem;
 }
 
+/* La ubicacion en la grilla la fija el bloque de arriba en movil
+   y el @media de 900px en escritorio; este bloque solo lleva
+   la forma de la foto. */
 .hero img {
-  grid-row: 1 / span 4;
-  grid-column: 2;
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   aspect-ratio: 16/10;
@@ -708,8 +755,8 @@ body.no-scroll {
   font-size: .8rem;
   text-transform: uppercase;
   letter-spacing: .25em;
-  color: var(--leaf);
-  border: 1px solid var(--leaf);
+  color: var(--leaf-texto);
+  border: 1px solid var(--leaf-texto);
   padding: .4rem 1rem;
   border-radius: 999px;
   margin-bottom: 2rem;
@@ -960,6 +1007,12 @@ footer nav a:focus-visible {
     padding: 1rem 2rem;
   }
 
+  /* En escritorio el interruptor de sonido vuelve a mostrar el
+     texto, igual que el resto de los links del nav. */
+  .nav-sonido-texto {
+    display: inline;
+  }
+
   /* El panel ya no existe, asi que el header recupera su fondo y
      baja del 65 al 50 de z-index. */
   header.menu-abierto {
@@ -1044,85 +1097,62 @@ footer nav a:focus-visible {
   header {
     padding: 1rem 2.5rem;
   }
-
-  .header-search {
-    flex-basis: 300px;
-  }
 }
 
 /* ==========================================================
    BUSCADOR CENTRADO RESPECTO A LA PANTALLA
    ------------------------------------------------------------
-   El buscador de mas arriba queda centrado dentro del hueco
-   que hay entre el logo y el nav, no respecto a la pantalla. No
-   es la misma cosa: con siete links de navegacion, el nav ocupa
-   unos 510px contra los 120px del logo, asi que el centro de ese
-   hueco cae bastante a la izquierda del centro real.
-
-   Recien a partir de 1440px hay ancho de sobra para que las dos
-   columnas laterales sean iguales (1fr) y ahi si el buscador
-   queda al centro de la pantalla. Antes de eso no es posible:
-   con flex, para que el centro del buscador coincida con el de
-   la pantalla, el logo y el nav tienen que medir exactamente lo
-   mismo, y con 120px contra 505px no hay combinacion que
-   sirva. A 1024px el borde izquierdo del nav cae justo en la
-   mitad de la pantalla, asi que un buscador centrado de verdad
-   se cruzaria con el.
+   Entre 1024px y 1280px el buscador sigue centrado dentro del
+   hueco logo-nav, porque no hay forma de centrarlo en la
+   pantalla sin cruzarlo con el nav. Con el nav medido en unos
+   505px, a 1024px su borde izquierdo cae en 471px y el centro
+   de la pantalla en 488px: no entra. A 1280px el nav empieza
+   en 695px contra un centro en 600px, recien ahi aparece el
+   hueco necesario, asi que recien ahi se pasa a centrado
+   absoluto. Por debajo de eso el centrado es del hueco, no de
+   la pantalla, y por eso queda en el bloque de 1024px.
    ========================================================== */
 
-@media (min-width: 1440px) {
+@media (min-width: 1280px) {
 
   header {
-
-    /* Tres columnas iguales con el buscador en la del medio. El
-       flex del header se cambia por grid porque es la unica
-       forma de garantizar que las columnas de los lados midan
-       lo mismo. */
-    display: grid;
-
-    grid-template-columns: 1fr auto 1fr;
-
-    gap: 1.5rem;
-
-  }
-
-  .logo {
-    justify-self: start;
+    position: relative;
   }
 
   .header-search {
 
-    /* justify-self alcanza en grid: los margenes automaticos no
-       hacen falta y ademas estarian peleandose con el ancho. */
-    justify-self: center;
+    /* Fuera del flujo: se posiciona por el centro de la
+       pantalla y no por el reparto de columnas. Asi el centro
+       coincide con el de la pantalla real sin depender de que
+       el logo y el nav midan lo mismo. */
+    position: absolute;
 
-    width: 240px;
+    left: 50%;
 
-    flex: none;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 180px;
 
     margin-inline: 0;
 
   }
 
   .nav-bar {
-
-    justify-self: end;
-
-    /* Red de seguridad: si el nav llegara a medir mas de lo
-       estimado, los links envuelven en vez de desbordar la
-       columna y empujar el buscador fuera del centro. */
-    min-width: 0;
-
+    position: static;
+    margin-left: auto;
   }
+}
 
-  .nav-bar ul {
+/* A 1366px ya entra el buscador con su ancho cómodo sin tocar
+   el nav: el hueco entre el centro de la pantalla y el nav
+   permite unos 276px. */
+@media (min-width: 1366px) {
 
-    flex-wrap: wrap;
-
-    justify-content: flex-end;
-
+  .header-search {
+    width: 240px;
   }
-
 }
 
 /* Pockets muy angostos (hasta 380px): el buscador y el logo

@@ -41,15 +41,27 @@
 
     bottom: var(--zapi-edge);
 
-    /* 9999 > 70 (barra carrito) > 60 (carrito flotante)
-       > 50 (header/nav): el chat siempre queda arriba, y
-       este puntero inactivo deja clickear el sitio con
-       el chat cerrado. El toggle y el panel abierto lo
-       reactivan. */
+    /* El chat queda por debajo del menu lateral para que, con el
+       menu abierto, el panel y su velo sean lo de arriba. Antes
+       el chat estaba en 9999 y se podia clickear por encima del
+       menu, dejando dos overlays apilados sin coordinacion.
 
-    z-index: 9999;
+       Los valores se suben por pasos: header 50, boton flotante
+       del carrito 60, backdrop del menu 200, panel del menu 210.
+       El widget arranca en 100 para quedar por encima del
+       contenido y del boton flotante, y menu.js sube esta regla
+       a 0 con .menu-abierto para que quede debajo del velo. */
+
+    z-index: 100;
 
     display: flex;
+
+    /* Con el menu lateral abierto, el chat baja por debajo del
+       velo. Sin esto el boton del chat quedaba clickeable por
+       encima del menu y se abrian los dos overlays juntos. */
+    :root.menu-abierto & {
+        z-index: 0;
+    }
 
     flex-direction: column;
 
@@ -241,7 +253,9 @@
 
     border-radius: 999px;
 
-    background: #d9484b;
+    /* #d9484b con blanco daba 4.22:1. Se oscurece un paso
+       para llegar a 5.2:1 sin cambiar el tono de alerta. */
+    background: #c23a3d;
 
     color: #fff;
 

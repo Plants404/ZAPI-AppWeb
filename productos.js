@@ -435,7 +435,72 @@ document.addEventListener("modal:agregar", function (evento) {
    alt-tab) se reanuda; si el navegador no soporta Web Audio se
    devuelve null y el carrito sigue funcionando igual, solo que
    en silencio.
+
+   Hay un interruptor global: guarda la eleccion en localStorage
+   y arranca con el sonido apagado si la persona prefiero menos
+   animacion o ya lo habia apagado antes. El boton vive en el
+   header, asi que el mismo switch sirve en las tres paginas.
    ========================================================== */
+
+const CLAVE_SONIDO = "zapiSonido";
+
+function sonidoHabilitado() {
+
+    try {
+
+        if (localStorage.getItem(CLAVE_SONIDO) === "off") return false;
+
+    } catch (error) {
+
+        /* Sin almacenamiento no se puede recordar la eleccion, pero
+           tampoco hay que romper nada: se sigue con la preferencia
+           del sistema. */
+
+    }
+
+    /* prefers-reduced-motion se extiende a sonido por el mismo
+       motivo: si la persona pidio menos movimiento, lo mas
+       probable es que no quiera un tono en cada accion. */
+
+    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+}
+
+function aplicarEstadoSonido(activo) {
+
+    document.documentElement.classList.toggle("sonido-off", !activo);
+
+    const boton = document.getElementById("sonidoToggle");
+
+    if (!boton) return;
+
+    boton.setAttribute("aria-pressed", String(activo));
+    boton.setAttribute("aria-label",
+        activo ? "Desactivar sonidos" : "Activar sonidos");
+
+    /* El nombre del icono es lo unico que cambia en la pantalla,
+       asi que se dibuja desde el estado y no queda una segunda
+       fuente de verdad que se pueda desincronizar. */
+
+    const icono = boton.querySelector("[data-sonido-icono]");
+
+    if (icono) {
+        icono.textContent = activo ? "volume_up" : "volume_off";
+    }
+
+}
+
+function cambiarSonido(activo) {
+
+    try {
+        localStorage.setItem(CLAVE_SONIDO, activo ? "on" : "off");
+    } catch (error) {
+        /* si no se puede guardar, el cambio dura hasta recargar */
+    }
+
+    aplicarEstadoSonido(activo);
+
+}
 
 let audioZapi = null;
 
@@ -458,6 +523,8 @@ function contextoAudio() {
 }
 
 function sonidoAgregar() {
+
+    if (!sonidoHabilitado()) return;
 
     const ctx = contextoAudio();
 
@@ -507,6 +574,33 @@ function sonidoAgregar() {
     });
 
 }
+
+
+/* ==========================================================
+   INTERRUPTOR DE SONIDO
+   ------------------------------------------------------------
+   Se engancha solo en las paginas que tienen el boton. El estado
+   se aplica al <html> con la clase sonido-off, y el boton refleja
+   si el sonido esta activo con aria-pressed.
+   ========================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const boton = document.getElementById("sonidoToggle");
+
+    if (!boton) return;
+
+    /* Se aplica el estado guardado antes de que suene nada. */
+
+    aplicarEstadoSonido(sonidoHabilitado());
+
+    boton.addEventListener("click", function () {
+
+        cambiarSonido(!sonidoHabilitado());
+
+    });
+
+});
 
 
 /* ==========================================================

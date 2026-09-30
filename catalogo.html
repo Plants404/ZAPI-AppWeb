@@ -5,13 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Catálogo | ZAPI Vivero Agroecológico</title>
+    <meta name="description"
+        content="Catálogo de ZAPI: aromáticas, hortalizas, plantas de interior, tupper y otros productos para huerta. Precios fijos y stock sujeto a confirmación.">
+    <link rel="canonical" href="https://zapi.uy/catalogo.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ZAPI">
+    <meta property="og:locale" content="es_UY">
+    <meta property="og:title" content="Catálogo | ZAPI Vivero Agroecológico">
+    <meta property="og:description" content="Catálogo de plantas, aromáticas y productos para huerta de ZAPI.">
+    <meta property="og:url" content="https://zapi.uy/catalogo.html">
+    <meta property="og:image" content="https://zapi.uy/asset/img/plants-hero.opt.jpg">
+    <meta name="twitter:card" content="summary_large_image">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" type="image/svg+xml" href="./asset/img/logo.svg">
 
-    <!-- Google Fonts: tipografia del sitio -->
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Google Fonts: tipografia del sitio. El eje itálico de Inter
+       no se usa en ningun lado, asi que no se pide: son menos
+       bytes de fuente por pagina. -->
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&display=swap">
 
     <!-- Google Material Symbols -->
     <link rel="stylesheet"
@@ -20,7 +35,10 @@
     <!-- CSS principal -->
     <link rel="stylesheet" href="./styles.css">
 
-    <link rel="stylesheet" href="catalogo.css">
+    <!-- El catalogo entero: grilla, filtros, boton flotante y la
+         ventana de producto. -->
+    <link rel="stylesheet" href="catalogo-catalogo.css">
+    <link rel="stylesheet" href="catalogo-modal.css">
     <link rel="stylesheet" href="zapi-bot.css">
 </head>
 
@@ -40,7 +58,7 @@
         <a href="catalogo.html" class="logo">
             
             <article class="logo-items-img">
-                <img src="./asset/img/logo.svg" alt="Marca de ZAPI: ilustración de una planta" width="200" height="284">
+                <img src="./asset/img/logo.svg" alt="" width="200" height="284">
             </article>
             <article class="logo-items-text">
                 <h4>ZAPI</h4>
@@ -68,6 +86,19 @@
                             data-cart-count aria-hidden="true">0</span>
                     </a>
                 </li>
+
+                <!-- Mismo interruptor que en index.html. El estado
+                     lo aplica productos.js, que esta cargado en las
+                     dos paginas. -->
+                <li>
+                    <button type="button" class="nav-link nav-link-sonido"
+                        id="sonidoToggle" aria-pressed="true"
+                        aria-label="Desactivar sonidos">
+                        <span class="material-symbols-outlined nav-sonido-icono"
+                            aria-hidden="true" data-sonido-icono>volume_up</span>
+                        <span class="nav-sonido-texto">Sonido</span>
+                    </button>
+                </li>
             </ul>
         </nav>
     </header>
@@ -82,7 +113,7 @@
 
             <div class="catalog-header">
                 <span class="catalog-eyebrow">Catálogo ZAPI</span>
-                <h2>Catálogo vivo</h2>
+                <h1>Catálogo vivo</h1>
                 <p>
                     Explorá nuestra selección de plantas e insumos
                     seleccionados para transformar cualquier espacio
