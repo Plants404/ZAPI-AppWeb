@@ -1,4 +1,4 @@
-/* ==========================================================
+﻿/* ==========================================================
            CATÁLOGO
            ========================================================== */
 
@@ -55,6 +55,35 @@
             font-weight: 500;
         }
 
+        /* Atajo que aparece en el estado vacio, para no obligar a
+           al visitante a encontrar el boton de limpiar del header.
+           Se muestra en bloque para que la linea del mensaje y la
+           del boton no queden pegadas. */
+        .catalog-empty-clear {
+            display: block;
+            margin: 1rem auto 0;
+            padding: .5rem 1.2rem;
+            font-family: inherit;
+            font-size: .95rem;
+            font-weight: 500;
+            color: var(--forest);
+            background: var(--white);
+            border: 1px solid rgba(61, 107, 79, .3);
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .catalog-empty-clear:hover {
+            background: var(--leaf);
+            border-color: var(--leaf);
+            color: var(--white);
+        }
+
+        .catalog-empty-clear:focus-visible {
+            outline: 2px solid var(--leaf);
+            outline-offset: 3px;
+        }
+
         .catalog-eyebrow {
             display: inline-block;
             font-size: .78rem;
@@ -106,13 +135,11 @@
             display: flex;
             flex-direction: column;
 
-            /* 4 columnas en escritorio. El basis reparte
-               (100% - 3 huecos) / 4, asi la fila suma justo el
-               ancho del contenedor. El flex-grow 0 es lo que evita
-               que la ultima fila estire una tarjeta a todo el
-               ancho, que es el defecto clasico de flex-wrap con
-               "flex: 1 1 250px" sin tope. */
-            flex: 0 1 calc(25% - 1.125rem);
+            /* Mobile first: una sola columna en el telefono. El
+               flex-grow 0 evita que una fila con una sola tarjeta
+               la estire a todo el ancho, que es el defecto clasico
+               de flex-wrap con "flex: 1 1 250px" sin tope. */
+            flex: 0 1 100%;
             min-width: 0;
         }
 
@@ -121,27 +148,28 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* Cuantas columnas entran segun el ancho. Cada base suma
-           (100% - huecos) / n, asi la fila siempre llena exacto el
-           contenedor. Los cortes reproducen los que daba el grid
-           anterior con minmax(250px, 1fr), con los mismos anchos
-           practicos: 4 hasta 1119, 3 hasta 845, 2 hasta 571 y 1 en
-           telefono. */
-        @media (max-width: 1119px) {
-            .product-card {
-                flex-basis: calc(33.333% - 1rem);
-            }
-        }
-
-        @media (max-width: 845px) {
+        /* Cuantas columnas entran segun el ancho, de ahi para
+           arriba. Cada base suma (100% - huecos) / n, asi la fila
+           siempre llena exacto el contenedor. Los cortes son los
+           que daba el grid anterior con minmax(250px, 1fr). */
+        @media (min-width: 572px) {
             .product-card {
                 flex-basis: calc(50% - .75rem);
             }
         }
 
-        @media (max-width: 571px) {
+        @media (min-width: 846px) {
             .product-card {
-                flex-basis: 100%;
+                flex-basis: calc(33.333% - 1rem);
+            }
+        }
+
+        @media (min-width: 1120px) {
+            .product-card {
+                /* 4 columnas en escritorio. El basis reparte
+                   (100% - 3 huecos) / 4, asi la fila suma justo el
+                   ancho del contenedor. */
+                flex-basis: calc(25% - 1.125rem);
             }
         }
 
@@ -314,13 +342,18 @@
 
         }
 
+        /* Mobile first: en el telefono el boton va pegado a las
+           esquinas, solo con el ícono, para no tapar el
+           contenido. De 600px para arriba aparece la etiqueta y
+           se separa de los bordes. */
+
         .cart-link-float {
 
             position: fixed;
 
-            left: 1.5rem;
+            left: 1rem;
 
-            bottom: 1.5rem;
+            bottom: 1rem;
 
             z-index: 60;
 
@@ -330,7 +363,7 @@
 
             gap: .6rem;
 
-            padding: .9rem 1.4rem;
+            padding: .8rem 1rem;
 
             border-radius: 999px;
 
@@ -347,6 +380,15 @@
             animation: floatCartBob 3.4s ease-in-out infinite;
 
             transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+
+        }
+
+        /* En el telefono solo el ícono: la pastilla con texto
+           ocupa media pantalla y tapa las tarjetas de abajo. */
+
+        .cart-link-float .cart-link-text {
+
+            display: none;
 
         }
 
@@ -481,25 +523,21 @@
 
         }
 
-        @media (max-width: 600px) {
+        @media (min-width: 601px) {
 
             .cart-link-float {
 
-                left: 1rem;
+                left: 1.5rem;
 
-                bottom: 1rem;
+                bottom: 1.5rem;
+
+                padding: .9rem 1.4rem;
 
             }
 
             .cart-link-float .cart-link-text {
 
-                display: none;
-
-            }
-
-            .cart-link-float {
-
-                padding: .8rem 1rem;
+                display: inline;
 
             }
 
@@ -527,11 +565,14 @@
 
             display: flex;
 
-            align-items: center;
+            /* Mobile first: en el telefono el modal se pega abajo y
+               ocupa todo el ancho. De 821px para arriba vuelve a ser
+               una caja centrada con aire alrededor. */
+            align-items: flex-end;
 
             justify-content: center;
 
-            padding: 1.5rem;
+            padding: 0;
 
             /* Sin "visibility": el sitio aplica transition: all a todos
                los elementos, y al heredarse cada descendiente abre su
@@ -583,18 +624,26 @@
 
             display: flex;
 
+            /* Mobile first: columna, pegada abajo, con esquinas
+               solo arriba. De 821px para arriba pasa a fila
+               centrada de ancho fijo. */
+            flex-direction: column;
+
+            width: 100%;
+
             /* El alto lo impone el max-height de abajo. Con flex las dos
                columnas se estiran a la misma altura y el detalle scrollea
                solo; el min-height: 0 de cada una es lo que deja recortar
                la columna en vez de empujar el boton de agregar fuera de
                la caja. */
-            width: min(940px, 100%);
-
-            max-height: min(88vh, 720px);
+            max-height: 94vh;
 
             background: var(--white);
 
-            border-radius: var(--radius);
+            /* Sin translateY en el estado cerrado: la caja queda
+               pegada abajo y correcta, y el offset empujaba el
+               boton de agregar fuera del viewport. */
+            border-radius: var(--radius) var(--radius) 0 0;
 
             box-shadow: var(--shadow-lg);
 
@@ -668,11 +717,11 @@
 
             flex-direction: column;
 
-            /* 52.5% = 1.05 de las 2 partes del reparto original
-               (1.05 / 2). Se usa base en porcentaje y no flex-grow
-               porque el reparto por grow no daba 1.05 exacto con
-               basis 0: midia 463/477 en vez de 493/446. */
-            flex: 0 0 52.5%;
+            /* Mobile first: en columna el flex-basis pasa a ser alto,
+               asi que la imagen se queda con el alto de abajo y el
+               detalle toma lo que sobra. De 821px para arriba vuelve
+               a ser una columna con ancho fijo. */
+            flex: none;
 
             min-height: 0;
 
@@ -686,7 +735,13 @@
 
             position: relative;
 
-            flex: 1;
+            /* Mobile first: alto fijo en vez de aspect-ratio, porque
+               una imagen muy alta deja sin lugar al detalle en
+               pantallas chicas. De 821px para arriba vuelve a
+               flex: 1, que reparte la columna con el detalle. */
+            flex: none;
+
+            height: min(38vh, 300px);
 
             min-height: 0;
 
@@ -700,7 +755,12 @@
 
             height: 100%;
 
-            object-fit: cover;
+            /* "contain" y no "cover" para que se vea la foto
+               entera. El marco es mas ancho que alto y las fotos
+               son verticales, asi que con "cover" se perdia la
+               parte de arriba y de abajo. Las bandas que quedan
+               caen sobre el fondo arena de .modal-carrusel. */
+            object-fit: contain;
 
             display: block;
 
@@ -880,10 +940,11 @@
 
             flex-direction: column;
 
-            /* la parte restante, .95 del reparto original */
-            flex: 1 1 0;
+            /* Mobile first: el detalle se come el alto restante y
+               scrollea solo. */
+            flex: 1 1 auto;
 
-            padding: 2.1rem 1.8rem 1.8rem;
+            padding: 1.4rem 1.3rem 1.2rem;
 
             overflow-y: auto;
 
@@ -921,7 +982,9 @@
 
             font-family: var(--serif);
 
-            font-size: 2.1rem;
+            /* Mobile first: 1.8rem en el telefono, 2.1rem de 821px
+               para arriba (ver la capa responsive del modal). */
+            font-size: 1.8rem;
 
             color: var(--forest);
 
@@ -1021,13 +1084,21 @@
 
         }
 
+        /* Mobile first: el agregar queda sticky abajo, porque es la
+           accion principal y no puede quedar escondido en un scroll. */
         .modal-agregar {
 
-            margin-top: auto;
+            position: sticky;
+
+            bottom: 0;
 
             width: 100%;
 
             padding: .9rem 1.25rem;
+
+            margin-top: 1.2rem;
+
+            box-shadow: 0 -12px 18px rgba(255, 255, 255, .92);
 
         }
 
@@ -1041,88 +1112,86 @@
 
         }
 
-        @media (max-width: 820px) {
+
+        /* ==========================================================
+           RESPONSIVE DEL MODAL (mobile first)
+           ------------------------------------------------------------
+           Todo lo de arriba es la version telefono: hoja pegada
+           abajo, carrusel de alto fijo y agregar sticky. Aca, de
+           821px para arriba, vuelve a ser la caja de dos columnas.
+           ========================================================== */
+
+        @media (min-width: 821px) {
 
             .modal-producto {
 
-                padding: 0;
+                padding: 1.5rem;
 
-                align-items: flex-end;
-
-            }
-
-              .modal-caja {
-
-                  flex-direction: column;
-
-                  width: 100%;
-
-                max-height: 94vh;
-
-                border-radius: var(--radius) var(--radius) 0 0;
-
-                /* Sin translateY en el estado cerrado: la caja queda
-                   pegada abajo ycorrecta, y el offset empujaba el
-                   boton de agregar fuera del viewport. */
+                align-items: center;
 
             }
 
-              .carrusel-marco {
+            .modal-caja {
 
-                  flex: none;
+                flex-direction: row;
 
-                  /* en vez de aspect-ratio: una imagen muy alta deja
-                     sin lugar al detalle en pantallas chicas */
-                  height: min(38vh, 300px);
+                width: min(940px, 100%);
 
-              }
+                max-height: min(88vh, 720px);
 
-              /* en columna el flex-basis pasa a ser alto, asi que la
-                 imagen se queda con su alto de contenido y el detalle
-                 toma lo que sobra */
-              .modal-carrusel {
+                border-radius: var(--radius);
 
-                  flex: none;
+            }
 
-              }
+            .carrusel-marco {
 
-              .modal-detalle {
+                flex: 1;
 
-                  /* el detalle se come el alto restante y scrollea solo */
-                  flex: 1 1 auto;
+                height: auto;
 
-                  padding: 1.4rem 1.3rem 0;
+            }
 
-              }
+            /* 52.5% = 1.05 de las 2 partes del reparto original
+               (1.05 / 2). Se usa base en porcentaje y no flex-grow
+               porque el reparto por grow no daba 1.05 exacto con
+               basis 0: midia 463/477 en vez de 493/446. */
+            .modal-carrusel {
+
+                flex: 0 0 52.5%;
+
+            }
+
+            /* la parte restante, .95 del reparto original */
+            .modal-detalle {
+
+                flex: 1 1 0;
+
+                padding: 2.1rem 1.8rem 1.8rem;
+
+            }
 
             .modal-titulo {
 
-                font-size: 1.8rem;
+                font-size: 2.1rem;
 
             }
-
-            /* El agregar queda siempre visible: es la accion
-               principal y no puede quedar buried en un scroll. */
 
             .modal-agregar {
 
-                position: sticky;
+                position: static;
 
-                bottom: 0;
+                margin-top: auto;
 
-                margin-top: 1.2rem;
-
-                box-shadow: 0 -12px 18px rgba(255, 255, 255, .92);
-
-            }
-
-            .modal-detalle {
-
-                padding-bottom: 1.2rem;
+                box-shadow: none;
 
             }
 
         }
+
+        /* prefers-reduced-motion: apagar los loops infinitos del
+           boton flotante y los destellos del contador. Antes solo
+           se frenaban las transiciones del modal, y el boton
+           seguía flotando y el contador seguía parpadeando. */
 
         @media (prefers-reduced-motion: reduce) {
 
@@ -1131,6 +1200,26 @@
             .modal-caja {
 
                 transition: none;
+
+            }
+
+            .cart-link-float {
+
+                animation: none;
+
+            }
+
+            .cart-count {
+
+                animation: none;
+
+            }
+
+            .cart-item,
+
+            .cart-summary {
+
+                animation: none;
 
             }
 

@@ -27,6 +27,16 @@
 <body>
 
     <header>
+        <!-- Mismo header que index.html: buscador arriba y, en el
+             telefono, el nav pasa a panel lateral con hamburguesa. -->
+
+        <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
+            aria-label="Abrir menu de navegacion">
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+        </button>
+
         <a href="catalogo.html" class="logo">
             
             <article class="logo-items-img">
@@ -37,7 +47,17 @@
             </article>
         </a>
 
-        <nav class="nav-bar" aria-label="Navegación principal">
+        <form class="header-search" id="headerSearch" role="search" autocomplete="off">
+            <label class="visually-hidden" for="searchInput">Buscar productos</label>
+            <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
+            <input type="search" class="header-search-input" id="searchInput" name="q"
+                placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
+            <button type="button" class="header-search-limpiar" id="searchClear" aria-label="Limpiar busqueda" hidden>
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+        </form>
+
+        <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
             <ul>
                 <li><a class="nav-link" href="index.html">Inicio</a></li>
                 <li><a class="nav-link active" href="catalogo.html" aria-current="page">Catálogo</a></li>
@@ -51,6 +71,10 @@
             </ul>
         </nav>
     </header>
+
+    <div class="nav-backdrop" id="navBackdrop" hidden></div>
+
+    <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
 
     <main>
 
@@ -167,6 +191,10 @@
 <script src="modal.js" defer></script>
 <script src="catalogo.js" defer></script>
     <script src="zapi-bot.js" defer></script>
+    <!-- El buscador necesita a catalogo.js, que expone
+         window.aplicarBusqueda. menu.js es independiente. -->
+    <script src="buscador.js" defer></script>
+    <script src="menu.js" defer></script>
 
 </body>
 </html>

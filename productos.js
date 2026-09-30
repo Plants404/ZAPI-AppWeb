@@ -6,6 +6,24 @@
 
 
 /* ==========================================================
+   ESCAPAR TEXTO PARA EL DOM
+   ------------------------------------------------------------
+   Todo texto que venga del visitante (o del almacenamiento)
+   tiene que pasar por acá antes de entrar en un innerHTML.
+   Escapar el texto es lo seguro; permitir HTML sin sanitize
+   seria abrir la puerta a XSS.
+   ========================================================== */
+
+const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+}[caracter]));
+
+
+/* ==========================================================
    PRODUCTOS
    ========================================================== */
 
@@ -185,29 +203,72 @@ function formatearPrecio(value) {
 
            const producto = PRODUCTOS.find(p => p.id == item.id);
 
-           if (!producto) return item;
+           /* Un id que ya no existe en el catalogo no se
+              puede dibujar: antes se colaba en la lista y
+              terminaba mostrando "undefined" y una imagen
+              rota. Se descarta y el resto del carrito sigue. */
+           if (!producto) return null;
 
            return {
                id: producto.id,
                nombre: producto.nombre,
                categoria: producto.categoria,
                imagen: producto.imagen,
-               precio: item.precio ?? precios[producto.id] ?? producto.precioBase,
-               cantidad: Number(item.cantidad) || 1
+               precio: Number.isFinite(Number(item.precio))
+                   ? Number(item.precio)
+                   : precios[producto.id] ?? producto.precioBase,
+               cantidad: Math.max(1, Number(item.cantidad) || 1)
            };
 
-       });
+       }).filter(Boolean);
+
+   }
+
+
+   /* ==========================================================
+      ALMACENAMIENTO DEL CARRITO
+      ------------------------------------------------------------
+      En modo privado, con cookies de terceros bloqueadas o
+      con la cuota llena, localStorage puede lanzar. Sin este
+      rodeo, obtenerCarrito() rompia la pagina entera. Ahora
+      el carrito sigue funcionando en memoria durante la
+      sesion, solo que no sobrevive a la recarga.
+      ========================================================== */
+
+   let carritoSinGuardar = null;
+
+   function leerCarritoGuardado() {
+
+       try {
+           return JSON.parse(localStorage.getItem("zapiCart")) || [];
+       } catch (error) {
+           console.warn("No se pudo leer el carrito guardado:", error);
+           return [];
+       }
+
+   }
+
+   function guardarCarrito(carrito) {
+
+       try {
+           localStorage.setItem("zapiCart", JSON.stringify(carrito));
+       } catch (error) {
+           carritoSinGuardar = carrito;
+           console.warn("El carrito no se pudo guardar, se mantiene solo en memoria:", error);
+       }
 
    }
 
    function obtenerCarrito() {
-       return normalizarCarrito(
-           JSON.parse(localStorage.getItem("zapiCart")) || []
-       );
-   }
 
-   function guardarCarrito(carrito) {
-       localStorage.setItem("zapiCart", JSON.stringify(carrito));
+       if (carritoSinGuardar) return normalizarCarrito(carritoSinGuardar);
+
+       const guardado = leerCarritoGuardado();
+
+       if (!Array.isArray(guardado)) return [];
+
+       return normalizarCarrito(guardado);
+
    }
 
 

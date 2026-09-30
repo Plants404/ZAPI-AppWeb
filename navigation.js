@@ -47,6 +47,15 @@ function mostrarSeccion(id, actualizarHistorial = true) {
     return;
   }
 
+  /* Un lector de pantalla no se entera de nada: la sección
+     anterior y la nueva tienen el mismo rol de landmarks y el
+     foco sigue en el link que se acaba de tocar. Se anuncia
+     el cambio por un region live y se lleva el foco al titulo
+     de la nueva sección. Solo cuando el cambio viene de un
+     click, no en la carga inicial, para no robar el foco. */
+  const cambioPorClick = actualizarHistorial && document.activeElement &&
+    document.activeElement !== document.body;
+
   // 1. Ocultar todas las secciones agregando la clase .hidden
   secciones.forEach((seccion) => {
     seccion.classList.add('hidden');
@@ -65,6 +74,41 @@ function mostrarSeccion(id, actualizarHistorial = true) {
 
   // 5. Desplazamiento suave al inicio de la página para una mejor UX
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // 6. Avisar y mover el foco a la sección nueva (solo si hubo click)
+  if (cambioPorClick) {
+    anunciarCambioDeSeccion(seccionObjetivo);
+  }
+}
+
+/* El foco va al encabezado de la sección, no a la sección misma:
+   así el siguiente Tab sigue bajando por el contenido y no vuelve
+   al header. tabindex="-1" hace que se pueda enfocar sin que el
+   elemento entre en el orden de tabulación. */
+function anunciarCambioDeSeccion(seccion) {
+  const titulo = seccion.querySelector('h1, h2');
+
+  if (titulo && !titulo.hasAttribute('tabindex')) {
+    titulo.setAttribute('tabindex', '-1');
+  }
+
+  if (titulo) {
+    titulo.focus({ preventScroll: true });
+  }
+
+  let region = document.getElementById('navEstado');
+
+  if (!region) {
+    region = document.createElement('div');
+    region.id = 'navEstado';
+    region.className = 'visually-hidden';
+    region.setAttribute('role', 'status');
+    region.setAttribute('aria-live', 'polite');
+    document.body.appendChild(region);
+  }
+
+  const nombre = titulo ? titulo.textContent.trim() : id;
+  region.textContent = `Sección ${nombre}`;
 }
 
 // Actualiza la clase 'active' y los atributos ARIA (aria-current) en los controles de navegación.

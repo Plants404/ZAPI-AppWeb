@@ -106,23 +106,29 @@
 /* ==========================================================
    CONTENEDOR PRINCIPAL
    ========================================================== */
-
+/* Mobile first: en el telefono los productos van arriba y el
+   resumen abajo, en una sola columna. De 851px para arriba el
+   resumen pasa a una columna fija de 380px al costado, con el
+   ancho completo del contenedor. */
 .cart-page {
 
-    width: min(1180px, calc(100% - 3rem));
+    width: min(680px, calc(100% - 2rem));
 
     margin: 0 auto;
 
-    padding: 4rem 0 6rem;
+    padding: 2.5rem 0 4rem;
 
     display: flex;
 
-    flex-wrap: wrap;
-    gap: 3rem;
+    flex-direction: column;
+
+    flex-wrap: nowrap;
+
+    gap: 2rem;
 
     align-items: flex-start;
-}
 
+}
 /* La columna de productos toma lo que sobra del resumen, que se
    queda en 380px. basis 0 + min-width 0 dejan que encoja de verdad
    en vez de desbordar cuando la pantalla achica. */
@@ -292,6 +298,11 @@
 
     overflow: hidden;
 
+    /* Cuadrado contra fotos verticales: con "cover" se perdia la
+       parte de arriba y de abajo de la planta. El fondo hace que
+       las bandas laterales queden como parte de la foto. */
+    background: var(--sand);
+
     background: var(--sand);
 }
 
@@ -302,7 +313,7 @@
 
     height: 100%;
 
-    object-fit: cover;
+    object-fit: contain;
 
     transition: transform .45s ease;
 
@@ -504,17 +515,18 @@
    RESUMEN
    ========================================================== */
 
+/* Mobile first: en el telefono el resumen es un bloque normal al
+   final de la lista, sin sticky. De 851px para arriba se vuelve
+   la columna lateral de 380px que acompaña el scroll. */
 .cart-summary {
 
-    position: sticky;
+    position: static;
 
-    top: 105px;
+    flex: 0 0 auto;
 
-    /* la columna lateral: 380px fijos y el resto es para los
-       productos (ver .cart-content) */
-    flex: 0 0 380px;
+    width: 100%;
 
-    padding: 2rem;
+    padding: 1.5rem;
 
     background: var(--white);
 
@@ -1225,9 +1237,12 @@
    aunque la mancha de color pase por debajo (medido: 4,66:1 en el
    peor momento del ciclo). La entrada se escalona con --i, que es
    la posicion que escribe renderRecommendations en cada tarjeta. */
+/* Mobile first: la recomendacion ocupa el ancho entero en el
+   telefono. De 488px para arriba vuelve al ancho de 13rem que
+   deja varias en fila. */
 .recommendation-card {
 
-    flex: 0 1 13rem;
+    flex: 0 1 100%;
 
     min-width: 0;
 
@@ -1356,7 +1371,10 @@
 
     height: 100%;
 
-    object-fit: cover;
+    /* 16:10 contra fotos verticales: con "cover" solo se veía
+       una franja de la planta. "contain" la muestra entera y las
+       bandas caen sobre el fondo arena del contenedor. */
+    object-fit: contain;
 
     transition: transform .4s ease;
 
@@ -1552,6 +1570,28 @@
 
     }
 
+
+    /* Faltaban los bucles del boton de WhatsApp, la entrada de
+       las filas del carrito, el resumen y el estado vacio: con
+       reduced-motion activo el boton de checkout seguia
+       pulsando en loop y las filas entraban animadas. */
+
+    .btn-whatsapp {
+
+        animation: none;
+
+    }
+
+    .cart-item,
+
+    .cart-summary,
+
+    .empty-cart {
+
+        animation: none;
+
+    }
+
 }
 
 
@@ -1688,23 +1728,120 @@
 
 
 /* ==========================================================
-   RESPONSIVE
+   RESPONSIVE (mobile first)
+   ------------------------------------------------------------
+   Todo lo de arriba es la version telefono. Aca se restaura la
+   disposicion de escritorio a partir del ancho necesario.
    ========================================================== */
 
-@media (max-width: 850px) {
+/* La recomendacion ocupa el ancho entero en el telefono y se
+   suma a una fila de ahi para arriba. */
+@media (min-width: 488px) {
+
+    .recommendation-card {
+
+        flex: 0 1 13rem;
+
+    }
+
+}
+
+@media (min-width: 601px) {
+
+    .cart-header {
+
+        padding: 1.1rem 1.6rem;
+
+    }
+
+
+    .cart-title h1 {
+
+        font-size: 1.7rem;
+
+    }
+
+
+    .cart-heading {
+
+        align-items: flex-end;
+
+        flex-direction: row;
+
+        gap: 2rem;
+
+    }
+
+
+    .cart-item {
+
+        gap: 1.5rem;
+
+    }
+
+
+    .cart-item-image {
+
+        flex: 0 0 100px;
+
+        width: 100px;
+
+        height: 100px;
+
+    }
+
+
+    .cart-item-total {
+
+        /* Vuelve a la fila del medio, con el nombre a la izquierda
+           y los controles a la derecha. */
+        flex: 0 0 auto;
+
+        margin-left: 0;
+
+        min-width: 0;
+
+        align-items: center;
+
+        flex-direction: column;
+
+        justify-content: flex-end;
+
+    }
+
+
+    .cart-item-info h3 {
+
+        font-size: 1.3rem;
+
+    }
+
+
+    .cart-summary {
+
+        padding: 2rem;
+
+    }
+
+}
+
+/* A partir de 851px el resumen vuelve a ser la columna lateral
+   de 380px que se pega al scroll. */
+@media (min-width: 851px) {
 
     .cart-page {
 
-        /* el resumen pasa debajo de los productos. En columna el
-           flex-basis pasa a ser alto, asi que el nowrap evita que
-           un carrito largo se desborde hacia un lado. */
-        flex-direction: column;
+        /* En columna el flex-basis pasa a ser alto, asi que el nowrap
+           evita que un carrito largo se desborde hacia un lado. */
+        flex-direction: row;
 
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
 
-        width: min(680px, calc(100% - 2rem));
+        width: min(1180px, calc(100% - 3rem));
 
-        padding-top: 2.5rem;
+        padding: 4rem 0 6rem;
+
+        gap: 3rem;
 
     }
 
@@ -1712,110 +1849,23 @@
     /* en columna los dos bloques vuelven a su alto de contenido */
     .cart-content {
 
-        flex: 0 0 auto;
+        flex: 1 1 0;
 
-        width: 100%;
+        width: auto;
 
     }
 
     .cart-summary {
 
-        position: static;
+        position: sticky;
 
-        flex: 0 0 auto;
+        top: 105px;
 
-        width: 100%;
+        /* la columna lateral: 380px fijos y el resto es para los
+           productos (ver .cart-content) */
+        flex: 0 0 380px;
 
-    }
-
-}
-
-
-/* en pantallas de telefono la recomendacion ocupa el ancho entero */
-@media (max-width: 487px) {
-
-    .recommendation-card {
-
-        flex-basis: 100%;
-
-    }
-
-}
-
-@media (max-width: 600px) {
-
-    .cart-header {
-
-        padding: .9rem 1rem;
-
-    }
-
-
-    .cart-title h1 {
-
-        font-size: 1.3rem;
-
-    }
-
-
-    .cart-heading {
-
-        align-items: flex-start;
-
-        flex-direction: column;
-
-        gap: .8rem;
-
-    }
-
-
-    .cart-item {
-
-        gap: 1rem;
-
-    }
-
-
-    .cart-item-image {
-
-        flex: 0 0 75px;
-
-        width: 75px;
-
-        height: 75px;
-
-    }
-
-
-    .cart-item-total {
-
-        /* baja a su propia fila y arranca alineado con la info: el
-           equivalente del grid-column: 2, con 75px de imagen + 1rem */
-        flex: 1 1 100%;
-
-        margin-left: 91px;
-
-        min-width: 0;
-
-        align-items: flex-start;
-
-        flex-direction: row;
-
-        justify-content: space-between;
-
-    }
-
-
-    .cart-item-info h3 {
-
-        font-size: 1.2rem;
-
-    }
-
-
-    .cart-summary {
-
-        padding: 1.5rem;
+        width: auto;
 
     }
 

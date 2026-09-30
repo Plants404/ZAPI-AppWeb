@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 :root {
   --forest: #1f3a2e;
   --moss: #3d6b4f;
@@ -103,8 +102,10 @@ p {
   color: var(--muted);
 }
 
+/* Mobile first: el aire vertical es corto en el telefono y
+   crece a partir de 900px (ver la capa responsive al final). */
 section {
-  padding: 6rem 1.5rem;
+  padding: 4rem 1.25rem;
 }
 
 section>* {
@@ -136,10 +137,27 @@ section>* {
 .services-view {
   padding: 0;
 }
-
 @media (prefers-reduced-motion: reduce) {
+
   .section {
     animation: none;
+  }
+
+  /* El pulso del buscador se quita, pero el color se queda: es
+     lo que distingue el campo del fondo, y quitarlo dejaria un
+     input sin ningun acento visual. El aro queda fijo en vez
+     de latir. */
+  .header-search-input {
+    animation: none;
+    border-color: var(--leaf);
+    box-shadow: 0 0 0 3px rgba(74, 124, 89, .18);
+  }
+
+  /* El scroll suave no es una animacion CSS, asi que el bloque
+     de arriba no lo apagaba. Con reduced-motion el salto a una
+     seccion tiene que ser instantaneo. */
+  html {
+    scroll-behavior: auto;
   }
 }
 /*LOGO*/
@@ -148,17 +166,63 @@ section>* {
   align-items: center;
   gap: .5rem;
 }
-/* HEADER/NAV */
+/* ==========================================================
+   UTILIDADES
+   ========================================================== */
+
+/* Contenido solo para lectores de pantalla: el buscador y el
+   aviso del catalogo viven aqui y no se ven. No se usa
+   display:none ni visibility:hidden, porque asi el contenido
+   se anuncia igual y el input sigue siendo enfocable. */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================
+   HEADER / NAV
+   ------------------------------------------------------------
+   Mobile first. En el telefono el header tiene dos filas: arriba
+   el logo con el boton de menu al otro extremo, y abajo el
+   buscador a todo lo ancho. El nav no esta en la pantalla: es el
+   panel lateral que abre la hamburguesa.
+
+   A partir de 1024px el nav vuelve a ser una barra horizontal
+   y el boton de menu desaparece, asi que el header queda en una
+   sola fila: logo, buscador centrado y navegacion.
+   ========================================================== */
+
+/* El header no lleva ni background ni backdrop-filter: los dos
+   viven en un ::before. Motivo: cualquiera de las dos cosas
+   convierte al header en bloque contenedor de los descendientes
+   fijos, y el panel del menu es position:fixed. Con el filtro en
+   el header, el panel se mediria contra el header en vez de
+   contra la pantalla y no saldria de la franja del encabezado. */
 header {
   position: sticky;
   top: 0;
   z-index: 50;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: 1rem 2.5rem;
-  background: rgba(247, 244, 236, 0.85);
+  gap: .75rem;
+  padding: .75rem 1.25rem;
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(247, 244, 236, .85);
   backdrop-filter: saturate(140%) blur(12px);
   -webkit-backdrop-filter: saturate(140%) blur(12px);
   border-bottom: 1px solid rgba(31, 58, 46, .08);
@@ -176,39 +240,277 @@ header h4 {
 header img {
   height: 42px;
   width: auto;
+}
+
+/* El logo crece hacia la derecha y empuja el boton de menu al
+   borde. Con el header en space-between esto haria lo mismo,
+   pero asi tambien funciona cuando el header envuelve filas. */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
   margin-right: auto;
-  margin-left: .25rem;
+}
+
+/* ---------------------------------------
+   BOTON DE MENU (hamburguesa)
+   Las tres barras son spans vacios: al abrir, la de arriba y
+   la de abajo rotan y la del medio se encoge, formando la X.
+   --------------------------------------- */
+
+.nav-toggle {
+  order: 2;
+  position: relative;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  background: none;
+  border: 1px solid rgba(31, 58, 46, .12);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.nav-toggle-barra {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--forest);
+  /* Sin esto el * { transition: all } de arriba pelea con la
+     rotacion y la barra "salta" en vez de girar. */
+  transition: transform .3s ease, opacity .2s ease;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-barra:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-barra:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(.3);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-barra:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+/* Con el menu abierto el header sube por encima del fondo y del
+   panel (55 y 60) para que la cruz siga siendo alcanzable: si
+   quedara debajo, el fondo oscuro la taparia y no habria forma
+   de cerrar el menu con el mouse. El fondo del header lo hace el
+   ::before de arriba, y se apaga para no tapar el panel. */
+header.menu-abierto {
+  z-index: 65;
+}
+
+header.menu-abierto::before {
+  opacity: 0;
+}
+
+/* ---------------------------------------
+   BUSCADOR
+   --------------------------------------- */
+
+.header-search {
+  /* En el telefono el buscador va DEBAJO del logo y de la
+     hamburguesa, no arriba. El DOM ya lo pone ultimo (toggle,
+     logo, buscador), asi que basta con quitar el order: -1 que
+     lo subia. Se deja explicito el order: 3 para que quede
+     claro que el valor depende de donde esten los otros dos. */
+  order: 3;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+/* El input no puede heredar el aspect-ratio ni el ancho de la
+   grilla, asi que se estira con flex dentro del form. */
+.header-search-input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 2.4rem 0 2.5rem;
+  font-family: inherit;
+  font-size: .95rem;
+  color: var(--ink);
+  background: var(--white);
+  border: 2px solid var(--sage);
+  border-radius: 999px;
+  -webkit-appearance: none;
+  appearance: none;
+  /* El pulso va aqui y no en el form para que la animacion no
+     se reinicie al cambiar de estado el boton de limpiar. */
+  animation: buscadorPulso 2.6s ease-in-out infinite;
+}
+
+/* Safari dibuja su propia lupa y la "x" sin esto, duplicadas
+   con las del Material Symbols. */
+.header-search-input::-webkit-search-decoration,
+.header-search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.header-search-icono {
+  position: absolute;
+  left: .85rem;
+  font-size: 1.25rem;
+  color: var(--moss);
+  pointer-events: none;
+}
+
+.header-search-limpiar {
+  position: absolute;
+  right: .4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  font-size: 1.15rem;
+  color: var(--muted);
+  background: none;
+  border-radius: 50%;
+}
+
+.header-search-limpiar:hover {
+  color: var(--forest);
+  background: var(--sand);
+}
+
+.header-search-limpiar:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 1px;
+}
+
+/* El pulso se frena al escribir: un campo que late mientras se
+   tipea distrae y compite con el cursor. */
+.header-search-input:focus {
+  animation: none;
+  border-color: var(--leaf);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, .22);
+  outline: none;
+}
+
+.header-search-input:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+/* El pulso de color pedido: el aro de sombra crece y se
+   desvanece mientras el borde va de salvia a hoja, en un ciclo
+   lento para que se lea como una respiracion y no como un
+   parpadeo. */
+@keyframes buscadorPulso {
+  0%,
+  100% {
+    border-color: var(--sage);
+    box-shadow: 0 0 0 0 rgba(74, 124, 89, .40);
+  }
+  50% {
+    border-color: var(--leaf);
+    box-shadow: 0 0 0 7px rgba(74, 124, 89, 0);
+  }
+}
+
+/* ---------------------------------------
+   PANEL LATERAL DEL NAV (movil)
+   Sale de la derecha. visibility se anima a proposito: mantiene
+   los links fuera del recorrido del tab mientras esta cerrado
+   y aun asi deja correr la salida deslizada.
+   --------------------------------------- */
+
+.nav-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 60;
+  width: min(320px, 85vw);
+  height: 100vh;
+  height: 100dvh;
+
+  /* El header queda por encima del panel (z-index 65 contra 60)
+     para que la cruz siga siendo alcanzable, asi que el panel tiene
+     que empezar debajo de el. 8.5rem es un poco mas que el alto
+     del header en el telefono: 12px de padding + 44px del buscador
+     + 12px de hueco + 44px de la fila del logo y la cruz + 12px de
+     padding, mas un margen para que no queden pegados. */
+  padding: 8.5rem 1.5rem 2rem;
+  overflow-y: auto;
+  background: var(--cream);
+  box-shadow: var(--shadow-lg);
+  visibility: hidden;
+  transform: translateX(100%);
+  transition: transform .3s ease, visibility .3s ease;
+}
+
+.nav-bar.esta-abierto {
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* El fondo oscurecido va por debajo del panel (55 contra 60) y
+   por encima del contenido de la pagina. */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(31, 58, 46, .45);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.nav-backdrop.esta-activo {
+  opacity: 1;
 }
 
 .nav-bar ul {
   display: flex;
-  gap: 2rem;
-  align-items: center;
+  flex-direction: column;
+  gap: .25rem;
+  align-items: stretch;
 }
 
 .nav-bar li a,
 .nav-bar li .nav-link {
   position: relative;
+  width: 100%;
   font-family: inherit;
-  font-size: .92rem;
+  font-size: 1.05rem;
   font-weight: 500;
   color: var(--ink);
   background: none;
   border: none;
   cursor: pointer;
-  padding: .4rem 0;
+  padding: .8rem 0;
+  text-align: left;
   text-transform: capitalize;
   text-decoration: none;
   display: inline-block;
   line-height: 1.5;
 }
 
+/* En el panel el subrayado de los links estorba, porque el
+   espaciado ya separa los items. */
 .nav-bar li a::after,
 .nav-bar li .nav-link::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -2px;
+  bottom: 0;
   width: 0;
   height: 2px;
   background: var(--leaf);
@@ -234,14 +536,34 @@ header img {
   border-radius: 4px;
 }
 
-/* HERO */
+/* Con el menu abierto el body no debe seguir bajando por
+   detras del panel. */
+body.no-scroll {
+  overflow: hidden;
+}
+
+
+/* HERO
+   Mobile first: una sola columna, con la foto entre los
+   textos. A partir de 900px pasa a dos columnas con la foto a
+   la derecha. */
 .hero {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 4rem;
+  grid-template-columns: 1fr;
+  gap: 2rem;
   align-items: center;
-  padding-top: 5rem;
-  padding-bottom: 6rem;
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+/* En movil la foto va entre los textos, asi que se posiciona a
+   mano dentro de una sola columna. Sin esto el navegador
+   creaba una segunda columna implicita y la imagen se salia del
+   ancho de la pantalla. */
+
+.hero img {
+  grid-row: 2;
+  grid-column: 1;
 }
 
 .hero h1 {
@@ -274,7 +596,7 @@ header img {
   grid-column: 2;
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
-  aspect-ratio: 4/5;
+  aspect-ratio: 16/10;
   object-fit: cover;
   width: 100%;
 }
@@ -590,34 +912,233 @@ footer nav a:focus-visible {
   border-bottom-color: var(--leaf);
 }
 
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  header {
-    flex-wrap: wrap;
-    padding: 1rem 1.25rem;
-    gap: .75rem;
-  }
+/* ==========================================================
+   CAPA RESPONSIVE (mobile first)
+   ------------------------------------------------------------
+   Todo lo de arriba es la version telefono. Aca, y solo a
+   partir de certain ancho, se mejora para pantalla grande.
 
-  .nav-bar ul {
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    width: 100%;
-  }
+   El header tiene dos cortes porque no alcanza con uno: a
+   1024px el nav vuelve a ser horizontal, pero todavia falta
+   lugar para el buscador. A 1280px ya se puede devolver el
+   espaciado amplio de los links y el buscador mas ancho.
+   ========================================================== */
+
+/* A partir de 900px el hero pasa a dos columnas: los textos a
+   la izquierda y la foto a la derecha. */
+@media (min-width: 900px) {
 
   .hero {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding-top: 3rem;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4rem;
+    padding-top: 5rem;
+    padding-bottom: 6rem;
   }
 
+  /* En dos columnas la foto vuelve a ocupar la derecha
+     entera y recupera la proporcion vertical. */
   .hero img {
-    grid-row: auto;
-    grid-column: auto;
-    aspect-ratio: 16/10;
+    grid-row: 1 / span 4;
+    grid-column: 2;
+    aspect-ratio: 4/5;
   }
 
   section {
-    padding: 4rem 1.25rem;
+    padding: 6rem 1.5rem;
+  }
+}
+
+/* A partir de 1024px el menu deja de ser un panel lateral: el
+   nav se vuelve a una barra en linea dentro del header y la
+   hamburguesa desaparece. El buscador pasa a la fila de arriba,
+   centrado. */
+@media (min-width: 1024px) {
+
+  header {
+    flex-wrap: nowrap;
+    gap: 1.25rem;
+    padding: 1rem 2rem;
+  }
+
+  /* El panel ya no existe, asi que el header recupera su fondo y
+     baja del 65 al 50 de z-index. */
+  header.menu-abierto {
+    z-index: 50;
+  }
+
+  header.menu-abierto::before {
+    opacity: 1;
+  }
+
+  .nav-toggle {
+    display: none;
+  }
+
+  .logo {
+    order: 0;
+    margin-right: 0;
+  }
+
+  .header-search {
+    order: 0;
+    width: auto;
+    flex: 0 1 240px;
+
+    /* Centrado dentro del espacio que hay: los dos margenes
+       automaticos se reparten el hueco libre a izquierda y derecha
+       por igual, asi que el buscador queda al medio entre el logo
+       y el nav. El nav no lleva margin-left:auto porque ese
+       margen se quedaria con la mitad del hueco y el buscador
+       volveria a quedar pegado al logo. */
+    margin-inline: auto;
+  }
+
+  .nav-bar {
+    position: static;
+    width: auto;
+    height: auto;
+    margin-left: 0;
+    padding: 0;
+    overflow: visible;
+    background: none;
+    box-shadow: none;
+    visibility: visible;
+    transform: none;
+  }
+
+  .nav-bar ul {
+    flex-direction: row;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .nav-bar li a,
+  .nav-bar li .nav-link {
+    width: auto;
+    font-size: .88rem;
+    padding: .4rem 0;
+    text-align: center;
+  }
+
+  .nav-bar li a::after,
+  .nav-bar li .nav-link::after {
+    bottom: -2px;
+  }
+
+  /* El bloqueo de scroll es solo para el panel lateral. En
+     escritorio el nav esta siempre visible, asi que la regla
+     se desactiva aqui. */
+  body.no-scroll {
+    overflow: revert;
+  }
+}
+
+/* A partir de 1280px el buscador crece. El espaciado de los
+   links se queda en el de 1024px a proposito: es el valor que
+   hace que el nav entre en media columna a partir del corte del
+   grid de mas abajo. Con el 2rem original, el nav necesita
+   unos 1570px de pantalla y el buscador centrado llegaria
+   demasiado tarde. */
+@media (min-width: 1280px) {
+
+  header {
+    padding: 1rem 2.5rem;
+  }
+
+  .header-search {
+    flex-basis: 300px;
+  }
+}
+
+/* ==========================================================
+   BUSCADOR CENTRADO RESPECTO A LA PANTALLA
+   ------------------------------------------------------------
+   El buscador de mas arriba queda centrado dentro del hueco
+   que hay entre el logo y el nav, no respecto a la pantalla. No
+   es la misma cosa: con siete links de navegacion, el nav ocupa
+   unos 510px contra los 120px del logo, asi que el centro de ese
+   hueco cae bastante a la izquierda del centro real.
+
+   Recien a partir de 1440px hay ancho de sobra para que las dos
+   columnas laterales sean iguales (1fr) y ahi si el buscador
+   queda al centro de la pantalla. Antes de eso no es posible:
+   con flex, para que el centro del buscador coincida con el de
+   la pantalla, el logo y el nav tienen que medir exactamente lo
+   mismo, y con 120px contra 505px no hay combinacion que
+   sirva. A 1024px el borde izquierdo del nav cae justo en la
+   mitad de la pantalla, asi que un buscador centrado de verdad
+   se cruzaria con el.
+   ========================================================== */
+
+@media (min-width: 1440px) {
+
+  header {
+
+    /* Tres columnas iguales con el buscador en la del medio. El
+       flex del header se cambia por grid porque es la unica
+       forma de garantizar que las columnas de los lados midan
+       lo mismo. */
+    display: grid;
+
+    grid-template-columns: 1fr auto 1fr;
+
+    gap: 1.5rem;
+
+  }
+
+  .logo {
+    justify-self: start;
+  }
+
+  .header-search {
+
+    /* justify-self alcanza en grid: los margenes automaticos no
+       hacen falta y ademas estarian peleandose con el ancho. */
+    justify-self: center;
+
+    width: 240px;
+
+    flex: none;
+
+    margin-inline: 0;
+
+  }
+
+  .nav-bar {
+
+    justify-self: end;
+
+    /* Red de seguridad: si el nav llegara a medir mas de lo
+       estimado, los links envuelven en vez de desbordar la
+       columna y empujar el buscador fuera del centro. */
+    min-width: 0;
+
+  }
+
+  .nav-bar ul {
+
+    flex-wrap: wrap;
+
+    justify-content: flex-end;
+
+  }
+
+}
+
+/* Pockets muy angostos (hasta 380px): el buscador y el logo
+   tienen que entrar sin empujar el boton de menu. */
+@media (max-width: 380px) {
+
+  header {
+    padding: .75rem .9rem;
+  }
+
+  header img {
+    height: 34px;
+  }
+
+  .nav-toggle {
+    width: 40px;
+    height: 40px;
   }
 }
