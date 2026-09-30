@@ -548,19 +548,12 @@ function changeQuantity(id, amount) {
     if (!item) return;
 
 
-    item.cantidad += amount;
+    /* Bajar la cantidad nunca borra el producto. Antes, llegar
+       a 1 y tocar "-" eliminaba la fila sin avisar, y eso se
+       leia como un fallo de la tienda. El 1 es el piso y para
+       sacar el producto esta el boton de papelera. */
 
-
-    /* No permitir cantidades menores a 1 */
-
-    if (item.cantidad <= 0) {
-
-        cart = cart.filter(
-            product => product.id != id
-        );
-
-    }
-
+    item.cantidad = Math.max(1, item.cantidad + amount);
 
     confirmarCarrito();
 

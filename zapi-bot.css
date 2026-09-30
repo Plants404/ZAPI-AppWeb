@@ -1384,4 +1384,12 @@
 
     }
 
+    /* El brillo del boton no estaba cubierto. */
+
+    .zapi-toggle::after {
+
+        animation: none;
+
+    }
+
 }

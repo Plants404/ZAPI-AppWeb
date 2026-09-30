@@ -26,12 +26,27 @@
   <link rel="stylesheet" href="./stylecarrito.css">
   <link rel="stylesheet" href="./catalogo.css">
   <link rel="stylesheet" href="./zapi-bot.css">
+
+  <!-- favicom: se agregaran cuando existan los archivos reales en ./asset/img/ -->
 </head>
 
 <body>
 
-  <!-- header -->
+  <!-- header. El orden de las piezas esta pensado para mobile:
+       el buscador va arriba, el logo y el boton de menu abajo,
+       y de 900px para arriba se acomodan en una sola fila. -->
   <header>
+    <!-- boton de menu. Solo existe en el DOM, no en pantalla: la
+         hamburguesa se dibuja con tres <span> para poder
+         transformarlos en una X al abrir. aria-expanded lo
+         mantiene menu.js sincronizado con el estado real. -->
+    <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
+      aria-label="Abrir menu de navegacion">
+      <span class="nav-toggle-barra" aria-hidden="true"></span>
+      <span class="nav-toggle-barra" aria-hidden="true"></span>
+      <span class="nav-toggle-barra" aria-hidden="true"></span>
+    </button>
+
     <!--logo-->
     <div class="logo" data-section="inicio" role="button" tabindex="0" aria-label="Ir a inicio" style="cursor: pointer;">
       <article class="logo-items-text">
@@ -41,8 +56,24 @@
         <img src="./asset/img/logo.svg" alt="Marca de ZAPI: ilustración de una planta">
       </article>
     </div>
-    <!--nav bar -->
-    <nav class="nav-bar" aria-label="Navegación principal">
+
+    <!-- buscador. El <form> evita tener que atrapar Enter a mano y
+         el boton limpiar es un <button type="button"> justamente
+         para que no envien el formulario. -->
+    <form class="header-search" id="headerSearch" role="search" autocomplete="off">
+      <label class="visually-hidden" for="searchInput">Buscar productos</label>
+      <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
+      <input type="search" class="header-search-input" id="searchInput" name="q"
+        placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
+      <button type="button" class="header-search-limpiar" id="searchClear" aria-label="Limpiar busqueda" hidden>
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+      </button>
+    </form>
+
+    <!--nav bar. En mobile es el panel lateral que abre la
+         hamburguesa, en desktop vuelve a ser una barra horizontal.
+         El id lo referencia aria-controls del boton. -->
+    <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
       <ul>
         <li><button type="button" class="nav-link active" data-section="inicio" aria-current="page">Inicio</button></li>
         <li><button type="button" class="nav-link" data-section="catalogo">Catálogo</button></li>
@@ -64,6 +95,17 @@
       </ul>
     </nav>
   </header>
+
+  <!-- Fondo oscurecido del menu lateral. Es decorativo: el cierre
+       real lo maneja menu.js, que escucha el clic en el backdrop
+       igual que el Escape o el boton. -->
+  <div class="nav-backdrop" id="navBackdrop" hidden></div>
+
+  <!-- Aviso para lectores de pantalla: cada vez que el buscador
+       cambia la grilla, anuncia cuantos productos quedan. aria-live
+       en un elemento que siempre esta en el DOM, porque si se
+       inserta junto al texto nuevo no lo anunciaria. -->
+  <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
 
   <main>
     <!-- hero section -->
@@ -404,9 +446,9 @@
          y carrito.html se siguen manteniendo como accesos directos
          y se dejan enlazados entre si. -->
     <nav aria-label="Páginas del sitio">
-      <a href="./index.html">Inicio</a>
-      <a href="./catalogo.html">Catálogo</a>
-      <a href="./carrito.html">Carrito</a>
+        <a href="./index.html">Inicio</a>
+        <a href="./catalogo.html">Catálogo</a>
+        <a href="#carrito" data-section="carrito">Carrito</a>
     </nav>
   </footer>
 
@@ -421,6 +463,11 @@
   <script src="./carrito.js" defer></script>
   <script src="./zapi-bot.js" defer></script>
   <script src="./navigation.js" defer></script>
+  <!-- El buscador va despues de catalogo.js porque escribe sobre
+       window.aplicarBusqueda, que ahi se define. menu.js es
+       independiente de los anteriores. -->
+  <script src="./buscador.js" defer></script>
+  <script src="./menu.js" defer></script>
 
 </body>
 
