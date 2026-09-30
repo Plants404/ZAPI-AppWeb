@@ -44,6 +44,8 @@
 
 <body>
 
+    <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+
     <header>
         <!-- Mismo header que index.html: buscador arriba y, en el
              telefono, el nav pasa a panel lateral con hamburguesa. -->
@@ -107,7 +109,7 @@
 
     <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
 
-    <main>
+    <main id="contenido" tabindex="-1">
 
         <section class="catalog" id="catalogo">
 
@@ -196,6 +198,12 @@
                     <span class="material-symbols-outlined">add_shopping_cart</span>
                     Agregar al carrito
                 </button>
+
+                <!-- Lo llena modal.js con la pagina estatica del producto
+                     (productos/<slug>.html). Sin JavaScript queda solo el
+                     texto "Ver la ficha completa" y el [hidden], que no
+                     engana a nadie. -->
+                <a class="modal-ficha" id="modalFicha" hidden>Ver la ficha completa</a>
             </div>
         </div>
     </div>

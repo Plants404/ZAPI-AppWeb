@@ -42,6 +42,8 @@
 
 <body>
 
+    <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+
     <!-- HEADER -->
 
     <header class="cart-header">
@@ -81,7 +83,7 @@
 
     <!-- CONTENIDO -->
 
-    <main class="cart-page">
+    <main class="cart-page" id="contenido" tabindex="-1">
 
         <!-- CARRITO -->
 
@@ -324,6 +326,12 @@
                     <span class="material-symbols-outlined">add_shopping_cart</span>
                     Agregar al carrito
                 </button>
+
+                <!-- Lo llena modal.js con la pagina estatica del producto
+                     (productos/<slug>.html). Sin JavaScript queda solo el
+                     texto "Ver la ficha completa" y el [hidden], que no
+                     engana a nadie. -->
+                <a class="modal-ficha" id="modalFicha" hidden>Ver la ficha completa</a>
             </div>
         </div>
     </div>

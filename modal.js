@@ -22,6 +22,7 @@ if (modalProducto) {
     const modalDescripcion = document.getElementById("modalDescripcion");
     const modalPrecio = document.getElementById("modalPrecio");
     const modalInfo = document.getElementById("modalInfo");
+    const modalFicha = document.getElementById("modalFicha");
 
     const btnCerrar = modalProducto.querySelectorAll("[data-cerrar-modal]");
     const btnPrev = modalProducto.querySelector(".carrusel-prev");
@@ -33,10 +34,21 @@ if (modalProducto) {
     let tarjetaQueAbrio = null;
     let scrollBloqueado = false;
 
+    /* El mismo criterio de slug que usa tools/generar-productos.js.
+       Si se cambia en un lado hay que cambiarlo en el otro: de eso
+       depende que el enlace del modal caiga en una pagina que
+       existe. */
+    function slugDe(texto) {
+        return String(texto)
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+    }
+
 
     /* Un producto puede tener una sola foto: en ese caso
        no hay carrusel y se muestra la imagen sola. */
-
     function fotosDe(producto) {
 
         if (Array.isArray(producto.imagenes) && producto.imagenes.length) {
@@ -112,7 +124,7 @@ if (modalProducto) {
         modalInfo.innerHTML = producto.infoDeVenta.map(item => `
             <li>
                 <span class="material-symbols-outlined">check_circle</span>
-                <span>${item}</span>
+                <span>${escaparHTML(item)}</span>
             </li>
         `).join("");
 
@@ -124,6 +136,20 @@ if (modalProducto) {
         modalAgregar.innerHTML =
             `<span class="material-symbols-outlined">add_shopping_cart</span> Agregar al carrito`;
 
+        /* Enlace a la pagina estatica del producto (productos/<slug>.html),
+           que es la que pueden leer los buscadores. El slug sale del
+           mismo criterio que usa tools/generar-productos.js: sin
+           acentos, en minusculas y con guiones.
+
+           Ojo con la carpeta: desde index.html es productos/<slug>.html
+           y desde catalogo.html tambien, asi que el href relativo
+           funciona igual en las dos. */
+        if (modalFicha) {
+            modalFicha.textContent = "Ver la ficha completa";
+            modalFicha.href = "productos/" + slugDe(producto.nombre) + ".html";
+            modalFicha.hidden = false;
+        }
+
         modalCarrusel.classList.toggle("sin-carrusel", galeriaActual.length < 2);
 
         if (galeriaActual.length > 1) {
@@ -131,7 +157,7 @@ if (modalProducto) {
             carruselMiniaturas.innerHTML = galeriaActual.map((src, i) => `
                 <button class="carrusel-miniatura" type="button" data-indice="${i}"
                     aria-label="Ver foto ${i + 1} de ${galeriaActual.length}">
-                    <img src="${src}" alt="" loading="lazy">
+                    <img src="${escaparHTML(src)}" alt="" loading="lazy">
                 </button>
             `).join("");
 

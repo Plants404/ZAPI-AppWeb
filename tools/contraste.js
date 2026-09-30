@@ -71,7 +71,7 @@ const PARES = [
     ['texto normal', 4.5, '--leaf-texto', '--cream', 'links y.etiquetas sobre crema'],
     ['texto normal', 4.5, '--leaf-texto', '--white', 'links sobre blanco'],
     ['texto normal', 4.5, '--leaf-texto', '--sand', 'links sobre arena'],
-    ['texto normal', 4.5, '--leaf-texto', '--sage', 'subtitulos sobre salvia'],
+    ['texto grande', 3, '--moss', '--white', 'icono del carrito vacio (54px) sobre blanco'],
     ['texto grande', 3, '--forest', '--cream', 'titulos sobre crema'],
     ['texto grande', 3, '--forest', '--white', 'titulos sobre blanco'],
     ['texto grande', 3, '--moss', '--cream', 'titulos de seccion sobre crema'],
@@ -107,8 +107,8 @@ for (const [tipo, minimo, fg, bg, nota] of PARES) {
     if (!cumple) fallos++;
 
     console.log('  ' + (cumple ? 'ok  ' : 'FALLA') +
-        '  ' + razon.toFixed(2).padStart(5) + ':1  (min ' + minimo + ')' +
-        '  ' + fg.padEnd(15) + ' sobre ' + fg ? '' : '');
+        '  ' + razon.toFixed(2).padStart(5) + ':1  (min ' + minimo + ')  ' +
+        fg + ' sobre ' + bg);
     console.log('        ' + nota);
 }
 
