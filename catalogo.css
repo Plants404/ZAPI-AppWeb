@@ -362,13 +362,17 @@
            eso la base va en un bloque compartido, no dentro de la
            seccion [CAT]: si se quedara alla, el boton del modal
            aparecia sin fondo ni forma en carrito.html. */
-        .add-cart {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: .5rem;
-            padding: .75rem 1.25rem;
-            border-radius: 999px;
+.add-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  /* El alto sale del padding (.75rem x 2) mas la linea, y queda
+     apenas por encima de 44px. Se fija el minimo para que un
+     cambio de line-height no lo baje del area tactil. */
+  min-height: 44px;
+  border-radius: 999px;
             background: var(--forest);
             color: var(--cream);
             font-size: .92rem;
@@ -1160,6 +1164,34 @@
             margin-top: 1.2rem;
 
             box-shadow: 0 -12px 18px rgba(255, 255, 255, .92);
+
+        }
+
+        /* El enlace a la ficha estatica del producto. Va debajo del
+           boton, con estilo de texto: la accion del boton ya esta
+           tomada, esto es un atajo para lectores y buscadores. */
+
+        .modal-ficha {
+
+            display: inline-block;
+
+            margin-top: .9rem;
+
+            font-size: .92rem;
+
+            font-weight: 600;
+
+            color: var(--leaf-texto);
+
+            text-decoration: underline;
+
+            text-underline-offset: 3px;
+
+        }
+
+        .modal-ficha:hover {
+
+            color: var(--moss);
 
         }
 

@@ -95,9 +95,9 @@ function renderFiltros() {
     contenedor.innerHTML = botones.map(({ valor, texto }) => `
 
             <button class="catalog-filter${valor === categoriaActual ? " activo" : ""}"
-                type="button" data-categoria="${valor}"
+                type="button" data-categoria="${escaparHTML(valor)}"
                 aria-pressed="${valor === categoriaActual}">
-                ${texto}
+                ${escaparHTML(texto)}
             </button>
 
     `).join("");
@@ -150,10 +150,15 @@ function renderCatalog() {
         const conCategoria = categoriaActual.length > 0;
 
         let mensaje = "Todavia no hay productos en esta categoria.";
+
+        /* sugerencia es HTML a proposito: es el boton que limpia la
+           causa. mensaje es texto y se escapa recien al escribirlo,
+           no al armarlo, para que el escapado se vea en el mismo
+           lugar donde se inserta. */
         let sugerencia = "";
 
         if (buscando) {
-            mensaje = `No encontramos productos para "${escaparHTML(busquedaActual)}".`;
+            mensaje = `No encontramos productos para "${busquedaActual}".`;
             sugerencia = `
                 <button class="catalog-empty-clear" type="button" data-limpiar-busqueda>
                     Limpiar busqueda
@@ -168,7 +173,7 @@ function renderCatalog() {
         grid.innerHTML = `
 
             <p class="catalog-empty">
-                ${mensaje}
+                ${escaparHTML(mensaje)}
                 ${sugerencia}
             </p>
 

@@ -1,0 +1,643 @@
+/* ==========================================================
+   PAGINA DE PRODUCTO
+   ------------------------------------------------------------
+   La escribe tools/generar-productos.js. El HTML se genera
+   con los datos de productos.js, asi que esta hoja solo aporta
+   la parte visual: la grilla de dos columnas, la galeria con
+   miniaturas y los botones de accion.
+
+   Se apoya en styles.css (tokens de color, tipografia,
+   .visually-hidden, .material-symbols-outlined) y no repite
+   ninguna variable.
+   ========================================================== */
+
+.pagina-producto {
+
+    background: var(--cream);
+
+    color: var(--ink);
+
+}
+
+/* ---------------------------------------
+   ENLACE PARA SALTAR AL CONTENIDO
+   Vive en styles.css, en las utilidades,
+   porque tambien lo usan index, catalogo
+   y carrito.
+   --------------------------------------- */
+
+/* ---------------------------------------
+   HEADER
+   --------------------------------------- */
+
+.header-producto {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: .75rem 1.25rem;
+
+    background: var(--white);
+
+    border-bottom: 1px solid var(--sand);
+
+    flex-wrap: wrap;
+
+}
+
+.header-producto .logo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .5rem;
+
+    margin-right: auto;
+
+    font-family: 'Bebas Neue', sans-serif;
+
+    font-size: 1.6rem;
+
+    letter-spacing: .04em;
+
+    color: var(--forest);
+
+    text-decoration: none;
+
+}
+
+.buscador-producto {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .25rem;
+
+    flex: 1 1 14rem;
+
+    min-width: 0;
+
+}
+
+.buscador-producto input {
+
+    flex: 1;
+
+    min-width: 0;
+
+    height: 44px;
+
+    padding: 0 1rem;
+
+    font: inherit;
+
+    color: var(--ink);
+
+    background: var(--white);
+
+    border: 2px solid var(--borde-input);
+
+    border-radius: 999px;
+
+}
+
+.buscador-producto button {
+
+    min-width: 44px;
+
+    height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: none;
+
+    border: none;
+
+    color: var(--leaf-texto);
+
+    cursor: pointer;
+
+    border-radius: 999px;
+
+}
+
+.carrito-enlace {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .4rem;
+
+    min-height: 44px;
+
+    padding: 0 1rem;
+
+    color: var(--forest);
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    border: 2px solid var(--borde-input);
+
+    border-radius: 999px;
+
+}
+
+.carrito-enlace:hover {
+
+    background: var(--cream);
+
+}
+
+/* ---------------------------------------
+   MIGAS
+   --------------------------------------- */
+
+main {
+
+    max-width: 68rem;
+
+    margin: 0 auto;
+
+    padding: 1.25rem 1.25rem 3rem;
+
+}
+
+.migas ol {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: .35rem;
+
+    list-style: none;
+
+    margin: 0 0 1.5rem;
+
+    padding: 0;
+
+    font-size: .9rem;
+
+}
+
+.migas li + li::before {
+
+    content: "/";
+
+    margin-right: .35rem;
+
+    color: var(--muted-texto);
+
+}
+
+.migas a {
+
+    color: var(--leaf-texto);
+
+}
+
+/* ---------------------------------------
+   PRODUCTO: una columna en movil, dos desde
+   900px. La galeria pegada a los datos.
+   --------------------------------------- */
+
+.producto {
+
+    display: grid;
+
+    gap: 1.5rem;
+
+    grid-template-columns: 1fr;
+
+}
+
+@media (min-width: 900px) {
+
+    .producto {
+
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+        gap: 2.5rem;
+
+        align-items: start;
+
+    }
+
+}
+
+.producto-galeria img {
+
+    max-width: 100%;
+
+    height: auto;
+
+    display: block;
+
+}
+
+.producto-principal {
+
+    width: 100%;
+
+    background: var(--white);
+
+    border-radius: 1.25rem;
+
+}
+
+.producto-miniaturas {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: .5rem;
+
+    list-style: none;
+
+    margin: .75rem 0 0;
+
+    padding: 0;
+
+}
+
+.producto-miniatura {
+
+    display: block;
+
+    padding: 0;
+
+    min-width: 60px;
+
+    min-height: 60px;
+
+    border: 2px solid transparent;
+
+    border-radius: .75rem;
+
+    overflow: hidden;
+
+    background: var(--white);
+
+    cursor: pointer;
+
+}
+
+.producto-miniatura.activa {
+
+    border-color: var(--leaf);
+
+}
+
+.producto-miniatura img {
+
+    width: 100%;
+
+    height: 72px;
+
+    object-fit: cover;
+
+}
+
+/* ---------------------------------------
+   DATOS
+   --------------------------------------- */
+
+.producto-categoria {
+
+    margin: 0 0 .25rem;
+
+    font-size: .82rem;
+
+    font-weight: 700;
+
+    letter-spacing: .1em;
+
+    text-transform: uppercase;
+
+    color: var(--leaf-texto);
+
+}
+
+.producto-datos h1 {
+
+    margin: 0 0 .5rem;
+
+    color: var(--forest);
+
+}
+
+.producto-precio {
+
+    margin: 0 0 1rem;
+
+    font-family: 'Bebas Neue', sans-serif;
+
+    font-size: 2.4rem;
+
+    line-height: 1;
+
+    color: var(--forest);
+
+}
+
+.producto-descripcion {
+
+    margin: 0 0 1.25rem;
+
+    font-size: 1.05rem;
+
+    color: var(--muted-texto);
+
+}
+
+.producto-info {
+
+    list-style: none;
+
+    margin: 0 0 1.5rem;
+
+    padding: 0;
+
+    display: grid;
+
+    gap: .5rem;
+
+}
+
+.producto-info li {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: .5rem;
+
+    color: var(--ink);
+
+}
+
+.producto-info .material-symbols-outlined {
+
+    color: var(--leaf-texto);
+
+    font-size: 1.2rem;
+
+}
+
+.producto-acciones {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: .75rem;
+
+}
+
+.producto-acciones .agregar {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .5rem;
+
+    min-height: 48px;
+
+    padding: 0 1.5rem;
+
+    background: var(--forest);
+
+    color: var(--cream);
+
+    border: none;
+
+    border-radius: 999px;
+
+    font: inherit;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+.producto-acciones .agregar:hover {
+
+    background: var(--leaf-texto);
+
+}
+
+.producto-acciones .whatsapp {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 48px;
+
+    padding: 0 1.5rem;
+
+    color: #ffffff;
+
+    background: #0a7b6e;
+
+    border-radius: 999px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+}
+
+.producto-acciones .whatsapp:hover {
+
+    background: #075e54;
+
+}
+
+.producto-aviso {
+
+    min-height: 1.5rem;
+
+    margin: .75rem 0 0;
+
+    font-weight: 600;
+
+    color: var(--leaf-texto);
+
+}
+
+.producto-aviso.error {
+
+    color: #a32f31;
+
+}
+
+/* ---------------------------------------
+   RELACIONADOS
+   --------------------------------------- */
+
+.producto-relacionados {
+
+    margin-top: 3.5rem;
+
+    padding-top: 2rem;
+
+    border-top: 1px solid var(--sand);
+
+}
+
+.producto-relacionados h2 {
+
+    color: var(--forest);
+
+}
+
+.producto-relacionados ul {
+
+    display: grid;
+
+    grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+
+    gap: 1rem;
+
+    list-style: none;
+
+    margin: 1rem 0 0;
+
+    padding: 0;
+
+}
+
+.producto-relacionados a {
+
+    display: block;
+
+    padding: .5rem;
+
+    background: var(--white);
+
+    border-radius: 1rem;
+
+    text-decoration: none;
+
+    color: var(--ink);
+
+}
+
+.producto-relacionados img {
+
+    width: 100%;
+
+    aspect-ratio: 4 / 5;
+
+    object-fit: cover;
+
+    border-radius: .75rem;
+
+}
+
+.relacionado-nombre {
+
+    display: block;
+
+    margin-top: .5rem;
+
+    font-weight: 600;
+
+}
+
+.relacionado-precio {
+
+    display: block;
+
+    color: var(--muted-texto);
+
+}
+
+/* ---------------------------------------
+   PIE
+   --------------------------------------- */
+
+.footer-producto {
+
+    padding: 2rem 1.25rem;
+
+    background: var(--forest);
+
+    color: var(--cream);
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+
+}
+
+.footer-producto a {
+
+    color: var(--cream);
+
+    margin-left: 1rem;
+
+}
+
+/* ---------------------------------------
+   FOCO
+   --------------------------------------- */
+
+.pagina-producto a:focus-visible,
+.pagina-producto button:focus-visible,
+.pagina-producto input:focus-visible {
+
+    outline: 3px solid var(--leaf);
+
+    outline-offset: 2px;
+
+    border-radius: .25rem;
+
+}
+
+/* ---------------------------------------
+   MOVIMIENTO REDUCIDO
+   Lo unico que se anima en esta pagina es el
+   salto del enlace "saltar al contenido".
+   --------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .saltar-contenido {
+
+        transition: none;
+
+    }
+
+    .producto-acciones .agregar,
+    .producto-acciones .whatsapp {
+
+        transition: none;
+
+    }
+
+}

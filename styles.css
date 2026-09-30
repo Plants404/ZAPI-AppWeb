@@ -186,6 +186,39 @@ section>* {
    UTILIDADES
    ========================================================== */
 
+/* Primer elemento del body en las cuatro paginas. Es lo primero
+   que toca el Tab en un sitio con header, y sin el un usuario de
+   teclado tiene que recorrer el menu entero en cada pagina antes
+   de llegar al contenido. Se dibuja fuera de pantalla y entra
+   desde arriba al enfocarse. */
+.saltar-contenido {
+  position: absolute;
+  left: .75rem;
+  top: -5rem;
+  z-index: 500;
+  min-height: 44px;
+  padding: .75rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  background: var(--forest);
+  color: var(--cream);
+  border-radius: 0 0 999px 999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: top .2s ease;
+}
+
+.saltar-contenido:focus {
+  top: 0;
+}
+
+/* Con reduced motion el enlace salta en vez de deslizarse. */
+@media (prefers-reduced-motion: reduce) {
+  .saltar-contenido {
+    transition: none;
+  }
+}
+
 /* Contenido solo para lectores de pantalla: el buscador y el
    aviso del catalogo viven aqui y no se ven. No se usa
    display:none ni visibility:hidden, porque asi el contenido
