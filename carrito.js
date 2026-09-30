@@ -263,15 +263,13 @@ function renderRecommendations() {
                 class="recommendation-card"
                 style="--i: ${indice}"
                 data-id="${producto.id}"
-                tabindex="0"
-                aria-haspopup="dialog"
             >
 
                 <div class="recommendation-image">
 
                     <img
                         src="${producto.imagen}"
-                        alt="${producto.nombre}"
+                        alt="${escaparHTML(producto.nombre)}"
                         loading="lazy"
                     >
 
@@ -280,15 +278,18 @@ function renderRecommendations() {
                 <div class="recommendation-info">
 
                     <div class="recommendation-category">
-                        ${producto.categoria}
+                        ${escaparHTML(producto.categoria)}
                     </div>
 
                     <h3>
-                        ${producto.nombre}
+                        <button class="recommendation-link" type="button"
+                            data-id="${producto.id}" aria-haspopup="dialog">
+                            ${escaparHTML(producto.nombre)}
+                        </button>
                     </h3>
 
                     <p>
-                        ${producto.descripcion}
+                        ${escaparHTML(producto.descripcion)}
                     </p>
 
                     <div class="recommendation-footer">
@@ -386,7 +387,9 @@ function renderCart() {
 
                     <img
                         src="${item.imagen}"
-                        alt="${item.nombre}"
+                        alt="${escaparHTML(item.nombre)}"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                 </div>
@@ -456,7 +459,7 @@ function renderCart() {
                     <button
                         class="remove-item"
                         data-id="${item.id}"
-                        aria-label="Eliminar producto"
+                        aria-label="Eliminar ${escaparHTML(item.nombre)} del carrito"
                         type="button"
                     >
 
@@ -630,6 +633,12 @@ function sumarAlCarrito(id) {
    listener en los dos sumaba dos unidades por clic.
    ========================================================== */
 
+/* La tarjeta de recomendacion no es un boton: el nombre del
+   producto lo es. Antes el <article> tenia tabindex="0" y
+   aria-haspopup="dialog" sin ningun rol, asi que se anunciaba
+   como un articulo generico aunque se pudiera abrir con Enter.
+   Se mantiene el clic en toda la tarjeta y el control de verdad
+   pasa a ser el boton del nombre. */
 document.addEventListener(
     "click",
     function(event) {
@@ -642,35 +651,6 @@ document.addEventListener(
 
         if (tarjeta &&
             !event.target.closest(".recommendation-add")) {
-
-            window.abrirModalProducto(
-                Number(tarjeta.dataset.id),
-                tarjeta
-            );
-
-            return;
-
-        }
-
-    }
-);
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        const objetivo =
-            event.target instanceof Element ? event.target : null;
-
-        const tarjeta = objetivo
-            ? objetivo.closest(".recommendation-card")
-            : null;
-
-        if (tarjeta &&
-            !objetivo.closest(".recommendation-add") &&
-            (event.key === "Enter" || event.key === " ")) {
-
-            event.preventDefault();
 
             window.abrirModalProducto(
                 Number(tarjeta.dataset.id),

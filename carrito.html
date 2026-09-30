@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Carrito | ZAPI Vivero Agroecológico</title>
+    <meta name="description" content="Revisa los productos de tu pedido de ZAPI y coordina el envío por WhatsApp.">
+    <link rel="canonical" href="https://zapi.uy/carrito.html">
+    <meta name="robots" content="noindex, follow">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <!-- Google Fonts: tipografia del sitio -->
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&display=swap">
 
     <!-- Google Material Symbols -->
     <link rel="stylesheet"
@@ -23,10 +26,15 @@
     <!-- CSS del carrito -->
     <link rel="stylesheet" href="./stylecarrito.css">
 
-    <!-- CSS de la ventana flotante de producto. Vive en catalogo.css
-         y se carga DESPUES del del carrito, para que sus reglas
-         ganen: el modal es el mismo en las dos páginas. -->
-    <link rel="stylesheet" href="catalogo.css">
+    <!-- CSS de la ventana flotante de producto. Se carga DESPUES
+         del del carrito, para que sus reglas ganen: el modal es el
+         mismo en las dos paginas.
+
+         Es catalogo-modal.css y no catalogo.css a proposito: el
+         carrito no dibuja la grilla de productos, asi que no
+         carga esas ~11KB de reglas. Los dos archivos se generan
+         desde catalogo.css con node tools/extraer-modal-css.js -->
+    <link rel="stylesheet" href="catalogo-modal.css">
 
     <!-- CSS del chat ZAPI -->
     <link rel="stylesheet" href="zapi-bot.css">
@@ -57,6 +65,15 @@
         <nav class="cart-nav" aria-label="Páginas del sitio">
             <a href="index.html">Inicio</a>
             <a href="catalogo.html">Catálogo</a>
+
+            <!-- Mismo interruptor de sonido que en las otras dos
+                 paginas. productos.js lo engancha solo si existe. -->
+            <button type="button" class="cart-sonido" id="sonidoToggle"
+                aria-pressed="true" aria-label="Desactivar sonidos">
+                <span class="material-symbols-outlined" aria-hidden="true"
+                    data-sonido-icono>volume_up</span>
+                <span class="visually-hidden">Sonido</span>
+            </button>
         </nav>
 
     </header>

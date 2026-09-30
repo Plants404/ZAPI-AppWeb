@@ -181,25 +181,28 @@ function renderCatalog() {
     grid.innerHTML = productos.map(producto => {
 
         return `
-            <article class="product-card" data-id="${producto.id}"
-                tabindex="0" role="button" aria-haspopup="dialog"
-                aria-label="Ver detalle de ${producto.nombre}">
+            <article class="product-card" data-id="${producto.id}">
                 <div class="product-visual">
                     <span class="product-badge">${producto.categoria}</span>
-                    <img src="${producto.imagen}" alt="${producto.nombre}" loading="lazy">
+                    <img src="${producto.imagen}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
                 </div>
                 <div class="product-body">
-                    <h3 class="product-name">${producto.nombre}</h3>
-                    <p class="product-desc">${producto.descripcion}</p>
+                    <h3 class="product-name">
+                        <button class="product-link" type="button" data-id="${producto.id}"
+                            aria-haspopup="dialog">
+                            ${escaparHTML(producto.nombre)}
+                        </button>
+                    </h3>
+                    <p class="product-desc">${escaparHTML(producto.descripcion)}</p>
 
                     <div class="product-info-wrap">
                         <div class="product-info">
                             <ul>
                                 ${producto.infoDeVenta.map(item => `
-                                    <li>
-                                        <span class="material-symbols-outlined">check_circle</span>
-                                        <span>${item}</span>
-                                    </li>
+                                <li>
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                    <span>${escaparHTML(item)}</span>
+                                </li>
                                 `).join("")}
                             </ul>
                         </div>
@@ -301,6 +304,15 @@ document.addEventListener("click", function (event) {
    tarjetas lo abren y que hace cada pagina al agregar.
    ========================================================== */
 
+/* La tarjeta ya no es un boton: el nombre del producto es el
+   boton de verdad. Antes el <article> tenia role="button" y
+   contenia otro <button> para agregar, o sea un boton dentro de
+   un boton: los lectores de pantalla lo anunciaban mal y con
+   teclado habia que tabular dos veces para llegar al agregar.
+
+   Se mantiene el clic en cualquier parte de la tarjeta, porque
+   es lo que la gente espera de una grilla, pero el control
+   accesible y enfocable es el del nombre. */
 document.addEventListener("click", function (event) {
 
     const tarjeta = event.target.closest(".product-card");
@@ -309,24 +321,6 @@ document.addEventListener("click", function (event) {
     if (tarjeta && !event.target.closest(".add-cart")) {
 
         window.abrirModalProducto(Number(tarjeta.dataset.id), tarjeta);
-
-    }
-
-});
-
-document.addEventListener("keydown", function (event) {
-
-    /* Teclado sobre la tarjeta enfocada */
-    const objetivo = event.target instanceof Element ? event.target : null;
-
-    const tarjeta = objetivo ? objetivo.closest(".product-card") : null;
-
-    if (tarjeta && !objetivo.closest(".add-cart") &&
-        (event.key === "Enter" || event.key === " ")) {
-
-        event.preventDefault();
-        window.abrirModalProducto(Number(tarjeta.dataset.id), tarjeta);
-        return;
 
     }
 

@@ -1,5 +1,19 @@
 ﻿/* ==========================================================
-           CATÁLOGO
+   INDICE DE ESTA HOJA
+   ------------------------------------------------------------
+   catalogo.html necesita el catalogo entero (grilla, filtros,
+   boton flotante) y la ventana de producto.
+   carrito.html solo usa la ventana de producto, asi que en esa
+   pagina se carga catalogo-modal.css, que son los ultimos
+   ~40 KB: la grilla del catalogo nunca se dibuja ahi.
+
+   Los bloques van marcados con [CAT] o [MODAL] para poder
+   partir la hoja sin romper el orden de las cascadas.
+   ========================================================== */
+
+
+/* ==========================================================
+           CATÁLOGO   [CAT]
            ========================================================== */
 
         .catalog {
@@ -24,6 +38,9 @@
             border: 1px solid rgba(61, 107, 79, .25);
             background: var(--white);
             color: var(--ink);
+            /* min-height en vez de padding fijo: el filtro queda en
+               44px de alto sin que el texto se descentre. */
+            min-height: 44px;
             padding: .45rem 1.1rem;
             border-radius: 999px;
             font-size: .95rem;
@@ -34,10 +51,17 @@
             white-space: nowrap;
         }
 
-        .catalog-filter:hover,
+        /* El hover y el foco por teclado se separan: antes el foco
+           no mostraba nada (un verde al 8% es casi invisible), y
+           con teclado no se distinguia el filtro elegido. */
+        .catalog-filter:hover {
+            background: rgba(74, 124, 89, .10);
+            border-color: var(--leaf-texto);
+        }
+
         .catalog-filter:focus-visible {
-            background: rgba(74, 124, 89, .08);
-            outline: none;
+            outline: 2px solid var(--leaf-texto);
+            outline-offset: 2px;
         }
 
         .catalog-filter.activo {
@@ -89,8 +113,8 @@
             font-size: .78rem;
             text-transform: uppercase;
             letter-spacing: .25em;
-            color: var(--leaf);
-            border: 1px solid var(--leaf);
+            color: var(--leaf-texto);
+            border: 1px solid var(--leaf-texto);
             padding: .35rem .9rem;
             border-radius: 999px;
             margin-bottom: 1rem;
@@ -281,6 +305,31 @@
             text-transform: uppercase;
         }
 
+        /* El nombre es el boton que abre el detalle. Hereda la
+           tipografia del h3 para que la tarjeta se vea igual que
+           antes, y el foco se ve como el de los otros botones. */
+        .product-link {
+            font: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            text-transform: inherit;
+            text-align: left;
+            background: none;
+            border: 0;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .product-link:hover {
+            color: var(--moss);
+        }
+
+        .product-link:focus-visible {
+            outline: 2px solid var(--leaf-texto);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+
         .product-desc {
             font-size: .9rem;
             color: var(--muted);
@@ -308,6 +357,11 @@
             color: var(--muted);
         }
 
+        /* El boton agregar vive en dos paginas: las tarjetas del
+           catalogo y el modal, que tambien esta en el carrito. Por
+           eso la base va en un bloque compartido, no dentro de la
+           seccion [CAT]: si se quedara alla, el boton del modal
+           aparecia sin fondo ni forma en carrito.html. */
         .add-cart {
             display: inline-flex;
             align-items: center;
@@ -356,6 +410,13 @@
             bottom: 1rem;
 
             z-index: 60;
+
+            /* Igual que el chat: con el menu lateral abierto el
+               boton flotante del carrito baja por debajo del
+               velo, para que no se pueda clickear a traves de el. */
+            :root.menu-abierto & {
+                z-index: 0;
+            }
 
             display: inline-flex;
 
@@ -679,9 +740,9 @@
 
             justify-content: center;
 
-            width: 2.2rem;
+            width: 44px;
 
-            height: 2.2rem;
+            height: 44px;
 
             border-radius: 50%;
 
@@ -782,9 +843,9 @@
 
             justify-content: center;
 
-            width: 2.4rem;
+            width: 44px;
 
-            height: 2.4rem;
+            height: 44px;
 
             border-radius: 50%;
 

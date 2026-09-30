@@ -88,12 +88,17 @@ function mostrarSeccion(id, actualizarHistorial = true) {
 function anunciarCambioDeSeccion(seccion) {
   const titulo = seccion.querySelector('h1, h2');
 
-  if (titulo && !titulo.hasAttribute('tabindex')) {
-    titulo.setAttribute('tabindex', '-1');
-  }
-
+  /* Hay dos caminos, y son excluyentes a proposito. Mover el foco
+     al encabezado ya hace que el lector de pantalla anuncie el
+     nombre de la seccion, asi que en ese caso escribir tambien en
+     una region live lo diria dos veces. La region live solo se usa
+     de reserva para las secciones que no tienen encabezado. */
   if (titulo) {
+    if (!titulo.hasAttribute('tabindex')) {
+      titulo.setAttribute('tabindex', '-1');
+    }
     titulo.focus({ preventScroll: true });
+    return;
   }
 
   let region = document.getElementById('navEstado');
@@ -107,8 +112,7 @@ function anunciarCambioDeSeccion(seccion) {
     document.body.appendChild(region);
   }
 
-  const nombre = titulo ? titulo.textContent.trim() : id;
-  region.textContent = `Sección ${nombre}`;
+  region.textContent = `Sección ${seccion.id}`;
 }
 
 // Actualiza la clase 'active' y los atributos ARIA (aria-current) en los controles de navegación.

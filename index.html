@@ -5,13 +5,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZAPI - Soluciones Agroecológicas</title>
+  <meta name="description"
+    content="Viveras, aromáticas, tuppers y servicios de jardinería agroecológica para hogares, empresas e instituciones. Catálogo con precios y envío a todo el país.">
+  <link rel="canonical" href="https://zapi.uy/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ZAPI">
+  <meta property="og:locale" content="es_UY">
+  <meta property="og:title" content="ZAPI - Soluciones Agroecológicas">
+  <meta property="og:description"
+    content="Viveras, aromáticas, tuppers y servicios de jardinería agroecológica para hogares, empresas e instituciones.">
+  <meta property="og:url" content="https://zapi.uy/">
+  <meta property="og:image" content="https://zapi.uy/asset/img/plants-hero.opt.jpg">
+  <meta name="twitter:card" content="summary_large_image">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
   <!-- Google Fonts: tipografia del sitio -->
+  <!-- Google Fonts: tipografia del sitio. El eje itálico de Inter
+       no se usa en ningun lado, asi que no se pide: son menos
+       bytes de fuente por pagina. -->
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap">
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&display=swap">
 
   <!-- Google Material Symbols: los iconos de las tarjetas,
        del carrito, de la ventana de detalle y del chat -->
@@ -19,15 +34,22 @@
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
 
   <!-- El orden importa: styles.css pone las secciones del index,
-       stylecarrito.css el carrito, catalogo.css la grilla de
-       productos, la ventana de detalle y el boton flotante, y
-       asi el modal gana sobre los estilos del carrito. -->
+       stylecarrito.css el carrito, catalogo-catalogo.css la grilla
+       de productos y catalogo-modal.css la ventana de detalle, y
+       asi el modal gana sobre los estilos del carrito. Los dos
+       archivos de catalogo se generan desde catalogo.css con
+       node tools/extraer-modal-css.js -->
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./stylecarrito.css">
-  <link rel="stylesheet" href="./catalogo.css">
+  <link rel="stylesheet" href="./catalogo-catalogo.css">
+  <link rel="stylesheet" href="./catalogo-modal.css">
   <link rel="stylesheet" href="./zapi-bot.css">
 
-  <!-- favicom: se agregaran cuando existan los archivos reales en ./asset/img/ -->
+  <!-- Favicon: el logo.svg ya existe, asi que se reutiliza en vez
+       de dejar referencias a archivos que no estan. Para iOS hace
+       falta un PNG de 180px, que se agrega cuando exista. -->
+  <link rel="icon" type="image/svg+xml" href="./asset/img/logo.svg">
+
 </head>
 
 <body>
@@ -47,15 +69,17 @@
       <span class="nav-toggle-barra" aria-hidden="true"></span>
     </button>
 
-    <!--logo-->
-    <div class="logo" data-section="inicio" role="button" tabindex="0" aria-label="Ir a inicio" style="cursor: pointer;">
+    <!--logo. Es un <a> y no un div con role=button para que
+         funcione con Enter y Espacio por teclado, tenga foco
+         real y se pueda enlazar desde otras paginas. -->
+    <a class="logo" href="./index.html" data-section="inicio" aria-label="ZAPI, ir al inicio">
       <article class="logo-items-text">
         <h4>ZAPI</h4>
       </article>
       <article class="logo-items-img">
-        <img src="./asset/img/logo.svg" alt="Marca de ZAPI: ilustración de una planta">
+        <img src="./asset/img/logo.svg" alt="">
       </article>
-    </div>
+    </a>
 
     <!-- buscador. El <form> evita tener que atrapar Enter a mano y
          el boton limpiar es un <button type="button"> justamente
@@ -78,7 +102,6 @@
         <li><button type="button" class="nav-link active" data-section="inicio" aria-current="page">Inicio</button></li>
         <li><button type="button" class="nav-link" data-section="catalogo">Catálogo</button></li>
         <li><button type="button" class="nav-link" data-section="servicios">Servicios</button></li>
-        <li><button type="button" class="nav-link" data-section="blog">Blog</button></li>
         <li><button type="button" class="nav-link" data-section="nosotros">Nosotros</button></li>
         <li><button type="button" class="nav-link" data-section="contacto">Contacto</button></li>
 
@@ -90,6 +113,20 @@
           <button type="button" class="nav-link nav-link-carrito" data-section="carrito" id="navLinkCarrito">
             Carrito
             <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
+          </button>
+        </li>
+
+        <!-- Interruptor de sonidos. El estado real vive en
+             productos.js (localStorage); este boton solo lo refleja
+             y lo cambia. aria-pressed comunica el estado sin depender
+             del icono, que ademas se dibuja desde el estado para que
+             no haya dos fuentes de verdad. -->
+        <li>
+          <button type="button" class="nav-link nav-link-sonido" id="sonidoToggle"
+            aria-pressed="true" aria-label="Desactivar sonidos">
+            <span class="material-symbols-outlined nav-sonido-icono" aria-hidden="true"
+              data-sonido-icono>volume_up</span>
+            <span class="nav-sonido-texto">Sonido</span>
           </button>
         </li>
       </ul>
@@ -118,7 +155,10 @@
       <!-- El espacio en el nombre del archivo va codificado como %20:
            sin esto el servidor corta la URL en el primer espacio. -->
       <img src="./asset/img/plants-hero.opt.jpg"
-        alt="Lush green houseplants arranged in a bright interior setting conveying a calm natural atmosphere and inspiration for plant care">
+        alt="Plantas de interior verdes y sanas en un ambiente luminoso, que evocan calma e inspiracion para el cuidado de las plantas"
+        width="1200" height="800"
+        fetchpriority="high"
+        decoding="async">
 
       <h2>Nuestra misión es ayudar a hogares, empresas e instituciones a crear y mantener espacios verdes saludables.
         Combinamos productos cuidadosamente seleccionados con conocimiento técnico y una experiencia digital diseñada
@@ -330,15 +370,15 @@
         </article>
       </div>
     </section>
-    <!-- testimonials & blog section -->
-    <section class="section testimonials hidden" id="blog">
+    <!-- Testimonios. La seccion quedo vacia con un link "Blog" en el
+         nav que no llegaba a nada, asi que se saco el link del nav.
+         El id es "testimonios" (antes "blog"), asi que sigue siendo
+         alcanzable por URL directa. A la espera del contenido real. -->
+    <section class="section testimonials hidden" id="testimonios">
       <h2>Testimonios</h2>
-      <p> Lo que dicen nuestros clientes</p>
+      <p>Lo que dicen nuestros clientes</p>
 
-      <!--blog items-->
-      <div class="blog-items">
-        <p>Aprendé con nosotros</p>
-      </div>
+      <div class="blog-items"></div>
     </section>
 
     <!---Benefits / nosotros section-->
@@ -446,9 +486,9 @@
          y carrito.html se siguen manteniendo como accesos directos
          y se dejan enlazados entre si. -->
     <nav aria-label="Páginas del sitio">
-        <a href="./index.html">Inicio</a>
-        <a href="./catalogo.html">Catálogo</a>
-        <a href="#carrito" data-section="carrito">Carrito</a>
+      <a href="./index.html">Inicio</a>
+      <a href="./catalogo.html">Catálogo</a>
+      <a href="./carrito.html">Carrito</a>
     </nav>
   </footer>
 
@@ -463,11 +503,6 @@
   <script src="./carrito.js" defer></script>
   <script src="./zapi-bot.js" defer></script>
   <script src="./navigation.js" defer></script>
-  <!-- El buscador va despues de catalogo.js porque escribe sobre
-       window.aplicarBusqueda, que ahi se define. menu.js es
-       independiente de los anteriores. -->
-  <script src="./buscador.js" defer></script>
-  <script src="./menu.js" defer></script>
 
 </body>
 
