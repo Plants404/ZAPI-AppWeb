@@ -754,8 +754,8 @@ function initZapiBot() {
     function pintarChips() {
 
         chips.innerHTML = ZAPI_MENU.map(item =>
-            `<button class="zapi-chip" type="button" data-clave="${item.clave}">
-                ${item.etiqueta}
+            `<button class="zapi-chip" type="button" data-clave="${escaparHTML(item.clave)}">
+                ${escaparHTML(item.etiqueta)}
             </button>`
         ).join("");
 
