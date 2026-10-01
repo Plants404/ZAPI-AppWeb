@@ -346,7 +346,8 @@ async function correr() {
         const rutas = [
             '/data/zapi.db', '/data/prueba.db', '/server.js', '/server/db.js',
             '/server/rutas-api.js', '/tools/generar-productos.js', '/package.json',
-            '/.gitignore', '/.env', '/node_modules/express/package.json', '/.vscode/settings.json'
+            '/.gitignore', '/.env', '/.env.example',
+            '/node_modules/express/package.json', '/.vscode/settings.json'
         ];
 
         for (const ruta of rutas) {
@@ -371,7 +372,7 @@ async function correr() {
     {
         const paginas = [
             '/', '/catalogo.html', '/carrito.html', '/productos/albahaca.html',
-            '/styles.css', '/zapi-bot.js', '/asset/img/albahaca.opt.jpg', '/sitemap.xml'
+            '/public/css/styles.css', '/public/js/zapi-bot.js', '/public/img/albahaca.opt.jpg', '/sitemap.xml'
         ];
 
         for (const pagina of paginas) {

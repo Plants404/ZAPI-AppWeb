@@ -23,15 +23,17 @@
    que hay en el archivo. Sirve para revisar el diseno; para ver el
    stock real hay que correr este servidor.
 
-   Por que hay que frenar ciertas rutas
-   ------------------------------------
-   El sitio se sirve desde la raiz del repo, porque las paginas se
-   abren con rutas relativas y moverlas a public/ las romperia. El
-   costo es que express.static dejaria exposes todo lo que hay en la
-   carpeta: el codigo de este servidor, los scripts de tools/ y la
-   base de datos SQLite con los pedidos y los telefonos de los
-   clientes. El middleware de abajo lo bloquea antes de que lleguemos
-   al estatico. Es la parte mas importante de este archivo. */
+   Estructura de carpetas
+   ----------------------
+   Los HTML (index.html, catalogo.html, carrito.html y productos/) se
+   sirven desde la raiz del repo, para que las URLs publicas sean
+   /catalogo.html y /productos/albahaca.html. Los estilos, scripts e
+   imagenes viven bajo public/, que es lo unico que se descarga como
+   recurso estatico. El resto -codigo del servidor, base de datos,
+   generadores- no se sirve nunca: el middleware de abajo lo frena antes
+   de que llegue al estatico. Es la parte mas importante de este
+   archivo: sin el, se podrian leer los pedidos y los telefonos de los
+   clientes por HTTP. */
 
 const path = require('path');
 const crypto = require('crypto');
@@ -59,11 +61,13 @@ app.disable('x-powered-by');
    Lo que no se sirve nunca
    ------------------------------------------------------------------ */
 
+/* Todo lo que no es pagina, estilo, script ni imagen. El codigo del
+   servidor, la base, los secrets y los generadores nunca se sirven:
+   una pagina necesita el sitio, no el codigo que lo arma. */
 const RUTAS_BLOQUEADAS = [
     '/server.js',
     '/package.json',
     '/package-lock.json',
-    '/sitemap.xml.bak',
     '/server',
     '/tools',
     '/data',
@@ -73,7 +77,8 @@ const RUTAS_BLOQUEADAS = [
     '/README.md',
     '/README.md.txt',
     '/.gitignore',
-    '/.env'
+    '/.env',
+    '/.env.example'
 ];
 
 app.use((req, res, next) => {

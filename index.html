@@ -15,7 +15,7 @@
   <meta property="og:description"
     content="Viveras, aromáticas, tuppers y servicios de jardinería agroecológica para hogares, empresas e instituciones.">
   <meta property="og:url" content="https://zapi.uy/">
-  <meta property="og:image" content="https://zapi.uy/asset/img/plants-hero.opt.jpg">
+  <meta property="og:image" content="https://zapi.uy/./public/img/plants-hero.opt.jpg">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
        que la descarga arranque al abrir el <head> y no cuando el
        parser llega al <img> mas abajo. width/height ya estan en la
        etiqueta, asi que no hay salto de maquetacion. -->
-  <link rel="preload" as="image" href="./asset/img/plants-hero.opt.jpg" fetchpriority="high">
+  <link rel="preload" as="image" href="././public/img/plants-hero.opt.jpg" fetchpriority="high">
 
   <!-- El orden importa: styles.css pone las secciones del index,
        stylecarrito.css el carrito, catalogo-catalogo.css la grilla
@@ -41,16 +41,16 @@
        asi el modal gana sobre los estilos del carrito. Los dos
        archivos de catalogo se generan desde catalogo.css con
        node tools/extraer-modal-css.js -->
-  <link rel="stylesheet" href="./styles.css">
-  <link rel="stylesheet" href="./stylecarrito.css">
-  <link rel="stylesheet" href="./catalogo-catalogo.css">
-  <link rel="stylesheet" href="./catalogo-modal.css">
-  <link rel="stylesheet" href="./zapi-bot.css">
+  <link rel="stylesheet" href="./public/css/styles.css">
+  <link rel="stylesheet" href="./public/css/stylecarrito.css">
+  <link rel="stylesheet" href="./public/css/catalogo-catalogo.css">
+  <link rel="stylesheet" href="./public/css/catalogo-modal.css">
+  <link rel="stylesheet" href="./public/css/zapi-bot.css">
 
   <!-- Favicon: el logo.svg ya existe, asi que se reutiliza en vez
        de dejar referencias a archivos que no estan. Para iOS hace
        falta un PNG de 180px, que se agrega cuando exista. -->
-  <link rel="icon" type="image/svg+xml" href="./asset/img/logo.svg">
+  <link rel="icon" type="image/svg+xml" href="././public/img/logo.svg">
 
 </head>
 
@@ -81,7 +81,7 @@
         <h4>ZAPI</h4>
       </article>
       <article class="logo-items-img">
-        <img src="./asset/img/logo.svg" alt="">
+        <img src="././public/img/logo.svg" alt="">
       </article>
     </a>
 
@@ -158,7 +158,7 @@
       </h3>
       <!-- El espacio en el nombre del archivo va codificado como %20:
            sin esto el servidor corta la URL en el primer espacio. -->
-      <img src="./asset/img/plants-hero.opt.jpg"
+      <img src="././public/img/plants-hero.opt.jpg"
         alt="Plantas de interior verdes y sanas en un ambiente luminoso, que evocan calma e inspiracion para el cuidado de las plantas"
         width="1200" height="800"
         fetchpriority="high"
@@ -507,18 +507,18 @@
        esos datos; despues los dos scripts que dibujan, que se
        registran como suscriptores del carrito; y navigation.js
        enruta las secciones en el DOMContentLoaded. -->
-  <script src="./productos.js" defer></script>
-  <script src="./modal.js" defer></script>
-<script src="./catalogo.js" defer></script>
-<script src="./carrito.js" defer></script>
+  <script src="./public/js/productos.js" defer></script>
+  <script src="./public/js/modal.js" defer></script>
+<script src="./public/js/catalogo.js" defer></script>
+<script src="./public/js/carrito.js" defer></script>
 <!-- buscador.js y menu.js faltaban aca: el buscador del header y el
      panel de navegacion estan en el HTML de index, pero sin estos dos
      scripts no respondian. El buscador necesita a catalogo.js, que
      expone window.aplicarBusqueda. -->
-<script src="./buscador.js" defer></script>
-<script src="./zapi-bot.js" defer></script>
-<script src="./navigation.js" defer></script>
-<script src="./menu.js" defer></script>
+<script src="./public/js/buscador.js" defer></script>
+<script src="./public/js/zapi-bot.js" defer></script>
+<script src="./public/js/navigation.js" defer></script>
+<script src="./public/js/menu.js" defer></script>
 
 </body>
 

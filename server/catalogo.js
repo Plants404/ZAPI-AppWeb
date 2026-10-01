@@ -29,7 +29,10 @@ const fs = require('fs');
 const path = require('path');
 
 const raiz = path.join(__dirname, '..');
-const ARCHIVO = path.join(raiz, 'productos.js');
+
+/* productos.js es un script de navegador y vive en public/js/, no en la
+   raiz: la raiz se dejo solo con los HTML. */
+const ARCHIVO = path.join(raiz, 'public', 'js', 'productos.js');
 
 /* El slug se calcula con EXACTAMENTE el mismo codigo que
    generar-productos.js, para que la URL de /api/productos sea la
