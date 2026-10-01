@@ -297,7 +297,13 @@ function crearPedido(req, res) {
     } catch (error) {
         /* La transaccion de db.js ya revirtio el stock. Falta stock de
            verdad: se responde 409 con las unidades reales, para que el
-           cliente baje la cantidad y pueda seguir. */
+           cliente baje la cantidad y pueda seguir.
+
+           Ojo con el filter: la cantidad pedida aqui se llama
+           "pedido", no "cantidad". Comparar contra linea.cantidad
+           comparaba contra undefined, que da false siempre, el filtro
+           se comia todos los shortages y el 409 nunca salia: el
+           cliente recibia un 500 en vez de un 409 con las unidades. */
         const shortages = lineas
             .map(linea => ({
                 id: linea.productoId,
@@ -305,7 +311,7 @@ function crearPedido(req, res) {
                 pedido: linea.cantidad,
                 disponibles: db.unidadesRestantes(linea.productoId)
             }))
-            .filter(linea => linea.disponibles === null || linea.disponibles < linea.cantidad);
+            .filter(linea => linea.disponibles === null || linea.disponibles < linea.pedido);
 
         if (shortages.length > 0) {
             return res.status(409).json({
@@ -313,8 +319,6 @@ function crearPedido(req, res) {
                 shortages
             });
         }
-
-        console.error('[debug catch]', error.message, 'stock1=', db.unidadesRestantes(1), 'stockStr=', db.unidadesRestantes('1'), JSON.stringify(shortages), JSON.stringify(lineas));
 
         throw error;
     }
