@@ -76,7 +76,11 @@
 
     pointer-events: none;
 
-    font-family: var(--sans);
+    /* Montserrat, no la --sans del sitio (Inter): el chat se
+       escribía en una tipografía que no era la de la marca y se
+       leía como un agregado. El título del panel sigue en
+       --serif (Bebas Neue), igual que el logo. */
+    font-family: 'Montserrat', var(--sans);
 
 }
 
@@ -419,7 +423,31 @@
 
 /* CABECERA */
 
+/* Anula el velo del sitio. Va como regla propia y no anidada
+   dentro de .zapi-header: anidada compilaría a descendiente
+   (.zapi-header .zapi-header::before) y no matchearía nada,
+   dejando el header igual de lavado. */
+.zapi-header::before {
+
+    display: none;
+
+}
+
 .zapi-header {
+
+    /* El widget reusa <header> y el sitio le aplica
+       header::before (un velo crema translúcido, rgba(...,.85),
+       el cristal del encabezado). Como este header es position
+       relative con z-index, ese velo se pinta encima del fondo
+       verde y debajo del texto: quedaba texto crema sobre un
+       verde clarificado, ilegible. Fijar top/wrap/z-index
+       propios evita además heredar el comportamiento de barra
+       fija del encabezado del sitio. */
+    top: auto;
+
+    flex-wrap: nowrap;
+
+    z-index: auto;
 
     /* Ocupa solo su altura natural: nunca crece
        ni se encoge, para no comerse la
@@ -446,9 +474,12 @@
 
 .zapi-avatar {
 
-    width: 38px;
+    /* El sprout quedaba chico dentro del círculo y el punto de
+       "en línea" caía encima. Con 44px el ícono entra bien y el
+       punto va en la esquina, sin taparlo. */
+    width: 44px;
 
-    height: 38px;
+    height: 44px;
 
     border-radius: 50%;
 
@@ -469,9 +500,9 @@
 
 .zapi-avatar .zapi-sprout {
 
-    width: 28px;
+    width: 30px;
 
-    height: 28px;
+    height: 30px;
 
     display: block;
 
@@ -504,9 +535,9 @@
 
     position: absolute;
 
-    bottom: 1px;
+    bottom: 0;
 
-    right: 1px;
+    right: 0;
 
     width: 10px;
 
@@ -579,7 +610,6 @@
 
 
 .zapi-header-close {
-
     margin-left: auto;
 
     flex-shrink: 0;
@@ -629,6 +659,115 @@
 
 }
 
+/* Carrito del header: la acción de "ver carrito" que estaba
+   mezclada entre los atajos. Comparte medidas y colores con el
+   botón de cerrar, así que los dos se leen como un mismo par.
+   El margen automático vive acá y no en el cerrar porque son
+   los dos últimos hijos los que se pegan al borde derecho. */
+
+.zapi-header-accion {
+
+    flex-shrink: 0;
+
+    margin-left: auto;
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 50%;
+
+    display: grid;
+
+    place-items: center;
+
+    color: rgba(247, 244, 236, .85);
+
+    transition: background .2s ease, color .2s ease;
+
+}
+
+.zapi-header-accion:hover {
+
+    background: rgba(255, 255, 255, .14);
+
+    color: var(--cream);
+
+}
+
+.zapi-header-accion:focus-visible {
+
+    outline: 2px solid var(--cream);
+
+    outline-offset: -2px;
+
+}
+
+.zapi-header-accion .material-symbols-outlined {
+
+    font-size: 20px;
+
+}
+
+/* Salida a una persona. Siempre visible entre los atajos y el
+   campo: si el bot no entiende, el que tiene que resolver
+   (cliente o bot) no debería tener que adivinar que existe
+   un WhatsApp escondido en la burbuja de respuesta. */
+
+.zapi-humano {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: .35rem;
+
+    flex-wrap: wrap;
+
+    padding: .45rem .9rem;
+
+    background: var(--cream);
+
+    border-top: 1px solid rgba(31, 58, 46, .08);
+
+    font-size: .78rem;
+
+    color: var(--muted-texto);
+
+}
+
+.zapi-humano-link {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .25rem;
+
+    color: var(--leaf-texto);
+
+    font-weight: 600;
+
+    text-decoration: underline;
+
+    text-underline-offset: 3px;
+
+}
+
+.zapi-humano-link:hover {
+
+    color: var(--moss);
+
+}
+
+.zapi-humano-link .material-symbols-outlined {
+
+    font-size: 17px;
+
+}
+
 
 /* ==========================================================
    MENSAJES
@@ -673,6 +812,14 @@
     flex-direction: column;
 
     gap: .75rem;
+
+    /* Con poca conversación sobraba un bloque vacío entre el
+       último mensaje y los atajos: la caja crece (flex: 1) y los
+       mensajes quedan pegados al techo. Pegándolos abajo se
+       apoya justo sobre los botones y el hueco queda arriba,
+       como en cualquier chat. */
+
+    justify-content: flex-end;
 
     background: var(--sand);
 
@@ -941,13 +1088,18 @@
 
     border: 1px solid rgba(74, 124, 89, .35);
 
-    color: var(--moss);
+    color: var(--leaf-texto);
 
     font-family: inherit;
 
-    font-size: .82rem;
+    /* .82rem con --moss quedaba chico y medio apagado sobre
+       crema. Se sube un escalón el tamaño y el verde se oscurece
+       a --leaf-texto, que es el que ya usan los links del sitio
+       sobre fondo claro. */
 
-    font-weight: 500;
+    font-size: .875rem;
+
+    font-weight: 600;
 
     line-height: 1.2;
 
@@ -991,6 +1143,26 @@
 
 }
 
+/* Ícono de línea del atajo, en vez de emojis sueltos: así la
+   fila se ve del mismo estilo. Hereda el color del texto para no
+   quedar desfasado al hacer hover. */
+
+.zapi-chip-icono {
+
+    font-size: 17px;
+
+    color: var(--moss);
+
+    flex-shrink: 0;
+
+}
+
+.zapi-chip:hover .zapi-chip-icono {
+
+    color: var(--cream);
+
+}
+
 
 .zapi-chip:active {
 
@@ -1017,11 +1189,15 @@
 
     gap: .5rem;
 
-    padding: .7rem .9rem;
+    padding: .7rem 1rem;
 
     /* 1rem de aire mínimo + safe-area en iPhone.
        Antes (.7rem) quedaba pegado al borde inferior
-       en cualquier pantalla donde inset-bottom da 0. */
+       en cualquier pantalla donde inset-bottom da 0.
+
+       El aire lateral es de 1rem y no de .7rem a propósito:
+       el botón de enviar quedaba pegado al borde derecho y
+       con el margen igual al del lado izquierdo del campo. */
 
     padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
 
@@ -1283,9 +1459,9 @@
 
     .zapi-avatar {
 
-        width: 34px;
+        width: 38px;
 
-        height: 34px;
+        height: 38px;
 
     }
 
