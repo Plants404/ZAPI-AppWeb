@@ -366,15 +366,7 @@ eso la base va en un bloque compartido, no dentro de la
 seccion [CAT]: si se quedara alla, el boton del modal
 aparecia sin fondo ni forma en carrito.html. */
 
-.add-cart:hover {
-background: var(--moss);
-transform: translateY(-2px);
-box-shadow: var(--shadow-md);
-}
 
-.add-cart.added {
-background: var(--leaf);
-}
 
 /* ==========================================================
 BOTÓN VER CARRITO · FLOTANTE (abajo izquierda)

@@ -24,9 +24,12 @@ const origen = path.join(raiz, 'catalogo.css');
 const lineas = fs.readFileSync(origen, 'utf8').split(/\r?\n/);
 
 /* El boton .add-cart lo usan las tarjetas del catalogo y el modal,
-   que tambien vive en carrito.html. Vive en la parte [CAT], asi
-   que hay que copiarlo a mano a la parte del modal. */
-const COMPARTIDO = /^\s*\.add-cart\s*\{/;
+   que tambien vive en carrito.html. Vive en la parte [CAT], asi que
+   hay que copiarlo a mano a la parte del modal. Se copian las tres
+   reglas -la base, :hover y .added- y no solo la base: si el modal
+   se queda sin :hover ni sin .added, el boton de carrito.html no
+   reacciona al pasar el mouse y no se pone verde al agregar. */
+const COMPARTIDO = /^\s*\.add-cart(\s*:\s*(hover)|\s*\.added)?\s*\{/;
 
 let corte = -1;
 
@@ -36,31 +39,39 @@ for (let i = 0; i < lineas.length; i++) {
         break;
     }
 }
-
-/* Recorta .add-cart y sus dos estados hasta que se cierra el
-   bloque siguiente, para no dejar la mitad de una regla. */
+/* Recorta cada bloque compartido hasta que se cierra, para no dejar
+   la mitad de una regla. Como son tres followed de tres, se repite
+   hasta que no quede ninguno. */
 function recortarCompartido(bloque) {
-    const inicio = bloque.findIndex(linea => COMPARTIDO.test(linea));
 
-    if (inicio < 0) return { bloque, compartido: '' };
+    let actual = bloque;
+    const compartidos = [];
 
-    let fin = inicio + 1;
-    let nivel = 1;
+    for (;;) {
 
-    for (let i = inicio + 1; i < bloque.length; i++) {
-        for (const c of bloque[i]) {
-            if (c === '{') nivel++;
-            if (c === '}') nivel--;
+        const inicio = actual.findIndex(linea => COMPARTIDO.test(linea));
+
+        if (inicio < 0) break;
+
+        let fin = inicio + 1;
+        let nivel = 1;
+
+        for (let i = inicio + 1; i < actual.length; i++) {
+            for (const c of actual[i]) {
+                if (c === '{') nivel++;
+                if (c === '}') nivel--;
+            }
+            if (nivel === 0) { fin = i + 1; break; }
         }
-        if (nivel === 0) { fin = i + 1; break; }
+
+        compartidos.push(actual.slice(inicio, fin).join('\n'));
+        actual = actual.slice(0, inicio).concat(actual.slice(fin));
+
     }
 
-    return {
-        bloque: bloque.slice(0, inicio).concat(bloque.slice(fin)),
-        compartido: bloque.slice(inicio, fin).join('\n')
-    };
-}
+    return { bloque: actual, compartido: compartidos.join('\n\n') };
 
+}
 if (corte < 0) {
     console.error('No se encontro el bloque "VENTANA FLOTANTE DE PRODUCTO" en catalogo.css.');
     console.error('Sin ese marcador no se puede partir la hoja. Revisa el comentario de seccion.');

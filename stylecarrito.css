@@ -1822,13 +1822,11 @@
 
 /* ==========================================================
    UTILIDAD
+   ------------------------------------------------------------
+   La clase .hidden no se repite aqui: ya esta en styles.css, que
+   las dos paginas cargan siempre y antes que este archivo. Estaba
+   duplicada al pedo y las dos copias eran identicas.
    ========================================================== */
-
-.hidden {
-
-    display: none !important;
-
-}
 
 
 /* ==========================================================
