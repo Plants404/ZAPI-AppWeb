@@ -32,9 +32,9 @@ const PRODUCTOS = [
         id: 1,
         nombre: "Albahaca",
         categoria: "Aromáticas",
-        imagen: "./asset/img/albahaca.opt.jpg",
+        imagen: "./public/img/albahaca.opt.jpg",
         imagenes: [
-            "./asset/img/albahaca.opt.jpg"
+            "./public/img/albahaca.opt.jpg"
         ],
         descripcion: "Fresca y perfumada, ideal para huertas en macetas.",
         precioBase: 150,
@@ -48,9 +48,9 @@ const PRODUCTOS = [
         id: 2,
         nombre: "Rúcula",
         categoria: "Hortalizas",
-        imagen: "./asset/img/ruucula.opt.jpg",
+        imagen: "./public/img/ruucula.opt.jpg",
         imagenes: [
-            "./asset/img/ruucula.opt.jpg"
+            "./public/img/ruucula.opt.jpg"
         ],
         descripcion: "Tierna y picante, lista para tus ensaladas.",
         precioBase: 120,
@@ -64,17 +64,17 @@ const PRODUCTOS = [
         id: 3,
         nombre: "Suculenta",
         categoria: "Plantas de interior",
-        imagen: "./asset/img/suculenta1.opt.jpg",
+        imagen: "./public/img/suculenta1.opt.jpg",
         imagenes: [
-            "./asset/img/suculenta1.opt.jpg",
-            "./asset/img/suculenta4.2.opt.jpg",
-            "./asset/img/suculenta4.1.opt.jpg",
-            "./asset/img/suculenta4.opt.jpg",
-            "./asset/img/suculenta3.2.opt.jpg",
-            "./asset/img/suculenta3.1.opt.jpg",
-            "./asset/img/suculenta3.opt.jpg",
-            "./asset/img/suculenta2.opt.jpg",
-            "./asset/img/suculentas2.1.opt.jpg"
+            "./public/img/suculenta1.opt.jpg",
+            "./public/img/suculenta4.2.opt.jpg",
+            "./public/img/suculenta4.1.opt.jpg",
+            "./public/img/suculenta4.opt.jpg",
+            "./public/img/suculenta3.2.opt.jpg",
+            "./public/img/suculenta3.1.opt.jpg",
+            "./public/img/suculenta3.opt.jpg",
+            "./public/img/suculenta2.opt.jpg",
+            "./public/img/suculentas2.1.opt.jpg"
         ],
         descripcion: "Resistente, ideal para interiores luminosos.",
         precioBase: 180,
@@ -88,13 +88,13 @@ const PRODUCTOS = [
         id: 4,
         nombre: "Cactus",
         categoria: "Plantas de interior",
-        imagen: "./asset/img/cactus1.opt.jpg",
+        imagen: "./public/img/cactus1.opt.jpg",
         imagenes: [
-            "./asset/img/cactus1.opt.jpg",
-            "./asset/img/cactus4.opt.jpg",
-            "./asset/img/cactus5.opt.jpg",
-            "./asset/img/cactus3.opt.jpg",
-            "./asset/img/cactus2.opt.jpg"
+            "./public/img/cactus1.opt.jpg",
+            "./public/img/cactus4.opt.jpg",
+            "./public/img/cactus5.opt.jpg",
+            "./public/img/cactus3.opt.jpg",
+            "./public/img/cactus2.opt.jpg"
         ],
         descripcion: "Decorativo y de fácil mantenimiento.",
         precioBase: 220,
@@ -108,10 +108,10 @@ const PRODUCTOS = [
         id: 5,
         nombre: "Suculentas mix",
         categoria: "Combo",
-        imagen: "./asset/img/almacigosuculentas.opt.jpg",
+        imagen: "./public/img/almacigosuculentas.opt.jpg",
         imagenes: [
-            "./asset/img/almacigosuculentas.opt.jpg",
-            "./asset/img/almacigosuculentas2.opt.jpg"
+            "./public/img/almacigosuculentas.opt.jpg",
+            "./public/img/almacigosuculentas2.opt.jpg"
         ],
         descripcion: "Una selección de suculentas para tu hogar.",
         precioBase: 90,
@@ -125,9 +125,9 @@ const PRODUCTOS = [
         id: 6,
         nombre: "Cretona",
         categoria: "Plantas de interior",
-        imagen: "./asset/img/cretona.opt.jpg",
+        imagen: "./public/img/cretona.opt.jpg",
         imagenes: [
-            "./asset/img/cretona.opt.jpg"
+            "./public/img/cretona.opt.jpg"
         ],
         descripcion: "Hojas coloridas para espacios con luz indirecta.",
         precioBase: 320,
@@ -141,13 +141,13 @@ const PRODUCTOS = [
         id: 7,
         nombre: "Kit de huerta sustentable",
         categoria: "Kits",
-        imagen: "./asset/img/kit_de_huerta_zapi.opt.jpg",
+        imagen: "./public/img/kit_de_huerta_zapi.opt.jpg",
         imagenes: [
-            "./asset/img/kit_de_huerta_zapi.opt.jpg",
-            "./asset/img/kit_de_huerta_zapi_2.opt.jpg",
-            "./asset/img/kit_de_huerta_zapi3.opt.jpg",
-            "./asset/img/kit_de_huerta_zapi4.opt.jpg",
-            "./asset/img/kit_de_huerta_zapi5.opt.jpg"
+            "./public/img/kit_de_huerta_zapi.opt.jpg",
+            "./public/img/kit_de_huerta_zapi_2.opt.jpg",
+            "./public/img/kit_de_huerta_zapi3.opt.jpg",
+            "./public/img/kit_de_huerta_zapi4.opt.jpg",
+            "./public/img/kit_de_huerta_zapi5.opt.jpg"
         ],
         descripcion: "Semillas, sustrato y guía para tu primera huerta.",
         precioBase: 650,

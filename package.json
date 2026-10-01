@@ -1,9 +1,10 @@
 {
   "name": "zapi-appweb",
   "private": true,
-  "description": "Sitio estatico de ZAPI. Los scripts de tools/ usan solo modulos nativos de Node, asi que no hay dependencias que instalar.",
+  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, servidor y base en server/ y herramientas en tools/.",
   "scripts": {
     "start": "node server.js",
+    "api": "node tools/probar-api.js",
     "verificar": "node tools/verificar.js",
     "contraste": "node tools/contraste.js",
     "generar": "node tools/generar-productos.js",
@@ -11,7 +12,7 @@
     "css": "node tools/extraer-modal-css.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "dependencies": {
     "express": "^5.2.1"
