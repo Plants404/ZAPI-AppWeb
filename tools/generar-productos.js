@@ -57,7 +57,7 @@ const DISPONIBILIDAD = {
    ------------------------------------------------------------------ */
 
 function extraerProductos() {
-    const fuente = fs.readFileSync(path.join(raiz, 'productos.js'), 'utf8');
+    const fuente = fs.readFileSync(path.join(raiz, 'public', 'js', 'productos.js'), 'utf8');
     const inicio = fuente.indexOf('const PRODUCTOS = [');
 
     if (inicio === -1) throw new Error('no se encontro "const PRODUCTOS = [" en productos.js');
@@ -215,7 +215,7 @@ function pagina(producto, otros) {
     <meta name="twitter:description" content="${escapar(descripcion)}">
     <meta name="twitter:image" content="${SITIO}/${principal.replace(/^\.\//, '')}">
 
-    <link rel="icon" type="image/svg+xml" href="../asset/img/logo.svg">
+    <link rel="icon" type="image/svg+xml" href="../public/img/logo.svg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -226,8 +226,8 @@ function pagina(producto, otros) {
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
 
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="../estilos-producto.css">
+    <link rel="stylesheet" href="../public/css/styles.css">
+    <link rel="stylesheet" href="../public/css/estilos-producto.css">
 
     <script type="application/ld+json">
 ${paraJsonLd(jsonLd)}
@@ -242,7 +242,7 @@ ${paraJsonLd(migas)}
 
     <header class="header-producto">
         <a class="logo" href="../index.html" aria-label="${escapar(NOMBRE)}, ir al inicio">
-            <img src="../asset/img/logo.svg" alt="" width="40" height="40">
+            <img src="../public/img/logo.svg" alt="" width="40" height="40">
             <span>${escapar(NOMBRE)}</span>
         </a>
 
@@ -348,8 +348,8 @@ ${paraJsonLd(migas)}
         </nav>
     </footer>
 
-    <script src="../productos.js" defer></script>
-    <script src="../productos-pagina.js" defer></script>
+    <script src="../public/js/productos.js" defer></script>
+    <script src="../public/js/productos-pagina.js" defer></script>
 </body>
 </html>
 `;
