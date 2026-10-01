@@ -217,13 +217,20 @@ const ZAPI_PROMOS = {
    ATAJOS DEL MENÚ
    ========================================================== */
 
+/* 5 atajos, todos temas (envíos / cuidados / club / servicios /
+   promociones). La acción "ver carrito" NO va acá: se separó a un
+   ícono de carrito fijo en el header del chat, porque mezclar
+   temas con acciones rompe la lógica de la fila. Para un vivero
+   "Cuidados" es el diferencial, así que abre la lista y
+   Promociones va al final (no se empuja primero). Los íconos son
+   de línea (Material Symbols) en vez de emojis sueltos, para que
+   el conjunto se vea parejo. */
 const ZAPI_MENU = [
-    { etiqueta: "🚚 Envíos", clave: "envio" },
-    { etiqueta: "💰 Promociones", clave: "promo" },
-    { etiqueta: "🌟 Club ZAPI", clave: "club" },
-    { etiqueta: "🌿 Cuidados", clave: "cuidado" },
-    { etiqueta: "🛠️ Servicios", clave: "servicio" },
-    { etiqueta: "🛒 Ver carrito", clave: "carrito" }
+    { etiqueta: "Cuidados", icono: "eco", clave: "cuidado" },
+    { etiqueta: "Envíos", icono: "local_shipping", clave: "envio" },
+    { etiqueta: "Club ZAPI · beneficios", icono: "star", clave: "club" },
+    { etiqueta: "Servicios", icono: "home_repair_service", clave: "servicio" },
+    { etiqueta: "Promociones", icono: "local_offer", clave: "promo" }
 ];
 
 
@@ -541,9 +548,22 @@ const ZAPI_BOT_HTML = `
                 <h4>${ZAPI_NOMBRE}</h4>
                 <span class="zapi-status">
                     <span class="material-symbols-outlined zapi-status-dot">circle</span>
-                    En línea · responde al instante
+                    Asistente virtual de ZAPI
                 </span>
             </div>
+
+            <!-- La acción "ver carrito" se mudó de los atajos a
+                 acá, para que la fila de botones sea solo de
+                 temas. aria-label porque el ícono solo no dice
+                 nada por sí mismo. -->
+            <a
+                class="zapi-header-accion"
+                href="carrito.html"
+                aria-label="Ver el carrito">
+
+                <span class="material-symbols-outlined">shopping_cart</span>
+
+            </a>
 
             <button
                 class="zapi-header-close"
@@ -568,6 +588,22 @@ const ZAPI_BOT_HTML = `
         </div>
 
         <div class="zapi-chips" id="zapiChips"></div>
+
+        <!-- El bot resuelve lo que puede, pero siempre tiene que
+             quedar una salida a una persona. Va siempre visible,
+             arriba del campo, para no depender de acertar la
+             pregunta. -->
+        <div class="zapi-humano">
+            <span>¿Preferís hablar con una persona?</span>
+            <a
+                class="zapi-humano-link"
+                href="https://wa.me/098268560?text=Hola%20ZAPI%2C%20necesito%20ayuda%20con%20un%20pedido"
+                target="_blank"
+                rel="noopener">
+                <span class="material-symbols-outlined" aria-hidden="true">support_agent</span>
+                Hablar con el equipo
+            </a>
+        </div>
 
         <form class="zapi-input-area" id="zapiForm">
 
@@ -755,6 +791,7 @@ function initZapiBot() {
 
         chips.innerHTML = ZAPI_MENU.map(item =>
             `<button class="zapi-chip" type="button" data-clave="${escaparHTML(item.clave)}">
+                <span class="material-symbols-outlined zapi-chip-icono" aria-hidden="true">${escaparHTML(item.icono)}</span>
                 ${escaparHTML(item.etiqueta)}
             </button>`
         ).join("");
@@ -804,19 +841,17 @@ function initZapiBot() {
 
     function saludoInicial() {
 
+        /* Una sola burbuja. Antes eran dos: la primera listaba los
+           temas y la segunda empujaba "empecemos por las
+           promociones", que además ya estaba en los atajos. La
+           lista de temas no hacía falta: los botones la muestran
+           solos, así que sobra repetirla. */
         agregarMensaje(
-            `¡Hola! 🌿 Soy <strong>${ZAPI_NOMBRE}</strong>, el asistente de ZAPI.<br><br>` +
-            "Te puedo ayudar con envíos, promociones, cuidados de tus " +
-            "plantas y servicios. ¿Qué necesitás?",
+            `¡Hola! 🌿 Soy <strong>${ZAPI_NOMBRE}</strong>, el asistente de ZAPI. ` +
+            "¿En qué te ayudo hoy?",
             "bot"
         );
 
-        setTimeout(() => {
-            agregarMensaje(
-                "¿Empezamos por las <strong>promociones vigentes</strong>? 🎁",
-                "bot"
-            );
-        }, 1100);
     }
 
     /* ------------------------- */
@@ -908,7 +943,11 @@ function initZapiBot() {
 
         const item = ZAPI_MENU.find(m => m.clave === clave);
 
-        if (item) responder(item.etiqueta.replace(/^\S+\s/, ""));
+        /* Se manda la etiqueta tal cual. Antes había que sacarle
+           el emoji del principio con un replace y ahora no hay
+           ninguno: la etiqueta sola ya dispara la intención
+           ("Cuidados", "Envíos", "Club ZAPI..."). */
+        if (item) responder(item.etiqueta);
     });
 
     /* ------------------------- */
