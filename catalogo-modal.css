@@ -23,6 +23,16 @@ font-weight: 500;
 transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 
+.add-cart:hover {
+background: var(--moss);
+transform: translateY(-2px);
+box-shadow: var(--shadow-md);
+}
+
+.add-cart.added {
+background: var(--leaf);
+}
+
 /* ==========================================================
 VENTANA FLOTANTE DE PRODUCTO
 Modal con carrusel de fotos, detalle y agregar al carrito.

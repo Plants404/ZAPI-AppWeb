@@ -27,10 +27,12 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Una sola peticion para la tipografia y los Material Symbols:
+         antes eran dos <link> al mismo origen y la segunda
+         bloqueaba el render. Montserrat no se pide porque en las
+         fichas de producto no se usa. -->
     <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&display=swap">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
 
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="../estilos-producto.css">

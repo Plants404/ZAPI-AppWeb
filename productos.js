@@ -429,9 +429,11 @@ document.addEventListener("modal:agregar", function (evento) {
    suma bytes ni peticiones, y el tono se ajusta cambiando las
    dos frecuencias de "notas".
 
-   El contexto se crea en el primer clic porque los navegadores
-   no dejan sonar nada antes de que el usuario toque la pagina.
-   Si el contexto queda suspendido (se puede pasar con un
+   El contexto se crea en el primer toque y no en el primer clic: en
+   iOS Safari el clic llega despues del gesto y ya no cuenta como
+   gesto del usuario, asi que un contexto creado ahi queda suspendido
+   y el primer "pop" no suena. Por eso despertarAudio() lo crea en
+   el pointerdown. Si despues queda suspendido (se puede pasar con un
    alt-tab) se reanuda; si el navegador no soporta Web Audio se
    devuelve null y el carrito sigue funcionando igual, solo que
    en silencio.
@@ -521,6 +523,35 @@ function contextoAudio() {
     return audioZapi;
 
 }
+
+/* iOS Safari entrega el gesto como pointerdown o touchstart, y el
+   click llega despues, ya afuera del gesto. Si el AudioContext se
+   creara adentro del click del boton, el navegador lo dejaria
+   suspended y el primer "pop" del carrito no sonaria: habria que
+   tocar dos veces.
+
+   Este listener crea y reanuda el contexto en el primer toque de la
+   pagina, con captura para correr antes que cualquier otro handler.
+   Es de un solo uso: apenas entra, se saca de los tres eventos, y si
+   el sonido esta apagado ni siquiera crea el contexto. Se escucha
+   keydown tambien, para que el boton funcione con Enter o Espacio
+   desde el teclado. */
+
+function despertarAudio() {
+
+    document.removeEventListener("pointerdown", despertarAudio, true);
+    document.removeEventListener("touchstart", despertarAudio, true);
+    document.removeEventListener("keydown", despertarAudio, true);
+
+    if (!sonidoHabilitado()) return;
+
+    contextoAudio();
+
+}
+
+document.addEventListener("pointerdown", despertarAudio, true);
+document.addEventListener("touchstart", despertarAudio, true);
+document.addEventListener("keydown", despertarAudio, true);
 
 function sonidoAgregar() {
 
