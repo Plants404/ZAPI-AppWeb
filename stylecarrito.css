@@ -76,6 +76,63 @@
     border-bottom-color: var(--leaf);
 }
 
+/* El interruptor de sonido comparte la forma de los links del
+   header del carrito, pero como es un boton necesita sus propios
+   estados: el foco por teclado y el color cuando esta apagado. */
+.cart-sonido {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 44px;
+
+    height: 44px;
+
+    margin-left: .25rem;
+
+    color: var(--forest);
+
+    background: none;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    transition: background .2s ease, color .2s ease;
+
+}
+
+.cart-sonido:hover {
+
+    background: rgba(74, 124, 89, .10);
+
+}
+
+.cart-sonido:focus-visible {
+
+    outline: 2px solid var(--leaf-texto);
+
+    outline-offset: 2px;
+
+}
+
+.cart-sonido .material-symbols-outlined {
+
+    font-size: 1.25rem;
+
+}
+
+.sonido-off .cart-sonido {
+
+    color: var(--muted-texto);
+
+}
+
 .cart-footer {
     background: var(--ink);
     color: rgba(247, 244, 236, .7);
@@ -106,23 +163,29 @@
 /* ==========================================================
    CONTENEDOR PRINCIPAL
    ========================================================== */
-
+/* Mobile first: en el telefono los productos van arriba y el
+   resumen abajo, en una sola columna. De 851px para arriba el
+   resumen pasa a una columna fija de 380px al costado, con el
+   ancho completo del contenedor. */
 .cart-page {
 
-    width: min(1180px, calc(100% - 3rem));
+    width: min(680px, calc(100% - 2rem));
 
     margin: 0 auto;
 
-    padding: 4rem 0 6rem;
+    padding: 2.5rem 0 4rem;
 
     display: flex;
 
-    flex-wrap: wrap;
-    gap: 3rem;
+    flex-direction: column;
+
+    flex-wrap: nowrap;
+
+    gap: 2rem;
 
     align-items: flex-start;
-}
 
+}
 /* La columna de productos toma lo que sobra del resumen, que se
    queda en 380px. basis 0 + min-width 0 dejan que encoja de verdad
    en vez de desbordar cuando la pantalla achica. */
@@ -167,7 +230,7 @@
 
     letter-spacing: .22em;
 
-    color: var(--leaf);
+    color: var(--leaf-texto);
 }
 
 
@@ -292,6 +355,9 @@
 
     overflow: hidden;
 
+    /* Cuadrado contra fotos verticales: con "cover" se perdia la
+       parte de arriba y de abajo de la planta. El fondo hace que
+       las bandas laterales queden como parte de la foto. */
     background: var(--sand);
 }
 
@@ -302,7 +368,7 @@
 
     height: 100%;
 
-    object-fit: cover;
+    object-fit: contain;
 
     transition: transform .45s ease;
 
@@ -388,11 +454,13 @@
 }
 
 
+/* 44px es el piso practico en movil para que el boton no se
+   equivoque con el que esta al lado. Antes media 34px. */
 .quantity-control button {
 
-    width: 34px;
+    width: 44px;
 
-    height: 34px;
+    height: 44px;
 
     display: grid;
 
@@ -465,9 +533,11 @@
 
 .remove-item {
 
-    width: 34px;
+    /* La papelera tambien sube a 44px: estaba en 34px y es el
+       control mas importante de la fila. */
+    width: 44px;
 
-    height: 34px;
+    height: 44px;
 
     display: grid;
 
@@ -504,17 +574,18 @@
    RESUMEN
    ========================================================== */
 
+/* Mobile first: en el telefono el resumen es un bloque normal al
+   final de la lista, sin sticky. De 851px para arriba se vuelve
+   la columna lateral de 380px que acompaña el scroll. */
 .cart-summary {
 
-    position: sticky;
+    position: static;
 
-    top: 105px;
+    flex: 0 0 auto;
 
-    /* la columna lateral: 380px fijos y el resto es para los
-       productos (ver .cart-content) */
-    flex: 0 0 380px;
+    width: 100%;
 
-    padding: 2rem;
+    padding: 1.5rem;
 
     background: var(--white);
 
@@ -705,7 +776,12 @@
 
     border-radius: 999px;
 
-    background: linear-gradient(135deg, #25D366, #128C7E);
+    /* El verde oficial de WhatsApp con texto blanco daba 1.99:1:
+       era el boton de checkout, el CTA mas importante del
+       carrito, y era practicamente ilegible. Se usa el verde
+       profundo de la marca (#075E54) con sus tintes, que si
+       llega a 4.5:1 conservando la identidad del canal. */
+    background: linear-gradient(135deg, #0A7B6E, #075E54);
 
     color: #ffffff;
 
@@ -1225,9 +1301,12 @@
    aunque la mancha de color pase por debajo (medido: 4,66:1 en el
    peor momento del ciclo). La entrada se escalona con --i, que es
    la posicion que escribe renderRecommendations en cada tarjeta. */
+/* Mobile first: la recomendacion ocupa el ancho entero en el
+   telefono. De 488px para arriba vuelve al ancho de 13rem que
+   deja varias en fila. */
 .recommendation-card {
 
-    flex: 0 1 13rem;
+    flex: 0 1 100%;
 
     min-width: 0;
 
@@ -1356,7 +1435,10 @@
 
     height: 100%;
 
-    object-fit: cover;
+    /* 16:10 contra fotos verticales: con "cover" solo se veía
+       una franja de la planta. "contain" la muestra entera y las
+       bandas caen sobre el fondo arena del contenedor. */
+    object-fit: contain;
 
     transition: transform .4s ease;
 
@@ -1417,6 +1499,42 @@
     font-size: 1.3rem;
 
     color: var(--forest);
+
+}
+
+/* El nombre abre el detalle del producto. Hereda la tipografia
+   del h3 para que la tarjeta no cambie de aspecto. */
+.recommendation-link {
+
+    font: inherit;
+
+    color: inherit;
+
+    text-align: left;
+
+    background: none;
+
+    border: 0;
+
+    padding: 0;
+
+    cursor: pointer;
+
+}
+
+.recommendation-link:hover {
+
+    color: var(--moss);
+
+}
+
+.recommendation-link:focus-visible {
+
+    outline: 2px solid var(--leaf-texto);
+
+    outline-offset: 3px;
+
+    border-radius: 4px;
 
 }
 
@@ -1552,6 +1670,28 @@
 
     }
 
+
+    /* Faltaban los bucles del boton de WhatsApp, la entrada de
+       las filas del carrito, el resumen y el estado vacio: con
+       reduced-motion activo el boton de checkout seguia
+       pulsando en loop y las filas entraban animadas. */
+
+    .btn-whatsapp {
+
+        animation: none;
+
+    }
+
+    .cart-item,
+
+    .cart-summary,
+
+    .empty-cart {
+
+        animation: none;
+
+    }
+
 }
 
 
@@ -1613,7 +1753,11 @@
 
     font-size: 54px;
 
-    color: var(--sage);
+    /* Era var(--sage), que sobre blanco da 2.43:1 y no llega al 3:1
+       que pide WCAG. Aunque sea un icono, es lo unico que dibuja el
+       estado vacio. --moss mantiene el tono apagado y cumple con 6:1. */
+
+    color: var(--moss);
 
 }
 
@@ -1688,23 +1832,120 @@
 
 
 /* ==========================================================
-   RESPONSIVE
+   RESPONSIVE (mobile first)
+   ------------------------------------------------------------
+   Todo lo de arriba es la version telefono. Aca se restaura la
+   disposicion de escritorio a partir del ancho necesario.
    ========================================================== */
 
-@media (max-width: 850px) {
+/* La recomendacion ocupa el ancho entero en el telefono y se
+   suma a una fila de ahi para arriba. */
+@media (min-width: 488px) {
+
+    .recommendation-card {
+
+        flex: 0 1 13rem;
+
+    }
+
+}
+
+@media (min-width: 601px) {
+
+    .cart-header {
+
+        padding: 1.1rem 1.6rem;
+
+    }
+
+
+    .cart-title h1 {
+
+        font-size: 1.7rem;
+
+    }
+
+
+    .cart-heading {
+
+        align-items: flex-end;
+
+        flex-direction: row;
+
+        gap: 2rem;
+
+    }
+
+
+    .cart-item {
+
+        gap: 1.5rem;
+
+    }
+
+
+    .cart-item-image {
+
+        flex: 0 0 100px;
+
+        width: 100px;
+
+        height: 100px;
+
+    }
+
+
+    .cart-item-total {
+
+        /* Vuelve a la fila del medio, con el nombre a la izquierda
+           y los controles a la derecha. */
+        flex: 0 0 auto;
+
+        margin-left: 0;
+
+        min-width: 0;
+
+        align-items: center;
+
+        flex-direction: column;
+
+        justify-content: flex-end;
+
+    }
+
+
+    .cart-item-info h3 {
+
+        font-size: 1.3rem;
+
+    }
+
+
+    .cart-summary {
+
+        padding: 2rem;
+
+    }
+
+}
+
+/* A partir de 851px el resumen vuelve a ser la columna lateral
+   de 380px que se pega al scroll. */
+@media (min-width: 851px) {
 
     .cart-page {
 
-        /* el resumen pasa debajo de los productos. En columna el
-           flex-basis pasa a ser alto, asi que el nowrap evita que
-           un carrito largo se desborde hacia un lado. */
-        flex-direction: column;
+        /* En columna el flex-basis pasa a ser alto, asi que el nowrap
+           evita que un carrito largo se desborde hacia un lado. */
+        flex-direction: row;
 
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
 
-        width: min(680px, calc(100% - 2rem));
+        width: min(1180px, calc(100% - 3rem));
 
-        padding-top: 2.5rem;
+        padding: 4rem 0 6rem;
+
+        gap: 3rem;
 
     }
 
@@ -1712,110 +1953,23 @@
     /* en columna los dos bloques vuelven a su alto de contenido */
     .cart-content {
 
-        flex: 0 0 auto;
+        flex: 1 1 0;
 
-        width: 100%;
+        width: auto;
 
     }
 
     .cart-summary {
 
-        position: static;
+        position: sticky;
 
-        flex: 0 0 auto;
+        top: 105px;
 
-        width: 100%;
+        /* la columna lateral: 380px fijos y el resto es para los
+           productos (ver .cart-content) */
+        flex: 0 0 380px;
 
-    }
-
-}
-
-
-/* en pantallas de telefono la recomendacion ocupa el ancho entero */
-@media (max-width: 487px) {
-
-    .recommendation-card {
-
-        flex-basis: 100%;
-
-    }
-
-}
-
-@media (max-width: 600px) {
-
-    .cart-header {
-
-        padding: .9rem 1rem;
-
-    }
-
-
-    .cart-title h1 {
-
-        font-size: 1.3rem;
-
-    }
-
-
-    .cart-heading {
-
-        align-items: flex-start;
-
-        flex-direction: column;
-
-        gap: .8rem;
-
-    }
-
-
-    .cart-item {
-
-        gap: 1rem;
-
-    }
-
-
-    .cart-item-image {
-
-        flex: 0 0 75px;
-
-        width: 75px;
-
-        height: 75px;
-
-    }
-
-
-    .cart-item-total {
-
-        /* baja a su propia fila y arranca alineado con la info: el
-           equivalente del grid-column: 2, con 75px de imagen + 1rem */
-        flex: 1 1 100%;
-
-        margin-left: 91px;
-
-        min-width: 0;
-
-        align-items: flex-start;
-
-        flex-direction: row;
-
-        justify-content: space-between;
-
-    }
-
-
-    .cart-item-info h3 {
-
-        font-size: 1.2rem;
-
-    }
-
-
-    .cart-summary {
-
-        padding: 1.5rem;
+        width: auto;
 
     }
 

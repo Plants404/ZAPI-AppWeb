@@ -61,16 +61,18 @@ let cart = obtenerCarrito();
    GUARDAR CARRITO
    ------------------------------------------------------------
    Toda modificacion del pedido termina pasando por confirmar:
-   se escribe el carrito entero como texto en "zapiCart" y se
-   redibujan la lista, el resumen y las recomendaciones.
+   se guarda el carrito entero y se redibujan la lista, el
+   resumen y las recomendaciones.
+
+   La escritura se delega a guardarCarrito, en productos.js, que
+   es el unico punto que toca localStorage. Esta copia estaba
+   escribiendo directo y tiraba toda la pagina en modo privado o
+   con la cuota llena.
    ========================================================== */
 
 function saveCart() {
 
-    localStorage.setItem(
-        "zapiCart",
-        JSON.stringify(cart)
-    );
+    guardarCarrito(cart);
 
 }
 
@@ -263,15 +265,13 @@ function renderRecommendations() {
                 class="recommendation-card"
                 style="--i: ${indice}"
                 data-id="${producto.id}"
-                tabindex="0"
-                aria-haspopup="dialog"
             >
 
                 <div class="recommendation-image">
 
                     <img
-                        src="${producto.imagen}"
-                        alt="${producto.nombre}"
+                        src="${escaparHTML(producto.imagen)}"
+                        alt="${escaparHTML(producto.nombre)}"
                         loading="lazy"
                     >
 
@@ -280,15 +280,18 @@ function renderRecommendations() {
                 <div class="recommendation-info">
 
                     <div class="recommendation-category">
-                        ${producto.categoria}
+                        ${escaparHTML(producto.categoria)}
                     </div>
 
                     <h3>
-                        ${producto.nombre}
+                        <button class="recommendation-link" type="button"
+                            data-id="${producto.id}" aria-haspopup="dialog">
+                            ${escaparHTML(producto.nombre)}
+                        </button>
                     </h3>
 
                     <p>
-                        ${producto.descripcion}
+                        ${escaparHTML(producto.descripcion)}
                     </p>
 
                     <div class="recommendation-footer">
@@ -301,7 +304,7 @@ function renderRecommendations() {
                             class="recommendation-add"
                             type="button"
                             data-id="${producto.id}"
-                            aria-label="Agregar ${producto.nombre} al carrito"
+                            aria-label="Agregar ${escaparHTML(producto.nombre)} al carrito"
                         >
 
                             <span class="material-symbols-outlined">
@@ -385,8 +388,10 @@ function renderCart() {
                 <div class="cart-item-image">
 
                     <img
-                        src="${item.imagen}"
-                        alt="${item.nombre}"
+                        src="${escaparHTML(item.imagen)}"
+                        alt="${escaparHTML(item.nombre)}"
+                        loading="lazy"
+                        decoding="async"
                     >
 
                 </div>
@@ -395,11 +400,11 @@ function renderCart() {
                 <div class="cart-item-info">
 
                     <h3>
-                        ${item.nombre}
+                        ${escaparHTML(item.nombre)}
                     </h3>
 
                     <div class="cart-item-category">
-                        ${item.categoria || "Producto ZAPI"}
+                        ${escaparHTML(item.categoria) || "Producto ZAPI"}
                     </div>
 
                     <div class="cart-item-price">
@@ -456,7 +461,7 @@ function renderCart() {
                     <button
                         class="remove-item"
                         data-id="${item.id}"
-                        aria-label="Eliminar producto"
+                        aria-label="Eliminar ${escaparHTML(item.nombre)} del carrito"
                         type="button"
                     >
 
@@ -548,19 +553,12 @@ function changeQuantity(id, amount) {
     if (!item) return;
 
 
-    item.cantidad += amount;
+    /* Bajar la cantidad nunca borra el producto. Antes, llegar
+       a 1 y tocar "-" eliminaba la fila sin avisar, y eso se
+       leia como un fallo de la tienda. El 1 es el piso y para
+       sacar el producto esta el boton de papelera. */
 
-
-    /* No permitir cantidades menores a 1 */
-
-    if (item.cantidad <= 0) {
-
-        cart = cart.filter(
-            product => product.id != id
-        );
-
-    }
-
+    item.cantidad = Math.max(1, item.cantidad + amount);
 
     confirmarCarrito();
 
@@ -637,6 +635,12 @@ function sumarAlCarrito(id) {
    listener en los dos sumaba dos unidades por clic.
    ========================================================== */
 
+/* La tarjeta de recomendacion no es un boton: el nombre del
+   producto lo es. Antes el <article> tenia tabindex="0" y
+   aria-haspopup="dialog" sin ningun rol, asi que se anunciaba
+   como un articulo generico aunque se pudiera abrir con Enter.
+   Se mantiene el clic en toda la tarjeta y el control de verdad
+   pasa a ser el boton del nombre. */
 document.addEventListener(
     "click",
     function(event) {
@@ -649,35 +653,6 @@ document.addEventListener(
 
         if (tarjeta &&
             !event.target.closest(".recommendation-add")) {
-
-            window.abrirModalProducto(
-                Number(tarjeta.dataset.id),
-                tarjeta
-            );
-
-            return;
-
-        }
-
-    }
-);
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        const objetivo =
-            event.target instanceof Element ? event.target : null;
-
-        const tarjeta = objetivo
-            ? objetivo.closest(".recommendation-card")
-            : null;
-
-        if (tarjeta &&
-            !objetivo.closest(".recommendation-add") &&
-            (event.key === "Enter" || event.key === " ")) {
-
-            event.preventDefault();
 
             window.abrirModalProducto(
                 Number(tarjeta.dataset.id),

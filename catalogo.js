@@ -15,15 +15,61 @@
 
 
 /* ==========================================================
-   FILTRAR POR CATEGORÍA
+   FILTRAR POR CATEGORÍA Y POR TEXTO
    ------------------------------------------------------------
    Los botones se arman con las categorias que existen en
    PRODUCTOS, no con una lista escrita a mano: asi el filtro
    nunca queda con una categoria sin productos. "Todas" es el
    estado inicial, y volver a esa categoria lo deja vacio.
+
+   El texto viene del buscador del header (buscador.js) y se
+   combina con la categoria: los dos filtros se aplican juntos,
+   no uno en lugar del otro.
    ========================================================== */
 
 let categoriaActual = "";
+let busquedaActual = "";
+
+
+/* Quita acentos y pasa a minuscula, para que "plantas" y
+   "Plántas" finds lo mismo. Hay que pasar por NFD porque
+   solo con toLowerCase el acento queda pegado a la letra. */
+
+function normalizarTexto(texto) {
+
+    return texto
+        .toString()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+}
+
+
+/* Un producto entra si pasa los dos filtros. Todos los campos
+   de texto van juntos en una sola cadena y se busca dentro, para
+   que "kit cactus" encuentre el kit de cactus sin tener que
+   adivinar en que campo estaba cada palabra. */
+
+function coincideBusqueda(producto) {
+
+    if (!busquedaActual) return true;
+
+    const texto = normalizarTexto([
+        producto.nombre,
+        producto.categoria,
+        producto.descripcion,
+        producto.infoDeVenta.join(" "),
+    ].join(" "));
+
+    /* Todas las palabras tiene que aparecer. Asi "kit cactus"
+       no trae el kit de huerta, que solo coincide con "kit". */
+    return normalizarTexto(busquedaActual)
+        .split(/\s+/)
+        .filter(Boolean)
+        .every(palabra => texto.includes(palabra));
+
+}
 
 
 /* Devuelve las categorias presentes en el catalogo, sin
@@ -49,9 +95,9 @@ function renderFiltros() {
     contenedor.innerHTML = botones.map(({ valor, texto }) => `
 
             <button class="catalog-filter${valor === categoriaActual ? " activo" : ""}"
-                type="button" data-categoria="${valor}"
+                type="button" data-categoria="${escaparHTML(valor)}"
                 aria-pressed="${valor === categoriaActual}">
-                ${texto}
+                ${escaparHTML(texto)}
             </button>
 
     `).join("");
@@ -88,20 +134,47 @@ function renderCatalog() {
 
     if (!grid) return;
 
-    const productos = categoriaActual
-        ? PRODUCTOS.filter(producto => producto.categoria === categoriaActual)
-        : PRODUCTOS;
+    const productos = PRODUCTOS.filter(producto =>
+        (!categoriaActual || producto.categoria === categoriaActual)
+        && coincideBusqueda(producto)
+    );
 
-    /* El filtro puede dejar la grilla vacia (por ejemplo si se
-       borra un producto de esa categoria). Se avisa en vez de
-       mostrar un hueco sin explicación. */
+    /* El filtro puede dejar la grilla vacia: por una categoria
+       sin productos, o porque el texto buscado no coincide con
+       nada. Son dos motivos distintos y el mensaje va distinto,
+       con un atajo para limpiar solo la causa. */
 
     if (productos.length === 0) {
+
+        const buscando = busquedaActual.length > 0;
+        const conCategoria = categoriaActual.length > 0;
+
+        let mensaje = "Todavia no hay productos en esta categoria.";
+
+        /* sugerencia es HTML a proposito: es el boton que limpia la
+           causa. mensaje es texto y se escapa recien al escribirlo,
+           no al armarlo, para que el escapado se vea en el mismo
+           lugar donde se inserta. */
+        let sugerencia = "";
+
+        if (buscando) {
+            mensaje = `No encontramos productos para "${busquedaActual}".`;
+            sugerencia = `
+                <button class="catalog-empty-clear" type="button" data-limpiar-busqueda>
+                    Limpiar busqueda
+                </button>`;
+        } else if (conCategoria) {
+            sugerencia = `
+                <button class="catalog-empty-clear" type="button" data-ver-todas>
+                    Ver todas las categorias
+                </button>`;
+        }
 
         grid.innerHTML = `
 
             <p class="catalog-empty">
-                Todavia no hay productos en esta categoria.
+                ${escaparHTML(mensaje)}
+                ${sugerencia}
             </p>
 
         `;
@@ -113,25 +186,28 @@ function renderCatalog() {
     grid.innerHTML = productos.map(producto => {
 
         return `
-            <article class="product-card" data-id="${producto.id}"
-                tabindex="0" role="button" aria-haspopup="dialog"
-                aria-label="Ver detalle de ${producto.nombre}">
+            <article class="product-card" data-id="${producto.id}">
                 <div class="product-visual">
-                    <span class="product-badge">${producto.categoria}</span>
-                    <img src="${producto.imagen}" alt="${producto.nombre}" loading="lazy">
+                    <span class="product-badge">${escaparHTML(producto.categoria)}</span>
+                    <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
                 </div>
                 <div class="product-body">
-                    <h3 class="product-name">${producto.nombre}</h3>
-                    <p class="product-desc">${producto.descripcion}</p>
+                    <h3 class="product-name">
+                        <button class="product-link" type="button" data-id="${producto.id}"
+                            aria-haspopup="dialog">
+                            ${escaparHTML(producto.nombre)}
+                        </button>
+                    </h3>
+                    <p class="product-desc">${escaparHTML(producto.descripcion)}</p>
 
                     <div class="product-info-wrap">
                         <div class="product-info">
                             <ul>
                                 ${producto.infoDeVenta.map(item => `
-                                    <li>
-                                        <span class="material-symbols-outlined">check_circle</span>
-                                        <span>${item}</span>
-                                    </li>
+                                <li>
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                    <span>${escaparHTML(item)}</span>
+                                </li>
                                 `).join("")}
                             </ul>
                         </div>
@@ -233,6 +309,15 @@ document.addEventListener("click", function (event) {
    tarjetas lo abren y que hace cada pagina al agregar.
    ========================================================== */
 
+/* La tarjeta ya no es un boton: el nombre del producto es el
+   boton de verdad. Antes el <article> tenia role="button" y
+   contenia otro <button> para agregar, o sea un boton dentro de
+   un boton: los lectores de pantalla lo anunciaban mal y con
+   teclado habia que tabular dos veces para llegar al agregar.
+
+   Se mantiene el clic en cualquier parte de la tarjeta, porque
+   es lo que la gente espera de una grilla, pero el control
+   accesible y enfocable es el del nombre. */
 document.addEventListener("click", function (event) {
 
     const tarjeta = event.target.closest(".product-card");
@@ -246,23 +331,69 @@ document.addEventListener("click", function (event) {
 
 });
 
-document.addEventListener("keydown", function (event) {
+/* Los botones de "Limpiar busqueda" y "Ver todas las
+   categorias" que aparecen cuando el filtro deja la grilla
+   vacia. Se atienden por delegacion porque los dos botones
+   se dibujan dentro del innerHTML de renderCatalog. */
 
-    /* Teclado sobre la tarjeta enfocada */
-    const objetivo = event.target instanceof Element ? event.target : null;
+document.addEventListener("click", function (event) {
 
-    const tarjeta = objetivo ? objetivo.closest(".product-card") : null;
+    if (event.target.closest("[data-limpiar-busqueda]")) {
 
-    if (tarjeta && !objetivo.closest(".add-cart") &&
-        (event.key === "Enter" || event.key === " ")) {
-
-        event.preventDefault();
-        window.abrirModalProducto(Number(tarjeta.dataset.id), tarjeta);
+        busquedaActual = "";
+        renderCatalog();
+        actualizarBuscadorHeader();
         return;
 
     }
 
+    if (event.target.closest("[data-ver-todas]")) {
+
+        categoriaActual = "";
+        renderFiltros();
+        renderCatalog();
+
+    }
+
 });
+
+/* Cuantos productos hay visibles ahora, para el aviso del
+   buscador. Cuenta lo que hay en la grilla, no lo que dice
+   el filtro, asi que si algo falla al dibujar, el numero
+   sigue siendo el correcto. */
+
+function productosVisibles() {
+
+    return document.querySelectorAll("#productGrid .product-card").length;
+
+}
+
+/* El buscador del header y el filtro de catalogo comparten el
+   texto. este es el punto de entrada que usa buscador.js: deja
+   el estado, redibuja y avisa. Devuelve cuantos quedaron, que
+   es lo que buscador.js lee para el aria-live. */
+
+window.aplicarBusqueda = function (texto) {
+
+    busquedaActual = texto.trim();
+    renderCatalog();
+    return productosVisibles();
+
+};
+
+
+/* El boton "limpiar" del header vacia el campo por lo mismo que
+   el atajo del estado vacio, pero ademas devuelve el foco al
+   input, que desde el boton se ha ido. */
+
+function actualizarBuscadorHeader() {
+
+    if (typeof window.refrescarCampoBuscador === "function") {
+        window.refrescarCampoBuscador(busquedaActual);
+    }
+
+}
+
 
 /* ==========================================================
    INICIALIZAR

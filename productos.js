@@ -6,6 +6,24 @@
 
 
 /* ==========================================================
+   ESCAPAR TEXTO PARA EL DOM
+   ------------------------------------------------------------
+   Todo texto que venga del visitante (o del almacenamiento)
+   tiene que pasar por acá antes de entrar en un innerHTML.
+   Escapar el texto es lo seguro; permitir HTML sin sanitize
+   seria abrir la puerta a XSS.
+   ========================================================== */
+
+const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+}[caracter]));
+
+
+/* ==========================================================
    PRODUCTOS
    ========================================================== */
 
@@ -185,29 +203,72 @@ function formatearPrecio(value) {
 
            const producto = PRODUCTOS.find(p => p.id == item.id);
 
-           if (!producto) return item;
+           /* Un id que ya no existe en el catalogo no se
+              puede dibujar: antes se colaba en la lista y
+              terminaba mostrando "undefined" y una imagen
+              rota. Se descarta y el resto del carrito sigue. */
+           if (!producto) return null;
 
            return {
                id: producto.id,
                nombre: producto.nombre,
                categoria: producto.categoria,
                imagen: producto.imagen,
-               precio: item.precio ?? precios[producto.id] ?? producto.precioBase,
-               cantidad: Number(item.cantidad) || 1
+               precio: Number.isFinite(Number(item.precio))
+                   ? Number(item.precio)
+                   : precios[producto.id] ?? producto.precioBase,
+               cantidad: Math.max(1, Number(item.cantidad) || 1)
            };
 
-       });
+       }).filter(Boolean);
+
+   }
+
+
+   /* ==========================================================
+      ALMACENAMIENTO DEL CARRITO
+      ------------------------------------------------------------
+      En modo privado, con cookies de terceros bloqueadas o
+      con la cuota llena, localStorage puede lanzar. Sin este
+      rodeo, obtenerCarrito() rompia la pagina entera. Ahora
+      el carrito sigue funcionando en memoria durante la
+      sesion, solo que no sobrevive a la recarga.
+      ========================================================== */
+
+   let carritoSinGuardar = null;
+
+   function leerCarritoGuardado() {
+
+       try {
+           return JSON.parse(localStorage.getItem("zapiCart")) || [];
+       } catch (error) {
+           console.warn("No se pudo leer el carrito guardado:", error);
+           return [];
+       }
+
+   }
+
+   function guardarCarrito(carrito) {
+
+       try {
+           localStorage.setItem("zapiCart", JSON.stringify(carrito));
+       } catch (error) {
+           carritoSinGuardar = carrito;
+           console.warn("El carrito no se pudo guardar, se mantiene solo en memoria:", error);
+       }
 
    }
 
    function obtenerCarrito() {
-       return normalizarCarrito(
-           JSON.parse(localStorage.getItem("zapiCart")) || []
-       );
-   }
 
-   function guardarCarrito(carrito) {
-       localStorage.setItem("zapiCart", JSON.stringify(carrito));
+       if (carritoSinGuardar) return normalizarCarrito(carritoSinGuardar);
+
+       const guardado = leerCarritoGuardado();
+
+       if (!Array.isArray(guardado)) return [];
+
+       return normalizarCarrito(guardado);
+
    }
 
 
@@ -374,7 +435,72 @@ document.addEventListener("modal:agregar", function (evento) {
    alt-tab) se reanuda; si el navegador no soporta Web Audio se
    devuelve null y el carrito sigue funcionando igual, solo que
    en silencio.
+
+   Hay un interruptor global: guarda la eleccion en localStorage
+   y arranca con el sonido apagado si la persona prefiero menos
+   animacion o ya lo habia apagado antes. El boton vive en el
+   header, asi que el mismo switch sirve en las tres paginas.
    ========================================================== */
+
+const CLAVE_SONIDO = "zapiSonido";
+
+function sonidoHabilitado() {
+
+    try {
+
+        if (localStorage.getItem(CLAVE_SONIDO) === "off") return false;
+
+    } catch (error) {
+
+        /* Sin almacenamiento no se puede recordar la eleccion, pero
+           tampoco hay que romper nada: se sigue con la preferencia
+           del sistema. */
+
+    }
+
+    /* prefers-reduced-motion se extiende a sonido por el mismo
+       motivo: si la persona pidio menos movimiento, lo mas
+       probable es que no quiera un tono en cada accion. */
+
+    return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+}
+
+function aplicarEstadoSonido(activo) {
+
+    document.documentElement.classList.toggle("sonido-off", !activo);
+
+    const boton = document.getElementById("sonidoToggle");
+
+    if (!boton) return;
+
+    boton.setAttribute("aria-pressed", String(activo));
+    boton.setAttribute("aria-label",
+        activo ? "Desactivar sonidos" : "Activar sonidos");
+
+    /* El nombre del icono es lo unico que cambia en la pantalla,
+       asi que se dibuja desde el estado y no queda una segunda
+       fuente de verdad que se pueda desincronizar. */
+
+    const icono = boton.querySelector("[data-sonido-icono]");
+
+    if (icono) {
+        icono.textContent = activo ? "volume_up" : "volume_off";
+    }
+
+}
+
+function cambiarSonido(activo) {
+
+    try {
+        localStorage.setItem(CLAVE_SONIDO, activo ? "on" : "off");
+    } catch (error) {
+        /* si no se puede guardar, el cambio dura hasta recargar */
+    }
+
+    aplicarEstadoSonido(activo);
+
+}
 
 let audioZapi = null;
 
@@ -397,6 +523,8 @@ function contextoAudio() {
 }
 
 function sonidoAgregar() {
+
+    if (!sonidoHabilitado()) return;
 
     const ctx = contextoAudio();
 
@@ -449,6 +577,33 @@ function sonidoAgregar() {
 
 
 /* ==========================================================
+   INTERRUPTOR DE SONIDO
+   ------------------------------------------------------------
+   Se engancha solo en las paginas que tienen el boton. El estado
+   se aplica al <html> con la clase sonido-off, y el boton refleja
+   si el sonido esta activo con aria-pressed.
+   ========================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const boton = document.getElementById("sonidoToggle");
+
+    if (!boton) return;
+
+    /* Se aplica el estado guardado antes de que suene nada. */
+
+    aplicarEstadoSonido(sonidoHabilitado());
+
+    boton.addEventListener("click", function () {
+
+        cambiarSonido(!sonidoHabilitado());
+
+    });
+
+});
+
+
+/* ==========================================================
    PRECIOS FIJOS
    El precio de cada producto es siempre
    su precioBase, sin variaciones.
@@ -459,3 +614,55 @@ const precios = {};
 PRODUCTOS.forEach(producto => {
     precios[producto.id] = producto.precioBase;
 });
+
+
+/* ==========================================================
+   IMAGENES QUE NO CARGAN
+   ------------------------------------------------------------
+   Un producto puede quedar con una foto que ya no esta en el
+   servidor, o con una ruta mal escrita. Antes eso dejaba el
+   icono de imagen rota del navegador adentro del marco, con el
+   fondo gris y el texto alt al lado.
+
+   Se escucha el evento "error" de forma global y se cambia la
+   foto por un marcador con los colores de la marca. Va con
+   data: URI para no sumar un request a un archivo que solo se
+   usa cuando algo ya salio mal.
+
+   El evento "error" no burbujea, asi que hace falta capturarlo
+   en la fase de captura: un listener comun en <img> o en su
+   contenedor padre no lo veria.
+   ========================================================== */
+
+const IMAGEN_FALLBACK = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150" ' +
+    'preserveAspectRatio="xMidYMid meet">' +
+    '<rect width="120" height="150" fill="#f7f4ec"/>' +
+    '<path d="M60 96V58" stroke="#4a7c59" stroke-width="3" stroke-linecap="round"/>' +
+    '<path d="M60 74c-16 0-24-10-24-24 14-2 24 6 24 24Z" fill="#4a7c59"/>' +
+    '<path d="M60 84c16 0 24-10 24-24-14-2-24 6-24 24Z" fill="#2f5c3c"/>' +
+    '<path d="M36 116h48" stroke="#2f5c3c" stroke-width="3" stroke-linecap="round"/>' +
+    '</svg>'
+);
+
+document.addEventListener("error", (evento) => {
+
+    const imagen = evento.target;
+
+    if (!(imagen instanceof HTMLImageElement)) return;
+
+    /* La marca evita el bucle: si el propio marcador fallara,
+       el evento vuelve a disparar el handler. */
+
+    if (imagen.dataset.fallbackImagen === "si") return;
+
+    imagen.dataset.fallbackImagen = "si";
+
+    imagen.src = IMAGEN_FALLBACK;
+
+    /* Si la foto original no tenia texto alternativo, el marcador
+       no aporta nada, asi que se deja claro que no hay imagen. */
+
+    if (!imagen.alt) imagen.alt = "Imagen no disponible";
+
+}, true);
