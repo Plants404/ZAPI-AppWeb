@@ -1,0 +1,22 @@
+# Base de datos: es estado, no codigo. Va con los pedidos, los
+# telefonos de los clientes y el stock, asi que no se versiona.
+# Para reiniciar de cero: borrar data/ y arrancar el servidor.
+data/
+
+# Secretos. ZAPI_SESSION_SECRET y ZAPI_ADMIN_TOKEN van aca. Nunca
+# un .env en el repo: se versiona el .env.example con los nombres.
+.env
+.env.local
+
+# Dependencias: el sitio no tiene ninguna en el navegador y en el
+# servidor solo se usa express.
+node_modules/
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
