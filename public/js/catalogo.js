@@ -120,12 +120,229 @@ document.addEventListener("click", function (event) {
 
 
 /* ==========================================================
+   SCROLL INFINITO
+   ------------------------------------------------------------
+   Los productos no se dibujan todos de una vez: entran por lotes
+   de PRODUCTOS_POR_LOTE y el lote siguiente se pide cuando el
+   centinela (un div vacio debajo de la grilla) entra a pantalla.
+
+   Con los 7 productos que hay hoy y un lote de 6 se ve el
+   mecanismo: al cargar aparecen 6 tarjetas y la septima al bajar.
+   Cuando el catalogo crezca, esto ya estara hecho y solo va a
+   cargar mas. El tamano del lote se cambia en esa constante de
+   arriba.
+
+   Por que IntersectionObserver y no un listener de scroll: el
+   observer avisa cuando el elemento se ve, no cada vez que se
+   mueve un pixel la pagina, asi que no hace falta calcular
+   posiciones ni mirando cada scroll.
+
+   Lo que hay que tener cuidado:
+
+   1. Cambiar de filtro o de busqueda vuelve al primer lote. Si
+      no, al filtrar por una categoria con 3 productos se
+      seguian viendo los que ya habian cargado del filtro anterior.
+   2. Mientras se esta pidiendo un lote no se pide otro, para que
+      un scroll rapido no carregue tres veces el mismo.
+   3. Cuando se terminaron los productos, el observer se
+      desconecta. Si no, queda mirando un centinela que nunca mas
+      va a disparar y cada filtro nuevo paga el costo de un
+      observer vivo.
+   4. El aviso con role=status dice cuantos productos hay y que
+      se estan cargando mas: quien navega con lector de pantalla no
+      tiene forma de saber que el scroll sigue trayendo cosas.
+   ========================================================== */
+
+const PRODUCTOS_POR_LOTE = 6;
+
+/* Los productos que pasan el filtro en este momento, y cuantos ya
+   se dibujaron. La lista se calcula una vez por render y se
+   recorre de a lotes; no se vuelve a filtrar en cada pedido. */
+let productosFiltrados = [];
+let mostrados = 0;
+
+let centinela = null;
+let avisoCatalogo = null;
+letObserverScroll = null;
+let cargando = false;
+
+
+function conectarCentinela() {
+
+    if (!centinela || !("IntersectionObserver" in window)) return;
+
+    ObserverScroll = new IntersectionObserver((entradas) => {
+
+        /* Se pide el lote siguiente solo si el centinela esta
+           entrando a pantalla. Sin este filtro, tambien saltaria
+           la primera vez que no hay nada que cargar. */
+        if (entradas.some(entrada => entrada.isIntersecting)) {
+
+            cargarMas();
+
+        }
+
+    }, {
+
+        /* rootMargin carga antes de que el centinela llegue
+           exactamente a la pantalla: si no, la primera tanda se
+           ve y recien ahi se empieza a pedir la segunda, y en una
+           pagina rapida se nota el tiron. */
+        rootMargin: "200px 0px",
+
+    });
+
+    ObserverScroll.observe(centinela);
+
+}
+
+
+/* Dibuja el siguiente lote. Si ya se-Endaron todos los productos,
+   desconecta el observer y no hace nada mas. */
+
+function cargarMas() {
+
+    if (cargando) return;
+
+    if (mostrados >= productosFiltrados.length) {
+
+        if (ObserverScroll) {
+
+            ObserverScroll.disconnect();
+            ObserverScroll = null;
+
+        }
+
+        return;
+
+    }
+
+    cargando = true;
+
+    const lote = productosFiltrados.slice(mostrados, mostrados + PRODUCTOS_POR_LOTE);
+
+    mostrados += lote.length;
+
+    agregarTarjetas(lote);
+
+    /* Con el ultimo lote se suelta el observer: ya no hay nada
+       mas que cargar y el listener no hace falta. */
+    if (mostrados >= productosFiltrados.length && ObserverScroll) {
+
+        ObserverScroll.disconnect();
+        ObserverScroll = null;
+
+    }
+
+    /* El contador del buscador cuenta las tarjetas de verdad, asi
+       que hay que avisarle que la grilla cambio. */
+    if (typeof window.aplicarBusqueda === "function" && busquedaActual) {
+
+        window.aplicarBusqueda(busquedaActual, { mantenerScroll: true });
+
+    }
+
+    if (avisoCatalogo) {
+
+        const quedan = productosFiltrados.length - mostrados;
+
+        avisoCatalogo.textContent = quedan === 0
+            ? "Se/licreron los " + mostrados + " productos de la categoria."
+            : "Cargando mas productos. Van " + mostrados + " de " +
+              productosFiltrados.length + ".";
+
+    }
+
+    cargando = false;
+
+}
+
+
+/* El HTML de una tarjeta. Vive en su propia funcion porque ahora
+   la escribe el render inicial y tambien cada lote del scroll
+   infinito: antes estaba metido dentro de renderCatalog. */
+
+function tarjetaProducto(producto) {
+
+    return `
+
+            <article class="product-card" data-id="${producto.id}">
+
+                <div class="product-visual">
+                    <span class="product-badge">${escaparHTML(producto.categoria)}</span>
+                    <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
+                </div>
+
+                <div class="product-body">
+                    <h3 class="product-name">
+                        <button class="product-link" type="button" data-id="${producto.id}"
+                            aria-haspopup="dialog">
+                            ${escaparHTML(producto.nombre)}
+                        </button>
+                    </h3>
+
+                    <p class="product-desc">${escaparHTML(producto.descripcion)}</p>
+
+                    <div class="product-info-wrap">
+                        <div class="product-info">
+                            <ul>
+                                ${producto.infoDeVenta.map(item => `
+
+                                <li>
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                    <span>${escaparHTML(item)}</span>
+                                </li>
+
+                                `).join("")}
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-footer">
+                    <div class="product-price">
+                        <span class="current">${formatearPrecio(precios[producto.id])}</span>
+                        <span class="since">precio por unidad</span>
+                    </div>
+
+                    <button class="add-cart" type="button" data-id="${producto.id}">
+                        <span class="material-symbols-outlined">add_shopping_cart</span>
+                        Agregar al carrito
+                    </button>
+                </div>
+
+            </article>
+
+        `;
+
+}
+
+/* Dibuja las tarjetas de un lote. Van con += y no con = porque el
+   scroll infinito va sumando al final de lo que ya esta: si se
+   reemplazara el innerHTML se perderian los lotes anteriores. El
+   primer += sobre una grilla vacia es igual que un =. */
+
+function agregarTarjetas(lote) {
+
+    const grid = document.getElementById("productGrid");
+
+    if (!grid || !lote.length) return;
+
+    grid.insertAdjacentHTML("beforeend", lote.map(tarjetaProducto).join(""));
+
+}
+
+
+/* ==========================================================
    RENDERIZAR CATÁLOGO
    ------------------------------------------------------------
-   Un article por producto dentro de #productGrid. La
-   tarjeta completa es un boton (role, tabindex y
-   aria-haspopup) para que se pueda abrir con teclado y los
-   lectores de pantalla sepan que abre algo.
+   Un article por producto dentro de #productGrid. Solo se
+   dibuja el primer lote: los demas llegan por scroll infinito.
+
+   Al cambiar de filtro o de busqueda esto vuelve a arrancar
+   desde cero: se suelta el observer viejo, se recalcula la
+   lista y se dibuja el primer lote.
    ========================================================== */
 
 function renderCatalog() {
@@ -134,17 +351,30 @@ function renderCatalog() {
 
     if (!grid) return;
 
-    const productos = PRODUCTOS.filter(producto =>
+    /* Cada render arranca de nuevo. Si el observer del filtro
+       anterior sigue vivo, dispara sobre una grilla que ya no
+       tiene nada que ver con el. */
+    if (observerScroll) {
+
+        observerScroll.disconnect();
+        observerScroll = null;
+
+    }
+
+    productosFiltrados = PRODUCTOS.filter(producto =>
         (!categoriaActual || producto.categoria === categoriaActual)
         && coincideBusqueda(producto)
     );
+
+    mostrados = 0;
+    cargando = false;
 
     /* El filtro puede dejar la grilla vacia: por una categoria
        sin productos, o porque el texto buscado no coincide con
        nada. Son dos motivos distintos y el mensaje va distinto,
        con un atajo para limpiar solo la causa. */
 
-    if (productos.length === 0) {
+    if (productosFiltrados.length === 0) {
 
         const buscando = busquedaActual.length > 0;
         const conCategoria = categoriaActual.length > 0;
@@ -179,53 +409,24 @@ function renderCatalog() {
 
         `;
 
+        if (avisoCatalogo) avisoCatalogo.textContent = "";
+
         return;
 
     }
 
-    grid.innerHTML = productos.map(producto => {
+    grid.innerHTML = "";
 
-        return `
-            <article class="product-card" data-id="${producto.id}">
-                <div class="product-visual">
-                    <span class="product-badge">${escaparHTML(producto.categoria)}</span>
-                    <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
-                </div>
-                <div class="product-body">
-                    <h3 class="product-name">
-                        <button class="product-link" type="button" data-id="${producto.id}"
-                            aria-haspopup="dialog">
-                            ${escaparHTML(producto.nombre)}
-                        </button>
-                    </h3>
-                    <p class="product-desc">${escaparHTML(producto.descripcion)}</p>
+    cargarMas();
 
-                    <div class="product-info-wrap">
-                        <div class="product-info">
-                            <ul>
-                                ${producto.infoDeVenta.map(item => `
-                                <li>
-                                    <span class="material-symbols-outlined">check_circle</span>
-                                    <span>${escaparHTML(item)}</span>
-                                </li>
-                                `).join("")}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="product-footer">
-                    <div class="product-price">
-                        <span class="current">${formatearPrecio(precios[producto.id])}</span>
-                        <span class="since">precio por unidad</span>
-                    </div>
-                    <button class="add-cart" type="button" data-id="${producto.id}">
-                        <span class="material-symbols-outlined">add_shopping_cart</span>
-                        Agregar al carrito
-                    </button>
-                </div>
-            </article>
-        `;
-    }).join("");
+    /* Si ya se dibujo todo en el primer lote no hay nada que
+       esperar con scroll: el observer no llega a hacer falta. */
+    if (mostrados < productosFiltrados.length) {
+
+        conectarCentinela();
+
+    }
+
 }
 
 
@@ -357,10 +558,9 @@ document.addEventListener("click", function (event) {
 
 });
 
-/* Cuantos productos hay visibles ahora, para el aviso del
-   buscador. Cuenta lo que hay en la grilla, no lo que dice
-   el filtro, asi que si algo falla al dibujar, el numero
-   sigue siendo el correcto. */
+/* Cuantos productos hay visibles ahora. Con el scroll infinito
+   esto es menor que el total: dice cuantas tarjetas hay
+   dibujadas de verdad, que es lo que se ve. */
 
 function productosVisibles() {
 
@@ -369,15 +569,29 @@ function productosVisibles() {
 }
 
 /* El buscador del header y el filtro de catalogo comparten el
-   texto. este es el punto de entrada que usa buscador.js: deja
-   el estado, redibuja y avisa. Devuelve cuantos quedaron, que
-   es lo que buscador.js lee para el aria-live. */
+   texto. este es el punto de entrada que usa buscador.js: deja el
+   estado, redibuja y avisa. Devuelve cuantos quedaron, que
+   es lo que buscador.js lee para el aria-live.
 
-window.aplicarBusqueda = function (texto) {
+   Con el scroll infinito, avisa cuantos HAY (productosFiltrados),
+   no cuantos estan dibujados: si no, al escribir "cactus" se
+   anunciaria "1 producto" y al terminar de cargar el resto se
+   anunciaria otra vez con el numero real. mantenerScroll evita que
+   un filtro repetido salte al inicio de la pagina mientras la
+   persona esta leyendo mas abajo. */
+
+window.aplicarBusqueda = function (texto, opciones) {
 
     busquedaActual = texto.trim();
     renderCatalog();
-    return productosVisibles();
+
+    if (!opciones || !opciones.mantenerScroll) {
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+    }
+
+    return productosFiltrados.length;
 
 };
 
@@ -402,6 +616,15 @@ function actualizarBuscadorHeader() {
    contador al dia con lo que ya habia en el carrito (sin
    animarlo: todavia no hizo nada el visitante).
    ========================================================== */
+
+/* El centinela y el aviso se buscan una vez: son los mismos para
+   todos los lotes y para todos los filtros. Si no estan (por
+   ejemplo porque la grilla se copio en una pagina que no los
+   tiene) el scroll infinito no arranca, pero la grilla sigue
+   mostrando los productos del primer lote. */
+
+centinela = document.querySelector("[data-centinela]");
+avisoCatalogo = document.querySelector("[data-catalogo-aviso]");
 
 renderFiltros();
 renderCatalog();

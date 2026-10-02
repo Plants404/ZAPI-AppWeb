@@ -76,63 +76,6 @@
     border-bottom-color: var(--leaf);
 }
 
-/* El interruptor de sonido comparte la forma de los links del
-   header del carrito, pero como es un boton necesita sus propios
-   estados: el foco por teclado y el color cuando esta apagado. */
-.cart-sonido {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    width: 44px;
-
-    height: 44px;
-
-    margin-left: .25rem;
-
-    color: var(--forest);
-
-    background: none;
-
-    border: 0;
-
-    border-radius: 50%;
-
-    cursor: pointer;
-
-    transition: background .2s ease, color .2s ease;
-
-}
-
-.cart-sonido:hover {
-
-    background: rgba(74, 124, 89, .10);
-
-}
-
-.cart-sonido:focus-visible {
-
-    outline: 2px solid var(--leaf-texto);
-
-    outline-offset: 2px;
-
-}
-
-.cart-sonido .material-symbols-outlined {
-
-    font-size: 1.25rem;
-
-}
-
-.sonido-off .cart-sonido {
-
-    color: var(--muted-texto);
-
-}
-
 .cart-footer {
     background: var(--ink);
     color: rgba(247, 244, 236, .7);

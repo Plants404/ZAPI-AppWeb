@@ -548,28 +548,6 @@ header.menu-abierto::before {
   opacity: 1;
 }
 
-/* Interruptor de sonido. En movil se ve solo el icono para no
-   sumar otro renglon al menu, y el texto queda solo en escritorio. */
-.nav-link-sonido {
-  display: flex;
-  align-items: center;
-  gap: .45rem;
-}
-
-.nav-sonido-texto {
-  display: none;
-}
-
-.nav-sonido-icono {
-  font-size: 1.1rem;
-}
-
-/* Cuando el sonido esta apagado el icono cambia de nombre; el
-   boton guarda el estado en aria-pressed. */
-.sonido-off .nav-sonido-icono {
-  color: var(--muted-texto);
-}
-
 .nav-bar ul {
   display: flex;
   flex-direction: column;
@@ -1699,12 +1677,6 @@ footer nav a:focus-visible {
     flex-wrap: nowrap;
     gap: 1.25rem;
     padding: 1rem 2rem;
-  }
-
-  /* En escritorio el interruptor de sonido vuelve a mostrar el
-     texto, igual que el resto de los links del nav. */
-  .nav-sonido-texto {
-    display: inline;
   }
 
   /* El panel ya no existe, asi que el header recupera su fondo y

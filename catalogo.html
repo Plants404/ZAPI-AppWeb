@@ -85,19 +85,6 @@
                             data-cart-count aria-hidden="true">0</span>
                     </a>
                 </li>
-
-                <!-- Mismo interruptor que en index.html. El estado
-                     lo aplica productos.js, que esta cargado en las
-                     dos paginas. -->
-                <li>
-                    <button type="button" class="nav-link nav-link-sonido"
-                        id="sonidoToggle" aria-pressed="true"
-                        aria-label="Desactivar sonidos">
-                        <span class="material-symbols-outlined nav-sonido-icono"
-                            aria-hidden="true" data-sonido-icono>volume_up</span>
-                        <span class="nav-sonido-texto">Sonido</span>
-                    </button>
-                </li>
             </ul>
         </nav>
     </header>
@@ -136,6 +123,20 @@
             <div id="productGrid" class="catalog-grid">
                 <!-- JavaScript genera los productos -->
             </div>
+
+            <!-- Scroll infinito. El centinela va despues de la grilla
+                 y no dentro: catalogo.js lo mira con
+                 IntersectionObserver y cuando entra a pantalla pide
+                 el lote siguiente. aria-hidden y el aviso con
+                 role=status son la parte accesible: sin ellos el
+                 scroll no existiria para quien no ve ni para quien
+                 navega con lector de pantalla. -->
+            <div class="catalog-centinela" data-centinela aria-hidden="true"></div>
+
+            <!-- Aviso para lectores de pantalla de cuantos productos
+                 hay y de que se estan cargando mas al bajar. -->
+            <p class="visually-hidden" role="status" aria-live="polite"
+                data-catalogo-aviso></p>
 
         </section>
 
