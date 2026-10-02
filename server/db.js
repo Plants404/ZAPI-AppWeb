@@ -119,8 +119,24 @@ db.exec(`
         PRIMARY KEY (pedido_id, producto_id)
     );
 
+    /* Mensajes del formulario de contacto. Es una bandeja de entrada:
+       se escribe, se lee desde el administrador y no se borra (salvo
+       que se conteste). Por eso no tiene clave foranea a nada: un
+       mensaje tiene que sobrevivir aunque se borre el producto sobre
+       el que pregunto, y nadie borra productos. */
+    CREATE TABLE IF NOT EXISTS mensajes (
+        id        INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre    TEXT NOT NULL,
+        correo    TEXT NOT NULL,
+        telefono  TEXT NOT NULL,
+        consulta  TEXT NOT NULL,
+        estado    TEXT NOT NULL DEFAULT 'nuevo',
+        creado    TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_pedidos_estado ON pedidos(estado);
     CREATE INDEX IF NOT EXISTS idx_items_producto ON carrito_items(producto_id);
+    CREATE INDEX IF NOT EXISTS idx_mensajes_estado ON mensajes(estado, id);
 `);
 
 /* ------------------------------------------------------------------
@@ -340,5 +356,22 @@ module.exports = {
         ).get(productoId);
 
         return fila ? fila.unidades : null;
+    },
+
+    /* ----------------------------------------------------------------
+       Contacto
+       ---------------------------------------------------------------- */
+
+    /* Guarda una consulta del formulario de contacto. El texto ya
+       viene limpio desde rutas-api.js: aca no se vuelve a recortar,
+       para que el largo guardado sea el que el visitante escribio y
+       no el que la base trunque. */
+    crearMensaje(datos) {
+        return db.prepare(`
+            INSERT INTO mensajes (nombre, correo, telefono, consulta, estado, creado)
+            VALUES (?, ?, ?, ?, 'nuevo', ?)
+        `).run(
+            datos.nombre, datos.correo, datos.telefono, datos.consulta, datos.creado
+        );
     }
 };
