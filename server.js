@@ -315,6 +315,11 @@ app.delete('/api/carrito/:id', api.quitar);
 
 app.post('/api/pedidos', limiteEscritura, api.crearPedido);
 
+/* El formulario de contacto va con el mismo limite que los pedidos:
+   escribir en la base es lo caro, y un formulario abierto sin limite
+   es la forma mas facil de llenar la bandeja de spam. */
+app.post('/api/contacto', limiteEscritura, api.crearContacto);
+
 /* Una ruta /api que no existe tiene que contestar JSON. Si cayera en
    el 404 de mas abajo devolveria el index.html, que es un HTML
    entero donde el fetch solo receive un error de sintaxis. */

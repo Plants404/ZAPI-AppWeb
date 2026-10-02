@@ -88,6 +88,9 @@ const PARES = [
     ['texto normal', 4.5, '#ffffff', '#0a7b6e', 'boton de WhatsApp (gradiente)'],
     ['texto normal', 4.5, '#ffffff', '#075e54', 'boton de WhatsApp, fin del gradiente'],
     ['texto normal', 4.5, '#ffffff', '#c23a3d', 'badge de error del chatbot'],
+    ['texto normal', 4.5, '--error', '--white', 'mensaje de error del formulario sobre blanco'],
+    ['texto normal', 4.5, '--error', '--cream', 'mensaje de error del formulario sobre crema'],
+    ['UI / foco', 3, '--error', '--white', 'borde del campo con error sobre blanco'],
     ['texto normal', 4.5, '#ffffff', '#1f3a2e', 'texto sobre footer oscuro']
 ];
 

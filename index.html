@@ -21,35 +21,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  <!-- Google Fonts: tipografia del sitio y los Material Symbols de
-       los iconos, en UNA sola peticion. Antes eran dos <link> al
-       mismo origen: el navegador hacia dos conexiones y la segunda
-       bloqueaba el render. El eje italico de Inter no se usa en
-       ningun lado, asi que no se pide: son menos bytes por pagina. -->
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
 
-  <!-- La imagen del hero es el LCP de esta pagina. Se precarga para
-       que la descarga arranque al abrir el <head> y no cuando el
-       parser llega al <img> mas abajo. width/height ya estan en la
-       etiqueta, asi que no hay salto de maquetacion. -->
   <link rel="preload" as="image" href="././public/img/plants-hero.opt.jpg" fetchpriority="high">
 
-  <!-- El orden importa: styles.css pone las secciones del index,
-       stylecarrito.css el carrito, catalogo-catalogo.css la grilla
-       de productos y catalogo-modal.css la ventana de detalle, y
-       asi el modal gana sobre los estilos del carrito. Los dos
-       archivos de catalogo se generan desde catalogo.css con
-       node tools/extraer-modal-css.js -->
   <link rel="stylesheet" href="./public/css/styles.css">
   <link rel="stylesheet" href="./public/css/stylecarrito.css">
   <link rel="stylesheet" href="./public/css/catalogo-catalogo.css">
   <link rel="stylesheet" href="./public/css/catalogo-modal.css">
   <link rel="stylesheet" href="./public/css/zapi-bot.css">
 
-  <!-- Favicon: el logo.svg ya existe, asi que se reutiliza en vez
-       de dejar referencias a archivos que no estan. Para iOS hace
-       falta un PNG de 180px, que se agrega cuando exista. -->
   <link rel="icon" type="image/svg+xml" href="././public/img/logo.svg">
 
 </head>
@@ -58,9 +40,6 @@
 
     <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 
-    <!-- header. El orden de las piezas esta pensado para mobile:
-       el buscador va arriba, el logo y el boton de menu abajo,
-       y de 900px para arriba se acomodan en una sola fila. -->
   <header>
     <!-- boton de menu. Solo existe en el DOM, no en pantalla: la
          hamburguesa se dibuja con tres <span> para poder
@@ -173,6 +152,28 @@
       <!--buttons-->
       <button type="button" data-section="catalogo">Explorar Catálogo</button>
       <button type="button" data-section="servicios">Conocer nuestros servicios</button>
+    </section>
+
+    <!-- Testimonios. data-parte-de="inicio" los ata al inicio: el
+         router de navigation.js muestra las dos secciones juntas
+         cuando la activa es "inicio", asi que se ven al abrir la
+         pagina sin pasar por el menu. El carrusel lo dibuja
+         public/js/testimonios.js. -->
+    <section class="section testimonios" id="testimonios" data-parte-de="inicio">
+      <div class="testimonios-cabecera">
+        <span class="contacto-eyebrow">TESTIMONIOS</span>
+
+        <h2>Lo que dicen nuestros clientes</h2>
+
+        <p>Historias de quienes ya transformaron sus espacios con ZAPI.</p>
+      </div>
+
+      <!-- El markup del carrusel lo arma testimonios.js. El
+           contenedor queda con role="region" para que el lector de
+           pantalla lo anuncie como una unidad y se pueda saltar con
+           un solo tabulador. -->
+      <div class="testimonios-carrusel" id="testimoniosCarrusel" role="region"
+        aria-roledescription="carrusel" aria-label="Testimonios de clientes"></div>
     </section>
 
     <!-- catalog section -->
@@ -374,17 +375,6 @@
         </article>
       </div>
     </section>
-    <!-- Testimonios. La seccion quedo vacia con un link "Blog" en el
-         nav que no llegaba a nada, asi que se saco el link del nav.
-         El id es "testimonios" (antes "blog"), asi que sigue siendo
-         alcanzable por URL directa. A la espera del contenido real. -->
-    <section class="section testimonials hidden" id="testimonios">
-      <h2>Testimonios</h2>
-      <p>Lo que dicen nuestros clientes</p>
-
-      <div class="blog-items"></div>
-    </section>
-
     <!---Benefits / nosotros section-->
     <section class="section benefits hidden" id="nosotros">
       <h2>Beneficios</h2>
@@ -416,16 +406,124 @@
       </article>
     </section>
 
-    <!--contacto section-->
+    <!--contacto section. Dos columnas: a la izquierda el texto y los
+         accesos rapidos al catalogo y a los servicios, a la derecha
+         el formulario. En movil se apilan, con el texto primero. -->
     <section class="section call-to-actions-view hidden" id="contacto">
-      <div class="call-to-actions">
-        <h2>Empezá hoy a transformar tus espacios
-        </h2>
-        <p>Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada
-          etapa del proceso.
-          Los botones de acción se dirigirán al catálogo y al formulario de contacto.</p>
-        <button type="button" data-section="catalogo">Explorar Catálogo</button>
-        <button type="button" data-section="servicios">Conocer nuestros servicios</button>
+      <div class="contacto">
+
+        <!-- Columna de texto -->
+        <div class="contacto-info">
+          <span class="contacto-eyebrow">CONTACTO</span>
+
+          <h2>Empezá hoy a transformar tus espacios</h2>
+
+          <p>Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada
+            etapa del proceso.</p>
+
+          <!-- Los botones de accion siguen siendo los mismos de
+               siempre: catalogo y servicios. Ahora quedan abajo del
+               texto, al lado del formulario, en vez de perdidos
+               abajo de un bloque sin forma. -->
+          <div class="contacto-acciones">
+            <button type="button" data-section="catalogo">Explorar Catálogo</button>
+            <button type="button" data-section="servicios">Conocer nuestros servicios</button>
+          </div>
+
+          <p class="contacto-nota">
+            <span class="material-symbols-outlined" aria-hidden="true">lock</span>
+            Tus datos solo se usan para responderte esta consulta.
+          </p>
+        </div>
+
+        <!-- Columna del formulario -->
+        <div class="contacto-panel">
+          <h3 class="contacto-panel-titulo">Escribinos</h3>
+
+          <form class="formulario" id="contactoForm" novalidate>
+            <!-- Campo trampa contra robots: escondido para la
+                 persona (se queda fuera de pantalla y sin foco) y
+                 visible para el que completa todos los inputs. Si
+                 viene relleno el servidor lo acepta sin guardarlo. -->
+            <div class="formulario-trampa" aria-hidden="true">
+              <label for="contactoSitio">No completes este campo</label>
+              <input type="text" id="contactoSitio" name="sitio_web" tabindex="-1" autocomplete="off">
+            </div>
+
+            <div class="campo">
+              <label class="campo-label" for="contactoNombre">Nombre <span aria-hidden="true">*</span></label>
+              <input class="campo-input" type="text" id="contactoNombre" name="nombre" autocomplete="name"
+                maxlength="120" required aria-required="true" aria-describedby="errorNombre">
+              <span class="campo-error" id="errorNombre"></span>
+            </div>
+
+            <div class="campo">
+              <label class="campo-label" for="contactoCorreo">Correo electrónico <span aria-hidden="true">*</span></label>
+              <input class="campo-input" type="email" id="contactoCorreo" name="correo" autocomplete="email"
+                inputmode="email" maxlength="160" required aria-required="true" aria-describedby="errorCorreo">
+              <span class="campo-error" id="errorCorreo"></span>
+            </div>
+
+            <div class="campo">
+              <label class="campo-label" for="contactoTelefono">Teléfono <span aria-hidden="true">*</span></label>
+              <input class="campo-input" type="tel" id="contactoTelefono" name="telefono" autocomplete="tel"
+                inputmode="tel" maxlength="40" required aria-required="true" aria-describedby="errorTelefono">
+              <span class="campo-error" id="errorTelefono"></span>
+            </div>
+
+            <div class="campo">
+              <label class="campo-label" for="contactoConsulta">Consulta <span aria-hidden="true">*</span></label>
+              <textarea class="campo-input campo-area" id="contactoConsulta" name="consulta" rows="5"
+                maxlength="2000" required aria-required="true" aria-describedby="errorConsulta"
+                placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..."></textarea>
+              <div class="campo-ayuda">
+                <!-- El contador va aria-hidden: es una ayuda visual y
+                     su texto ("2000") no significa nada leído solo. El
+                     error si se anuncia, porque esta en el
+                     aria-describedby del textarea. -->
+                <span class="campo-error" id="errorConsulta"></span>
+                <span class="campo-contador" id="contactoContador" aria-hidden="true">2000</span>
+              </div>
+            </div>
+
+            <div class="formulario-pie">
+              <button class="formulario-enviar" type="submit" id="contactoEnviar">
+                <span class="material-symbols-outlined" aria-hidden="true">send</span>
+                <span id="contactoEnviarTexto">Enviar consulta</span>
+              </button>
+
+              <p class="formulario-obligatorio">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
+            </div>
+
+            <!-- region de estado: el mismo elemento para el error y
+                 para el exito, porque solo hay una cosa que anunciar
+                 a la vez. aria-live polite para no cortar lo que el
+                 lector de pantalla este leyendo. -->
+            <p class="formulario-estado" id="contactoEstado" role="status" aria-live="polite"></p>
+          </form>
+
+          <!-- Panel de exito. Vive siempre en el DOM pero escondido:
+               asi el cambio de estado lo anuncia el live region del
+               formulario sin tener que insertar texto nuevo. -->
+          <div class="formulario-ok" id="contactoOk" role="group" aria-labelledby="contactoOkTitulo" hidden>
+            <span class="material-symbols-outlined formulario-ok-icono" aria-hidden="true">mark_email_read</span>
+
+            <!-- tabindex="-1" para que el foco se pueda llevar al
+                 titulo cuando el formulario se oculta: si el foco
+                 se queda en el boton de enviar, que acaba de
+                 desaparecer de la pagina, el lector de pantalla se
+                 queda sin contexto. -->
+            <h3 class="formulario-ok-titulo" id="contactoOkTitulo" tabindex="-1">¡Gracias por escribirnos!</h3>
+
+            <p>Recibimos tu consulta y te vamos a responder al correo o al teléfono que dejaste.</p>
+
+            <button class="formulario-ok-boton" type="button" id="contactoReiniciar">
+              <span class="material-symbols-outlined" aria-hidden="true">add</span>
+              Enviar otra consulta
+            </button>
+          </div>
+        </div>
+
       </div>
     </section>
   </main>
@@ -517,7 +615,13 @@
      expone window.aplicarBusqueda. -->
 <script src="./public/js/buscador.js" defer></script>
 <script src="./public/js/zapi-bot.js" defer></script>
+<!-- testimonios.js dibuja el carrusel de opiniones y contacto.js
+     valida y envia el formulario: los dos dependen solo del markup
+     del index, asi que pueden ir despues del bot. -->
+<script src="./public/js/testimonios.js" defer></script>
+<script src="./public/js/contacto.js" defer></script>
 <script src="./public/js/navigation.js" defer></script>
+<script src="./public/js/menu.js" defer></script>
 <script src="./public/js/menu.js" defer></script>
 
 </body>

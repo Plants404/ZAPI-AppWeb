@@ -12,6 +12,7 @@
    PATCH  /api/carrito/:id    cambiar la cantidad
    DELETE /api/carrito/:id    sacar un producto
    POST   /api/pedidos        cerrar el pedido
+   POST   /api/contacto       consulta del formulario de contacto
 
    Que se valida y que no
    ----------------------
@@ -329,6 +330,71 @@ function crearPedido(req, res) {
 }
 
 /* ------------------------------------------------------------------
+   Contacto
+   ------------------------------------------------------------------ */
+
+/* Lo que se busca es separar "se le olvidó el @ o el .com" de "esto
+   no es un correo". No es un validador de RFC: apretar reglas de mas
+   termina rechazando direcciones que son reales. */
+const CORREO = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+/* POST /api/contacto
+   Recibe el formulario de la seccion de contacto. A diferencia del
+   carrito, aca no hay transaccion que hacer: o se guarda la consulta
+   entera o no se guarda nada, y por eso alcanza con un INSERT. */
+function crearContacto(req, res) {
+    /* Campo trampa (honeypot). Va escondido para la persona y es
+       invisible para un robot que completa todos los inputs. Si
+       viene relleno se responde 201 igual de ok: si se respondiera
+       con error, el robot aprenderia a no llenarlo, y entonces
+       dejaria de filtrarse pero a costa de un dato real menos. */
+    if (texto(req.body?.sitio_web, 100)) {
+        return res.status(201).json({ ok: true });
+    }
+
+    const nombre = texto(req.body?.nombre, 120);
+    const correo = texto(req.body?.correo, 160);
+    const telefono = texto(req.body?.telefono, 40);
+    const consulta = texto(req.body?.consulta, 2000);
+
+    /* Cada error vuelve con el nombre del campo: el front usa eso
+       para poner el foco en el input que hay que corregir, en vez
+       de pintar un error suelto arriba del formulario. */
+    if (nombre.length < 2) {
+        return res.status(400).json({ error: 'Escribí tu nombre', campo: 'nombre' });
+    }
+
+    if (!CORREO.test(correo)) {
+        return res.status(400).json({ error: 'Revisá el correo electrónico', campo: 'correo' });
+    }
+
+    /* El teléfono se cuenta por dígitos, no por largo: en Uruguay se
+       escribe con +, con guiones y con espacios, y contado crudo un
+       "09 123 456" da 10 caracteres pero un "+598 9 123 4567" da 13.
+       Lo que importa es que haya suficientes números para llamar. */
+    if (telefono.replace(/\D/g, '').length < 6) {
+        return res.status(400).json({ error: 'Revisá el teléfono de contacto', campo: 'telefono' });
+    }
+
+    if (consulta.length < 10) {
+        return res.status(400).json({
+            error: 'Contanos un poco más sobre tu consulta',
+            campo: 'consulta'
+        });
+    }
+
+    db.crearMensaje({
+        nombre,
+        correo,
+        telefono,
+        consulta,
+        creado: new Date().toISOString()
+    });
+
+    res.status(201).json({ ok: true });
+}
+
+/* ------------------------------------------------------------------
    Salud
    ------------------------------------------------------------------ */
 
@@ -350,6 +416,7 @@ module.exports = {
     fijar,
     quitar,
     crearPedido,
+    crearContacto,
     salud,
     cantidadSegura
 };

@@ -47,6 +47,21 @@ function mostrarSeccion(id, actualizarHistorial = true) {
     return;
   }
 
+  /* Una sección puede ser parte de otra con data-parte-de="otra".
+     Los testimonios viven así: son su propia <section> (para que se
+     pueda apuntar con #testimonios) pero se muestran junto con el
+     inicio. Se juntan las dos y se.ocultan todas menos ellas. */
+  const partes = new Set([seccionObjetivo.id]);
+
+  /* El id viene del hash de la URL, asi que no se arma un selector
+     con el: un # raro tiraria la excepcion al construirlo. Se filtra
+     por atributo y se compara en codigo. */
+  document.querySelectorAll('[data-parte-de]').forEach((parte) => {
+    if (parte.getAttribute('data-parte-de') === seccionObjetivo.id && parte.id) {
+      partes.add(parte.id);
+    }
+  });
+
   /* Un lector de pantalla no se entera de nada: la sección
      anterior y la nueva tienen el mismo rol de landmarks y el
      foco sigue en el link que se acaba de tocar. Se anuncia
@@ -58,11 +73,15 @@ function mostrarSeccion(id, actualizarHistorial = true) {
 
   // 1. Ocultar todas las secciones agregando la clase .hidden
   secciones.forEach((seccion) => {
-    seccion.classList.add('hidden');
+    if (!partes.has(seccion.id)) {
+      seccion.classList.add('hidden');
+    }
   });
 
-  // 2. Mostrar únicamente la sección seleccionada eliminando .hidden
-  seccionObjetivo.classList.remove('hidden');
+  // 2. Mostrar la sección elegida y las que forman parte de ella
+  partes.forEach((parteId) => {
+    document.getElementById(parteId)?.classList.remove('hidden');
+  });
 
   // 3. Sincronizar el estado activo visual y los atributos ARIA en la navegación
   actualizarNavegacionActiva(id);

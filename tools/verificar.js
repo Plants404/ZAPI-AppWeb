@@ -14,7 +14,8 @@ const HTML = ['index.html', 'catalogo.html', 'carrito.html'];
 const CSS = ['styles.css', 'catalogo.css', 'catalogo-modal.css',
     'catalogo-catalogo.css', 'stylecarrito.css', 'zapi-bot.css'];
 const JS = ['productos.js', 'modal.js', 'catalogo.js', 'carrito.js',
-    'zapi-bot.js', 'navigation.js', 'buscador.js', 'menu.js'];
+    'zapi-bot.js', 'navigation.js', 'buscador.js', 'menu.js',
+    'testimonios.js', 'contacto.js'];
 
 const rutaCss = nombre => path.join(raiz, 'public', 'css', nombre);
 const rutaJs = nombre => path.join(raiz, 'public', 'js', nombre);
@@ -32,14 +33,20 @@ for (const f of CSS) {
     if (d === 0) ok(f); else avisar(f + ' llaves desbalanceadas: ' + d);
 }
 
-/* --- 2. ARIA apunta a algo que existe --- */
+/* --- 2. ARIA apunta a algo que existe ---
+   aria-describedby y aria-labelledby aceptan una lista de ids
+   separados por espacio (el formulario de contacto describe el
+   campo con el mensaje de error y con la ayuda a la vez), asi que
+   la lista se parte antes de comparar. */
 console.log('\nARIA');
 for (const f of HTML) {
     const s = fs.readFileSync(path.join(raiz, f), 'utf8');
     const ids = new Set(Array.from(s.matchAll(/id="([^"]+)"/g), m => m[1]));
     let malos = 0;
     for (const m of s.matchAll(/aria-(?:controls|describedby|labelledby)="([^"]+)"/g)) {
-        if (!ids.has(m[1])) { avisar(f + ' aria apunta a #' + m[1] + ' que no existe'); malos++; }
+        for (const destino of m[1].trim().split(/\s+/)) {
+            if (!ids.has(destino)) { avisar(f + ' aria apunta a #' + destino + ' que no existe'); malos++; }
+        }
     }
     if (!malos) ok(f);
 }
@@ -216,7 +223,9 @@ console.log('\nScripts por pagina');
 const MARCADO_QUE_NECESITA_SCRIPT = [
     { marca: 'id="navToggle"', script: 'menu.js' },
     { marca: 'id="navBackdrop"', script: 'menu.js' },
-    { marca: 'id="headerSearch"', script: 'buscador.js' }
+    { marca: 'id="headerSearch"', script: 'buscador.js' },
+    { marca: 'id="testimoniosCarrusel"', script: 'testimonios.js' },
+    { marca: 'id="contactoForm"', script: 'contacto.js' }
 ];
 
 /* Quien define cada window.algo y quien lo usa, para poder cruzar

@@ -19,6 +19,12 @@
   --muted-texto: #5b6058;     /* 6.2:1 sobre crema y arena */
   --borde-input: #6f8f75;     /* 3.2:1 sobre blanco */
 
+  /* Error. El rojo del chatbot (#c23a3d) no daba 4.5:1 con letras
+     pequenas, asi que el texto de error usa este, mas oscuro: 6.8:1
+     sobre blanco y 6.2:1 sobre crema. Como borde tambien pasa el
+     3:1 de UI. */
+  --error: #a3341f;
+
   --radius: 14px;
   --shadow-sm: 0 2px 10px rgba(31, 58, 46, .06);
   --shadow-md: 0 12px 30px rgba(31, 58, 46, .10);
@@ -689,9 +695,12 @@ body.no-scroll {
   width: 100%;
 }
 
-/* Botones */
+/* Botones. El par "primero relleno, segundo con borde" se repite
+   entre el hero y el bloque de acciones del contacto, asi que
+   comparten la forma y solo cambian los colores: en contacto el
+   boton relleno va sobre crema y no sobre la foto. */
 .hero button,
-.call-to-actions button {
+.contacto-acciones button {
   display: inline-block;
   padding: .95rem 1.9rem;
   margin: .35rem .5rem .35rem 0;
@@ -703,30 +712,36 @@ body.no-scroll {
 }
 
 .hero button:first-of-type,
-.call-to-actions button:first-of-type {
+.contacto-acciones button:first-of-type {
   background: var(--forest);
   color: var(--cream);
   box-shadow: var(--shadow-sm);
 }
 
 .hero button:first-of-type:hover,
-.call-to-actions button:first-of-type:hover {
+.contacto-acciones button:first-of-type:hover {
   background: var(--moss);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 .hero button:last-of-type,
-.call-to-actions button:last-of-type {
+.contacto-acciones button:last-of-type {
   background: transparent;
   color: var(--forest);
   border: 1.5px solid var(--forest);
 }
 
 .hero button:last-of-type:hover,
-.call-to-actions button:last-of-type:hover {
+.contacto-acciones button:last-of-type:hover {
   background: var(--forest);
   color: var(--cream);
+}
+
+.hero button:focus-visible,
+.contacto-acciones button:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
 }
 
 /* CATÁLOGO */
@@ -887,76 +902,690 @@ body.no-scroll {
   padding: 0 1.75rem;
 }
 
-/* TESTIMONIOS + BLOG + CTA */
+/* TESTIMONIOS
+   Los dibuja public/js/testimonios.js: el contenedor .testimonios-
+   carrusel llega vacio del HTML y se arma aca. */
 .testimonials {
+  background: var(--sand);
   text-align: center;
 }
 
-.testimonials>h2 {
-  margin-bottom: .25rem;
+.testimonios-cabecera {
+  max-width: 720px;
+  margin: 0 auto 3rem;
 }
 
-.testimonials>p {
-  font-family: var(--serif);
-  font-size: 1.3rem;
-  color: var(--moss);
-  font-style: italic;
-  margin-bottom: 3rem;
+.testimonials .contacto-eyebrow {
+  display: inline-block;
+  margin-bottom: .75rem;
 }
 
-.blog-items {
-  padding: 3rem 1.5rem;
+.testimonials h2 {
+  margin-bottom: .5rem;
+}
+
+.testimonials-cabecera p {
+  font-family: var(--sans);
+  font-size: .95rem;
+  color: var(--muted-texto);
+  margin: 0;
+}
+
+.testimonios-carrusel {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.testimonios-vacio {
+  font-family: var(--sans);
+  color: var(--muted-texto);
+  margin: 0;
+}
+
+/* CARRUSEL DE TESTIMONIOS
+   La pista es una fila de tarjetas y se mueve con translateX.
+   Cada pagina avanza lo que ocupa una tarjeta mas su hueco, o sea
+   100% + el hueco, y eso da el calculo del transform de abajo.
+
+   --por-vista es la unica fuente de verdad de cuantas opiniones se
+   ven a la vez. testimonials.js la lee del CSS con getComputedStyle
+   en vez de tener su propio numero: si el breakpoint cambia el ancho
+   de la tarjeta, el JS se entera solo y no pueden desincronizarse.
+
+   Las variables van en el contenedor de afuera (#testimoniosCarrusel)
+   y no en la pista: el JS las lee desde ahi, y una variable declarada
+   mas adentro no se lee desde el elemento padre. Todo lo que esta
+   adentro las hereda. */
+.testimonios-carrusel {
+  --por-vista: 1;
+  --hueco: 1.25rem;
+  --indice: 0;
+}
+
+.opinion-carrusel {
+  position: relative;
+}
+
+/* Cuantas se ven a la vez segun el ancho de la ventana. Los mismos
+   dos cortes los mira testimonials.js con matchMedia para rehacer
+   los puntos cuando se cruza uno. */
+@media (min-width: 640px) {
+  .testimonios-carrusel {
+    --por-vista: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .testimonios-carrusel {
+    --por-vista: 3;
+  }
+}
+
+.opinion-pista {
+  display: flex;
+  gap: var(--hueco);
+  /* Sin barra de scroll: el movimiento lo hace el translateX, no el
+     scroll del navegador. */
+  overflow: hidden;
+  transform: translateX(calc(var(--indice) * (-100% - var(--hueco))));
+  transition: transform .45s cubic-bezier(.4, 0, .2, 1);
+  will-change: transform;
+}
+
+/* Mientras se arrastra con el dedo no hay transicion: el pista tiene
+   que seguir el dedo al instante. Con la transicion de arriba se
+   ve que arrastra pero no responde. */
+.opinion-pista.deslizando {
+  transition: none;
+  /* Sin esto seleccionar el texto del testimonio mientras se
+     desliza deja todo el renglon resaltado. */
+  user-select: none;
+}
+
+/* El ancho se reparte entre las que entran: si no, cada tarjeta
+   mediria la pagina entera y quedaria una sola.
+
+   container-type hace que la tarjeta sea su propio contenedor de
+   medida, para poder Bukan el texto con cqw (unidades relativas al
+   ancho de la tarjeta) en vez de a la ventana: con tres tarjetas en
+   pantalla un tamano de fuente pensado para el ancho de la pagina
+   deja cada tarjeta con diez caracteres por renglon. */
+.opinion-slide {
+  container-type: inline-size;
+  flex: 0 0 calc((100% - (var(--por-vista) - 1) * var(--hueco)) / var(--por-vista));
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem 1.15rem;
   background: var(--white);
   border-radius: var(--radius);
-  max-width: 900px;
-  margin: 0 auto 4rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  /* Alto parejo entre opinion corta y larga: sin esto el carrusel
+     "salta" de alto al cambiar de pagina. */
+  min-height: 300px;
 }
 
-.blog-items p {
+/* Con una sola opinion por pagina la tarjeta es ancha y el aire de
+   adentro se aprovecha; con varias hay que ajustarlo para que el
+   texto no quede en diez caracteres por renglon. */
+@container (min-width: 320px) {
+  .opinion-slide {
+    gap: 1.25rem;
+    padding: 2rem 1.75rem;
+  }
+}
+
+/* Con una sola pagina no hay a donde ir, asi que los controles se
+   ocultan. testimonials.js pone la clase segun la cantidad de
+   paginas y la recalcula cuando el ancho de la ventana cruza un
+   breakpoint. */
+.sin-paginacion .opinion-controles,
+.sin-paginacion .opinion-contador {
+  display: none;
+}
+
+.estrellas {
+  display: inline-flex;
+  gap: .15rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  /* Las llenas usan el verde de texto, no el de borde: a 1.2rem no
+     son "texto grande", asi que para no depender de que se lean
+     tienen que pasar 4.5:1 como cualquier texto. */
+  color: var(--leaf-texto);
+}
+
+.estrella-vacia {
+  color: var(--sage);
+}
+
+/* La estrella a media se pinta con un degradado: la mitad de
+   izquierda en verde y la de derecha en salvia. Sin esto habria que
+   elegir entre cinco estrellas llenas o cuatro, y las dos mienten
+   lo mismo. */
+.estrella-media {
+  background: linear-gradient(90deg, var(--leaf-texto) 50%, var(--sage) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.opinion-texto {
+  margin: 0;
+}
+
+.opinion-texto p {
   font-family: var(--serif);
-  font-size: 1.5rem;
+  /* cqw es un porcentaje del ancho de la tarjeta (la consulta de
+     contenedor de arriba), no de la ventana: por eso el texto se
+     mantiene legible con una opinion por pagina y con tres. */
+  font-size: clamp(1rem, 6.5cqw, 1.55rem);
+  line-height: 1.5;
   color: var(--forest);
   margin: 0;
 }
 
-.call-to-actions {
-  padding: 4rem 2rem;
+/* La comilla de adorno se dibuja con content y no en el texto: si
+   estuviera en el HTML un lector de pantalla la leeria. */
+.opinion-texto p::before {
+  content: "\201C";
+}
+
+.opinion-texto p::after {
+  content: "\201D";
+}
+
+.opinion-firma {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  text-align: left;
+}
+
+.opinion-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 50%;
   background: var(--forest);
   color: var(--cream);
-  border-radius: var(--radius);
-  max-width: 1000px;
+  font-family: var(--sans);
+  font-size: .95rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.opinion-autor {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.opinion-nombre {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 600;
+  color: var(--forest);
+}
+
+.opinion-meta {
+  font-family: var(--sans);
+  font-size: .85rem;
+  color: var(--muted-texto);
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.opinion-fecha::before {
+  content: "\00B7";
+  margin-right: .5rem;
+}
+
+/* Controles del carrusel de opiniones.
+   Estas clases van con prefijo "opinion-" y no "carrusel-" a
+   proposito: el modal de producto (catalogo-modal.css, que se carga
+   despues de este archivo) ya usa .carrusel-flecha y le pone
+   position: absolute para flotar sobre la foto. Con el mismo nombre
+   esas reglas le ganaban a las de aca y las flechas terminaban
+   superpuestas en el medio de la tarjeta.
+
+   Las flechas van a los costados, pegadas a cada borde del
+   carrusel, y los puntos al medio. Antes iban los tres juntos al
+   centro, lo que hace pensar que el bloque entero es un boton.
+   Con una sola opinion no hay carrusel y los controles ni se
+   dibujan (lo decide el JS), pero el estilo queda. */
+.opinion-controles {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.opinion-flecha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--forest);
+  box-shadow: var(--shadow-sm);
+}
+
+.opinion-flecha:hover {
+  background: var(--forest);
+  color: var(--cream);
+}
+
+.opinion-flecha:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+/* Los puntos ocupan todo el hueco del medio (flex: 1) y se centran
+   adentro: asi quedan al centro de la pagina aunque las flechas
+   midieran distinto, en vez de depender de que sean iguales. */
+.opinion-puntos {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+}
+
+/* Los puntos son botones de 44px de alto con un punto chico
+   adentro: el area de click es la que pide el target de 44px, y lo
+   que se ve es el punto. */
+.opinion-punto {
+  position: relative;
+  width: 20px;
+  height: 44px;
+  padding: 0;
+  background: none;
+}
+
+.opinion-punto::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--sage);
+}
+
+.opinion-punto:hover::after {
+  background: var(--moss);
+}
+
+.opinion-punto.activa::after {
+  background: var(--forest);
+}
+
+.opinion-punto:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: -4px;
+  border-radius: 6px;
+}
+
+.opinion-contador {
+  margin: .5rem 0 0;
+  font-family: var(--sans);
+  font-size: .8rem;
+  letter-spacing: .1em;
+  color: var(--muted-texto);
+}
+
+/* Con reduced-motion el salto entre testimonios es instantaneo, y
+   el avance automatico directamente no corre (eso lo decide
+   testimonios.js). La transición se apaga, no se reemplaza por
+   otra: cualquier movimiento intermedio es justo lo que se pidió
+   evitar. */
+@media (prefers-reduced-motion: reduce) {
+
+  .opinion-pista {
+    transition: none;
+  }
+}
+
+/* CONTACTO
+   Dos columnas en escritorio (texto a la izquierda, formulario a
+   la derecha) y una sola en movil. La seccion usa el fondo de
+   crema como el resto del sitio, y el formulario lleva la tarjeta
+   blanca que ya se usa en catalogo y beneficios. */
+.call-to-actions-view {
+  padding-bottom: 5rem;
+}
+
+.contacto {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 1040px;
   margin: 0 auto;
+}
+
+.contacto-eyebrow {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .25em;
+  color: var(--leaf-texto);
+  border: 1px solid var(--leaf-texto);
+  padding: .4rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1rem;
+}
+
+.contacto-info h2 {
+  margin-bottom: 1rem;
+}
+
+.contacto-info>p {
+  font-size: 1.02rem;
+  max-width: 45ch;
+}
+
+.contacto-nota {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-top: 1.75rem;
+  font-size: .85rem;
+  color: var(--muted-texto);
+}
+
+.contacto-nota .material-symbols-outlined {
+  font-size: 1.1rem;
+  color: var(--moss);
+}
+
+.contacto-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.contacto-panel {
+  padding: 2.25rem 1.75rem;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(31, 58, 46, .06);
+}
+
+.contacto-panel-titulo {
+  margin-bottom: 1.5rem;
+}
+
+/* FORMULARIO
+   Dos columnas para nombre/correo y telefono/consulta no alcanzan
+   en el ancho de la tarjeta, asi que en movil y en escritorio los
+   campos van de a uno, y el unico que se estira es la consulta. */
+.formulario {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.campo-label {
+  font-family: var(--sans);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--forest);
+  letter-spacing: .01em;
+}
+
+.campo-label span {
+  color: var(--leaf);
+}
+
+.campo-input {
+  width: 100%;
+  min-width: 0;
+  /* min-height y no height: el campo crece solo si el navegador
+     amplia el tamano de fuente, y con height fijo se cortaria
+     el texto. */
+  min-height: 48px;
+  padding: .7rem .9rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--white);
+  /* 2px como el buscador del header: es el borde que ya se sabe
+     que se ve bien contra el blanco. */
+  border: 2px solid var(--borde-input);
+  border-radius: 10px;
+}
+
+.campo-input::placeholder {
+  color: var(--muted);
+}
+
+.campo-input:focus {
+  border-color: var(--leaf);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, .22);
+  outline: none;
+}
+
+.campo-input:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+/* El error no se muestra solo con color: ademas del aro, el input
+   queda marcado y hay un texto abajo que lo explica. */
+.campo-input.campo-con-error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(163, 52, 31, .14);
+}
+
+.campo-area {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.6;
+}
+
+.campo-error {
+  display: block;
+  min-height: 0;
+  font-family: var(--sans);
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--error);
+}
+
+.campo-ayuda {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* El contador vive a la derecha del mensaje de error para que no
+   se mezclen: son dos textos de cosas distintas en la misma linea. */
+.campo-contador {
+  font-family: var(--sans);
+  font-size: .78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.contador-cerca {
+  color: var(--error);
+  font-weight: 600;
+}
+
+/* El atributo hidden no gana contra un display de autor: el navegador
+   lo pone en su hoja, que es la mas debil, y una regla como
+   .formulario { display: grid } la pisa. Sin estas dos lineas el
+   formulario y el panel de exito se verian los dos a la vez.
+   Es el mismo problema que resuelve .modal-producto[hidden]. */
+.formulario[hidden],
+.formulario-ok[hidden] {
+  display: none;
+}
+
+.formulario-pie {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-top: .25rem;
+}
+
+.formulario-enviar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 50px;
+  padding: .85rem 1.9rem;
+  border-radius: 999px;
+  background: var(--forest);
+  color: var(--cream);
+  font-size: .95rem;
+  font-weight: 500;
+  letter-spacing: .02em;
+  box-shadow: var(--shadow-sm);
+}
+
+.formulario-enviar:hover {
+  background: var(--moss);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.formulario-enviar:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.formulario-enviar:disabled {
+  background: var(--sage);
+  cursor: progress;
+  transform: none;
+  box-shadow: none;
+}
+
+.formulario-enviar .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+.formulario-obligatorio {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: .8rem;
+  color: var(--muted-texto);
+}
+
+/* Un solo aviso de estado para el error y para el exito: hay una
+   sola cosa que anunciar a la vez, y dos regiones live se pisan. */
+.formulario-estado {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: .88rem;
+  font-weight: 500;
+}
+
+.formulario-estado:empty {
+  display: none;
+}
+
+.formulario-estado.estado-error {
+  color: var(--error);
+}
+
+.formulario-estado.estado-ok {
+  color: var(--leaf-texto);
+}
+
+/* Panel de exito. Reemplaza al formulario cuando el envio sale
+   bien: volver a leer el formulario ya enviado no le sirve de nada
+   a nadie. */
+.formulario-ok {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  gap: .35rem;
+  padding: 1.5rem .5rem;
 }
 
-.call-to-actions h2 {
+.formulario-ok-icono {
+  font-size: 3rem;
+  color: var(--leaf);
+}
+
+.formulario-ok-titulo {
+  margin: .5rem 0 0;
+}
+
+/* El foco programatico que se lleva el titulo al enviar no necesita
+   aro: no se llego con el Tab y el aro queda dibujado alrededor de un
+   texto, que parece un error de la pagina. Lo que importa es que el
+   lector de pantalla lo anuncie, y eso no depende del aro. */
+.formulario-ok-titulo:focus {
+  outline: none;
+}
+
+.formulario-ok p {
+  max-width: 34ch;
+  margin: 0 0 1rem;
+  font-size: .95rem;
+}
+
+.formulario-ok-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .7rem 1.4rem;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--forest);
+  border: 1.5px solid var(--forest);
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.formulario-ok-boton:hover {
+  background: var(--forest);
   color: var(--cream);
 }
 
-.call-to-actions p {
-  color: rgba(247, 244, 236, .8);
-  max-width: 55ch;
-  margin: 0 auto 2rem;
+.formulario-ok-boton:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
 }
 
-.call-to-actions button:first-of-type {
-  background: var(--cream);
-  color: var(--forest);
-}
-
-.call-to-actions button:first-of-type:hover {
-  background: var(--sand);
-}
-
-.call-to-actions button:last-of-type {
-  border-color: var(--cream);
-  color: var(--cream);
-}
-
-.call-to-actions button:last-of-type:hover {
-  background: var(--cream);
-  color: var(--forest);
+/* La trampa contra robots. Va fuera de pantalla con position y no
+   con display:none: asi sigue en el arbol y los lectores de
+   pantalla la anuncian, pero no se ve. aria-hidden la silencia. */
+.formulario-trampa {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 /* FOOTER */
@@ -1033,6 +1662,30 @@ footer nav a:focus-visible {
 
   section {
     padding: 6rem 1.5rem;
+  }
+
+  /* El contacto pasa a dos columnas: el texto a la izquierda y el
+     formulario a la derecha. Con una sola columna, en una pantalla
+     grande, la tarjeta del formulario quedaba estirada en el medio
+     de un renglon vacio a cada lado. */
+  .contacto {
+    grid-template-columns: .85fr 1.15fr;
+    gap: 3.5rem;
+    align-items: start;
+  }
+
+  .contacto-panel {
+    padding: 2.5rem 2.25rem;
+  }
+
+  /* El boton y la aclaracion de campos obligatorios se ponen al
+     lado, y no uno sobre el otro: el boton queda siempre en el
+     mismo lugar y no baja con el texto. */
+  .formulario-pie {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
   }
 }
 
