@@ -17,7 +17,8 @@ const fs = require('fs');
 const path = require('path');
 
 const raiz = path.join(__dirname, '..');
-const origen = path.join(raiz, 'catalogo.css');
+const CSS = path.join(raiz, 'public', 'css');
+const origen = path.join(CSS, 'catalogo.css');
 
 /* El separador tiene que ser el comentario que abre la seccion de
    la ventana flotante. */
@@ -97,12 +98,12 @@ const CABECERA_COMPARTIDA =
     '   mitades de la hoja. */\n\n';
 
 fs.writeFileSync(
-    path.join(raiz, 'catalogo-modal.css'),
+    path.join(CSS, 'catalogo-modal.css'),
     AVISO + CABECERA_COMPARTIDA + compartido.replace(/^[ \t]+/gm, '') + '\n\n' + sinSangria(modal) + '\n'
 );
 
 fs.writeFileSync(
-    path.join(raiz, 'catalogo-catalogo.css'),
+    path.join(CSS, 'catalogo-catalogo.css'),
     AVISO + sinSangria(catalogo) + '\n'
 );
 

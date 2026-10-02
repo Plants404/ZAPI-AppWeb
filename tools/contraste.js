@@ -46,8 +46,11 @@ function contraste(a, b) {
 
 const variables = {};
 
+/* Las hojas viven en public/css/, no en la raiz. */
+const HOJAS = path.join(raiz, 'public', 'css');
+
 for (const f of ['styles.css', 'catalogo.css', 'stylecarrito.css', 'zapi-bot.css']) {
-    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
+    const s = fs.readFileSync(path.join(HOJAS, f), 'utf8');
 
     for (const m of s.matchAll(/(--[a-z-]+)\s*:\s*(#[0-9a-fA-F]{3,8})\s*;/g)) {
         if (!(m[1] in variables)) variables[m[1]] = m[2];
@@ -85,6 +88,9 @@ const PARES = [
     ['texto normal', 4.5, '#ffffff', '#0a7b6e', 'boton de WhatsApp (gradiente)'],
     ['texto normal', 4.5, '#ffffff', '#075e54', 'boton de WhatsApp, fin del gradiente'],
     ['texto normal', 4.5, '#ffffff', '#c23a3d', 'badge de error del chatbot'],
+    ['texto normal', 4.5, '--error', '--white', 'mensaje de error del formulario sobre blanco'],
+    ['texto normal', 4.5, '--error', '--cream', 'mensaje de error del formulario sobre crema'],
+    ['UI / foco', 3, '--error', '--white', 'borde del campo con error sobre blanco'],
     ['texto normal', 4.5, '#ffffff', '#1f3a2e', 'texto sobre footer oscuro']
 ];
 

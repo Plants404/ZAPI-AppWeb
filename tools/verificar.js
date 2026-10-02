@@ -6,11 +6,19 @@ const fs = require('fs');
 const path = require('path');
 
 const raiz = path.join(__dirname, '..');
+
+/* Los HTML siguen en la raiz para no cambiar las URLs publicas
+   (/catalogo.html, /productos/albahaca.html). Los estilos, scripts e
+   imagenes viven en public/. */
 const HTML = ['index.html', 'catalogo.html', 'carrito.html'];
 const CSS = ['styles.css', 'catalogo.css', 'catalogo-modal.css',
     'catalogo-catalogo.css', 'stylecarrito.css', 'zapi-bot.css'];
 const JS = ['productos.js', 'modal.js', 'catalogo.js', 'carrito.js',
-    'zapi-bot.js', 'navigation.js', 'buscador.js', 'menu.js'];
+    'zapi-bot.js', 'navigation.js', 'buscador.js', 'menu.js',
+    'testimonios.js', 'contacto.js'];
+
+const rutaCss = nombre => path.join(raiz, 'public', 'css', nombre);
+const rutaJs = nombre => path.join(raiz, 'public', 'js', nombre);
 
 let problemas = 0;
 const avisar = m => { problemas++; console.log('  FALLA  ' + m); };
@@ -19,20 +27,26 @@ const ok = m => console.log('  ok     ' + m);
 /* --- 1. CSS: llaves balanceadas --- */
 console.log('\nCSS');
 for (const f of CSS) {
-    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
+    const s = fs.readFileSync(rutaCss(f), 'utf8');
     let d = 0;
     for (const c of s) { if (c === '{') d++; if (c === '}') d--; }
     if (d === 0) ok(f); else avisar(f + ' llaves desbalanceadas: ' + d);
 }
 
-/* --- 2. ARIA apunta a algo que existe --- */
+/* --- 2. ARIA apunta a algo que existe ---
+   aria-describedby y aria-labelledby aceptan una lista de ids
+   separados por espacio (el formulario de contacto describe el
+   campo con el mensaje de error y con la ayuda a la vez), asi que
+   la lista se parte antes de comparar. */
 console.log('\nARIA');
 for (const f of HTML) {
     const s = fs.readFileSync(path.join(raiz, f), 'utf8');
     const ids = new Set(Array.from(s.matchAll(/id="([^"]+)"/g), m => m[1]));
     let malos = 0;
     for (const m of s.matchAll(/aria-(?:controls|describedby|labelledby)="([^"]+)"/g)) {
-        if (!ids.has(m[1])) { avisar(f + ' aria apunta a #' + m[1] + ' que no existe'); malos++; }
+        for (const destino of m[1].trim().split(/\s+/)) {
+            if (!ids.has(destino)) { avisar(f + ' aria apunta a #' + destino + ' que no existe'); malos++; }
+        }
     }
     if (!malos) ok(f);
 }
@@ -91,7 +105,7 @@ const NUMEROS = /^(i|j|idx|indice|indiceActual|n|pos|total|cantidad|unidades|tot
 const htmlPropias = new Set();
 
 for (const f of JS) {
-    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
+    const s = fs.readFileSync(rutaJs(f), 'utf8');
     const re = /(?<![.\w$])([a-zA-Z_$][\w$]*)\s*=\s*`([\s\S]*?)`/g;
 
     for (const m of s.matchAll(re)) {
@@ -101,7 +115,7 @@ for (const f of JS) {
 const ETIQUETA = /<[a-zA-Z/]/;
 const ACENTO = /(?<!\\)`/g;
 
-const hallazgos = escanearXSS(JS.map(f => [f, fs.readFileSync(path.join(raiz, f), 'utf8')]));
+const hallazgos = escanearXSS(JS.map(f => [f, fs.readFileSync(rutaJs(f), 'utf8')]));
 hallazgos.forEach(h => avisar(h));
 if (!hallazgos.length) ok('toda interpolacion dentro de HTML pasa por escaparHTML');
 
@@ -189,7 +203,7 @@ const { execFileSync } = require('child_process');
 try {
     execFileSync('node', [path.join(raiz, 'tools', 'extraer-modal-css.js')],
         { cwd: raiz, stdio: 'pipe' });
-    ok('catalogo-modal.css y catalogo-catalogo.css regenerados');
+    ok('public/css/catalogo-modal.css y catalogo-catalogo.css regenerados');
 } catch (e) {
     avisar('no se pudo regenerar el CSS del catalogo: ' + e.message);
 }
@@ -209,7 +223,9 @@ console.log('\nScripts por pagina');
 const MARCADO_QUE_NECESITA_SCRIPT = [
     { marca: 'id="navToggle"', script: 'menu.js' },
     { marca: 'id="navBackdrop"', script: 'menu.js' },
-    { marca: 'id="headerSearch"', script: 'buscador.js' }
+    { marca: 'id="headerSearch"', script: 'buscador.js' },
+    { marca: 'id="testimoniosCarrusel"', script: 'testimonios.js' },
+    { marca: 'id="contactoForm"', script: 'contacto.js' }
 ];
 
 /* Quien define cada window.algo y quien lo usa, para poder cruzar
@@ -219,7 +235,7 @@ const usa = new Map();
 const globales = new Set();
 
 for (const f of JS) {
-    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
+    const s = fs.readFileSync(rutaJs(f), 'utf8');
     for (const m of s.matchAll(/window\.([a-zA-Z_$][\w$]*)\s*=/g)) {
         define.set(m[1], f);
         globales.add(m[1]);
@@ -231,7 +247,12 @@ for (const f of JS) {
 
 for (const f of HTML) {
     const s = fs.readFileSync(path.join(raiz, f), 'utf8');
-    const cargados = new Set(Array.from(s.matchAll(/<script src="\.?\/?([^"]+\.js)"/g), m => m[1]));
+    /* El src ahora trae carpeta (./public/js/menu.js), pero las listas
+       de arriba nombran los scripts por archivo. Se queda solo con el
+       nombre para poder comparar. */
+    const cargados = new Set(Array.from(
+        s.matchAll(/<script src="[^"]*\/([^"/]+\.js)"/g), m => m[1]
+    ));
     let fallos = 0;
 
     for (const { marca, script } of MARCADO_QUE_NECESITA_SCRIPT) {
@@ -325,7 +346,7 @@ function recorrerBloques(css, archivo) {
 }
 
 for (const f of CSS) {
-    recorrerBloques(fs.readFileSync(path.join(raiz, f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, ''), f);
+    recorrerBloques(fs.readFileSync(rutaCss(f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, ''), f);
 }
 
 /* Un selector apagado cubre tambien a los que lo extienden:
@@ -443,7 +464,11 @@ if (!fs.existsSync(gen)) {
        el enlace cae en una pagina que no existe: se prueban las dos
        implementaciones contra los nombres reales. */
     function extraerFuncion(archivo, nombre) {
-        const s = fs.readFileSync(path.join(raiz, archivo), 'utf8');
+        /* Los scripts de navegador van en public/js/. Los generadores de
+           tools/ van en tools/: se distinguen por el nombre, no por la
+           ruta, porque los dos son .js y los dos se leen desde aca. */
+        const enTools = fs.existsSync(path.join(raiz, 'tools', archivo));
+        const s = fs.readFileSync(enTools ? path.join(raiz, 'tools', archivo) : rutaJs(archivo), 'utf8');
         const ini = s.indexOf('function ' + nombre + '(');
         if (ini < 0) return null;
 
@@ -472,7 +497,9 @@ if (!fs.existsSync(gen)) {
         return null;
     }
 
-    const cuerpoGen = extraerFuncion('tools/generar-productos.js', 'slug');
+    /* generar-productos.js vive en tools/, no en public/js/, asi que no
+   pasa por rutaJs(): esa resuelve scripts de navegador. */
+    const cuerpoGen = extraerFuncion('generar-productos.js', 'slug');
     const cuerpoModal = extraerFuncion('modal.js', 'slugDe');
 
     if (!cuerpoGen || !cuerpoModal) {
@@ -484,7 +511,7 @@ if (!fs.existsSync(gen)) {
 
         /* El catalogo es un literal JS (claves sin comillas), no
            JSON: se evalua tal cual. */
-        const fuente = fs.readFileSync(path.join(raiz, 'productos.js'), 'utf8');
+        const fuente = fs.readFileSync(rutaJs('productos.js'), 'utf8');
         const literal = fuente.match(/const PRODUCTOS = (\[[\s\S]*?\n\]);/);
         const nombres = literal ? new Function('return ' + literal[1])() : null;
 
