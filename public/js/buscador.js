@@ -42,20 +42,23 @@
 
   const plural = (n, singular, pluralForma) => n === 1 ? singular : pluralForma;
 
+  /* Si no hay nada, el mensaje lo pone la grilla. El aviso solo
+     confirma cuando hay resultados, y en el catalogo exacto (sin
+     filtro de categoría) para no mentir. Cuando no hay resultados
+     hay que callar el aviso igual: si se dejara, seguiría anunciando
+     el conteo anterior y quien usa lector de pantalla oiría "1
+     producto" sobre una grilla vacía. */
+  const anunciarResultados = (limpio, encontrados) => {
+    anunciar(limpio && encontrados > 0
+      ? `${encontrados} ${plural(encontrados, "producto", "productos")} para "${limpio}".`
+      : "");
+  };
+
   const buscar = texto => {
     const encontrados = window.aplicarBusqueda(texto);
 
-    const limpio = texto.trim();
     escribir(texto);
-
-    /* Si no hay nada, el mensaje lo pone la grilla. El aviso
-       solo confirma cuando hay resultados, y en el catalogo
-       exacto (sin filtro de categoría) para no mentir. */
-    if (limpio && encontrados > 0) {
-      anunciar(`${encontrados} ${plural(encontrados, "producto", "productos")} para "${limpio}".`);
-    } else if (!limpio) {
-      anunciar("");
-    }
+    anunciarResultados(texto.trim(), encontrados);
 
     return encontrados;
   };
@@ -99,11 +102,10 @@
 
   if (botonLimpiar) {
     botonLimpiar.addEventListener("click", function () {
-      escribir("");
+      /* buscar ya vacia el campo y calla el aviso: repetirlo aqui
+         seria hacerlo dos veces. El foco vuelve porque el botón que
+         se acaba de pulsar desaparece al redibujarse la grilla. */
       buscar("");
-      anunciar("");
-      /* El foco vuelve al campo: si se queda en el botón que ya
-         no está, el siguiente tab se pierde. */
       input.focus();
     });
   }
@@ -115,15 +117,27 @@
     if (event.key === "Escape" && input.value.length > 0) {
       event.stopPropagation();
       event.preventDefault();
-      escribir("");
       buscar("");
-      anunciar("");
     }
   });
 
   /* catalogo.js llama a esto cuando su propio botón de limpiar
      (el del estado vacío) apaga la búsqueda. */
   window.refrescarCampoBuscador = escribir;
+
+  /* Y a este para devolverle el foco: ese botón vive dentro de la
+     grilla, que se redibuja al limpiar y lo borra. */
+  window.enfocarBuscadorHeader = function () {
+    input.focus();
+  };
+
+  /* Con el scroll infinito la grilla crece después de que la
+     búsqueda se aplicó. El aviso tiene que poder actualizarse sin
+     que se vuelva a filtrar: por eso el número se pasa por
+     parámetro en lugar de releer la grilla desde acá. */
+  window.refrescarContadorBuscador = function (encontrados) {
+    anunciarResultados(input.value.trim(), encontrados);
+  };
 
   /* El botón "Enviar" implícito no debe recargar la página. */
   formulario.addEventListener("submit", function (event) {
