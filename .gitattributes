@@ -1,0 +1,38 @@
+# Los finales de linea van con LF, en el repositorio y tambien en el
+# checkout de Windows.
+#
+# Por que sin esto aparecian problemas: con core.autocrlf=true, git
+# escribia CRLF en el disco y las herramientas del repo escriben LF.
+# generar-productos.js comparaba el archivo con el que iba a escribir,
+# veia diferencia en los finales de linea y lo reescribia siempre, sin
+# cambiar un byte de contenido. Todas las fichas de productos/
+# quedaban marcadas como modificadas en git status para siempre.
+#
+# eol=lf gana en los dos lados: lo que se versiona es LF y lo que se
+# descarga al disco tambien. Para un sitio que se sirve por HTTP, CRLF
+# en el disco tampoco aporta nada.
+
+* text=auto eol=lf
+
+# Binarios: git no los toca ni los intenta decodificar. Las fotos son
+# lo mas importante, pero tambien la base de datos y las fuentes.
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.pdf binary
+*.db binary
+*.db-wal binary
+*.db-shm binary
+
+# La base esta en .gitignore, pero se declara igual: si alguien la saca
+# de ahi, ya queda marcada como binaria.
+data/ binary
