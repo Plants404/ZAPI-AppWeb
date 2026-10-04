@@ -23,7 +23,21 @@
    en el archivo: el catalogo pasaria a necesitar fetch y un servidor.
    Por ahora el sitio anda de las dos formas -abierto con doble clic
    o servido por Node- y productos.js queda igual. Si alguna vez hay
-   que elegir una sola, la JSON es el camino. */
+   que elegir una sola, la JSON es el camino.
+
+   Cuando se haga, el motivo es este: mientras el catalogo viva en un
+   .js, el eval de arriba es fragil ante cualquier cambio de formato
+   en productos.js (el espaciado del "const PRODUCTOS = [", unas
+   comillas simples, un corchete en un comentario). Hoy eso esta
+   cubierto: tools/verificar.js llama a leerProductos() de verdad y
+   falla si el archivo ya no se puede leer, asi que el error aparece
+   antes de levantar el servidor y no en produccion.
+
+   Al migrar a JSON se pueden borrar a la vez el eval, la funcion
+   emparejar() de este archivo y la seccion 10 de verificar.js.
+   La condicion para hacerlo es que el sitio ya no se abra con doble
+   clic: mientras siga siendo una opcion, productos.js tiene que
+   quedar como esta. */
 
 const fs = require('fs');
 const path = require('path');

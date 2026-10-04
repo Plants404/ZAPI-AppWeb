@@ -47,11 +47,6 @@ const STOCK = {
     /* 1: 'https://schema.org/InStock', */
 };
 
-const DISPONIBILIDAD = {
-    'InStock': 'https://schema.org/InStock',
-    'OutOfStock': 'https://schema.org/OutOfStock'
-};
-
 /* ------------------------------------------------------------------
    Lectura de los datos
    ------------------------------------------------------------------ */
@@ -367,6 +362,73 @@ function formatearPrecio(valor) {
 }
 
 /* ------------------------------------------------------------------
+   Poda de fichas que ya no estan en el catalogo
+   ------------------------------------------------------------------ */
+
+/* Si un producto se renombra o se saca, su ficha vieja se queda en
+   productos/, y como generar-sitemap.js lee esa carpeta con
+   readdirSync, la ficha entra al sitemap y queda publicada con el
+   precio y el texto viejos. Es exactamente la clase de error que este
+   proyecto no se permite.
+
+   Igual no se borra a ciegas. Solo se borra lo que se puede demostrar
+   que salio de este generador: un canonical que apunta a la URL
+   publica de esa misma ficha mas el JSON-LD de Product. Una pagina
+   escrita a mano no tiene las dos cosas, asi que queda intacta y se
+   avisa, por si hay que mirarla a ojo.
+
+   Con --sin-poda no se borra nada. */
+function esGenerada(archivo) {
+    let texto;
+    try {
+        texto = fs.readFileSync(archivo, 'utf8');
+    } catch {
+        return false;
+    }
+
+    /* El canonical se compara con el nombre del archivo, no con la
+       ruta: lo que se escribio en la pagina es
+       SITIO/productos/<archivo.html>, sin la carpeta. */
+    const nombreArchivo = path.basename(archivo);
+
+    const canonical = new RegExp('<link\\s+rel="canonical"\\s+href="' +
+        SITIO.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\/productos\\/' +
+        nombreArchivo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '"');
+
+    const okCanon = canonical.test(texto);
+    const okProducto = /"@type"\s*:\s*"Product"/.test(texto);
+    return okCanon && okProducto;
+}
+
+function podar(esperados) {
+    const sinPoda = process.argv.includes('--sin-poda');
+    const existentes = fs.existsSync(destino)
+        ? fs.readdirSync(destino).filter(f => f.endsWith('.html'))
+        : [];
+
+    const borrados = [];
+    const ajenos = [];
+
+    for (const ficha of existentes) {
+        const nombre = ficha.replace(/\.html$/, '');
+
+        if (esperados.has(nombre)) continue;
+
+        const completa = path.join(destino, ficha);
+
+        if (!esGenerada(completa)) {
+            ajenos.push(ficha);
+            continue;
+        }
+
+        if (!sinPoda) fs.unlinkSync(completa);
+        borrados.push(ficha);
+    }
+
+    return { borrados, ajenos, sinPoda };
+}
+
+/* ------------------------------------------------------------------
    Escritura
    ------------------------------------------------------------------ */
 
@@ -376,12 +438,29 @@ const destino = path.join(raiz, 'productos');
 if (!fs.existsSync(destino)) fs.mkdirSync(destino, { recursive: true });
 
 const sinStock = [];
+const escritas = [];
 
 for (const producto of productos) {
     const s = slug(producto.nombre);
     const archivo = path.join(destino, s + '.html');
+    const contenido = pagina(producto, productos);
 
-    fs.writeFileSync(archivo, pagina(producto, productos), 'utf8');
+    /* Se escribe solo si el contenido cambio. Regenerar paginas que ya
+       estan bien deja git con las 7 fichas marcadas como modificadas
+       aunque no haya cambiado un byte, y a la semana ya nadie sabe si
+       ese cambio es real. Aparte se evita el trabajo de reescribir. */
+    let anterior = null;
+    try {
+        anterior = fs.readFileSync(archivo, 'utf8');
+    } catch {
+        /* No existe todavia: es la primera vez que sale. */
+    }
+
+    const cambio = anterior !== contenido;
+    if (cambio) {
+        fs.writeFileSync(archivo, contenido, 'utf8');
+        escritas.push(s);
+    }
 
     const estado = STOCK[producto.id]
         ? 'stock: ' + STOCK[producto.id].split('/').pop()
@@ -389,10 +468,33 @@ for (const producto of productos) {
 
     if (!STOCK[producto.id]) sinStock.push(producto.nombre);
 
-    console.log('  productos/' + s + '.html  (' + estado + ')');
+    console.log('  productos/' + s + '.html  (' + estado + (cambio ? '' : ', sin cambios') + ')');
 }
 
-console.log('\n' + productos.length + ' paginas escritas en productos/');
+/* La poda va despues de escribir: si el catalogo esta roto, el script
+   ya tiró antes de llegar aca y no se borra nada. */
+const poda = podar(new Set(productos.map(p => slug(p.nombre))));
+
+/* Se cuenta lo que se escribio de verdad, no la cantidad del catalogo:
+   si nada cambio, decirlo asi y no "7 paginas escritas". */
+console.log('\n' + productos.length + ' fichas al dia, ' + escritas.length + ' cambiadas' +
+    (escritas.length ? ': ' + escritas.join(', ') : ''));
+
+if (poda.borrados.length) {
+    console.log('\n' + (poda.sinPoda ? 'Poda suspendida (--sin-poda). Quedaron sin borrar:' : 'Fichas borradas (ya no estan en el catalogo):'));
+
+    for (const ficha of poda.borrados) {
+        console.log('  productos/' + ficha);
+    }
+}
+
+if (poda.ajenos.length) {
+    console.log('\nArchivos .html en productos/ que no son de este generador, sin tocar:');
+
+    for (const ficha of poda.ajenos) {
+        console.log('  productos/' + ficha + '  (no tiene canonical ni JSON-LD de Product: no se borro)');
+    }
+}
 
 if (sinStock.length) {
     console.log('\nFalta el stock real de: ' + sinStock.join(', '));
