@@ -41,7 +41,6 @@ const express = require('express');
 
 const db = require('./server/db');
 const catalogo = require('./server/catalogo');
-const sesion = require('./server/sesion');
 const api = require('./server/rutas-api');
 
 const raiz = __dirname;
@@ -75,7 +74,6 @@ const RUTAS_BLOQUEADAS = [
     '/.git',
     '/.vscode',
     '/README.md',
-    '/README.md.txt',
     '/.gitignore',
     '/.env',
     '/.env.example'
@@ -349,8 +347,20 @@ app.use(express.static(raiz, {
 
 /* Si el visitante pidio algo que no existe, se le devuelve la home en
    vez de un error seco: el sitio es de una sola pagina con secciones,
-   asi que casi todas las rutas validas son secciones. */
+   asi que casi todas las rutas validas son secciones.
+
+   Salvo los recursos. Si falta un .js o un .css, mandarle el HTML del
+   index deja al navegador con un "SyntaxError" o con el CSS roto, en
+   lugar de un 404 claro: el error aparece en la consola apuntando al
+   archivo que se pidio, no a una pagina que nadie pidio. */
 app.use((req, res) => {
+    const ruta = req.path.toLowerCase();
+    const esRecurso = ruta.startsWith('/public/') || (/\.[a-z0-9]+$/i.test(ruta) && !ruta.endsWith('.html'));
+
+    if (esRecurso) {
+        return res.status(404).type('text/plain').send('No encontrado');
+    }
+
     res.status(404).sendFile(path.join(raiz, 'index.html'));
 });
 

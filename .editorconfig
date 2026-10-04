@@ -1,0 +1,46 @@
+# Ajustes comunes de editores. La idea es que dos personas que abran el
+# mismo archivo vean lo mismo, sin tener que acordarse.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# El codigo del repo usa 4 espacios, sin tabuladores. Hay unas cuantas
+# lineas de public/js con 2, que quedaron de cuando se escribio esa
+# parte; no se tocan aqui porque cambiarlas todas seria un diff grande
+# sin ningun beneficio.
+[*.js]
+indent_style = space
+indent_size = 4
+
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+
+[*.css]
+indent_style = space
+indent_size = 4
+
+[*.html]
+indent_style = space
+indent_size = 4
+
+[*.md]
+# El README y el resto de markdown usan una sola palabra por linea, con
+# los parrafos envueltos a mano. Un trim automatico de finales de linea
+# no rompe nada, pero un editor que reescriba el ancho sí.
+trim_trailing_whitespace = false
+
+# No se impone ancho de linea: hay lineas largas a proposito, sobre todo
+# en los textos de la tabla del README y en los mensajes de error del
+# servidor, donde partir el texto lo hace mas dificil de leer.
+[*.{js,css,html,json,md}]
+max_line_length = off
+
+[{*.env,.env.example,*.txt}]
+insert_final_newline = true
+trim_trailing_whitespace = false

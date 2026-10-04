@@ -114,7 +114,7 @@ for (const [tipo, minimo, fg, bg, nota] of PARES) {
 
     console.log('  ' + (cumple ? 'ok  ' : 'FALLA') +
         '  ' + razon.toFixed(2).padStart(5) + ':1  (min ' + minimo + ')  ' +
-        fg + ' sobre ' + bg);
+        tipo + ', ' + fg + ' sobre ' + bg);
     console.log('        ' + nota);
 }
 
