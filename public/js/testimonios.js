@@ -412,7 +412,7 @@ const OPINIONES_DESLIZAR = 40;
                   " de " + opiniones.length;
 
             anuncio.textContent = texto + ": " +
-                opinions.slice(rango.desde, rango.hasta)
+                opiniones.slice(rango.desde, rango.hasta)
                     .map(opinion => opinion.autor).join(", ");
         }
     }

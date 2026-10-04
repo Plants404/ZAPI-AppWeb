@@ -738,39 +738,6 @@ body.no-scroll {
   color: var(--ink);
 }
 
-.catalog-items ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
-}
-
-.catalog-items li {
-  background: var(--white);
-  padding: 2rem 1.75rem;
-  border-radius: var(--radius);
-  font-family: var(--serif);
-  font-size: 1.35rem;
-  color: var(--forest);
-  font-weight: 600;
-  box-shadow: var(--shadow-sm);
-  border-top: 3px solid var(--leaf);
-  transition: transform .3s ease, box-shadow .3s ease;
-}
-
-.catalog-items li:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-md);
-}
-
-.catalog-items li p {
-  margin-top: .75rem;
-  font-family: var(--sans);
-  font-size: .95rem;
-  font-weight: 400;
-  color: var(--muted);
-  line-height: 1.6;
-}
-
 /* SERVICIOS */
 .service {
   text-align: center;
@@ -883,30 +850,10 @@ body.no-scroll {
 /* TESTIMONIOS
    Los dibuja public/js/testimonios.js: el contenedor .testimonios-
    carrusel llega vacio del HTML y se arma aca. */
-.testimonials {
-  background: var(--sand);
-  text-align: center;
-}
 
 .testimonios-cabecera {
   max-width: 720px;
   margin: 0 auto 3rem;
-}
-
-.testimonials .contacto-eyebrow {
-  display: inline-block;
-  margin-bottom: .75rem;
-}
-
-.testimonials h2 {
-  margin-bottom: .5rem;
-}
-
-.testimonials-cabecera p {
-  font-family: var(--sans);
-  font-size: .95rem;
-  color: var(--muted-texto);
-  margin: 0;
 }
 
 .testimonios-carrusel {

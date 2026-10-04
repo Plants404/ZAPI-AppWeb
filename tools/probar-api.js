@@ -382,6 +382,37 @@ async function correr() {
         }
     }
 
+    /* --- Un recurso que falta no se responde con HTML ---------------
+       Si un .js o un .css no existe, mandar el index deja al navegador
+       con un error de sintaxis en lugar de un 404 claro. Las rutas que
+       no son recursos (las que son secciones) si siguen devolviendo
+       la home. */
+    {
+        const recursos = [
+            '/public/js/no-existe.js', '/public/css/no-existe.css',
+            '/public/img/no-existe.jpg', '/no-existe.js', '/deep/no-existe.mjs'
+        ];
+
+        for (const ruta of recursos) {
+            const r = await fetch(base + ruta);
+            const tipo = r.headers.get('content-type') || '';
+            const cuerpo = await r.text();
+
+            comprobar('el recurso faltante ' + ruta + ' da 404, no el HTML del index',
+                r.status === 404 && !cuerpo.includes('<!DOCTYPE html'),
+                'estado ' + r.status + ', ' + tipo.split(';')[0]);
+        }
+
+        for (const ruta of ['/ruta-inexistente', '/otra/seccion']) {
+            const r = await fetch(base + ruta);
+            const cuerpo = await r.text();
+
+            comprobar('la ruta ' + ruta + ' sigue devolviendo la home',
+                r.status === 404 && cuerpo.includes('<!DOCTYPE html'),
+                'estado ' + r.status);
+        }
+    }
+
     /* --- API inexistente --------------------------------------------- */
     {
         const r = await pedir('/api/no-existe');
