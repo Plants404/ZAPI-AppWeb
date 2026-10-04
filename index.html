@@ -190,16 +190,6 @@
       <div id="productGrid" class="catalog-grid">
         <!-- JavaScript genera los productos -->
       </div>
-
-      <!-- Scroll infinito: es el mismo mecanismo que en catalogo.html,
-           con el mismo catalogo.js. El centinela va despues de la
-           grilla y no dentro: catalogo.js lo mira con
-           IntersectionObserver y cuando entra a pantalla pide el
-           lote siguiente. aria-hidden y el aviso con role=status son
-           la parte accesible. -->
-      <div class="catalog-centinela" data-centinela aria-hidden="true"></div>
-      <p class="visually-hidden" role="status" aria-live="polite"
-        data-catalogo-aviso></p>
     </section>
 
     <!-- cart section. El markup es el de carrito.html, dentro de una

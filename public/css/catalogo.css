@@ -108,19 +108,6 @@
             outline-offset: 3px;
         }
 
-        /* Centinela del scroll infinito: un div vacio que catalogo.js
-           mira con IntersectionObserver para saber que llego el
-           momento de pedir el lote siguiente de productos.
-
-           No tiene alto propio a proposito. Si midiera algo se veria
-           como una franja y ademas el observer podria disparar
-           demasiado tarde; vacio y con aria-hidden porque no aporta
-           nada a la pagina, solo sirve de punto de control. */
-        .catalog-centinela {
-            width: 100%;
-            height: 0;
-        }
-
         .catalog-eyebrow {
             display: inline-block;
             font-size: .78rem;
@@ -154,12 +141,30 @@
             font-size: 1.1rem;
         }
 
+        /* ==========================================================
+           GRILLA SIMETRICA
+           ==========================================================
+           Grid y no flex-wrap, por el alto. Con flex cada tarjeta
+           se mide por su contenido y arranca arriba: la mas corta
+           deja un escalon al pie y la fila queda despareja. Ese
+           escalon era justo lo que el masonry venia a tapar,
+           placing cada tarjeta en la columna mas corta, y el
+           resultado era peor: columnas terminadas en alturas
+           distintas y sin ninguna fila que las alineara.
+
+           Con display:grid el alto por defecto es "stretch": todas
+           las tarjetas de una misma fila se estiran a la mas alta y
+           el pie queda parejo. Las columnas tambien quedan del
+           mismo ancho sin cuentas de flex-basis, porque 1fr
+           reparte solo.
+
+           Y no hace falta ningun JS para acomodar: las tarjetas van
+           en el flujo, el navegador las coloca y no hay nada que
+           recalcular cuando carga una foto o cambia el ancho. */
         .catalog-grid {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 1.5rem;
-            align-items: flex-start;
-            justify-content: center;
         }
 
         .product-card {
@@ -172,11 +177,9 @@
             display: flex;
             flex-direction: column;
 
-            /* Mobile first: una sola columna en el telefono. El
-               flex-grow 0 evita que una fila con una sola tarjeta
-               la estire a todo el ancho, que es el defecto clasico
-               de flex-wrap con "flex: 1 1 250px" sin tope. */
-            flex: 0 1 100%;
+            /* Mobile first: una sola columna en el telefono.
+               El min-width:0 evita que un titulo largo estire la
+               columna de la grilla. */
             min-width: 0;
         }
 
@@ -185,173 +188,38 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* Cuantas columnas entran segun el ancho, de ahi para
-           arriba. Cada base suma (100% - huecos) / n, asi la fila
-           siempre llena exacto el contenedor. Los cortes son los
-           que daba el grid anterior con minmax(250px, 1fr). */
+        /* Cuantas columnas entran segun el ancho, de ahi para arriba.
+           Los cortes son los mismos que usaba el JS del masonry, asi
+           que la grilla no cambia de forma al pasar por el ancho que
+           antes lo cambiaba a tierra. 1fr reparte el ancho sobrante
+           en partes iguales, asi que las columnas quedan del mismo
+           ancho y la fila llena exacto el contenedor. */
         @media (min-width: 572px) {
-            .product-card {
-                flex-basis: calc(50% - .75rem);
+            .catalog-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
         @media (min-width: 846px) {
-            .product-card {
-                flex-basis: calc(33.333% - 1rem);
+            .catalog-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
         @media (min-width: 1120px) {
-            .product-card {
-                /* 4 columnas en escritorio. El basis reparte
-                   (100% - 3 huecos) / 4, asi la fila suma justo el
-                   ancho del contenedor. */
-                flex-basis: calc(25% - 1.125rem);
+            .catalog-grid {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
 
-        /* ==========================================================
-           MASONRY: COLUMNAS ASIMETRICAS
-           ==========================================================
-           Con el flex de arriba todas las tarjetas de una fila
-           arrancan en el mismo alto, asi que la columna queda con
-           un escalon al pie de cada tarjeta: la mas corta deja un
-           hueco debajo. Masonry reparte cada tarjeta en la columna
-           que menos alto lleva, y las columnas quedan desparejas,
-           sin huecos y sin filas.
-
-           Quien coloca las tarjetas es catalogo.js: escribe el
-           ancho de la columna en cada una y la pone con left/top
-           en la columna mas corta.
-
-           - La clase es-masonry la agrega el script, no el HTML.
-             Si algo falla y nunca llega, las tarjetas se quedan en
-             el flex de arriba y se ven en filas parejas: una grilla
-             pareja fea se puede arreglar; una grilla vacia no.
-           - left/top y no transform, porque el hover de la tarjeta
-             ya usa transform para el saltito y las dos cosas en la
-             misma propiedad se pisan.
-           - No hay que reservar el alto de las imagenes a mano: el
-             aspect-ratio del .product-visual de mas abajo ya lo
-             fija, asi que una tarjeta mide lo mismo antes y
-             despues de que cargue la foto. Si eso se tocara, habria
-             que volver a medir cuando cada img dispara su load.
-           ========================================================== */
-        .catalog-grid.es-masonry {
-            /* Las tarjetas salen del flujo, asi que el flex ya no
-               hace nada y la grilla pasa a ser solo el contenedor
-               donde se mide el alto de la columna mas alta. */
-            display: block;
-            gap: 0;
-            position: relative;
-        }
-
-        .catalog-grid.es-masonry .product-card {
-            position: absolute;
-            top: 0;
-            left: 0;
-            flex: none;
-            margin: 0;
-        }
-
-        /* Masonry necesita tarjetas de distinta altura: con todas
-           iguales (y aca lo son: el .product-visual de mas abajo
-           tiene una sola proporcion y las descripciones dan el
-           mismo alto) el algoritmo de la columna mas corta
-           devuelve exactamente una grilla de filas parejas.
-
-           Por eso la caja de la foto alterna entre tres
-           proporciones. El object-fit: contain sigue igual, asi
-           que la foto nunca se recorta: la caja mas alta o mas
-           baja deja bandas en blanco, que es el mismo fondo de
-           la foto.
-
-           nth-child y no el id del producto a proposito: al
-           filtrar el orden de la grilla cambia, y las tarjetas
-           guardan data-columna pero no el nth-child que tenian.
-           Con nth-child cada tanda conserva su proporcion y las
-           de antes no se reacomodan al agregar productos. */
-        .catalog-grid.es-masonry .product-card:nth-child(3n + 1) .product-visual {
-            aspect-ratio: 2 / 3;
-        }
-
-        .catalog-grid.es-masonry .product-card:nth-child(3n + 2) .product-visual {
-            aspect-ratio: 3 / 4;
-        }
-
-        .catalog-grid.es-masonry .product-card:nth-child(3n + 3) .product-visual {
-            aspect-ratio: 1 / 1;
-        }
-
-        /* En masonry el alto de cada tarjeta esta escrito y no se
-           toca nunca: si la ficha de venta apareciera empujando
-           el pie hacia abajo, la tarjeta creeria al pasar el mouse
-           y se montaria encima de la de abajo, que esta mas cerca
-           de lo que parece.
-
-           Por eso el bloque se dibuja sobre la foto, que es donde
-           sobra espacio, y no haciendo crecer la tarjeta. Se
-           despliega de arriba hacia abajo y el borde redondeado
-           de la tarjeta lo recorta al aparecer. */
-        .catalog-grid.es-masonry .product-info-wrap {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 2;
-            overflow: hidden;
-            background: var(--white);
-            border-radius: var(--radius) var(--radius) 0 0;
-            transform: translateY(-100%);
-            transition: grid-template-rows .4s ease, transform .4s ease;
-        }
-
-        .catalog-grid.es-masonry .product-card:hover .product-info-wrap,
-        .catalog-grid.es-masonry .product-card:focus-within .product-info-wrap {
-            transform: translateY(0);
-        }
-
-        /* El padding va en el bloque de adentro, no en el de
-           afuera: el de afuera tiene alto 0 cuando esta plegado y
-           un padding propio se veria como una franja blanca
-           incluso plegado. El padding de arriba corre la etiqueta
-           de la categoria para no taparla. */
-        .catalog-grid.es-masonry .product-info {
-            padding: 3.4rem 1.4rem 1.1rem;
-        }
-
-        /* Las tarjetas que llegan con el scroll aparecen en vez de
-           caer de golpe. Una sola vez cada una, asi que no es una
-           animacion infinita: quien pidio menos movimiento la
-           tiene apagada igual, por si acaso.
-
-           El relleno es backwards y no both a proposito: con both el
-           transform del ultimo fotograma se queda pegado para
-           siempre, y como una animacion le gana al :hover, la
-           tarjeta dejaba de levantarse al pasar el mouse. Con
-           backwards solo se cubre el arranque; terminada la
-           animacion manda el estilo propio de la tarjeta. */
-        @keyframes tarjeta-llega {
-            from {
-                opacity: 0;
-                transform: translateY(14px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .catalog-grid.es-masonry .product-card.llega {
-            animation: tarjeta-llega .45s ease backwards;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .catalog-grid.es-masonry .product-card.llega {
-                animation: none;
-            }
-        }
+        /* Ya no hay masonry ni posicion absoluta. Ver el bloque
+           GRILLA SIMETRICA de arriba: las tarjetas van en el
+           flujo y las coloca el grid del navegador. Cuando
+           estaba el masonry, cada tarjeta iba con left/top a la
+           columna mas corta y las columnas quedaban desparejas.
+           Ese era el problema que se queria tapar con el escalon
+           del flex, pero el escalon se ve menos que una columna
+           corta. Con stretch no hay ninguno de los dos. */
 
         .product-visual {
             position: relative;
