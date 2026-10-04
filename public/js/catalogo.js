@@ -120,516 +120,31 @@ document.addEventListener("click", function (event) {
 
 
 /* ==========================================================
-   SCROLL INFINITO
+   CATALOGO COMPLETO, SIN SCROLL
    ------------------------------------------------------------
-   Los productos no se dibujan todos de una vez: entran por lotes
-   de PRODUCTOS_POR_LOTE y el lote siguiente se pide cuando el
-   centinela (un div vacio debajo de la grilla) entra a pantalla.
+   Los productos se dibujan todos de una vez. Antes entraban por
+   lotes de 6, pedidos con un IntersectionObserver sobre un div
+   vacio debajo de la grilla, y con masonry las columnas quedaban
+   desparejas: cada tarjeta iba con left/top a la columna mas corta
+   y las columnas terminaban en alturas distintas.
 
-   Con los 7 productos que hay hoy y un lote de 6 se ve el
-   mecanismo: al cargar aparecen 6 tarjetas y la septima al bajar.
-   Cuando el catalogo crezca, esto ya estara hecho y solo va a
-   cargar mas. El tamano del lote se cambia en esa constante de
-   arriba.
+   Ahora las tarjetas van en el flujo normal y las coloca el grid
+   del CSS, que las estira a la misma altura dentro de cada fila.
+   No hay nada que medir, nada que recolocar y nada que observar:
+   si el catalogo tiene 300 productos, se dibujan los 300.
 
-   Por que IntersectionObserver y no un listener de scroll: el
-   observer avisa cuando el elemento se ve, no cada vez que se
-   mueve un pixel la pagina, asi que no hace falta calcular
-   posiciones ni mirando cada scroll.
-
-   Lo que hay que tener cuidado:
-
-   1. Cambiar de filtro o de busqueda vuelve al primer lote. Si
-      no, al filtrar por una categoria con 3 productos se
-      seguian viendo los que ya habian cargado del filtro anterior.
-2. Mientras se esta pidiendo un lote no se pide otro, para que
-       un scroll rapido no cargue tres veces el mismo.
-   3. Cuando se terminaron los productos, el observer se
-      desconecta. Si no, queda mirando un centinela que nunca mas
-      va a disparar y cada filtro nuevo paga el costo de un
-      observer vivo.
-   4. El aviso con role=status dice cuantos productos hay y que
-      se estan cargando mas: quien navega con lector de pantalla no
-      tiene forma de saber que el scroll sigue trayendo cosas.
+   Lo que queda de estado es solo la lista ya filtrada. El aviso de
+   cantidad lo pone buscador.js, que es quien sabe cuando cambio el
+   filtro.
    ========================================================== */
 
-const PRODUCTOS_POR_LOTE = 6;
-
-/* Los productos que pasan el filtro en este momento, y cuantos ya
-   se dibujaron. La lista se calcula una vez por render y se
-   recorre de a lotes; no se vuelve a filtrar en cada pedido. */
 let productosFiltrados = [];
-let mostrados = 0;
 
-let centinela = null;
-let avisoCatalogo = null;
-let observerScroll = null;
-let cargando = false;
-
-
-function conectarCentinela() {
-
-    if (!centinela || !("IntersectionObserver" in window)) return;
-
-    observerScroll = new IntersectionObserver((entradas) => {
-
-        /* Se pide el lote siguiente solo si el centinela esta
-           entrando a pantalla. Sin este filtro, tambien saltaria
-           la primera vez que no hay nada que cargar. */
-        if (entradas.some(entrada => entrada.isIntersecting)) {
-
-            cargarMas();
-
-        }
-
-    }, {
-
-        /* rootMargin carga antes de que el centinela llegue
-           exactamente a la pantalla: si no, la primera tanda se
-           ve y recien ahi se empieza a pedir la segunda, y en una
-           pagina rapida se nota el tiron. */
-        rootMargin: "200px 0px",
-
-    });
-
-    observerScroll.observe(centinela);
-
-}
-
-
-/* Dibuja el siguiente lote. Si ya se dibujaron todos los productos,
-   desconecta el observer y no hace nada mas. */
-
-/* Suelta el observer. Se llama desde los dos momentos en que ya no
-   queda nada que cargar: cuando se entra a cargarMas y la lista ya
-   esta agotada, y cuando el lote recien dibujado fue el ultimo. */
-
-function desconectarCentinela() {
-
-    if (!observerScroll) return;
-
-    observerScroll.disconnect();
-    observerScroll = null;
-
-}
-
-
-function cargarMas() {
-
-    if (cargando) return;
-
-    if (mostrados >= productosFiltrados.length) {
-
-        desconectarCentinela();
-        return;
-
-    }
-
-    cargando = true;
-
-    const lote = productosFiltrados.slice(mostrados, mostrados + PRODUCTOS_POR_LOTE);
-
-    mostrados += lote.length;
-
-    agregarTarjetas(lote);
-
-    /* Con el ultimo lote no queda nada que esperar: si la lista
-       entera entra en el primer lote, el observer ni se llega a
-       conectar. */
-    if (mostrados >= productosFiltrados.length) {
-
-        desconectarCentinela();
-
-    }
-
-    /* Si hay algo escrito en el buscador, su aviso dice cuantos
-       productos hay. El total no cambia al cargar lotes, pero el
-       aviso se reescribe igual para que no quede desfasado si en
-       el meantime se toco el filtro. */
-    if (typeof window.refrescarContadorBuscador === "function" && busquedaActual) {
-
-        window.refrescarContadorBuscador(productosFiltrados.length);
-
-    }
-
-    if (avisoCatalogo) {
-
-        const quedan = productosFiltrados.length - mostrados;
-        const palabra = mostrados === 1 ? "producto" : "productos";
-
-        avisoCatalogo.textContent = quedan === 0
-            ? `Mostrando ${mostrados} ${palabra} de la categoría.`
-            : `Cargando más productos. Van ${mostrados} de ` +
-              `${productosFiltrados.length}.`;
-
-    }
-
-    cargando = false;
-
-}
-
-
-/* ==========================================================
-   MASONRY: COLUMNAS ASIMETRICAS
-   ------------------------------------------------------------
-   El flex de .catalog-grid pone todas las tarjetas de una fila
-   en el mismo alto, asi que al pie de cada tarjeta queda el
-   escalon de la mas corta. Masonry reparte cada tarjeta en la
-   columna que menos alto lleva y las columnas quedan desparejas.
-
-   Como se hace:
-
-   1. Se mide el ancho de la columna segun el ancho del
-      contenedor y se escribe en la tarjeta. El ancho va primero
-      porque el alto se mide con la tarjeta ya angosta.
-   2. Cada tarjeta va a la columna mas corta, con left/top.
-   3. Al final se le pone a la grilla el alto de la columna mas
-      alta. Sin eso el contenedor se quedaria sin alto (todas las
-      tarjetas estan en posicion absoluta) y el centinela del
-      scroll infinito quedaria pegado al inicio de la pagina.
-
-   Lo que lo hace compatible con el scroll infinito: al llegar un
-   lote solo se acomodan las tarjetas nuevas, sin volver a tocar
-   las de antes. Por eso cada tarjeta lleva su data-columna (para
-   saber si ya esta colocada) y las alturas de columna se guardan
-   en alturasColumnas entre lote y lote. Si al agregar se
-   recolocaran todas, cada tanda de productos correria lo que hay
-   arriba mientras el visitante lo esta leyendo.
-
-   ========================================================== */
-
-/* El ancho de columna se calcula aca, pero el hueco sale del CSS.
-   Leerlo del gap evita tener el 1.5rem escrito en dos lugares: si
-   un dia se cambia el gap, el masonry se entera solo. */
-let separacionMasonry = 24;
-
-/* Alto acumulado de cada columna. El ultimo elemento de cada
-   lista es donde llega la siguiente tarjeta de esa columna. */
-let alturasColumnas = [];
-
-function separacionDeLaGrilla() {
-
-    const grid = document.getElementById("productGrid");
-
-    if (!grid) return;
-
-    const gap = parseFloat(window.getComputedStyle(grid).rowGap);
-
-    if (gap > 0) separacionMasonry = gap;
-
-}
-
-
-/* Cuantas columnas entran. El corte se lee del ancho de la ventana y
-   no del ancho de la grilla, a proposito: los cortes del CSS son
-   @media, que miden la ventana. Si aca se midiera la grilla, que es
-   mas angosta por el padding del contenedor, en una ventana de 900px
-   se contarian 3 columnas (grilla de 852px) donde el flex de mas
-   arriba pone 2, y el acomodo cambiaria justo al cargar el script. */
-function columnasSegunAncho() {
-
-    const ancho = window.innerWidth;
-
-    if (ancho < 572) return 1;
-    if (ancho < 846) return 2;
-    if (ancho < 1120) return 3;
-    return 4;
-
-}
-
-
-/* Deja la grilla como estaba antes de masonry. Se llama cuando se
-   cambia de filtro (la grilla se vacia) y cuando no hay nada que
-   mostrar, para que el mensaje de estado vacio no quede con el
-   alto de la tanda anterior debajo. */
-function reiniciarMasonry() {
-
-    alturasColumnas = [];
-
-    const grid = document.getElementById("productGrid");
-
-    if (!grid) return;
-
-    grid.classList.remove("es-masonry");
-    grid.style.height = "";
-
-}
-
-
-/* Coloca las tarjetas que se le pasan, cada una en la columna mas
-   corta, y deja la grilla con el alto de la columna mas alta.
-
-   animar va solo para las tarjetas que acaban de llegar: cuando se
-   recoloca todo por un cambio de ancho, las que ya estaban en
-   pantalla no tienen por que volver a aparecer. */
-function acomodarMasonry(tarjetas, animar) {
-
-    const grid = document.getElementById("productGrid");
-
-    if (!grid || !tarjetas.length) return;
-
-    /* En la home la seccion del catalogo arranca oculta, y ahi la
-       grilla tiene ancho 0. Medir en ese estado daria tarjetas de
-       ancho 0 (con el texto partido letra por letra, y unos altos
-       enormes) que ya no se corrigen solos. Se dejan sin colocar, sin
-       quitarles el ancho, y las acomoda el observador de la grilla
-       cuando la seccion se muestra. */
-    if (grid.clientWidth === 0) return;
-
-    /* La clase se pone antes de medir: si no, las tarjetas siguen
-       en el flujo del flex y no tendrian el ancho de columna. */
-    grid.classList.add("es-masonry");
-
-    const separacion = separacionMasonry;
-    const columnas = columnasSegunAncho();
-    const ancho = (grid.clientWidth - separacion * (columnas - 1)) / columnas;
-
-    /* Si cambio el numero de columnas (se giro la ventana) se
-       arranca de cero: si no, las columnas conservarian el alto
-       de la ronda anterior y las tarjetas nuevas quedarian
-       descolgadas. */
-    if (alturasColumnas.length !== columnas) {
-
-        alturasColumnas = new Array(columnas).fill(0);
-
-    }
-
-    for (const tarjeta of tarjetas) {
-
-        tarjeta.style.width = ancho + "px";
-
-        /* La columna mas corta. El medio pixel de margen evita que
-           una diferencia que no se ve haga cambiar de columna en
-           cada tanda, que se lee como un acomodo que titila. */
-        let columna = 0;
-
-        for (let i = 1; i < alturasColumnas.length; i++) {
-
-            if (alturasColumnas[i] < alturasColumnas[columna] - 0.5) columna = i;
-
-        }
-
-        /* El alto se mide recien con el ancho puesto, y recien
-           antes de escribir la posicion: leer el alto escribe el
-           ancho, y escribir top tambien invalida la medida. */
-        const alto = tarjeta.offsetHeight;
-
-        tarjeta.style.left = (columna * (ancho + separacion)) + "px";
-        tarjeta.style.top = alturasColumnas[columna] + "px";
-
-        alturasColumnas[columna] += alto + separacion;
-
-        tarjeta.dataset.columna = columna;
-
-        if (animar) animarEntrada(tarjeta);
-
-    }
-
-    grid.style.height = (Math.max(...alturasColumnas) - separacion) + "px";
-
-}
-
-
-/* Las tarjetas que llegan por scroll aparecen en vez de caer de
-   golpe. La clase se saca sola al terminar la animacion y no se
-   deja puesta: con "both" el transform de la animacion le gana al
-   del hover, y la tarjeta dejaria de levantarse al pasar el mouse.
-   El CSS ademas lo cubre con "backwards", asi que si la clase se
-   queda por ahi el hover tampoco se rompe: esta es la red de
-   seguridad.
-
-   Con reduced motion no hay animacion que ejecutar, y la clase no
-   se pone. */
-function animarEntrada(tarjeta) {
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    tarjeta.classList.add("llega");
-
-    tarjeta.addEventListener("animationend", function () {
-
-        tarjeta.classList.remove("llega");
-
-    }, { once: true });
-
-    /* animationend no siempre llega: si la pestana estaba en
-       segundo plano, si el navegador la pausa, o si el elemento
-       se quedo sin pintar. Se saca igual al pasar el tiempo de la
-       animacion, que para entonces ya termino. */
-    setTimeout(function () {
-
-        tarjeta.classList.remove("llega");
-
-    }, 700);
-
-}
-
-
-/* Recoloca todas las tarjetas. Se usa cuando cambia el ancho de la
-   ventana, cuando se muestra la seccion del catalogo y cuando una
-   tarjeta cambia de alto. */
-function relayoutMasonry() {
-
-    const grid = document.getElementById("productGrid");
-
-    if (!grid) return;
-
-    const tarjetas = [...grid.querySelectorAll(".product-card")];
-
-    /* Sin tarjetas no hay nada que colocar. Ojo que aqui no se mira
-       si la grilla tiene la clase de masonry: en la home se llama
-       justamente para ponerla, porque las tarjetas quedaron sin
-       colocar cuando la seccion estaba oculta. El estado vacio no
-       pasa por aca porque no tiene tarjetas. */
-    if (!tarjetas.length) return;
-
-    /* Y el ancho se mira ANTES de tocar nada. Si la seccion se
-       ocultó despues del ultimo acomodo, este recolocado no tendria
-       forma de terminar: se quedarian las tarjetas sin columna, la
-       clase puesta y el alto viejo. Con la guarda, una seccion
-       oculta conserva el acomodo que ya tenia, que es el correcto. */
-    if (grid.clientWidth === 0) return;
-
-    alturasColumnas = [];
-
-    for (const tarjeta of tarjetas) {
-
-        tarjeta.removeAttribute("data-columna");
-
-    }
-
-    acomodarMasonry(tarjetas);
-
-}
-
-
-/* Al redimensionar a mano se dispara un resize por pixel, y medir
-   todas las tarjetas en cada uno se nota. Se espera a que pare. */
-let esperaMasonry = null;
-
-window.addEventListener("resize", function () {
-
-    clearTimeout(esperaMasonry);
-    esperaMasonry = setTimeout(relayoutMasonry, 150);
-
-});
-
-
-/* Los altos se miden una vez y se quedan. Si despues cambia el alto
-   de una tarjeta, la grilla queda con huecos o con tarjetas
-   montadas: pasa cuando tarda la fuente de los titulares, cuando
-   una imagen todavia no entro o cuando cambia el texto del
-   navegador. Con un ResizeObserver se vuelve a medir solo cuando
-   eso pasa.
-
-   Observa las tarjetas y no la grilla a proposito: el alto de la
-   grilla lo escribe el propio acomodo, asi que observarla
-   realimentaria el ciclo sin fin. */
-let observadorTamanio = null;
-
-function observarTamanios() {
-
-    const grid = document.getElementById("productGrid");
-
-    if (!grid || typeof ResizeObserver === "undefined") return;
-
-    if (!observadorTamanio) {
-
-        observadorTamanio = new ResizeObserver(function () {
-
-            clearTimeout(esperaMasonry);
-            esperaMasonry = setTimeout(relayoutMasonry, 50);
-
-        });
-
-    }
-
-    for (const tarjeta of grid.querySelectorAll(".product-card")) {
-
-        observadorTamanio.observe(tarjeta);
-
-    }
-
-}
-
-
-/* En la home el catalogo arranca oculto, y al ocultarse no se puede
-   medir nada. Cuando la seccion se muestra no hay ningun resize de
-   la ventana que avise (abrir un menu no cambia el tamano de la
-   ventana), asi que sin esto las tarjetas se quedarian con el ancho
-   que tuvieran al ocultarse.
-
-   Solo se recoloca si hay tarjetas sin colocar, asi que el alto que
-   escribe el propio acomodo no vuelve a disparar el ciclo. */
-function observarAnchoGrilla() {
-
-    const grid = document.getElementById("productGrid");
-
-    if (!grid || typeof ResizeObserver === "undefined") return;
-
-    new ResizeObserver(function () {
-
-        /* Ancho 0 es la seccion oculta: no hay nada que medir. */
-        if (grid.clientWidth === 0) return;
-
-        if (!grid.querySelector(".product-card:not([data-columna])")) return;
-
-        clearTimeout(esperaMasonry);
-        esperaMasonry = setTimeout(relayoutMasonry, 50);
-
-    }).observe(grid);
-
-}
-
-
-/* Red de seguridad del observador. Si la seccion sigue oculta al
-   dibujar, las tarjetas quedan sin colocar esperando a que el
-   observador avise. Ese aviso es lo normal, pero si el navegador
-   no lo entrega (pestana en segundo plano al cargar, o motores que
-   no lo soportan) el catalogo de la home se quedaria para siempre
-   en el flex de respaldo.
-
-   Por eso se reintenta un numero acotado de veces y se para en
-   cuanto las tarjetas quedan colocadas: no es unintervalo vivo, y
-   si el visitante esta mirando otra seccion tampoco pasa nada
-   porque el acomodo sale sin medir nada. */
-function reintentarMasonry() {
-
-    const grid = document.getElementById("productGrid");
-
-    if (!grid) return;
-
-    let intentos = 0;
-
-    const intentar = function () {
-
-        /* Si ya estan colocadas (o la grilla quedo vacia) no hace
-           falta seguir probando. */
-        if (!grid.querySelector(".product-card:not([data-columna])")) return;
-
-        if (grid.clientWidth === 0) {
-
-            if (++intentos > 20) return;
-
-            setTimeout(intentar, 150);
-
-            return;
-
-        }
-
-        relayoutMasonry();
-
-    };
-
-    setTimeout(intentar, 150);
-
-}
-
-
-/* El HTML de una tarjeta. Vive en su propia funcion porque ahora
-   la escribe el render inicial y tambien cada lote del scroll
-   infinito: antes estaba metido dentro de renderCatalog. */
-
+/* El HTML de una tarjeta. Vive en su propia funcion porque la
+   dibuja mas de una vez por render: todas las que pasan el filtro
+   activo, cada vez que se cambia la categoria o la busqueda. Antes
+   era el segundo trabajo de renderCatalog, que ademas la escribia de
+   a un lote para el scroll infinito. */
 function tarjetaProducto(producto) {
 
     return `
@@ -686,51 +201,17 @@ function tarjetaProducto(producto) {
 
 }
 
-/* Dibuja las tarjetas de un lote. Van con += y no con = porque el
-   scroll infinito va sumando al final de lo que ya esta: si se
-   reemplazara el innerHTML se perderian los lotes anteriores. El
-   primer += sobre una grilla vacia es igual que un =. Al final
-   las nuevas van a su columna: solo esas, las de antes quedan
-   donde estaban. */
-
-function agregarTarjetas(lote) {
-
-    const grid = document.getElementById("productGrid");
-
-    if (!grid || !lote.length) return;
-
-    grid.insertAdjacentHTML("beforeend", lote.map(tarjetaProducto).join(""));
-
-    /* data-columna es la marca de "ya colocada". Las que la tienen
-       son de un lote anterior y no se vuelven a mover. */
-    const nuevas = [...grid.querySelectorAll(".product-card:not([data-columna])")];
-
-    if (nuevas.length) {
-
-        acomodarMasonry(nuevas, true);
-        observarTamanios();
-
-        /* Si la seccion estaba oculta, acomodarMasonry no pudo
-           medirlas y se quedaron sin columna. El reintento se
-           encarga: sin esto, una tanda que llega con la grilla
-           oculta se quedaria sin colocar, porque el reintento del
-           arranque ya habia terminado antes de que llegara. */
-        reintentarMasonry();
-
-    }
-
-}
-
-
 /* ==========================================================
    RENDERIZAR CATÁLOGO
    ------------------------------------------------------------
-   Un article por producto dentro de #productGrid. Solo se
-   dibuja el primer lote: los demas llegan por scroll infinito.
+   Un article por producto dentro de #productGrid, todos de una
+   vez. Antes se dibujaba solo el primer lote y el resto llegaba al
+   hacer scroll; ahora la grilla se arma entera cada vez que cambia
+   la categoria o la busqueda.
 
-   Al cambiar de filtro o de busqueda esto vuelve a arrancar
-   desde cero: se suelta el observer viejo, se recalcula la
-   lista y se dibuja el primer lote.
+   No hace falta colocar las tarjetas a mano ni esperar a que se
+   carguen las imagenes: van en el flujo y el grid del CSS las
+   ordena y las estira a la misma altura de su fila.
    ========================================================== */
 
 function renderCatalog() {
@@ -739,18 +220,22 @@ function renderCatalog() {
 
     if (!grid) return;
 
-    /* Cada render arranca de nuevo. Si el observer del filtro
-       anterior sigue vivo, dispara sobre una grilla que ya no
-       tiene nada que ver con el. */
-    desconectarCentinela();
-
     productosFiltrados = PRODUCTOS.filter(producto =>
         (!categoriaActual || producto.categoria === categoriaActual)
         && coincideBusqueda(producto)
     );
 
-    mostrados = 0;
-    cargando = false;
+    /* Si hay una busqueda puesta, el contador del header tiene que
+       seguir al filtro. Antes lo actualizaba cada lote del scroll
+       infinito; ahora alcanza con una vez por render, y de paso se
+       corrige el caso de elegir una categoria con una busqueda
+       activa: el aviso queda en el total nuevo y no en el viejo.
+
+       Con busqueda vacia no se toca: el aviso se llama solo cuando
+       hay algo escrito, y hay que dejarlo como esta. */
+    if (busquedaActual && typeof window.refrescarContadorBuscador === "function") {
+        window.refrescarContadorBuscador(productosFiltrados.length);
+    }
 
     /* El filtro puede dejar la grilla vacia, y solo por una causa:
        que el texto buscado no coincida con nada. Los botones de
@@ -762,11 +247,6 @@ function renderCatalog() {
        hasta aqui con el scroll bajo puede no mirar arriba. */
 
     if (productosFiltrados.length === 0) {
-
-        /* Sin esto la grilla se quedaria con el alto de la tanda
-           anterior y el mensaje de estado vacio flotaria en una
-           columna de espacio en blanco. */
-        reiniciarMasonry();
 
         /* mensaje se arma aparte y se escapa recien al escribirlo,
            no al armarlo: asi el escapado se ve en el mismo lugar
@@ -784,29 +264,11 @@ function renderCatalog() {
 
         `;
 
-        if (avisoCatalogo) avisoCatalogo.textContent = "";
-
         return;
 
     }
 
-    /* Antes de vaciar la grilla se le saca el masonry: el alto y
-       las posiciones de la tanda anterior son de tarjetas que ya
-       no estan, y sin limpiar dejarian hueco abajo y columnas
-       descolgadas. */
-    reiniciarMasonry();
-
-    grid.innerHTML = "";
-
-    cargarMas();
-
-    /* Si ya se dibujo todo en el primer lote no hay nada que
-       esperar con scroll: el observer no llega a hacer falta. */
-    if (mostrados < productosFiltrados.length) {
-
-        conectarCentinela();
-
-    }
+    grid.innerHTML = productosFiltrados.map(tarjetaProducto).join("");
 
 }
 
@@ -935,11 +397,7 @@ document.addEventListener("click", function (event) {
 /* El buscador del header y el filtro de catalogo comparten el
    texto. este es el punto de entrada que usa buscador.js: deja el
    estado, redibuja y avisa. Devuelve cuantos quedaron, que
-   es lo que buscador.js lee para el aria-live.
-
-   Devuelve el total, no las tarjetas dibujadas: con el scroll
-   infinito se muestran de a lotes, asi que contar la grilla
-   anunciaria "1 producto" para una categoria que tiene siete. */
+   es lo que buscador.js lee para el aria-live. */
 
 window.aplicarBusqueda = function (texto) {
 
@@ -978,30 +436,12 @@ function actualizarBuscadorHeader() {
    Se dibujan los filtros y los productos, y se pone el
    contador al dia con lo que ya habia en el carrito (sin
    animarlo: todavia no hizo nada el visitante).
+
+   No hay nada que observar ni que esperar: las tarjetas van en el
+   flujo y el navegador las coloca. Por eso el catalogo tambien
+   funciona igual si arranca con la seccion oculta, que era el
+   caso que el masonry no podia cubrir.
    ========================================================== */
-
-/* El centinela y el aviso se buscan una vez: son los mismos para
-   todos los lotes y para todos los filtros. Si no estan (por
-   ejemplo porque la grilla se copio en una pagina que no los
-   tiene) el scroll infinito no arranca, pero la grilla sigue
-   mostrando los productos del primer lote. */
-
-centinela = document.querySelector("[data-centinela]");
-avisoCatalogo = document.querySelector("[data-catalogo-aviso]");
-
-/* El hueco del masonry sale del CSS, asi que se lee antes del
-   primer render: despues la grilla ya tiene la clase es-masonry y
-   su gap es 0. */
-separacionDeLaGrilla();
-
-/* Antes del render, para que tambien este pendiente el caso de la
-   seccion oculta: si el catalogo arranca oculto, el primer render
-   no puede medir nada y las tarjetas quedan esperando a que la
-   grilla tenga ancho. */
-observarAnchoGrilla();
-
-/* Y el reintento, que cubre el caso de que el observador no avise. */
-reintentarMasonry();
 
 renderFiltros();
 renderCatalog();
