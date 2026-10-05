@@ -52,9 +52,33 @@ const SHIPPING_COST = 0;
    ademas completa los datos que le falten a cada item con los
    del catalogo: asi un pedido guardado por una version vieja
    del sitio no se dibuja con la imagen rota o sin nombre.
+
+   Por que arranca vacio y no se lee de una
+   -----------------------------------------
+   obtenerCarrito, en productos.js, descarta los items cuyo id no
+   encuentra en PRODUCTOS, porque no se pueden dibujar. Antes el
+   catalogo estaba entero en el script, asi que discardar era
+   correcto. Ahora PRODUCTOS se llena con un fetch: si se leyera el
+   carrito al cargar, todavia no habria nada y TODOS los items se
+   descartarian, dejando el carrito vacio.
+
+   Peor todavia: guardarCarrito escribe esa lista vacia en
+   localStorage. Con solo recargar, un visitante con el pedido
+   armado lo perdia de verdad.
+
+   Por eso cart arranca vacio y se arma adentro de
+   alCargarElCatalogo, ya con el catalogo cargado. La funcion leer()
+   es la que se suscribe.
    ========================================================== */
 
-let cart = obtenerCarrito();
+let cart = [];
+
+function leer() {
+
+    cart = obtenerCarrito();
+    renderCart();
+
+}
 
 
 /* ==========================================================
@@ -962,6 +986,9 @@ suscribirAlCarrito(function () {
 
 
 /* Con solo renderizar el carrito la pagina queda lista:
-   el resumen y las recomendaciones se actualizan desde ahi. */
+   el resumen y las recomendaciones se actualizan desde ahi.
 
-renderCart();
+   La primera lectura va atrasada hasta que el catalogo este
+   cargado: ver el bloque OBTENER CARRITO mas arriba, que explica
+   por que leer el carrito antes seria perderlo. */
+alCargarElCatalogo(leer);

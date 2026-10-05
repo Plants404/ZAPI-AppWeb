@@ -24,140 +24,169 @@ const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter =>
 
 
 /* ==========================================================
-   PRODUCTOS
+   EL CATALOGO
+   ------------------------------------------------------------
+   PRODUCTOS arranca vacio y se llena solo, bajando
+   public/data/productos.json. Ese JSON lo escribe
+   tools/generar-productos.js desde datos/catalogo.js, que es la
+   fuente que se edita a mano.
+
+   Por que no viene incrustado
+   ----------------------------
+   El catalogo estuvo un tiempo dentro de este mismo archivo, como
+   un array. Servia para que la pagina abriera con doble clic, sin
+   servidor. A cambio obligaba a que el servidor -que necesita el
+   catalogo para sembrar la base- no lo pudiera importar con
+   require(), porque este archivo usa window y document: tenia que
+   arrancar el archivo entero a mano y ejecutar el array con
+   Function() solo para sacarle los datos. Ese era el punto mas
+   fragil de todo el proyecto: un cambio de espaciado, unas
+   comillas simples o un corchete en un comentario partian el
+   catalogo del servidor, y se enteraba uno al arrancar el server.
+
+   Ahora el servidor hace JSON.parse de un archivo y el navegador lo
+   pide por HTTP. El sitio anda de una sola forma, que es la que
+   hace falta: siempre servido por Node.
+
+   Que el catalogo llegue un instante despues
+   ------------------------------------------
+   Antes era sincrono, ahora es un fetch. Hay codigo que lo necesita
+   apenas carga la pagina y no puede esperar: es el catalogo de la
+   grilla, el carrito guardado y el boton de agregar de las fichas.
+
+   Por eso existe alCargarElCatalogo(). Se registra lo que hay que
+   hacer, y el navegador lo corre en el instante en que los datos
+   llegan, una sola vez. Los que dependen del catalogo usan esa
+   funcion en vez de leer PRODUCTOS directo al arrancar; leerlo
+   directo daria una lista vacia y, en el caso del carrito, peor:
+   un carrito guardado con productos se descartaria por no
+   encontrarlos en el catalogo todavia vacio.
    ========================================================== */
 
-const PRODUCTOS = [
-    {
-        id: 1,
-        nombre: "Albahaca",
-        categoria: "Aromáticas",
-        imagen: "./public/img/albahaca.opt.jpg",
-        imagenes: [
-            "./public/img/albahaca.opt.jpg"
-        ],
-        descripcion: "Fresca y perfumada, ideal para huertas en macetas.",
-        precioBase: 150,
-        infoDeVenta: [
-            "Mata de 20 cm lista para plantar",
-            "Rinde + de 8 semanas de cosecha continua",
-            "Incluye guía de cuidados digital"
-        ]
-    },
-    {
-        id: 2,
-        nombre: "Rúcula",
-        categoria: "Hortalizas",
-        imagen: "./public/img/ruucula.opt.jpg",
-        imagenes: [
-            "./public/img/ruucula.opt.jpg"
-        ],
-        descripcion: "Tierna y picante, lista para tus ensaladas.",
-        precioBase: 120,
-        infoDeVenta: [
-            "Resiembra: hasta 4 cortes por planta",
-            "Cultivo 100% agroecológico",
-            "Incluye guía de cuidados digital"
-        ]
-    },
-    {
-        id: 3,
-        nombre: "Suculenta",
-        categoria: "Plantas de interior",
-        imagen: "./public/img/suculenta1.opt.jpg",
-        imagenes: [
-            "./public/img/suculenta1.opt.jpg",
-            "./public/img/suculenta4.2.opt.jpg",
-            "./public/img/suculenta4.1.opt.jpg",
-            "./public/img/suculenta4.opt.jpg",
-            "./public/img/suculenta3.2.opt.jpg",
-            "./public/img/suculenta3.1.opt.jpg",
-            "./public/img/suculenta3.opt.jpg",
-            "./public/img/suculenta2.opt.jpg",
-            "./public/img/suculentas2.1.opt.jpg"
-        ],
-        descripcion: "Resistente, ideal para interiores luminosos.",
-        precioBase: 180,
-        infoDeVenta: [
-            "Viene en maceta cerámica",
-            "Riego: 1 vez cada 15 días",
-            "Ideal para principiantes"
-        ]
-    },
-    {
-        id: 4,
-        nombre: "Cactus",
-        categoria: "Plantas de interior",
-        imagen: "./public/img/cactus1.opt.jpg",
-        imagenes: [
-            "./public/img/cactus1.opt.jpg",
-            "./public/img/cactus4.opt.jpg",
-            "./public/img/cactus5.opt.jpg",
-            "./public/img/cactus3.opt.jpg",
-            "./public/img/cactus2.opt.jpg"
-        ],
-        descripcion: "Decorativo y de fácil mantenimiento.",
-        precioBase: 220,
-        infoDeVenta: [
-            "Viene en maceta cerámica",
-            "Soporta largos períodos sin riego",
-            "Purifica el aire de tu hogar"
-        ]
-    },
-    {
-        id: 5,
-        nombre: "Suculentas mix",
-        categoria: "Combo",
-        imagen: "./public/img/almacigosuculentas.opt.jpg",
-        imagenes: [
-            "./public/img/almacigosuculentas.opt.jpg",
-            "./public/img/almacigosuculentas2.opt.jpg"
-        ],
-        descripcion: "Una selección de suculentas para tu hogar.",
-        precioBase: 90,
-        infoDeVenta: [
-            "Pack de 6 variedades surtidas",
-            "30% más económico que por unidad",
-            "Incluye caja de regalo"
-        ]
-    },
-    {
-        id: 6,
-        nombre: "Cretona",
-        categoria: "Plantas de interior",
-        imagen: "./public/img/cretona.opt.jpg",
-        imagenes: [
-            "./public/img/cretona.opt.jpg"
-        ],
-        descripcion: "Hojas coloridas para espacios con luz indirecta.",
-        precioBase: 320,
-        infoDeVenta: [
-            "Viene en maceta decorativa",
-            "Hojas rojas, crema y verde",
-            "Incluye guía de cuidados digital"
-        ]
-    },
-    {
-        id: 7,
-        nombre: "Kit de huerta sustentable",
-        categoria: "Kits",
-        imagen: "./public/img/kit_de_huerta_zapi.opt.jpg",
-        imagenes: [
-            "./public/img/kit_de_huerta_zapi.opt.jpg",
-            "./public/img/kit_de_huerta_zapi_2.opt.jpg",
-            "./public/img/kit_de_huerta_zapi3.opt.jpg",
-            "./public/img/kit_de_huerta_zapi4.opt.jpg",
-            "./public/img/kit_de_huerta_zapi5.opt.jpg"
-        ],
-        descripcion: "Semillas, sustrato y guía para tu primera huerta.",
-        precioBase: 650,
-        infoDeVenta: [
-            "Semillas, sustrato y macetas para empezar",
-            "Guía de cultivo paso a paso",
-            "Embalaje reciclable, sin plástico de un solo uso"
-        ]
+let PRODUCTOS = [];
+
+/* Se suscribe lo que hay que correr cuando el catalogo este.
+   Guarda las funciones para poder llamarlas todas juntas cuando el
+   fetch termine, sin importar en que orden se registraron. */
+const esperandoElCatalogo = [];
+
+/* Va declarado antes de alCargarElCatalogo porque esa funcion lo
+   mira: si el fetch ya termino, corre en el acto, y si no, se
+   encola. */
+let catalogoCargado = false;
+
+/* Corre fn apenas el catalogo este disponible. Si ya llego, corre
+   en el acto: asi da lo mismo suscribirse antes o despues del fetch.
+   El try/catch es para que un fallo al dibujar una pantalla no
+   cancele las demas. */
+function alCargarElCatalogo(fn) {
+    if (catalogoCargado) {
+        try {
+            fn();
+        } catch (error) {
+            console.error("Fallo al usar el catalogo ya cargado:", error);
+        }
+    } else {
+        esperandoElCatalogo.push(fn);
     }
-];
+}
+
+/* Baja el JSON y llena PRODUCTOS y precios. Cuando termina, corre
+   todo lo que se haya suscrito con alCargarElCatalogo.
+
+   La ruta es absoluta porque las fichas de producto viven en
+   productos/ y si fuera relativa, desde ahi buscaria
+   productos/public/data/... y no lo encontraria. */
+function cargarCatalogo() {
+
+    fetch("/public/data/productos.json")
+        .then(respuesta => {
+            if (!respuesta.ok) throw new Error("el servidor devolvio " + respuesta.status);
+            return respuesta.json();
+        })
+        .then(documento => {
+
+            const productos = documento && documento.productos;
+
+            if (!Array.isArray(productos) || !productos.length) {
+                throw new Error("el JSON del catalogo no trae productos");
+            }
+
+            PRODUCTOS = productos;
+
+            /* precios se arma recien ahora, no al cargar el archivo.
+               Antes se llenaba una vez y para siempre al tope del
+               script, con lo que el catalogo ya venia entero. Con el
+               fetch, si se llenara en ese momento, se quedaria
+               vacio para siempre y las tarjetas del catalogo
+               mostrarian el precio en blanco. */
+            for (const producto of PRODUCTOS) {
+                precios[producto.id] = producto.precioBase;
+            }
+
+            catalogoCargado = true;
+
+            const funciones = esperandoElCatalogo.splice(0);
+            for (const fn of funciones) {
+                try {
+                    fn();
+                } catch (error) {
+                    console.error("Fallo al dibujar con el catalogo:", error);
+                }
+            }
+
+        })
+        .catch(error => {
+            console.error("No se pudo cargar el catalogo:", error);
+            avisarCatalogoNoCargado();
+        });
+
+}
+
+/* Si el fetch falla, la grilla y el carrito quedan con lo ultimo que
+   有的. No es una pagina rota del todo -el esqueleto esta ahi- pero
+   si necesita un aviso: sin productos, la grilla se dibuja vacia y
+   no hay forma de que el visitante entienda por que.
+
+   El caso que mas conviene tratar aparte es el doble clic. El
+   sitio ya no anda con file:// porque el navegador le bloquea el
+   fetch del catalogo por CORS, y el visitante ve una pagina sin
+   productos sin ninguna pista de por que. Se le dice que arranque
+   el servidor. */
+function avisarCatalogoNoCargado() {
+
+    const grilla = document.getElementById("productGrid");
+    if (!grilla) return;
+
+    const aviso = document.createElement("p");
+    aviso.className = "catalog-empty";
+
+    /* Se arma con createElement y no con innerHTML. No hace falta
+       meter HTML aca: asi el texto queda siempre escapado por el
+       navegador y el escaner de XSS de verificar.js no tiene nada
+       que revisar. */
+    if (location.protocol === "file:") {
+        aviso.appendChild(document.createTextNode(
+            "Este sitio necesita el servidor para cargar el catálogo. "
+            + "Abrí una terminal en la carpeta del proyecto, corré "));
+        aviso.appendChild(document.createElement("code")).textContent = "npm start";
+        aviso.appendChild(document.createTextNode(" y entrá por "));
+        aviso.appendChild(document.createElement("code")).textContent = "http://localhost:5501";
+        aviso.appendChild(document.createTextNode("."));
+    } else {
+        aviso.textContent =
+            "No pudimos cargar los productos. Recargá la página o probá de nuevo en un rato.";
+    }
+
+    grilla.innerHTML = "";
+    grilla.appendChild(aviso);
+
+}
+
+/* El fetch arranca recien, sin await. El resto del archivo lo usa
+   a traves de alCargarElCatalogo y ya no depende del momento. */
+cargarCatalogo();
+
 
 
 /* ==========================================================

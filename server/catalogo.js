@@ -1,52 +1,50 @@
 'use strict';
-/* Lee el catalogo de productos.js para cargarlo en la base.
-   
+/* Lee el catalogo de public/data/productos.json para cargarlo en la
+   base.
+
    Por que no se copia a mano
    --------------------------
-   productos.js ya es la fuente unica de verdad del catalogo: el
-   navegador lo carga, generar-productos.js saca de ahi las fichas y
-   el sitemap sale de los archivos generados. Si el servidor tambien
-   leyera otra copia, cambiar un precio habria que acordarse de tres
-   lugares, y el que se olvide se vende al precio viejo.
+   datos/catalogo.js es la fuente unica de verdad del catalogo: de
+   ahi salen las tarjetas del navegador, las fichas de productos/
+   y el sitemap. Si el servidor leyera otra copia, cambiar un precio
+   habria que acordarse de tres lugares, y el que se olvide se vende
+   al precio viejo.
 
-   Por que no se importa con require()
-   ------------------------------------
-   productos.js es un script de navegador: usa window, document y
-   const a nivel de modulo. Si se hiciera require() reventaria al
-   tocar el DOM. Se le saca el literal de PRODUCTOS con un contador
-   de llaves y se evalua en un contexto vacio. Es codigo del propio
-   repo, nunca entrada del visitante.
+   De donde sale el JSON
+   ---------------------
+   public/data/productos.json lo escribe tools/generar-productos.js
+   con npm run generar. Se versiona, asi que un deploy recien clonado
+   tiene el catalogo sin acordarse de correr nada.
 
-   Por que no se pasa el catalogo a JSON
-   -------------------------------------
-   Se podria, pero entonces el sitio dejaria de abrir con doble clic
-   en el archivo: el catalogo pasaria a necesitar fetch y un servidor.
-   Por ahora el sitio anda de las dos formas -abierto con doble clic
-   o servido por Node- y productos.js queda igual. Si alguna vez hay
-   que elegir una sola, la JSON es el camino.
+   Por que JSON y no require()
+   ---------------------------
+   Este era el punto flojo de la version anterior. El catalogo vivia
+   en public/js/productos.js, que es un script de navegador: usa
+   window y document, asi que require() reventaba. Para leerlo igual
+   habia que arrancarlo a mano: sacar el literal del array con un
+   contador de llaves y pasarlo por Function(). Ese emparejar() era
+   fragil ante cualquier cambio de formato -el espaciado del
+   "const PRODUCTOS = [", unas comillas simples, un corchete dentro
+   de un comentario- y el fallo aparecia al arrancar el servidor, en
+   produccion, no en un test.
 
-   Cuando se haga, el motivo es este: mientras el catalogo viva en un
-   .js, el eval de arriba es fragil ante cualquier cambio de formato
-   en productos.js (el espaciado del "const PRODUCTOS = [", unas
-   comillas simples, un corchete en un comentario). Hoy eso esta
-   cubierto: tools/verificar.js llama a leerProductos() de verdad y
-   falla si el archivo ya no se puede leer, asi que el error aparece
-   antes de levantar el servidor y no en produccion.
+   Ahora es un JSON.parse. No hay nada que pueda romperse por
+   reformatear el origen, y si el archivo esta malo el error lo dice
+   el parser con el numero de linea y la columna.
 
-   Al migrar a JSON se pueden borrar a la vez el eval, la funcion
-   emparejar() de este archivo y la seccion 10 de verificar.js.
-   La condicion para hacerlo es que el sitio ya no se abra con doble
-   clic: mientras siga siendo una opcion, productos.js tiene que
-   quedar como esta. */
+   El archivo se versiona junto con las fichas y con las dos partes
+   de catalogo.css, que son la misma clase de salida: generado, pero
+   parte del repo. npm run verificar avisa si quedo desactualizado
+   respecto de datos/catalogo.js. */
 
 const fs = require('fs');
 const path = require('path');
 
 const raiz = path.join(__dirname, '..');
 
-/* productos.js es un script de navegador y vive en public/js/, no en la
-   raiz: la raiz se dejo solo con los HTML. */
-const ARCHIVO = path.join(raiz, 'public', 'js', 'productos.js');
+/* Vive bajo public/ porque es lo mismo que baja el navegador: una
+   sola copia para los dos, imposible que discrepen. */
+const ARCHIVO = path.join(raiz, 'public', 'data', 'productos.json');
 
 /* El slug se calcula con EXACTAMENTE el mismo codigo que
    generar-productos.js, para que la URL de /api/productos sea la
@@ -57,7 +55,7 @@ const ARCHIVO = path.join(raiz, 'public', 'js', 'productos.js');
    ("ú" queda como "u" mas un acento combinante), despues se borran
    los acentos combinantes, y recien ahi se cambia todo lo que no sea
    letra o numero por un guion. Si se reemplazara la vocal acentuada
-   antes del NFD, "Rucula" saldria "ru-cula". */
+   antes del NFD, "Camion" con tilde saldria "cami-n". */
 function slug(texto) {
     return String(texto)
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -66,87 +64,49 @@ function slug(texto) {
         .replace(/^-+|-+$/g, '');
 }
 
-/* Saca el array literal PRODUCTOS del archivo y lo evalua. Devuelve
-   null si no lo encuentra o si el resultado no tiene la forma
-   esperada: mejor arrancar sin catalogo que arrancar con cualquier
-   cosa. */
+/* Lee el JSON del catalogo. Tira con un mensaje util si el archivo no
+   esta o esta roto.
+
+   Que tire en vez de devolver null es a proposito: el catalogo es lo
+   unico que el servidor necesita para sembrar la base y para que el
+   sitio tenga algo que mostrar. Arrancar sin el daria una pagina en
+   vacio y una base sin productos, que es mas dificil de diagnosticar
+   que un mensaje al arrancar.
+
+   Si el archivo no esta, casi siempre es que falta correr el
+   generador. El mensaje lo dice, porque es el tres de cada cuatro. */
 function leerProductos() {
 
-    const codigo = fs.readFileSync(ARCHIVO, 'utf8');
-
-    const inicio = codigo.indexOf('const PRODUCTOS = [');
-
-    if (inicio < 0) {
-        throw new Error('No se encontro "const PRODUCTOS = [" en productos.js');
+    if (!fs.existsSync(ARCHIVO)) {
+        throw new Error(
+            'No existe public/data/productos.json. '
+            + 'Se genera con: npm run generar'
+        );
     }
 
-    const corchete = codigo.indexOf('[', inicio);
-    const cierre = emparejar(corchete, codigo);
+    let documento;
 
-    if (cierre < 0) {
-        throw new Error('El array PRODUCTOS de productos.js no cierra bien');
+    try {
+        documento = JSON.parse(fs.readFileSync(ARCHIVO, 'utf8'));
+    } catch (error) {
+        throw new Error('public/data/productos.json esta roto: ' + error.message);
     }
 
-    const literal = codigo.slice(corchete, cierre + 1);
-
-    /* El eval es sobre codigo del repo, no sobre entrada de nadie. Lo
-       unico que hace es resolver el literal. */
-    const productos = Function(`"use strict"; return (${literal});`)();
+    const productos = documento && documento.productos;
 
     if (!Array.isArray(productos) || productos.length === 0) {
-        throw new Error('PRODUCTOS en productos.js no es una lista con contenido');
+        throw new Error('public/data/productos.json no trae una lista de productos con contenido');
     }
 
     return productos;
 }
 
-/* Devuelve el indice del ] o } que cierra al del indice dado, saltando
-   adentro de los strings y los comentarios. Sin esto, un corchete
-   dentro de un nombre de producto parte el array al medio. */
-function emparejar(indice, codigo) {
-    let nivel = 0;
-    let enString = null;
-    let enComentario = false;
-
-    for (let i = indice; i < codigo.length; i++) {
-        const caracter = codigo[i];
-        const siguiente = codigo[i + 1];
-
-        if (enComentario) {
-            if (caracter === '\n') enComentario = false;
-            continue;
-        }
-
-        if (enString) {
-            if (caracter === '\\') { i++; continue; }
-            if (caracter === enString) enString = null;
-            continue;
-        }
-
-        if (caracter === '/' && siguiente === '/') { enComentario = true; continue; }
-        if (caracter === '/' && siguiente === '*') { i += 2; enComentario = true; continue; }
-
-        if (caracter === '"' || caracter === "'" || caracter === '`') {
-            enString = caracter;
-            continue;
-        }
-
-        if (caracter === '[' || caracter === '{') nivel++;
-        if (caracter === ']' || caracter === '}') {
-            nivel--;
-            if (nivel === 0) return i;
-        }
-    }
-
-    return -1;
-}
-
-/* Convierte un producto de productos.js a la fila que espera la base.
+/* Convierte un producto del JSON a la fila que espera la base.
    Se separa en columnas (lo que se busca o se ordena) y el resto
    queda en JSON, asi que agregar un campo al catalogo no obliga a
    tocar el esquema.
 
-   El precio en productos.js se llama precioBase: la pagina genera el
+   El precio en el catalogo se llama precioBase: la pagina genera el
    precio final con una tabla de precios aparte, asi que es el precio
    de referencia del catalogo, no el de venta. El servidor guarda ese
    mismo numero; cuando haya una regla de precios real, se ajusta en
@@ -155,7 +115,7 @@ function aFila(producto) {
     const { id, nombre, precioBase, categoria, ...resto } = producto;
 
     if (!id || !nombre || typeof precioBase !== 'number' || !categoria) {
-        throw new Error(`Producto incompleto en productos.js: ${JSON.stringify(producto).slice(0, 120)}`);
+        throw new Error(`Producto incompleto en el catalogo: ${JSON.stringify(producto).slice(0, 120)}`);
     }
 
     return {

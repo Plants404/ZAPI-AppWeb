@@ -72,7 +72,7 @@ function precioRedondeado(numero) {
    Catalogo
    ------------------------------------------------------------------ */
 
-/* Se junta el producto de productos.js con su stock. El JSON guardado
+/* Se junta el producto del catalogo con su stock. El JSON guardado
    en la columna descripcion_json trae el resto de los campos (fotos,
    descripcion, datos de venta), asi que agregar uno al catalogo no
    obliga a tocar el esquema. */

@@ -12,9 +12,8 @@
      - agregar al carrito.
 
    El carrito lo maneja productos.js, que se carga antes que
-   este archivo: agregarProductoAlCarrito es una funcion global.
-   Si ese script no estuviera, el boton se apaga en vez de
-   romper la pagina.
+   este archivo. Si ese script no estuviera, el boton se apaga en
+   vez de romper la pagina.
    ========================================================== */
 
 (function () {
@@ -31,7 +30,7 @@
             miniatura.addEventListener('click', function () {
                 principal.src = miniatura.dataset.src;
 
-                miniaturas.forEach(otra => otra.classList.remove('activa'));
+                miniaturas.forEach((otra) => otra.classList.remove('activa'));
                 miniatura.classList.add('activa');
             });
         });
@@ -46,6 +45,26 @@
         boton.textContent = 'Carrito no disponible';
         return;
     }
+
+    /* El boton espera al catalogo antes de habilitarse.
+
+       agregarProductoAlCarrito busca el producto por id dentro de
+       PRODUCTOS para saber el nombre, el precio y la foto. Con el
+       catalogo en un fetch, esa lista esta vacia hasta que baja el
+       JSON, y una funcion que existe no dice si el catalogo llego.
+       El guard de arriba, que mira que exista la funcion, ya no
+       alcanza: pasaria y el click caeria en un return sin efecto,
+       con el boton aparentemente vivo y sin pasar nada.
+
+       Asi que se apaga hasta que alCargarElCatalogo lo vuelva a
+       prender, y si el catalogo no llega nunca, alCargarElCatalogo
+       no corre y el boton queda apagado: es preferible un boton
+       deshabilitado a uno que no hace nada. */
+    boton.disabled = true;
+
+    alCargarElCatalogo(function () {
+        boton.disabled = false;
+    });
 
     boton.addEventListener('click', function () {
 

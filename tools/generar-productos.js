@@ -1,5 +1,5 @@
 'use strict';
-/* Genera una pagina estatica por producto.
+/* Genera una pagina estatica por producto y el JSON del catalogo.
    Usage: node tools/generar-productos.js
 
    Escribe productos/<slug>.html para cada item de PRODUCTOS, con
@@ -7,23 +7,30 @@
    y el JSON-LD de Product que piden los buscadores para mostrar el
    precio y la foto en los resultados.
 
-   Los datos salen de productos.js, que es la unica fuente de
-   verdad del catalogo: si el precio cambia alla, se corre esto y
-   las siete paginas quedan al dia. No hay build ni bundler, solo
-   Node >= 18.
+   Escribe tambien public/data/productos.json, que es el archivo que
+   baja el navegador con fetch y el que lee el servidor al sembrar
+   la base. Los dospaths salen de la misma fuente, asi que no pueden
+   discrepar.
 
    De donde salen los datos
    ------------------------
-   productos.js es un script de navegador, asi que no se puede
-   importar con require(). Se le saca el literal de PRODUCTOS con
-   un contador de llaves y se evalua en un contexto vacio. Es
-   codigo del propio repo, nunca entrada del visitante, y despues
-   se valida la forma del resultado: si no es una lista de objetos
-   con id, nombre y precio, el generador se corta sin escribir
-   nada. La alternativa seria partir los datos a un
-   datos/productos.json, pero entonces el catalogo tendria que
-   hacer fetch y la pagina dejaria de abrir con doble clic en el
-   archivo, que es como se esta revisando el sitio. */
+   datos/catalogo.js es un modulo de Node: se importa con require() y
+   ya esta. Si el precio cambia alla, se corre esto y quedan al dia
+   las siete paginas, el JSON y el sitemap. No hay build ni bundler,
+   solo Node >= 18.
+
+   El JSON se versiona, igual que las fichas y que las dos partes de
+   catalogo.css: es generado, pero tambien es lo que lee el servidor
+   al arrancar. Si no estuviera en el repo, un despliegue recien
+   clonado tendria que acordarse de correr esto antes de levantar.
+
+   Por que el navegador lo pide por fetch y no lo lleva incrustado
+   -----------------------------------------------------------------
+   Mientras el catalogo vivia en public/js/productos.js, el sitio
+   abria con doble clic y tambien por HTTP. Ahora anda solo por HTTP:
+   el fetch es lo que hace posible que el servidor lea el catalogo
+   con JSON.parse en vez de arrancar el archivo a mano. Ese era el
+   punto flojo de la cadena anterior. */
 
 const fs = require('fs');
 const path = require('path');
@@ -52,42 +59,51 @@ const STOCK = {
    ------------------------------------------------------------------ */
 
 function extraerProductos() {
-    const fuente = fs.readFileSync(path.join(raiz, 'public', 'js', 'productos.js'), 'utf8');
-    const inicio = fuente.indexOf('const PRODUCTOS = [');
+    /* datos/catalogo.js es un modulo de Node de una vez: se importa
+       y listo. Antes habia que arrancar el archivo, sacar el literal
+       de PRODUCTOS con un contador de llaves y evaluarlo con
+       Function(), porque el catalogo vivia adentro de productos.js
+       y ese es un script de navegador. Ese emparejar a mano era lo
+       unico frágil de toda la cadena.
 
-    if (inicio === -1) throw new Error('no se encontro "const PRODUCTOS = [" en productos.js');
+       Ahora que la fuente esta en un .js propio, un require normal
+       alcanza. La validacion sigue igual y es la que de verdad
+       protege: si el catalogo esta incompleto, esto corta sin
+       escribir nada. */
+    const { PRODUCTOS } = require(path.join(raiz, 'datos', 'catalogo.js'));
 
-    const desde = fuente.indexOf('[', inicio);
-    let nivel = 0;
-    let fin = -1;
-    let enTexto = false;
-    let comilla = '';
+    return validar(PRODUCTOS);
+}
 
-    for (let i = desde; i < fuente.length; i++) {
-        const c = fuente[i];
+/* ------------------------------------------------------------------
+   El JSON que baja el navegador
+   ------------------------------------------------------------------ */
 
-        if (enTexto) {
-            if (c === '\\') i++;
-            else if (c === comilla) enTexto = false;
-            continue;
-        }
+/* El archivo que consumen el fetch del navegador y el JSON.parse del
+   servidor.
 
-        if (c === '"' || c === "'" || c === '`') {
-            enTexto = true;
-            comilla = c;
-        } else if (c === '[') nivel++;
-        else if (c === ']') {
-            nivel--;
-            if (nivel === 0) { fin = i; break; }
-        }
-    }
+   Va envuelto en un objeto y no como un array pelado por dos
+   razones: se le puede agregar metadata sin romper a nadie -"generado"
+   y "version" ya van, para cuando haga falta-, y un array suelto en
+   la raiz es mas facil de colar cualquier cosa.
 
-    if (fin === -1) throw new Error('el arreglo PRODUCTOS no se cierra');
+   Los < del JSON se escapan a \u003c. No es cosmetico: un producto
+   cuya descripcion trajera "</script>" romperia el HTML de la ficha
+   si el JSON fuera embebido en una etiqueta, y algunos crawlers y
+   proxies leen los .json buscando datos que en realidad son HTML.
+   Con el escape, el archivo no puede cerrar una etiqueta. */
 
-    const literal = fuente.slice(desde, fin + 1);
-    const lista = new Function('"use strict"; return ' + literal)();
+function paraElNavegador(lista) {
+    const documento = {
+        generado: new Date().toISOString(),
+        version: 1,
+        productos: lista
+    };
 
-    return validar(lista);
+    /* Sin la fecha no se sabria si el JSON del repo es el del ultimo
+       cambio del catalogo. Es lo que usa verificar.js para avisar
+       cuando hay que correr npm run generar. */
+    return JSON.stringify(documento, null, 2).replace(/</g, '\\u003c') + '\n';
 }
 
 function validar(lista) {
@@ -434,8 +450,32 @@ function podar(esperados) {
 
 const productos = extraerProductos();
 const destino = path.join(raiz, 'productos');
+const destinoJson = path.join(raiz, 'public', 'data');
 
 if (!fs.existsSync(destino)) fs.mkdirSync(destino, { recursive: true });
+if (!fs.existsSync(destinoJson)) fs.mkdirSync(destinoJson, { recursive: true });
+
+/* El JSON va primero, antes que las fichas.
+
+   Es el archivo del que dependen el navegador y el servidor: si este
+   sale mal, mejor que no se escriba ninguna pagina y quede un repo
+   coherente a medias, que un JSON roto al que apunten siete fichas
+   nuevas. El servidor lo lee al arrancar y revienta si no esta. */
+const contenidoJson = paraElNavegador(productos);
+const archivoJson = path.join(destinoJson, 'productos.json');
+
+let jsonAnterior = null;
+try {
+    jsonAnterior = fs.readFileSync(archivoJson, 'utf8');
+} catch {
+    /* No existe todavia: es la primera vez que sale. */
+}
+
+const cambioJson = jsonAnterior !== contenidoJson;
+if (cambioJson) fs.writeFileSync(archivoJson, contenidoJson, 'utf8');
+
+console.log('  public/data/productos.json  (' + productos.length + ' productos' +
+    (cambioJson ? '' : ', sin cambios') + ')');
 
 const sinStock = [];
 const escritas = [];

@@ -22,6 +22,7 @@ const DEL_CATALOGO = {
     agregarProductoAlCarrito: 'readonly',
     suscribirAlCarrito: 'readonly',
     IMAGEN_FALLBACK: 'readonly',
+    alCargarElCatalogo: 'readonly',
 };
 
 const COMUNES = {
@@ -93,7 +94,8 @@ module.exports = [
 
     /* Las herramientas, el servidor y esta misma config: CommonJS. */
     {
-        files: ['tools/**/*.js', 'server.js', 'server/**/*.js', 'eslint.config.js'],
+        files: ['tools/**/*.js', 'server.js', 'server/**/*.js',
+            'datos/**/*.js', 'modelo/**/*.js', 'eslint.config.js'],
         languageOptions: {
             ecmaVersion: 2024,
             sourceType: 'commonjs',
