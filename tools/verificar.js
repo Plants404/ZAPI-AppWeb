@@ -24,6 +24,11 @@ let problemas = 0;
 const avisar = m => { problemas++; console.log('  FALLA  ' + m); };
 const ok = m => console.log('  ok     ' + m);
 
+/* Para lo que hay que ver pero no esta mal. Renombrar un producto
+   borra su ficha vieja: eso es lo correcto, no un error, pero tiene
+   que quedar a la vista porque se borro un archivo. */
+const nota = m => console.log('  nota   ' + m);
+
 /* --- 1. CSS: llaves balanceadas --- */
 console.log('\nCSS');
 for (const f of CSS) {
@@ -384,7 +389,35 @@ if (!fs.existsSync(gen)) {
     avisar('falta tools/generar-productos.js');
 } else {
     try {
-        execFileSync('node', [gen], { cwd: raiz, stdio: 'pipe' });
+        const salida = execFileSync('node', [gen], { cwd: raiz, stdio: 'pipe' }).toString();
+
+        /* El generador poda las fichas que ya no estan en el catalogo
+           y lo dice en su salida. Como acá la salida se traga, se lee
+           para que quien verifica se entere de que se borro algo. */
+        const podadas = [];
+        let dentro = false;
+
+        for (const linea of salida.split('\n')) {
+            const t = linea.trim();
+
+            if (/^Fichas borradas/.test(t) || /^Poda suspendida/.test(t)) {
+                dentro = true;
+                continue;
+            }
+            if (dentro && /^Archivos \.html/.test(t)) { dentro = false; continue; }
+
+            if (dentro && /^productos\//.test(t)) {
+                podadas.push(t.replace(/\s+\(.*/, ''));
+            }
+        }
+
+        for (const ficha of podadas) {
+            nota(ficha + ' se borro: su producto ya no esta en el catalogo');
+        }
+
+        if (podadas.length) {
+            nota('  esas fichas quedaban publicadas con el precio anterior y en el sitemap');
+        }
     } catch (e) {
         avisar('el generador fallo: ' + String(e.stderr || e.message).trim().split('\n').pop());
     }
@@ -459,16 +492,33 @@ if (!fs.existsSync(gen)) {
     }
 
     /* El modal enlaza a productos/<slugDe(nombre)>.html con su propio
-       slugDe (modal.js), y el generador nombra los archivos con su
-       slug (herramienta aparte). Si alguna vez se tocan distinto,
-       el enlace cae en una pagina que no existe: se prueban las dos
-       implementaciones contra los nombres reales. */
+       slugDe (modal.js), el generador nombra los archivos con su
+       slug (herramienta aparte) y el servidor arma la columna slug de
+       la base con un tercero (server/catalogo.js). Si alguno se toca
+       distinto, el enlace cae en una pagina que no existe o /api/
+       productos devuelve una URL que no corresponde a la ficha: se
+       prueban las TRES implementaciones contra los nombres reales. */
     function extraerFuncion(archivo, nombre) {
-        /* Los scripts de navegador van en public/js/. Los generadores de
-           tools/ van en tools/: se distinguen por el nombre, no por la
-           ruta, porque los dos son .js y los dos se leen desde aca. */
-        const enTools = fs.existsSync(path.join(raiz, 'tools', archivo));
-        const s = fs.readFileSync(enTools ? path.join(raiz, 'tools', archivo) : rutaJs(archivo), 'utf8');
+        /* Los scripts de navegador van en public/js/, los generadores de
+           tools/ y la logica del servidor en server/. Se distinguen por
+           la carpeta donde estan, no por el nombre, porque los tres son
+           .js y los tres se leen desde aca.
+
+           Un nombre con "/" se toma como ruta desde la raiz. Hace falta
+           porque "catalogo.js" esta en dos carpetas a la vez: el del
+           navegador (public/js/) no tiene slug(), el del servidor
+           (server/) si. Sin esto se leeria el equivocado. */
+        const donde = archivo.includes('/')
+            ? path.join(raiz, archivo)
+            : [
+                path.join(raiz, 'tools', archivo),
+                rutaJs(archivo),
+                path.join(raiz, 'server', archivo)
+            ].find(ruta => fs.existsSync(ruta));
+
+        if (!donde || !fs.existsSync(donde)) return null;
+
+        const s = fs.readFileSync(donde, 'utf8');
         const ini = s.indexOf('function ' + nombre + '(');
         if (ini < 0) return null;
 
@@ -498,16 +548,20 @@ if (!fs.existsSync(gen)) {
     }
 
     /* generar-productos.js vive en tools/, no en public/js/, asi que no
-   pasa por rutaJs(): esa resuelve scripts de navegador. */
+       pasa por rutaJs(): esa resuelve scripts de navegador.
+       El servidor tiene un tercer slug() en server/catalogo.js, el que
+       arma la columna slug de la base. */
     const cuerpoGen = extraerFuncion('generar-productos.js', 'slug');
     const cuerpoModal = extraerFuncion('modal.js', 'slugDe');
+    const cuerpoServidor = extraerFuncion('server/catalogo.js', 'slug');
 
-    if (!cuerpoGen || !cuerpoModal) {
-        avisar('no se encontro slug() del generador o slugDe() de modal.js');
+    if (!cuerpoGen || !cuerpoModal || !cuerpoServidor) {
+        avisar('no se encontro slug() del generador, slugDe() de modal.js o slug() de server/catalogo.js');
         malas++;
     } else {
         const slugGen = new Function('texto', cuerpoGen);
         const slugModal = new Function('texto', cuerpoModal);
+        const slugServidor = new Function('texto', cuerpoServidor);
 
         /* El catalogo es un literal JS (claves sin comillas), no
            JSON: se evalua tal cual. */
@@ -524,10 +578,16 @@ if (!fs.existsSync(gen)) {
 
                 const a = slugGen(p.nombre);
                 const b = slugModal(p.nombre);
+                const c = slugServidor(p.nombre);
                 const existe = fs.existsSync(path.join(carpeta, a + '.html'));
 
                 if (a !== b) {
                     avisar('slug desincronizado para "' + p.nombre + '": generador=' + a + ' modal=' + b);
+                    malas++;
+                }
+                if (a !== c) {
+                    avisar('slug desincronizado para "' + p.nombre + '": generador=' + a + ' servidor=' + c +
+                        ' (/api/productos daria una URL distinta a la ficha estatica)');
                     malas++;
                 }
                 if (!existe) {
@@ -540,6 +600,135 @@ if (!fs.existsSync(gen)) {
 
     if (!malas) ok(paginas.length + ' paginas generadas, con JSON-LD, canonical e imagenes');
 }
+
+/* --- 10. El servidor puede leer el catalogo ------------------------
+
+   server/catalogo.js saca el literal PRODUCTOS de productos.js
+   contando llaves y lo evalua con Function(). Se.documento que es
+   fragil: si alguien reformatea el archivo (cambia el espaciado del
+   "const PRODUCTOS = [", pasa las comillas a simples, agrega un
+   comentario con un corchete), el arranque del servidor revienta.
+
+   Aca se llama a leerProductos() de verdad, no a una copia: si el
+   metodo deja de poder leer el archivo, esto falla antes de que
+   alguien levante el servidor y lo descubra en produccion. La idea
+   es que un cambio de formato en productos.js sea un error de
+   verificar, no un incidente.
+
+   Cuando el sitio se sirva siempre por Node, este bloque se puede
+   borrar junto con el Function(): el catalogo pasara a leerse de un
+   JSON y no habra nada que fragile que verificar. */
+console.log('\nEl servidor lee el catalogo');
+
+{
+    let malas = 0;
+
+    /* Se usa el modulo real, no una reimplementacion: si el metodo
+       cambia, la prueba cambia con el. */
+    const servidor = require(path.join(raiz, 'server', 'catalogo.js'));
+
+    let leidos = null;
+    try {
+        leidos = servidor.leerProductos();
+    } catch (error) {
+        avisar('server/catalogo.js no puede leer productos.js: ' + String(error.message).split('\n')[0]);
+        avisar('  si reformateaste productos.js, revisa que "const PRODUCTOS = [" siga igual');
+        malas++;
+    }
+
+    if (leidos) {
+        if (!Array.isArray(leidos) || leidos.length === 0) {
+            avisar('leerProductos() no devolvio una lista con contenido');
+            malas++;
+        } else {
+            /* No alcanza con que no tire: lo que el servidor lee tiene
+               que ser lo mismo que el navegador dibuja y que el
+               generador usa para nombrar los archivos. */
+            const fuente = fs.readFileSync(rutaJs('productos.js'), 'utf8');
+            const literal = fuente.match(/const PRODUCTOS = (\[[\s\S]*?\n\]);/);
+            const delNavegador = literal ? new Function('return ' + literal[1])() : null;
+
+            if (!delNavegador) {
+                avisar('no se pudo leer PRODUCTOS de productos.js para comparar');
+                malas++;
+            } else if (delNavegador.length !== leidos.length) {
+                avisar('el servidor lee ' + leidos.length + ' productos y el navegador ' +
+                    delNavegador.length + ': el recorte del literal esta partiendo el array');
+                malas++;
+            } else {
+                for (let i = 0; i < delNavegador.length; i++) {
+                    const delServer = leidos[i];
+                    const delFront = delNavegador[i];
+
+                    if (String(delServer.id) !== String(delFront.id)) {
+                        avisar('producto ' + i + ': el id del servidor es ' + delServer.id +
+                            ' y el del navegador ' + delFront.id);
+                        malas++;
+                    }
+                    if (servidor.slug(delServer.nombre) !== servidor.slug(delFront.nombre)) {
+                        avisar('producto ' + i + ' (' + delFront.nombre + '): el nombre leido por el ' +
+                            'servidor no es el que usa el navegador');
+                        malas++;
+                    }
+                }
+            }
+
+            /* El id es la clave con la que se inserts en la base: si
+               faltara, sembrar() tiraria al arrancar. */
+            const sinId = leidos.filter(p => !p || !p.id);
+            if (sinId.length) {
+                avisar(sinId.length + ' producto(s) sin id: sembrar() fallaria al arrancar');
+                malas++;
+            }
+        }
+    }
+
+    if (!malas) {
+        ok('server/catalogo.js lee ' + leidos.length + ' productos y coinciden con productos.js');
+    }
+}
+
+/* --- 11. El .env se carga de verdad ------------------------------
+
+   Node no lee .env por su cuenta: hay que pasararselo con un flag. El
+   script start de package.json lo hace, pero si alguien lo saca del
+   script el sintoma es silencioso: el servidor arranca igual, asi que
+   parece que todo funciona, pero cada reinicio regenera
+   ZAPI_SESSION_SECRET y borra todos los carritos abiertos.
+
+   Es un fallo de configuracion, no de codigo, asi que ningun otro
+   chequeo lo pilla. */
+
+try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(raiz, 'package.json'), 'utf8'));
+    const start = (pkg.scripts && pkg.scripts.start) || '';
+
+    /* -if-exists y no solo -env-file: el archivo es opcional porque
+       todo tiene valor por defecto, y arrancar sin el tiene que
+       funcionar. Con --env-file pelado, un .env ausente tumba el
+       servidor y parece un error de instalacion. */
+    const conIfExists = /--env-file-if-exists\b/.test(start);
+    if (conIfExists) {
+        ok('npm start carga .env con --env-file-if-exists');
+    } else {
+        avisar('npm start no usa --env-file-if-exists: el .env no se carga y ' +
+            'ZAPI_SESSION_SECRET se regenera en cada reinicio (script actual: "' + start + '")');
+    }
+} catch (e) {
+    avisar('no se pudo leer package.json: ' + e.message);
+}
+
+/* --- Fichas huerfanas -------------------------------------------
+
+   No hace falta buscarlas aca: el generador de arriba ya las poda,
+   porque su unica fuente es productos.js. Lo que si hace falta es no
+   tragarse lo que hizo. Correr verificar puede borrar fichas, y
+   borrar sin avisar es la clase de sorpresa que hace que la gente
+   deje de correr la herramienta.
+
+   Por eso se lee la salida del generador y lo que podo se reporta
+   como aviso: si alguien renombro un producto, al verificar se entera
+   de que la ficha vieja desaparecio y de por que. */
 
 console.log('\n' + (problemas ? problemas + ' problema(s)' : 'Sin problemas'));
 

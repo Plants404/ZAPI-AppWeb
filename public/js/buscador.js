@@ -131,10 +131,10 @@
     input.focus();
   };
 
-  /* Con el scroll infinito la grilla crece después de que la
-     búsqueda se aplicó. El aviso tiene que poder actualizarse sin
-     que se vuelva a filtrar: por eso el número se pasa por
-     parámetro en lugar de releer la grilla desde acá. */
+  /* catalogo.js llama a esto cuando cambia el filtro y hay una
+     búsqueda escrita: también al elegir una categoría, que puede
+     dejar menos productos y tiene que actualizar el número sin que
+     se vuelva a escribir en el campo. */
   window.refrescarContadorBuscador = function (encontrados) {
     anunciarResultados(input.value.trim(), encontrados);
   };

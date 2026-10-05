@@ -8,8 +8,8 @@ data/
 .env
 .env.local
 
-# Dependencias: el sitio no tiene ninguna en el navegador y en el
-# servidor solo se usa express.
+# Dependencias: en el navegador no hay ninguna. En el servidor solo se
+# usa express; eslint y globals son de desarrollo (npm install --save-dev).
 node_modules/
 
 # Sistema operativo y editores
