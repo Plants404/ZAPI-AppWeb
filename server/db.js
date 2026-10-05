@@ -48,7 +48,7 @@ db.exec('PRAGMA foreign_keys = ON');
 
 db.exec(`
     /* El catalogo de verdad: precio, nombre y demas datos del
-       producto. Se carga desde productos.js al arrancar. La columna
+       producto. Se carga desde datos/catalogo.js al arrancar. La columna
        descripcion_json guarda el resto del objeto (fotos, categoria,
        datos de venta) tal cual llega, para que agregar un campo al
        catalogo no obligue a tocar el esquema. */
@@ -180,7 +180,7 @@ module.exports = {
     },
 
     /* Inserta o actualiza un producto del catalogo. Se corre al
-       arrancar el servidor con lo que hay en productos.js. */
+       arrancar el servidor con lo que hay en datos/catalogo.js. */
     upsertProducto(producto) {
         db.prepare(`
             INSERT INTO productos (id, nombre, slug, categoria, precio, descripcion_json, activo)

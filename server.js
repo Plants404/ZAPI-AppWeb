@@ -5,9 +5,8 @@
 
    Que hace y que NO hace
    ----------------------
-   Hace: sirve el sitio estatico tal cual esta (las mismas paginas que
-   se abren con doble clic) y agrega la API que falta para que el
-   stock y el carrito sean de verdad.
+   Hace: sirve el sitio estatico tal cual esta y agrega la API que
+   falta para que el stock y el carrito sean de verdad.
 
    NO hace: cobrar. No hay pasarela de pagos conectada. Un pedido se
    guarda en la base con estado 'pendiente' y hay que cerrarlo a mano
@@ -15,13 +14,13 @@
    conectar Mercado Pago o Stripe pide una cuenta con datos fiscales
    reales, claves secretas y HTTPS, y eso se decide con el negocio.
 
-   Las dos formas de abrir el sitio
+   Una sola forma de abrir el sitio
    --------------------------------
-   Con doble clic en index.html funciona todo menos el stock real: el
-   catalogo sale de productos.js, que va incrustado en la pagina. Sin
-   servidor no se puede consultar la base, asi que ahi se muestra lo
-   que hay en el archivo. Sirve para revisar el diseno; para ver el
-   stock real hay que correr este servidor.
+   Por HTTP, siempre. Abrir index.html con doble clic ya no
+   funciona: el navegador le bloquea al pedido de productos.json y
+   el catalogo queda vacio. No es una limitacion que se pueda
+   schapar en el cliente. La pagina avisa con un mensaje claro y
+   dice que arranque npm start.
 
    Estructura de carpetas
    ----------------------
@@ -400,7 +399,7 @@ const cargados = sembrar();
 function arrancar() {
     const server = app.listen(PUERTO, () => {
         console.log(`ZAPI escuchando en http://localhost:${PUERTO}`);
-        console.log(`  ${cargados} productos cargados desde productos.js`);
+        console.log(`  ${cargados} productos cargados desde datos/catalogo.js`);
         console.log(`  base: ${db.RUTA_DB}`);
 
         const sinStock = db.productosConStock().filter(p => p.unidades === null);
