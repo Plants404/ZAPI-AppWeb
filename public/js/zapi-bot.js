@@ -121,12 +121,12 @@ const ZAPI_FAQ = [
             "que comprarlas por separado."
     },
     {
-        claves: ["aromatica", "aromáticas", "aromatica", "albahaca", "rucula", "rúcula", "romero", "menta", "huerta", "hortaliza", "verdura", "comestible", "cultivo", "siembra", "plantin"],
+        claves: ["aromatica", "aromáticas", "aromatica", "albahaca", "ruda", "romero", "menta", "huerta", "hortaliza", "verdura", "comestible", "cultivo", "siembra", "plantin"],
         respuesta:
             "Tenemos aromáticas y hortalizas de <strong>cultivo " +
             "agroecológico</strong> 🌿<br><br>" +
             "La albahaca rinde más de 8 semanas de cosecha continua y la " +
-            "rúcula se puede resilembrar hasta 4 veces. Ideal para empezar " +
+            "ruda se puede resilembrar hasta 4 veces. Ideal para empezar " +
             "tu huerta en casa o balcón."
     },
     {
@@ -146,7 +146,7 @@ const ZAPI_FAQ = [
         claves: ["mascota", "gato", "perro", "animal", "toxica", "tóxica", "venenosa", "seguro", "niños", "niño", "bebe", "bebé"],
         respuesta:
             "Buena pregunta. 🌿<br><br>" +
-            "<strong>La albahaca y la rúcula son seguras</strong> para " +
+            "<strong>La albahaca y la ruda son seguras</strong> para " +
             "mascotas y niños, pero algunas suculentas <strong>no son " +
             "tóxicas para gatos ni perros</strong>.<br><br>" +
             "Decime cuáles tenés en casa y te confirmo antes de comprar."
@@ -258,7 +258,7 @@ function detectarIntencion(texto) {
 
     const especificas = [
         ["cactus"], ["suculenta", "suculentas"],
-        ["aromatica", "aromaticas", "albahaca", "rucula", "romero", "menta", "hortaliza", "verdura"],
+        ["aromatica", "aromaticas", "albahaca", "ruda", "romero", "menta", "hortaliza", "verdura"],
         ["club", "punto", "puntos", "fidelidad", "vip", "acumular"],
         ["envio", "envios", "delivery", "entrega", "entregar", "reparto", "llega", "llegan"],
         ["mascota", "gato", "perro", "animal", "toxica", "niños", "bebe"],

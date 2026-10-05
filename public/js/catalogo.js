@@ -10,7 +10,12 @@
    tarjetas se dibujan y que filtro esta activo.
 
    Depende de productos.js (PRODUCTOS, precios, formatearPrecio,
-   actualizarContador y agregarProductoAlCarrito) y de modal.js.
+   actualizarContador, agregarProductoAlCarrito y
+   alCargarElCatalogo) y de modal.js.
+
+   PRODUCTOS llega con un fetch, asi que la grilla no se dibuja al
+   cargar el script sino cuando el catalogo esta: ver el bloque
+   INICIALIZAR, al final.
    ========================================================== */
 
 
@@ -185,7 +190,7 @@ function tarjetaProducto(producto) {
 
                 <div class="product-footer">
                     <div class="product-price">
-                        <span class="current">${formatearPrecio(precios[producto.id])}</span>
+                        <span class="current">${formatearPrecio(precios[producto.id] ?? producto.precioBase)}</span>
                         <span class="since">precio por unidad</span>
                     </div>
 
@@ -437,12 +442,23 @@ function actualizarBuscadorHeader() {
    contador al dia con lo que ya habia en el carrito (sin
    animarlo: todavia no hizo nada el visitante).
 
-   No hay nada que observar ni que esperar: las tarjetas van en el
-   flujo y el navegador las coloca. Por eso el catalogo tambien
+   Todo esto va dentro de alCargarElCatalogo porque el catalogo ya
+   no viene en el script: llega con un fetch desde
+   public/data/productos.json. Al arrancar todavia esta vacio, y
+   dibujar con la lista vacia daria una grilla sin filtros y con el
+   mensaje de "no encontramos productos", que es exactamente lo que
+   el visitante no debe ver.
+
+   No hay nada que observar ni que esperar despues: las tarjetas van
+   en el flujo y el navegador las coloca. Por eso el catalogo tambien
    funciona igual si arranca con la seccion oculta, que era el
    caso que el masonry no podia cubrir.
    ========================================================== */
 
-renderFiltros();
-renderCatalog();
-refrescarContadores(false);
+alCargarElCatalogo(function () {
+
+    renderFiltros();
+    renderCatalog();
+    refrescarContadores(false);
+
+});

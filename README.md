@@ -26,9 +26,10 @@ npm install
 npm start          # servidor en http://localhost:5501
 ```
 
-El sitio **también funciona sin servidor**: `index.html` se puede abrir con
-doble clic. En esa forma no hay API, ni pedidos, ni carrito persistente; el
-catálogo se dibuja desde `public/js/productos.js`.
+El sitio se abre **solo por HTTP**, siempre por `npm start`. Abrir
+`index.html` con doble clic ya no funciona: el navegador le bloquea
+al pedido de `productos.json` y el catálogo queda vacío. La razón de
+esto está al principio de `datos/catalogo.js`.
 
 ### Variables de entorno
 
@@ -77,7 +78,7 @@ poder hacer cuarenta escrituras seguidas sin comerse un `429`.
 | `npm run check` | `lint` + `verificar`, para correr antes de commitear. |
 | `npm run contraste` | Comprueba que los pares de color cumplen el mínimo de contraste. |
 | `npm run api` | Prueba de extremo a extremo de la API. Levanta su propio servidor en un puerto libre, con base y secretos de prueba, así que no necesita el tuyo arrancado ni toca `data/zapi.db`. |
-| `npm run generar` | Regenera las fichas de `productos/` desde `public/js/productos.js`. También **poda** las fichas cuyo producto ya no está en el catálogo. |
+| `npm run generar` | Regenera las fichas de `productos/` desde `datos/catalogo.js`. También **poda** las fichas cuyo producto ya no está en el catálogo. |
 | `npm run sitemap` | Regenera `sitemap.xml`. |
 | `npm run css` | Regenera `public/css/catalogo-modal.css` y `catalogo-catalogo.css` desde `public/css/catalogo.css`. |
 
@@ -100,6 +101,11 @@ avisa. Para correr sin borrar nada: `node tools/generar-productos.js --sin-poda`
 ```
 index.html, catalogo.html, carrito.html   Páginas. Los HTML viven en la raíz.
 productos/                                 Fichas estáticas, generadas.
+datos/catalogo.js                           Fuente del catálogo. La
+                                           edita el humano, la leen los
+                                           generadores, el navegador no.
+public/data/productos.json                  Catálogo que baja el navegador
+                                           con fetch. Se genera.
 public/js/                                 Scripts del navegador.
 public/css/                                CSS. catalogo.css es la fuente;
                                            las dos catalogo-*.css se generan.
@@ -113,28 +119,29 @@ data/                                      SQLite. No se versiona.
 
 ## El catálogo tiene una sola fuente
 
-`public/js/productos.js` es la fuente de verdad del catálogo. De ahí salen:
+`datos/catalogo.js` es la fuente de verdad del catálogo. De ahí salen:
 
 - las tarjetas del navegador,
 - las fichas de `productos/` (`npm run generar`),
 - las filas de la base que se siembran al arrancar (`server.js:375`),
 - `sitemap.xml`.
 
-El servidor no la importa con `require()` —`productos.js` es un script de
-navegador y usa `window`/`document`— sino que `server/catalogo.js` extrae el
-literal del array y lo evalúa en un contexto vacío. Ese `Function()` es
-**frágil ante cambios de formato**: si cambia el espaciado de
-`const PRODUCTOS = [`, el arranque falla. Por eso `npm run verificar` llama a
-`leerProductos()` de verdad y falla si el archivo dejó de poder leerse: un
-reformateo es un error de verificación, no un incidente.
+Como `datos/catalogo.js` es un `.js` de Node, el servidor lo importa con
+`require()` y el navegador nunca lo ve. De ahí `npm run generar` escribe
+`public/data/productos.json`, que es lo que **bajan los dos**: el navegador
+con `fetch`, el servidor con `JSON.parse` al sembrar la base.
 
-Migrar el catálogo a un JSON generado eliminaría esa fragilidad, pero haría
-que el sitio dejara de abrir con doble clic. Está pendiente de que el sitio se
-sirva siempre por Node; el razonamiento está al principio de
-`server/catalogo.js`.
+Antes el catálogo viajaba dentro de `public/js/productos.js` y para leerlo
+sin `require()` —el archivo usa `window` y `document`— había que arrancar
+el texto a mano con un contador de llaves y evaluarlo con `Function()`. Ese
+emparejar() era **frágil ante cambios de formato**: un reformateo, unas
+comillas simples o un corchete dentro de un comentario partían el
+catálogo. `JSON.parse` no tiene ese problema.
 
-Si tocás un precio, tocá **un solo lugar**: `productos.js`. Después
-`npm run generar` y `npm run verificar`.
+Si tocás un precio, tocá **un solo lugar**: `datos/catalogo.js`. Después
+`npm run generar` y `npm run verificar`. El mismo orden de siempre: generar
+primero, porque verificar corre el generador antes de mirar lo que hay en
+disco.
 
 ## Convenciones
 
