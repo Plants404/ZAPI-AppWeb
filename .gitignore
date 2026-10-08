@@ -1,19 +1,16 @@
-# Base de datos: es estado, no codigo. Va con los pedidos, los
-# telefonos de los clientes y el stock, asi que no se versiona.
-# Para reiniciar de cero: borrar data/ y arrancar el servidor.
-#
+# Base de datos: estado, no codigo. Vuelve junto con el backend nuevo;
+# va a contener pedidos, telefonos de clientes y stock.
 # La barra inicial importa: sin ella, git ignoraria tambien
-# public/data/, que es el catalogo en JSON que baja el navegador y
-# lee el servidor. Ese si se versiona.
+# public/data/, que es el catalogo en JSON que si se versiona.
 /data/
 
-# Secretos. ZAPI_SESSION_SECRET y ZAPI_ADMIN_TOKEN van aca. Nunca
-# un .env en el repo: se versiona el .env.example con los nombres.
+# Secretos del backend futuro. Nunca un .env en el repo: se versiona
+# el .env.example con los nombres de las variables.
 .env
 .env.local
 
-# Dependencias: en el navegador no hay ninguna. En el servidor solo se
-# usa express; eslint y globals son de desarrollo (npm install --save-dev).
+# Dependencias. El sitio no carga ninguna: eslint y globals son de
+# desarrollo (npm install --save-dev).
 node_modules/
 
 # Sistema operativo y editores
