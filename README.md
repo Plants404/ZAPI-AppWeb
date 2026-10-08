@@ -4,14 +4,19 @@ Sitio de ZAPI: una home con secciones, un catálogo de productos con fichas
 individuales y un carrito que termina en pedido.
 
 Es un proyecto sin framework y sin build: HTML en la raíz, recursos en
-`public/`, servidor en `server.js` y utilidades en `tools/`. **Una sola
-dependencia** (`express`). El navegador carga los archivos tal cual, sin
+`public/`, el catálogo en `datos/` y las herramientas en `tools/`. **Sin
+dependencias de producción.** El navegador carga los archivos tal cual, sin
 transpilar nada.
+
+> El backend se está reescribiendo desde cero: se borraron `server.js` y
+> `server/` (Express + SQLite) y su prueba de API. El sitio hoy es estático:
+> hasta que el backend vuelva, el carrito, los pedidos, el contacto y los
+> testimonios quedan sin funcionar (los `fetch` a `/api/` siguen en el
+> código, esperándolo).
 
 ## Requisitos
 
-- **Node 24 o superior** (`package.json` lo fija con `engines`). Se usa
-  `node:sqlite`, que es nativo desde Node 22 y estable en 24.
+- **Node 24 o superior** (`package.json` lo fija con `engines`) y npm.
 - No hace falta compilar nada.
 
 ## Instalación
@@ -20,64 +25,27 @@ transpilar nada.
 npm install
 ```
 
-## Cómo arrancar
+## Cómo ver el sitio
+
+El sitio se abre **solo por HTTP**, con cualquier servidor estático. Abrir
+`index.html` con doble clic ya no funciona: el navegador le bloquea al pedido
+de `productos.json` y el catálogo queda vacío. La razón de esto está al
+principio de `datos/catalogo.js`.
 
 ```sh
-npm start          # servidor en http://localhost:5501
+npx serve          # levanta en http://localhost:3000
 ```
 
-El sitio se abre **solo por HTTP**, siempre por `npm start`. Abrir
-`index.html` con doble clic ya no funciona: el navegador le bloquea
-al pedido de `productos.json` y el catálogo queda vacío. La razón de
-esto está al principio de `datos/catalogo.js`.
-
-### Variables de entorno
-
-`npm start` carga el `.env` solo: el script `start` lleva
-`--env-file-if-exists=.env`. El sufijo `-if-exists` importa, porque hace que
-el servidor **arranque igual sin el archivo** en vez de romperse. Así que
-copiar el `.env` es opcional y todos los ajustes tienen valor por defecto.
-
-```sh
-# PowerShell
-copy .env.example .env
-
-# Linux/Mac
-cp .env.example .env
-```
-
-Después de copiarlo, `npm start` ya lo toma. Si prefieres arrancar el
-servidor sin npm, hay que pasar el archivo a mano:
-
-```sh
-node --env-file=.env server.js
-```
-
-Ojo: si `.env` no existe, Node escribe un aviso en la consola y sigue.
-
-| Variable | Por defecto | Para qué |
-|---|---|---|
-| `ZAPI_SESSION_SECRET` | se genera al azar en cada arranque | Firma la cookie de sesión del carrito. **Sin esto, reiniciar borra los carritos abiertos.** |
-| `ZAPI_ADMIN_TOKEN` | vacío | Se manda en `x-zapi-token` para cambiar stock. Vacío = la carga de stock queda deshabilitada. |
-| `PORT` | `5501` | Puerto del servidor. |
-| `NODE_ENV` | vacío | `production` activa cookies `Secure`, caché de estáticos y oculta el aviso de modo desarrollo. |
-| `ZAPI_DB` | `data/zapi.db` | Ruta del SQLite. Cambiarla crea otra base, con su propio catálogo. |
-| `ZAPI_LIMITE_LECTURA` | `120` por minuto | Rate limit de lectura del catálogo. |
-| `ZAPI_LIMITE_ESCRITURA` | `20` por 10 min | Rate limit de escritura (carrito, pedidos, contacto, stock). |
-
-Los dos límites están en `.env.example` porque `npm run api` los sube para
-poder hacer cuarenta escrituras seguidas sin comerse un `429`.
+O el Live Server de VSCode, o `python -m http.server` desde la carpeta raíz.
 
 ## Scripts
 
 | Comando | Qué hace |
 |---|---|
-| `npm start` | Levanta el servidor Express en `PORT` (5501). Carga `.env` si existe. |
 | `npm run verificar` | Verificación estática: regenera el CSS derivado, compara los `slug`, valida assets, IDs y scripts. **Correlo antes de commitear.** |
 | `npm run lint` | ESLint sobre todo el repo. At typos en nombres que nadie declara, código inalcanzable y variables muertas. |
 | `npm run check` | `lint` + `verificar`, para correr antes de commitear. |
 | `npm run contraste` | Comprueba que los pares de color cumplen el mínimo de contraste. |
-| `npm run api` | Prueba de extremo a extremo de la API. Levanta su propio servidor en un puerto libre, con base y secretos de prueba, así que no necesita el tuyo arrancado ni toca `data/zapi.db`. |
 | `npm run generar` | Regenera las fichas de `productos/` desde `datos/catalogo.js`. También **poda** las fichas cuyo producto ya no está en el catálogo. |
 | `npm run sitemap` | Regenera `sitemap.xml`. |
 | `npm run css` | Regenera `public/css/catalogo-modal.css` y `catalogo-catalogo.css` desde `public/css/catalogo.css`. |
@@ -110,33 +78,26 @@ public/js/                                 Scripts del navegador.
 public/css/                                CSS. catalogo.css es la fuente;
                                            las dos catalogo-*.css se generan.
 public/img/                                Imágenes, ya optimizadas (.opt).
-server.js                                  Express, cabeceras, rate limit.
-server/                                    db.js, rutas-api.js, sesion.js,
-                                           catalogo.js (lee el catálogo).
 tools/                                     Generadores y verificadores.
-data/                                      SQLite. No se versiona.
 ```
 
 ## El catálogo tiene una sola fuente
 
-`datos/catalogo.js` es la fuente de verdad del catálogo. De ahí salen:
+`datos/catalogo.js` es la fuente de verdad del catálogo. De ahí salen las
+tarjetas del navegador, las fichas de `productos/` (`npm run generar`) y
+`sitemap.xml`.
 
-- las tarjetas del navegador,
-- las fichas de `productos/` (`npm run generar`),
-- las filas de la base que se siembran al arrancar (`server.js:375`),
-- `sitemap.xml`.
-
-Como `datos/catalogo.js` es un `.js` de Node, el servidor lo importa con
-`require()` y el navegador nunca lo ve. De ahí `npm run generar` escribe
-`public/data/productos.json`, que es lo que **bajan los dos**: el navegador
-con `fetch`, el servidor con `JSON.parse` al sembrar la base.
+Como `datos/catalogo.js` es un `.js` de Node, el navegador nunca lo ve: de ahí
+`npm run generar` escribe `public/data/productos.json`, que es lo que el
+navegador baja con `fetch` y se versiona para que `npm run verificar` pueda
+comprobar que no quedó viejo.
 
 Antes el catálogo viajaba dentro de `public/js/productos.js` y para leerlo
 sin `require()` —el archivo usa `window` y `document`— había que arrancar
 el texto a mano con un contador de llaves y evaluarlo con `Function()`. Ese
-emparejar() era **frágil ante cambios de formato**: un reformateo, unas
-comillas simples o un corchete dentro de un comentario partían el
-catálogo. `JSON.parse` no tiene ese problema.
+`emparejar()` era **frágil ante cambios de formato**: un reformateo, unas
+comillas simples o un corchete dentro de un comentario partían el catálogo.
+`JSON.parse` no tiene ese problema.
 
 Si tocás un precio, tocá **un solo lugar**: `datos/catalogo.js`. Después
 `npm run generar` y `npm run verificar`. El mismo orden de siempre: generar
@@ -153,7 +114,8 @@ disco.
 - **No borrar CSS sin verificar.** Varios archivos mezclan el
   español/inglés de cuando se renombraron las clases; ya se limpiaron los
   restos, pero la idea sigue vigente.
-- `.env` nunca se versiona. Solo `.env.example`.
+- `.env` nunca se versiona. Solo `.env.example`, que hoy está vacío a la
+  espera de la configuración del backend nuevo.
 
 ### Linter
 
@@ -190,15 +152,13 @@ para que dos editores no peleen por el mismo archivo.
 
 ## Seguridad
 
-Lo que ya está resuelto, para no duplicarlo:
+Lo que se conserva del sitio estático:
 
-- CSP estricta y cabeceras (`X-Frame-Options`, `nosniff`, HSTS,
-  `Referrer-Policy`, `Permissions-Policy`) en `server.js:166-206`.
-- **16 consultas preparadas**, cero interpolación de strings en SQL.
-- Rate limiting por IP con limpieza de memoria y sin dependencias.
-- Límite de 16 kB en el cuerpo de las peticiones.
-- Honeypot `sitio_web` y validación por campo en `/api/contacto`.
-- `data/` y `.env` fuera de git.
+- Toda interpolación pasa por `escaparHTML` antes de tocar el DOM, y
+  `npm run verificar` escanea ese patrón (sección XSS).
+- `/data/` y `.env` fuera de git.
+- Las políticas de servidor (CSP, rate limit, consultas preparadas, honeypot
+  de contacto) vuelven junto con el backend.
 
 ## Estado de verificación
 
@@ -206,7 +166,6 @@ Lo que ya está resuelto, para no duplicarlo:
 |---|---|
 | Verificación estática (`npm run verificar`) | ✅ |
 | Contraste de color (`npm run contraste`) | ✅ |
-| Prueba E2E de API (`npm run api`) | ✅ levanta su propio servidor |
 | ESLint (`npm run lint`) | ✅ 0 errores, 6 warnings de `eqeqeq` |
 | `.editorconfig` | ✅ |
 | Tests unitarios | ❌ no hay framework |

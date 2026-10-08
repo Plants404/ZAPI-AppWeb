@@ -34,7 +34,7 @@ function leerCatalogoFuente() {
     }
 }
 
-/* El JSON que baja el navegador y lee el servidor. Devuelve la lista de
+/* El JSON que baja el navegador. Devuelve la lista de
    productos, o null si el archivo no esta o esta roto. */
 function leerCatalogoJSON() {
     try {
@@ -517,28 +517,19 @@ if (!fs.existsSync(gen)) {
     }
 
     /* El modal enlaza a productos/<slugDe(nombre)>.html con su propio
-       slugDe (modal.js), el generador nombra los archivos con su
-       slug (herramienta aparte) y el servidor arma la columna slug de
-       la base con un tercero (server/catalogo.js). Si alguno se toca
-       distinto, el enlace cae en una pagina que no existe o /api/
-       productos devuelve una URL que no corresponde a la ficha: se
-       prueban las TRES implementaciones contra los nombres reales. */
+       slugDe (modal.js) y el generador nombra los archivos con su
+       slug (herramienta aparte). Si alguno se toca distinto, el enlace
+       cae en una pagina que no existe: se prueban las DOS
+       implementaciones contra los nombres reales. */
     function extraerFuncion(archivo, nombre) {
-        /* Los scripts de navegador van en public/js/, los generadores de
-           tools/ y la logica del servidor en server/. Se distinguen por
-           la carpeta donde estan, no por el nombre, porque los tres son
-           .js y los tres se leen desde aca.
-
-           Un nombre con "/" se toma como ruta desde la raiz. Hace falta
-           porque "catalogo.js" esta en dos carpetas a la vez: el del
-           navegador (public/js/) no tiene slug(), el del servidor
-           (server/) si. Sin esto se leeria el equivocado. */
+        /* Los scripts de navegador van en public/js/ y los generadores en
+           tools/. Se distinguen por la carpeta donde estan, no por el
+           nombre, porque ambos son .js y los dos se leen desde aca. */
         const donde = archivo.includes('/')
             ? path.join(raiz, archivo)
             : [
                 path.join(raiz, 'tools', archivo),
-                rutaJs(archivo),
-                path.join(raiz, 'server', archivo)
+                rutaJs(archivo)
             ].find(ruta => fs.existsSync(ruta));
 
         if (!donde || !fs.existsSync(donde)) return null;
@@ -573,20 +564,16 @@ if (!fs.existsSync(gen)) {
     }
 
     /* generar-productos.js vive en tools/, no en public/js/, asi que no
-       pasa por rutaJs(): esa resuelve scripts de navegador.
-       El servidor tiene un tercer slug() en server/catalogo.js, el que
-       arma la columna slug de la base. */
+       pasa por rutaJs(): esa resuelve scripts de navegador. */
     const cuerpoGen = extraerFuncion('generar-productos.js', 'slug');
     const cuerpoModal = extraerFuncion('modal.js', 'slugDe');
-    const cuerpoServidor = extraerFuncion('server/catalogo.js', 'slug');
 
-    if (!cuerpoGen || !cuerpoModal || !cuerpoServidor) {
-        avisar('no se encontro slug() del generador, slugDe() de modal.js o slug() de server/catalogo.js');
+    if (!cuerpoGen || !cuerpoModal) {
+        avisar('no se encontro slug() del generador o slugDe() de modal.js');
         malas++;
     } else {
         const slugGen = new Function('texto', cuerpoGen);
         const slugModal = new Function('texto', cuerpoModal);
-        const slugServidor = new Function('texto', cuerpoServidor);
 
         /* Los nombres salen del JSON del catalogo, no de productos.js:
            ese archivo ya no tiene el array, porque el catalogo viaja
@@ -602,16 +589,10 @@ if (!fs.existsSync(gen)) {
 
                 const a = slugGen(p.nombre);
                 const b = slugModal(p.nombre);
-                const c = slugServidor(p.nombre);
                 const existe = fs.existsSync(path.join(carpeta, a + '.html'));
 
                 if (a !== b) {
                     avisar('slug desincronizado para "' + p.nombre + '": generador=' + a + ' modal=' + b);
-                    malas++;
-                }
-                if (a !== c) {
-                    avisar('slug desincronizado para "' + p.nombre + '": generador=' + a + ' servidor=' + c +
-                        ' (/api/productos daria una URL distinta a la ficha estatica)');
                     malas++;
                 }
                 if (!existe) {
@@ -630,15 +611,13 @@ if (!fs.existsSync(gen)) {
    El catalogo tiene una fuente, datos/catalogo.js, y de ahi salen dos
    cosas: las fichas de productos/*.html y public/data/productos.json.
 
-   El JSON se versiona y lo leen el navegador y el servidor, asi que
-   puede quedar viejo si alguien edito la fuente y se olvido de
-   correr el generador. El sintoma seria dificil de ver: el sitio
-   andaria con precios viejos, sin ningun error.
+   El JSON se versiona y lo lee el navegador, asi que puede quedar
+   viejo si alguien edito la fuente y se olvido de correr el
+   generador. El sintoma seria dificil de ver: el sitio andaria con
+   precios viejos, sin ningun error.
 
-   Por eso se comprueba que los tres coincidan producto por producto.
-   Esta seccion reemplaza la que verificaba que server/catalogo.js
-   pudiera arrancar el array de productos.js contando llaves: eso ya
-   no existe. */
+   Por eso se comprueba que la fuente y el JSON coincidan producto
+   por producto. */
 
 console.log('\nEl catalogo en JSON');
 
@@ -676,80 +655,21 @@ console.log('\nEl catalogo en JSON');
         }
     }
 
-    /* El servidor lee este mismo archivo. Se usa el modulo real, no una
-       reimplementacion: si el metodo cambia, la prueba cambia con el.
-       Y tiene que devolver lo mismo que el JSON, porque es lo mismo. */
-    const servidor = require(path.join(raiz, 'server', 'catalogo.js'));
-
-    let delServidor = null;
-    try {
-        delServidor = servidor.leerProductos();
-    } catch (error) {
-        avisar('server/catalogo.js no puede leer el catalogo: ' + String(error.message).split('\n')[0]);
-        malas++;
-    }
-
-    if (delServidor && delJson) {
-        if (delServidor.length !== delJson.length) {
-            avisar('el servidor lee ' + delServidor.length + ' productos y el JSON tiene ' +
-                delJson.length);
-            malas++;
-        }
-
-        /* El id es la clave con la que se inserta en la base: si
-           faltara, sembrar() tiraria al arrancar. */
-        const sinId = delServidor.filter(p => !p || !p.id);
-        if (sinId.length) {
-            avisar(sinId.length + ' producto(s) sin id: sembrar() fallaria al arrancar');
-            malas++;
-        }
-    }
-
     /* El navegador lo baja con fetch. Si el path estuviera mal, el
-       servidor devuelve 404 y el catalogo no aparece nunca. */
+       catalogo no aparece nunca. */
     if (delJson) {
         const relativo = path.relative(path.join(raiz, 'public'), rutaCatalogoJSON());
         if (fs.existsSync(path.join(raiz, 'public', relativo))) {
             ok('public/data/productos.json al dia con datos/catalogo.js (' + delJson.length +
-                ' productos, el servidor los lee igual)');
+                ' productos)');
         }
     }
 
     if (!malas && delJson) {
-        ok('el servidor y el navegador leen el mismo JSON, sin Function() por el medio');
+        ok('datos/catalogo.js y public/data/productos.json coinciden, sin Function() por el medio');
     }
 }
 
-
-/* --- 11. El .env se carga de verdad ------------------------------
-
-   Node no lee .env por su cuenta: hay que pasararselo con un flag. El
-   script start de package.json lo hace, pero si alguien lo saca del
-   script el sintoma es silencioso: el servidor arranca igual, asi que
-   parece que todo funciona, pero cada reinicio regenera
-   ZAPI_SESSION_SECRET y borra todos los carritos abiertos.
-
-   Es un fallo de configuracion, no de codigo, asi que ningun otro
-   chequeo lo pilla. */
-
-try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(raiz, 'package.json'), 'utf8'));
-    const start = (pkg.scripts && pkg.scripts.start) || '';
-
-    /* -if-exists y no solo -env-file: el archivo es opcional porque
-       todo tiene valor por defecto, y arrancar sin el tiene que
-       funcionar. Con --env-file pelado, un .env ausente tumba el
-       servidor y parece un error de instalacion. */
-    const conIfExists = /--env-file-if-exists\b/.test(start);
-    if (conIfExists) {
-        ok('npm start carga .env con --env-file-if-exists');
-    } else {
-        avisar('npm start no usa --env-file-if-exists: el .env no se carga y ' +
-            'ZAPI_SESSION_SECRET se regenera en cada reinicio (script actual: "' + start + '")');
-    }
-} catch (e) {
-    avisar('no se pudo leer package.json: ' + e.message);
-}
 
 /* --- Fichas huerfanas -------------------------------------------
 

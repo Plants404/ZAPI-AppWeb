@@ -92,10 +92,9 @@ module.exports = [
         },
     },
 
-    /* Las herramientas, el servidor y esta misma config: CommonJS. */
+    /* Las herramientas, el catalogo y esta misma config: CommonJS. */
     {
-        files: ['tools/**/*.js', 'server.js', 'server/**/*.js',
-            'datos/**/*.js', 'modelo/**/*.js', 'eslint.config.js'],
+        files: ['tools/**/*.js', 'datos/**/*.js', 'eslint.config.js'],
         languageOptions: {
             ecmaVersion: 2024,
             sourceType: 'commonjs',

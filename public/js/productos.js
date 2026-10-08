@@ -167,11 +167,10 @@ function avisarCatalogoNoCargado() {
        que revisar. */
     if (location.protocol === "file:") {
         aviso.appendChild(document.createTextNode(
-            "Este sitio necesita el servidor para cargar el catálogo. "
-            + "Abrí una terminal en la carpeta del proyecto, corré "));
-        aviso.appendChild(document.createElement("code")).textContent = "npm start";
-        aviso.appendChild(document.createTextNode(" y entrá por "));
-        aviso.appendChild(document.createElement("code")).textContent = "http://localhost:5501";
+            "Este sitio necesita servirse por HTTP para cargar el catálogo. "
+            + "Abrí una terminal en la carpeta del proyecto y serví la carpeta raíz "
+            + "con un servidor estático, por ejemplo "));
+        aviso.appendChild(document.createElement("code")).textContent = "npx serve";
         aviso.appendChild(document.createTextNode("."));
     } else {
         aviso.textContent =
