@@ -1,10 +1,8 @@
 {
   "name": "zapi-appweb",
   "private": true,
-  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, servidor y base en server/ y herramientas en tools/.",
+  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, catalogo en datos/ y herramientas en tools/.",
   "scripts": {
-    "start": "node --env-file-if-exists=.env server.js",
-    "api": "node tools/probar-api.js",
     "verificar": "node tools/verificar.js",
     "lint": "eslint .",
     "check": "npm run lint && npm run verificar",
@@ -15,9 +13,6 @@
   },
   "engines": {
     "node": ">=24"
-  },
-  "dependencies": {
-    "express": "^5.2.1"
   },
   "devDependencies": {
     "eslint": "^10.12.0",

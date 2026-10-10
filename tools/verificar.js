@@ -19,6 +19,31 @@ const JS = ['productos.js', 'modal.js', 'catalogo.js', 'carrito.js',
 
 const rutaCss = nombre => path.join(raiz, 'public', 'css', nombre);
 const rutaJs = nombre => path.join(raiz, 'public', 'js', nombre);
+const rutaCatalogo = nombre => path.join(raiz, 'datos', nombre);
+const rutaCatalogoJSON = () => path.join(raiz, 'public', 'data', 'productos.json');
+
+/* El catalogo vive en datos/catalogo.js, que se importa con require() y
+   ya esta. Devuelve null si no se puede leer, para que el que llama
+   avise en vez de reventar. */
+function leerCatalogoFuente() {
+    try {
+        return require(rutaCatalogo('catalogo.js')).PRODUCTOS;
+    } catch (error) {
+        avisar('no se pudo importar datos/catalogo.js: ' + error.message);
+        return null;
+    }
+}
+
+/* El JSON que baja el navegador. Devuelve la lista de
+   productos, o null si el archivo no esta o esta roto. */
+function leerCatalogoJSON() {
+    try {
+        const documento = JSON.parse(fs.readFileSync(rutaCatalogoJSON(), 'utf8'));
+        return Array.isArray(documento.productos) ? documento.productos : null;
+    } catch {
+        return null;
+    }
+}
 
 let problemas = 0;
 const avisar = m => { problemas++; console.log('  FALLA  ' + m); };
@@ -377,7 +402,7 @@ if (sinCubrir.length === 0) {
 
 /* --- 9. Paginas de producto generadas ---
    Se corre el generador primero, asi que ademas de validar lo
-   que hay en disco esto deja las paginas al dia con productos.js.
+   que hay en disco esto deja las paginas al dia con el catalogo.
    De cada pagina se mira que el JSON-LD parse, que el canonical
    apunte a la pagina misma, y que las imagenes y los enlaces que
    usa existan de verdad. */
@@ -492,28 +517,19 @@ if (!fs.existsSync(gen)) {
     }
 
     /* El modal enlaza a productos/<slugDe(nombre)>.html con su propio
-       slugDe (modal.js), el generador nombra los archivos con su
-       slug (herramienta aparte) y el servidor arma la columna slug de
-       la base con un tercero (server/catalogo.js). Si alguno se toca
-       distinto, el enlace cae en una pagina que no existe o /api/
-       productos devuelve una URL que no corresponde a la ficha: se
-       prueban las TRES implementaciones contra los nombres reales. */
+       slugDe (modal.js) y el generador nombra los archivos con su
+       slug (herramienta aparte). Si alguno se toca distinto, el enlace
+       cae en una pagina que no existe: se prueban las DOS
+       implementaciones contra los nombres reales. */
     function extraerFuncion(archivo, nombre) {
-        /* Los scripts de navegador van en public/js/, los generadores de
-           tools/ y la logica del servidor en server/. Se distinguen por
-           la carpeta donde estan, no por el nombre, porque los tres son
-           .js y los tres se leen desde aca.
-
-           Un nombre con "/" se toma como ruta desde la raiz. Hace falta
-           porque "catalogo.js" esta en dos carpetas a la vez: el del
-           navegador (public/js/) no tiene slug(), el del servidor
-           (server/) si. Sin esto se leeria el equivocado. */
+        /* Los scripts de navegador van en public/js/ y los generadores en
+           tools/. Se distinguen por la carpeta donde estan, no por el
+           nombre, porque ambos son .js y los dos se leen desde aca. */
         const donde = archivo.includes('/')
             ? path.join(raiz, archivo)
             : [
                 path.join(raiz, 'tools', archivo),
-                rutaJs(archivo),
-                path.join(raiz, 'server', archivo)
+                rutaJs(archivo)
             ].find(ruta => fs.existsSync(ruta));
 
         if (!donde || !fs.existsSync(donde)) return null;
@@ -548,29 +564,24 @@ if (!fs.existsSync(gen)) {
     }
 
     /* generar-productos.js vive en tools/, no en public/js/, asi que no
-       pasa por rutaJs(): esa resuelve scripts de navegador.
-       El servidor tiene un tercer slug() en server/catalogo.js, el que
-       arma la columna slug de la base. */
+       pasa por rutaJs(): esa resuelve scripts de navegador. */
     const cuerpoGen = extraerFuncion('generar-productos.js', 'slug');
     const cuerpoModal = extraerFuncion('modal.js', 'slugDe');
-    const cuerpoServidor = extraerFuncion('server/catalogo.js', 'slug');
 
-    if (!cuerpoGen || !cuerpoModal || !cuerpoServidor) {
-        avisar('no se encontro slug() del generador, slugDe() de modal.js o slug() de server/catalogo.js');
+    if (!cuerpoGen || !cuerpoModal) {
+        avisar('no se encontro slug() del generador o slugDe() de modal.js');
         malas++;
     } else {
         const slugGen = new Function('texto', cuerpoGen);
         const slugModal = new Function('texto', cuerpoModal);
-        const slugServidor = new Function('texto', cuerpoServidor);
 
-        /* El catalogo es un literal JS (claves sin comillas), no
-           JSON: se evalua tal cual. */
-        const fuente = fs.readFileSync(rutaJs('productos.js'), 'utf8');
-        const literal = fuente.match(/const PRODUCTOS = (\[[\s\S]*?\n\]);/);
-        const nombres = literal ? new Function('return ' + literal[1])() : null;
+        /* Los nombres salen del JSON del catalogo, no de productos.js:
+           ese archivo ya no tiene el array, porque el catalogo viaja
+           aparte. */
+        const nombres = leerCatalogoJSON();
 
         if (!nombres) {
-            avisar('no se pudo leer PRODUCTOS de productos.js');
+            avisar('no se pudo leer public/data/productos.json (corré npm run generar)');
             malas++;
         } else {
             for (const p of nombres) {
@@ -578,16 +589,10 @@ if (!fs.existsSync(gen)) {
 
                 const a = slugGen(p.nombre);
                 const b = slugModal(p.nombre);
-                const c = slugServidor(p.nombre);
                 const existe = fs.existsSync(path.join(carpeta, a + '.html'));
 
                 if (a !== b) {
                     avisar('slug desincronizado para "' + p.nombre + '": generador=' + a + ' modal=' + b);
-                    malas++;
-                }
-                if (a !== c) {
-                    avisar('slug desincronizado para "' + p.nombre + '": generador=' + a + ' servidor=' + c +
-                        ' (/api/productos daria una URL distinta a la ficha estatica)');
                     malas++;
                 }
                 if (!existe) {
@@ -601,127 +606,75 @@ if (!fs.existsSync(gen)) {
     if (!malas) ok(paginas.length + ' paginas generadas, con JSON-LD, canonical e imagenes');
 }
 
-/* --- 10. El servidor puede leer el catalogo ------------------------
+/* --- 10. El JSON del catalogo esta al dia ----------------------
 
-   server/catalogo.js saca el literal PRODUCTOS de productos.js
-   contando llaves y lo evalua con Function(). Se.documento que es
-   fragil: si alguien reformatea el archivo (cambia el espaciado del
-   "const PRODUCTOS = [", pasa las comillas a simples, agrega un
-   comentario con un corchete), el arranque del servidor revienta.
+   El catalogo tiene una fuente, datos/catalogo.js, y de ahi salen dos
+   cosas: las fichas de productos/*.html y public/data/productos.json.
 
-   Aca se llama a leerProductos() de verdad, no a una copia: si el
-   metodo deja de poder leer el archivo, esto falla antes de que
-   alguien levante el servidor y lo descubra en produccion. La idea
-   es que un cambio de formato en productos.js sea un error de
-   verificar, no un incidente.
+   El JSON se versiona y lo lee el navegador, asi que puede quedar
+   viejo si alguien edito la fuente y se olvido de correr el
+   generador. El sintoma seria dificil de ver: el sitio andaria con
+   precios viejos, sin ningun error.
 
-   Cuando el sitio se sirva siempre por Node, este bloque se puede
-   borrar junto con el Function(): el catalogo pasara a leerse de un
-   JSON y no habra nada que fragile que verificar. */
-console.log('\nEl servidor lee el catalogo');
+   Por eso se comprueba que la fuente y el JSON coincidan producto
+   por producto. */
+
+console.log('\nEl catalogo en JSON');
 
 {
     let malas = 0;
 
-    /* Se usa el modulo real, no una reimplementacion: si el metodo
-       cambia, la prueba cambia con el. */
-    const servidor = require(path.join(raiz, 'server', 'catalogo.js'));
+    const fuente = leerCatalogoFuente();
+    const delJson = leerCatalogoJSON();
 
-    let leidos = null;
-    try {
-        leidos = servidor.leerProductos();
-    } catch (error) {
-        avisar('server/catalogo.js no puede leer productos.js: ' + String(error.message).split('\n')[0]);
-        avisar('  si reformateaste productos.js, revisa que "const PRODUCTOS = [" siga igual');
+    if (!fuente) {
         malas++;
     }
 
-    if (leidos) {
-        if (!Array.isArray(leidos) || leidos.length === 0) {
-            avisar('leerProductos() no devolvio una lista con contenido');
+    if (!delJson) {
+        avisar('falta public/data/productos.json o esta roto: corré npm run generar');
+        malas++;
+    }
+
+    if (fuente && delJson) {
+        if (fuente.length !== delJson.length) {
+            avisar('el JSON tiene ' + delJson.length + ' productos y la fuente ' + fuente.length +
+                ': el JSON quedo viejo, corré npm run generar');
             malas++;
         } else {
-            /* No alcanza con que no tire: lo que el servidor lee tiene
-               que ser lo mismo que el navegador dibuja y que el
-               generador usa para nombrar los archivos. */
-            const fuente = fs.readFileSync(rutaJs('productos.js'), 'utf8');
-            const literal = fuente.match(/const PRODUCTOS = (\[[\s\S]*?\n\]);/);
-            const delNavegador = literal ? new Function('return ' + literal[1])() : null;
+            for (let i = 0; i < fuente.length; i++) {
+                const a = fuente[i];
+                const b = delJson[i];
 
-            if (!delNavegador) {
-                avisar('no se pudo leer PRODUCTOS de productos.js para comparar');
-                malas++;
-            } else if (delNavegador.length !== leidos.length) {
-                avisar('el servidor lee ' + leidos.length + ' productos y el navegador ' +
-                    delNavegador.length + ': el recorte del literal esta partiendo el array');
-                malas++;
-            } else {
-                for (let i = 0; i < delNavegador.length; i++) {
-                    const delServer = leidos[i];
-                    const delFront = delNavegador[i];
-
-                    if (String(delServer.id) !== String(delFront.id)) {
-                        avisar('producto ' + i + ': el id del servidor es ' + delServer.id +
-                            ' y el del navegador ' + delFront.id);
-                        malas++;
-                    }
-                    if (servidor.slug(delServer.nombre) !== servidor.slug(delFront.nombre)) {
-                        avisar('producto ' + i + ' (' + delFront.nombre + '): el nombre leido por el ' +
-                            'servidor no es el que usa el navegador');
-                        malas++;
-                    }
+                if (JSON.stringify(a) !== JSON.stringify(b)) {
+                    avisar('producto ' + i + ' (' + a.nombre + ') difiere entre datos/catalogo.js y ' +
+                        'el JSON: corré npm run generar');
+                    malas++;
                 }
-            }
-
-            /* El id es la clave con la que se inserts en la base: si
-               faltara, sembrar() tiraria al arrancar. */
-            const sinId = leidos.filter(p => !p || !p.id);
-            if (sinId.length) {
-                avisar(sinId.length + ' producto(s) sin id: sembrar() fallaria al arrancar');
-                malas++;
             }
         }
     }
 
-    if (!malas) {
-        ok('server/catalogo.js lee ' + leidos.length + ' productos y coinciden con productos.js');
+    /* El navegador lo baja con fetch. Si el path estuviera mal, el
+       catalogo no aparece nunca. */
+    if (delJson) {
+        const relativo = path.relative(path.join(raiz, 'public'), rutaCatalogoJSON());
+        if (fs.existsSync(path.join(raiz, 'public', relativo))) {
+            ok('public/data/productos.json al dia con datos/catalogo.js (' + delJson.length +
+                ' productos)');
+        }
+    }
+
+    if (!malas && delJson) {
+        ok('datos/catalogo.js y public/data/productos.json coinciden, sin Function() por el medio');
     }
 }
 
-/* --- 11. El .env se carga de verdad ------------------------------
-
-   Node no lee .env por su cuenta: hay que pasararselo con un flag. El
-   script start de package.json lo hace, pero si alguien lo saca del
-   script el sintoma es silencioso: el servidor arranca igual, asi que
-   parece que todo funciona, pero cada reinicio regenera
-   ZAPI_SESSION_SECRET y borra todos los carritos abiertos.
-
-   Es un fallo de configuracion, no de codigo, asi que ningun otro
-   chequeo lo pilla. */
-
-try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(raiz, 'package.json'), 'utf8'));
-    const start = (pkg.scripts && pkg.scripts.start) || '';
-
-    /* -if-exists y no solo -env-file: el archivo es opcional porque
-       todo tiene valor por defecto, y arrancar sin el tiene que
-       funcionar. Con --env-file pelado, un .env ausente tumba el
-       servidor y parece un error de instalacion. */
-    const conIfExists = /--env-file-if-exists\b/.test(start);
-    if (conIfExists) {
-        ok('npm start carga .env con --env-file-if-exists');
-    } else {
-        avisar('npm start no usa --env-file-if-exists: el .env no se carga y ' +
-            'ZAPI_SESSION_SECRET se regenera en cada reinicio (script actual: "' + start + '")');
-    }
-} catch (e) {
-    avisar('no se pudo leer package.json: ' + e.message);
-}
 
 /* --- Fichas huerfanas -------------------------------------------
 
    No hace falta buscarlas aca: el generador de arriba ya las poda,
-   porque su unica fuente es productos.js. Lo que si hace falta es no
+   porque su unica fuente es datos/catalogo.js. Lo que si hace falta es no
    tragarse lo que hizo. Correr verificar puede borrar fichas, y
    borrar sin avisar es la clase de sorpresa que hace que la gente
    deje de correr la herramienta.

@@ -23,10 +23,10 @@
    muestran. Dos avisos utiles para cuando llegue ese momento:
 
    1. El fetch a la API de Google no puede hacerse desde el
-      navegador: la CSP de server.js tiene connect-src 'self', asi
-      que el navegador bloquea la llamada antes de que salga. Hay
-      que pedir las opiniones al servidor (por ejemplo a
-      GET /api/testimonios) y que el servidor las traiga con la
+      navegador: habria que escribir la clave en el HTML, y una CSP
+      propia con connect-src 'self' bloquearia la llamada igual. Hay
+      que pedir las opiniones a un endpoint propio (por ejemplo
+      GET /api/testimonios) y que ese endpoint las pida con la
       clave, que nunca se escribe en el HTML.
    2. Google devuelve como mucho cinco opiniones por llamada y pide
       un maxReviewPerPage mayor que cinco; para ver mas hay que
