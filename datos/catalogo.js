@@ -9,24 +9,21 @@
    De este archivo salen, con npm run generar:
 
      - public/data/productos.json, que es lo que baja el navegador
-       con fetch y lo que lee el servidor al sembrar la base;
+       con fetch;
      - las fichas de productos/*.html;
      - sitemap.xml, a traves de las fichas.
 
    Por que vive aca y no en public/js/
    ---------------------------------------
    Antes el array estaba en public/js/productos.js, que el navegador
-   cargaba como un script comun. Eso obligaba a que el catalogo
-   llegara dentro de un .js, y de ahi salia el problema que se
-   llevo mas tiempo: para que el servidor lo leyera sin require() -
-   productos.js usa window y document -, habia que arrancar el
-   archivo, arrancar el array a mano con un contador de llaves y
-   evaluarlo con Function(). Ese emparejar() era fragil: un cambio
-   de espaciado, unas comillas simples o un corchete dentro de un
-   comentario partian el catalogo.
+   cargaba como un script comun. El problema era leerlo sin require
+   -productos.js usa window y document-: habia que arrancar el array
+   a mano con un contador de llaves y evaluarlo con Function(). Ese
+   emparejar() era fragil: un cambio de espaciado, unas comillas
+   simples o un corchete dentro de un comentario partian el
+   catalogo.
 
-   Ahora el catalogo viaja en JSON. El servidor hace JSON.parse, que
-   no se rompe con un reformateo, y el navegador lo pide por HTTP,
+   Ahora el catalogo viaja en JSON y el navegador lo pide por HTTP,
    que es la unica forma en que anda el sitio.
 
    Que quede claro el reparto: este archivo NO lo carga el

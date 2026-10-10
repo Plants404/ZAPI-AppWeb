@@ -40,7 +40,3 @@ trim_trailing_whitespace = false
 # servidor, donde partir el texto lo hace mas dificil de leer.
 [*.{js,css,html,json,md}]
 max_line_length = off
-
-[{*.env,.env.example,*.txt}]
-insert_final_newline = true
-trim_trailing_whitespace = false

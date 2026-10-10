@@ -7,10 +7,9 @@
    y el JSON-LD de Product que piden los buscadores para mostrar el
    precio y la foto en los resultados.
 
-   Escribe tambien public/data/productos.json, que es el archivo que
-   baja el navegador con fetch y el que lee el servidor al sembrar
-   la base. Los dospaths salen de la misma fuente, asi que no pueden
-   discrepar.
+   Escribe tambien public/data/productos.json, que es el archivo
+   que baja el navegador con fetch. Los dos salen de la misma
+   fuente, asi que no pueden discrepar.
 
    De donde salen los datos
    ------------------------
@@ -20,17 +19,15 @@
    solo Node >= 18.
 
    El JSON se versiona, igual que las fichas y que las dos partes de
-   catalogo.css: es generado, pero tambien es lo que lee el servidor
-   al arrancar. Si no estuviera en el repo, un despliegue recien
-   clonado tendria que acordarse de correr esto antes de levantar.
+   catalogo.css: aunque es generado, el navegador lo pide por fetch
+   y no sobra un paso de build antes de desplegar.
 
    Por que el navegador lo pide por fetch y no lo lleva incrustado
    -----------------------------------------------------------------
    Mientras el catalogo vivia en public/js/productos.js, el sitio
    abria con doble clic y tambien por HTTP. Ahora anda solo por HTTP:
-   el fetch es lo que hace posible que el servidor lea el catalogo
-   con JSON.parse en vez de arrancar el archivo a mano. Ese era el
-   punto flojo de la cadena anterior. */
+   el JSON evita tener que arrancar el archivo a mano para sacarle
+   los datos. Ese era el punto flojo de la cadena anterior. */
 
 const fs = require('fs');
 const path = require('path');
@@ -79,8 +76,7 @@ function extraerProductos() {
    El JSON que baja el navegador
    ------------------------------------------------------------------ */
 
-/* El archivo que consumen el fetch del navegador y el JSON.parse del
-   servidor.
+/* El archivo que consume el fetch del navegador.
 
    Va envuelto en un objeto y no como un array pelado por dos
    razones: se le puede agregar metadata sin romper a nadie -"generado"
@@ -457,10 +453,9 @@ if (!fs.existsSync(destinoJson)) fs.mkdirSync(destinoJson, { recursive: true });
 
 /* El JSON va primero, antes que las fichas.
 
-   Es el archivo del que dependen el navegador y el servidor: si este
-   sale mal, mejor que no se escriba ninguna pagina y quede un repo
-   coherente a medias, que un JSON roto al que apunten siete fichas
-   nuevas. El servidor lo lee al arrancar y revienta si no esta. */
+   Es el archivo del que depende el navegador: si este sale mal,
+   mejor que no se escriba ninguna pagina y quede un repo coherente
+   a medias, que un JSON roto al que apunten siete fichas nuevas. */
 const contenidoJson = paraElNavegador(productos);
 const archivoJson = path.join(destinoJson, 'productos.json');
 

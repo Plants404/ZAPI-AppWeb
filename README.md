@@ -114,8 +114,6 @@ disco.
 - **No borrar CSS sin verificar.** Varios archivos mezclan el
   español/inglés de cuando se renombraron las clases; ya se limpiaron los
   restos, pero la idea sigue vigente.
-- `.env` nunca se versiona. Solo `.env.example`, que hoy está vacío a la
-  espera de la configuración del backend nuevo.
 
 ### Linter
 
@@ -156,7 +154,7 @@ Lo que se conserva del sitio estático:
 
 - Toda interpolación pasa por `escaparHTML` antes de tocar el DOM, y
   `npm run verificar` escanea ese patrón (sección XSS).
-- `/data/` y `.env` fuera de git.
+- `/data/` fuera de git.
 - Las políticas de servidor (CSP, rate limit, consultas preparadas, honeypot
   de contacto) vuelven junto con el backend.
 

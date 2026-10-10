@@ -4,11 +4,6 @@
 # public/data/, que es el catalogo en JSON que si se versiona.
 /data/
 
-# Secretos del backend futuro. Nunca un .env en el repo: se versiona
-# el .env.example con los nombres de las variables.
-.env
-.env.local
-
 # Dependencias. El sitio no carga ninguna: eslint y globals son de
 # desarrollo (npm install --save-dev).
 node_modules/

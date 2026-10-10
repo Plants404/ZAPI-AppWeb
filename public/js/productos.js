@@ -34,19 +34,16 @@ const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter =>
    Por que no viene incrustado
    ----------------------------
    El catalogo estuvo un tiempo dentro de este mismo archivo, como
-   un array. Servia para que la pagina abriera con doble clic, sin
-   servidor. A cambio obligaba a que el servidor -que necesita el
-   catalogo para sembrar la base- no lo pudiera importar con
-   require(), porque este archivo usa window y document: tenia que
-   arrancar el archivo entero a mano y ejecutar el array con
-   Function() solo para sacarle los datos. Ese era el punto mas
-   fragil de todo el proyecto: un cambio de espaciado, unas
-   comillas simples o un corchete en un comentario partian el
-   catalogo del servidor, y se enteraba uno al arrancar el server.
+   un array. Servia para que la pagina abriera con doble clic. A
+   cambio no habia forma de leerlo sin ejecutar el archivo entero:
+   usa window y document, asi que habia que arrancarlo a mano y
+   ejecutar el array con Function() solo para sacarle los datos.
+   Ese era el punto mas fragil de todo el proyecto: un cambio de
+   espaciado, unas comillas simples o un corchete en un comentario
+   partian el catalogo.
 
-   Ahora el servidor hace JSON.parse de un archivo y el navegador lo
-   pide por HTTP. El sitio anda de una sola forma, que es la que
-   hace falta: siempre servido por Node.
+   Ahora viaja en JSON aparte y el navegador lo pide por HTTP. El
+   sitio anda de una sola forma, que es la que hace falta: por HTTP.
 
    Que el catalogo llegue un instante despues
    ------------------------------------------
@@ -151,8 +148,8 @@ function cargarCatalogo() {
    El caso que mas conviene tratar aparte es el doble clic. El
    sitio ya no anda con file:// porque el navegador le bloquea el
    fetch del catalogo por CORS, y el visitante ve una pagina sin
-   productos sin ninguna pista de por que. Se le dice que arranque
-   el servidor. */
+   productos sin ninguna pista de por que. Se le dice que sirva el
+   sitio por HTTP. */
 function avisarCatalogoNoCargado() {
 
     const grilla = document.getElementById("productGrid");
@@ -599,8 +596,8 @@ PRODUCTOS.forEach(producto => {
 /* ==========================================================
    IMAGENES QUE NO CARGAN
    ------------------------------------------------------------
-   Un producto puede quedar con una foto que ya no esta en el
-   servidor, o con una ruta mal escrita. Antes eso dejaba el
+   Un producto puede quedar con la ruta de la foto mal escrita, o
+   con el archivo borrado. Antes eso dejaba el
    icono de imagen rota del navegador adentro del marco, con el
    fondo gris y el texto alt al lado.
 
