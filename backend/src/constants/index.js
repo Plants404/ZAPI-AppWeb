@@ -16,6 +16,11 @@ const LARGO = {
     telefono: 40,
     consulta: 2000,
     sitioWeb: 100,
+
+    /* Pedidos. La zona y las notas son opcionales, pero el largo
+       maximo igual se pisa para que nadie llene la base. */
+    zona: 120,
+    notas: 500,
 };
 
 /* Pisos minimos. La consulta pide 10 caracteres y el telefono se
@@ -36,4 +41,11 @@ const CORREO = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
    quien intente mandar un cuerpo enorme. */
 const LIMITE_CUERPO = '16kb';
 
-module.exports = { LARGO, MINIMOS, CORREO, LIMITE_CUERPO };
+/* Carrito y pedidos. */
+const LIMITE_CANTIDAD = 99;
+const VIDA_SESION_MS = 30 * 24 * 60 * 60 * 1000;
+
+module.exports = {
+    LARGO, MINIMOS, CORREO, LIMITE_CUERPO,
+    LIMITE_CANTIDAD, VIDA_SESION_MS,
+};
