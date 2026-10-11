@@ -133,11 +133,15 @@ Colecciones (Mongoose crea los índices al conectar):
 - `pedidos`: pedidos cerrados con sus líneas (nombre y precio de la venta),
   estado `pendiente` por defecto e id corto `Z-AAAA-MM-DD-XXXXXX`.
 - `mensajes`: consultas del formulario. Estado `nuevo` por defecto.
-- `testimonios`: opiniones del carrusel. Solo se listan las `publicado: true`.
+- `testimonios`: opiniones del carrusel. Se siembran al arrancar desde
+  `public/data/testimonios.json` (upsert por autor + fecha, sin duplicar) y
+  solo se listan las `publicado: true`.
 
-Todavía no hay una fuente real de testimonios: la API devuelve una lista
-vacía y el front sigue con su respaldo de `public/js/testimonios.js`. Por eso
-`testimonios` no requiere cargar nada para que el sitio ande.
+`datos/testimonios.js` es la fuente de autoría: de ahí sale
+`public/data/testimonios.json` con `npm run generar:testimonios`, que siembra
+la colección del backend y además es el respaldo estático que baja el carrusel
+si la API no está. Las opiniones cargadas hoy son de ejemplo (no de clientes
+reales).
 
 ## Scripts
 
@@ -151,6 +155,7 @@ vacía y el front sigue con su respaldo de `public/js/testimonios.js`. Por eso
 | `npm run check` | `lint` + `verificar`, para correr antes de commitear. |
 | `npm run contraste` | Comprueba que los pares de color cumplen el mínimo de contraste. |
 | `npm run generar` | Regenera las fichas de `productos/` desde `datos/catalogo.js`. También **poda** las fichas cuyo producto ya no está en el catálogo. |
+| `npm run generar:testimonios` | Regenera `public/data/testimonios.json` desde `datos/testimonios.js` (lo siembra el backend y es el respaldo del carrusel). |
 | `npm run sitemap` | Regenera `sitemap.xml`. |
 | `npm run css` | Regenera `public/css/catalogo-modal.css` y `catalogo-catalogo.css` desde `public/css/catalogo.css`. |
 
@@ -293,7 +298,7 @@ Lo que agrega el backend:
 | Contraste de color (`npm run contraste`) | ✅ |
 | ESLint (`npm run lint`) | ✅ 0 errores, 6 warnings de `eqeqeq` |
 | `.editorconfig` | ✅ |
-| Tests del backend (`npm test`) | ✅ 32 tests (`node:test` + Supertest + Mongo en memoria) |
+| Tests del backend (`npm test`) | ✅ 33 tests (`node:test` + Supertest + Mongo en memoria) |
 
 Los tests cubren la API de contacto y el módulo de comercio completo
 (catálogo, stock, carrito y pedidos), con el catálogo real del sitio

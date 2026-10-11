@@ -5,10 +5,20 @@
 
    De donde salen los datos
    ------------------------
-   Hoy salen de la constante OPINIONES de mas abajo, que hace de
-   lista a mano. Todo lo demas vive alrededor de la forma de cada
-   opinion, asi que conectar la API de Google despues no obliga a
-   redibujar nada: alcanza con entregar la misma forma.
+   De GET /api/testimonios, el endpoint propio: el servidor las
+   tiene en la base y las sirve con esta forma. Si la API no esta
+   levantada -el sitio servido estatico- o falla, se cae a
+   public/data/testimonios.json, que es el mismo JSON del que
+   siembra la API y sale de datos/testimonios.js con
+   npm run generar:testimonios.
+
+   Con las dos fuentes caidas el carrusel muestra el estado vacio
+   ("Todavia no hay opiniones publicadas") en vez de romperse: la
+   home nunca queda dependiendo de que la API este arriba.
+
+   La forma de cada opinion es la misma en las dos fuentes y la que
+   ya usaba el carrusel, asi que cambiar de fuente no obliga a
+   redibujar nada:
 
      { autor, lugar, texto, estrellas, fecha }
 
@@ -18,69 +28,63 @@
    escritorio, 2 en tablet, 1 en celular) y el script lo lee. El
    avance es de a paginas completas, no de a opinion.
 
-   Cuando se quiera conectar Google Places (o el widget de
-   opiniones), el cambio es de donde salen los datos, no de como se
-   muestran. Dos avisos utiles para cuando llegue ese momento:
+   Por que un endpoint propio y no la API de Google directo
+   --------------------------------------------------------
+   El fetch a la API de Google no puede hacerse desde el navegador:
+   habria que escribir la clave en el HTML, y una CSP propia con
+   connect-src 'self' bloquearia la llamada igual. Por eso las
+   opiniones se piden a este endpoint, que seria quien las pida con
+   la clave, que nunca se escribe en el HTML.
 
-   1. El fetch a la API de Google no puede hacerse desde el
-      navegador: habria que escribir la clave en el HTML, y una CSP
-      propia con connect-src 'self' bloquearia la llamada igual. Hay
-      que pedir las opiniones a un endpoint propio (por ejemplo
-      GET /api/testimonios) y que ese endpoint las pida con la
-      clave, que nunca se escribe en el HTML.
-   2. Google devuelve como mucho cinco opiniones por llamada y pide
-      un maxReviewPerPage mayor que cinco; para ver mas hay que
-      seguir el nextPageToken. Conviene guardar el resultado en el
-      servidor para no gastar cuota en cada visita.
-
-   La constante OPINIONES queda como respaldo: si la API todavia no
-   esta conectada o falla, el carrusel se dibuja igual.
-
-   OJO con estos textos
-   -------------------
-   Los de abajo son de ejemplo, para ver como queda la seccion: no
-   son opiniones de clientes reales y no hay que publicarlos como si
-   lo fueran. Cuando entren las de verdad (de Google o escritas a
-   mano), se reemplazan estas por las nuevas y el resto no se toca.
+   Si algun dia la fuente pasa a ser Google Places, dos cosas a
+   tener en cuenta: devuelve como mucho cinco opiniones por llamada
+   y pide un maxReviewPerPage mayor que cinco; para ver mas hay que
+   seguir el nextPageToken. Conviene guardar el resultado en el
+   servidor para no gastar cuota en cada visita.
    ========================================================== */
 
-const OPINIONES = [
-    {
-        autor: "María Gómez",
-        lugar: "Montevideo",
-        texto: "Compré dos aromáticas para la cocina y llegaron sanas y con la guía de cuidados. A las dos semanas ya las estaba usando para las comidas.",
-        estrellas: 5,
-        fecha: "2026-08-14"
-    },
-    {
-        autor: "Diego Fernández",
-        lugar: "Ciudad de la Costa",
-        texto: "Nos hicieron el diseño de la huerta del colegio. El equipo entendió lo que necesitan los chicos y nos dejaron claro cómo seguir con el mantenimiento.",
-        estrellas: 5,
-        fecha: "2026-07-02"
-    },
-    {
-        autor: "Lucía Sánchez",
-        lugar: "Punta del Este",
-        texto: "Me tasteó y por eso sigo comprando. Los precios del catálogo son fijos hasta que se avisa, y siempre avisan antes de cambiar algo.",
-        estrellas: 4,
-        fecha: "2026-06-21"
-    },
-    {
-        autor: "Andrés Pérez",
-        lugar: "Salto",
-        texto: "Encargamos el mantenimiento de un patio chico. Es un trabajo prolijo, ordenado y se nota el cambio en el estado de las plantas.",
-        estrellas: 4.5,
-        fecha: "2026-05-30"
-    },
-    {
-        autor: "Familia Bentancor",
-        lugar: "Canelones",
-        texto: "Pedimos la huerta familiar completa y nos explican cada paso. Después de un mes ya estábamos comiendo de lo que sembramos.",
-        estrellas: 5,
-        fecha: "2026-05-11"
-    }
+/* Las fuentes, en orden: primero la API (opiniones vivas, de la
+   base), despues el JSON versionado (el mismo que siembra la API).
+   Se prueban de a una y se corta en la primera que traiga algo. */
+const FUENTES_OPINIONES = [
+    "/api/testimonios",
+    "/public/data/testimonios.json"
 ];
+
+/* Devuelve las opiniones de la primera fuente que responda, o una
+   lista vacia si ninguna lo hace (el carrusel muestra su estado
+   vacio). Nunca tira: un fetch caido no puede dejar la home a
+   medio dibujar. */
+async function cargarOpiniones() {
+
+    for (const url of FUENTES_OPINIONES) {
+
+        try {
+
+            const respuesta = await fetch(url, {
+                headers: { Accept: "application/json" }
+            });
+
+            if (!respuesta.ok) continue;
+
+            const cuerpo = await respuesta.json();
+
+            const opiniones = Array.isArray(cuerpo.testimonios)
+                ? cuerpo.testimonios.filter(Boolean)
+                : [];
+
+            if (opiniones.length) return opiniones;
+
+        } catch {
+
+            /* Se prueba la siguiente fuente. */
+
+        }
+
+    }
+
+    return [];
+}
 
 /* Cada cuanto avanza solo, en milisegundos. Con un solo testimonio
    no hay carrusel que avance, asi que el tiempo no se usa. */
@@ -91,18 +95,22 @@ const OPINIONES_INTERVALO = 7000;
    opinion con un temblor de la mano. */
 const OPINIONES_DESLIZAR = 40;
 
-(function carruselDeOpiniones() {
+(async function carruselDeOpiniones() {
 
     const contenedor = document.getElementById("testimoniosCarrusel");
 
     /* Esta seccion solo existe en index.html. En catalogo.html y en
        carrito.html no hay nada que dibujar, y el script se sale
-       derecho sin tirar error. */
+       derecho sin tirar error (y sin pedir la API al pedo). */
     if (!contenedor) return;
 
     const menosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const opiniones = OPINIONES.filter(Boolean);
+    /* Las opiniones se piden antes de dibujar: con la lista vacia
+       pintar() muestra el estado vacio. Todo lo que sigue (los
+       escuchantes de flechas, puntos y deslizar) se engancha
+       despues, asi que la espera no deja nada a medio armar. */
+    const opiniones = await cargarOpiniones();
 
     let indice = 0;
     let temporizador = null;

@@ -7,11 +7,12 @@
    texto, estrellas, fecha), para que conectar el endpoint no
    obligue a redibujar nada.
 
-   Todavia no hay una fuente real (el fetch a Google Places no
-   puede hacerse desde el navegador: la clave quedaria en el
-   HTML). La coleccion existe para cuando se cargue a mano o a
-   traves de un endpoint propio; hasta entonces la API devuelve
-   una lista vacia y el front sigue con su respaldo.
+   Todavia hay una fuente a mano: datos/testimonios.js -> JSON ->
+   siembra (ver testimonios.service.js). La coleccion sigue abierta
+   a que lleguen opiniones de una fuente real (o escritas a mano);
+   las de la fuente se marcan publicado: true al sembrar, y una
+   opinion cargada para revisar sale con publicado false hasta que
+   alguien la apruebe.
    ========================================================== */
 
 const mongoose = require('mongoose');
