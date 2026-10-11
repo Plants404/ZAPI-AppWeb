@@ -11,6 +11,7 @@
     "check": "npm run lint && npm run verificar",
     "contraste": "node tools/contraste.js",
     "generar": "node tools/generar-productos.js",
+    "generar:testimonios": "node tools/generar-testimonios.js",
     "sitemap": "node tools/generar-sitemap.js",
     "css": "node tools/extraer-modal-css.js"
   },

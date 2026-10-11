@@ -21,6 +21,7 @@ const rutaCss = nombre => path.join(raiz, 'public', 'css', nombre);
 const rutaJs = nombre => path.join(raiz, 'public', 'js', nombre);
 const rutaCatalogo = nombre => path.join(raiz, 'datos', nombre);
 const rutaCatalogoJSON = () => path.join(raiz, 'public', 'data', 'productos.json');
+const rutaTestimoniosJSON = () => path.join(raiz, 'public', 'data', 'testimonios.json');
 
 /* El catalogo vive en datos/catalogo.js, que se importa con require() y
    ya esta. Devuelve null si no se puede leer, para que el que llama
@@ -40,6 +41,27 @@ function leerCatalogoJSON() {
     try {
         const documento = JSON.parse(fs.readFileSync(rutaCatalogoJSON(), 'utf8'));
         return Array.isArray(documento.productos) ? documento.productos : null;
+    } catch {
+        return null;
+    }
+}
+
+/* Igual que el catalogo, pero para testimonios. La fuente es
+   datos/testimonios.js (requirable porque es un modulo de Node) y
+   el JSON que baja el carrusel es public/data/testimonios.json. */
+function leerTestimoniosFuente() {
+    try {
+        return require(rutaCatalogo('testimonios.js')).TESTIMONIOS;
+    } catch (error) {
+        avisar('no se pudo importar datos/testimonios.js: ' + error.message);
+        return null;
+    }
+}
+
+function leerTestimoniosJSON() {
+    try {
+        const documento = JSON.parse(fs.readFileSync(rutaTestimoniosJSON(), 'utf8'));
+        return Array.isArray(documento.testimonios) ? documento.testimonios : null;
     } catch {
         return null;
     }
@@ -667,6 +689,62 @@ console.log('\nEl catalogo en JSON');
 
     if (!malas && delJson) {
         ok('datos/catalogo.js y public/data/productos.json coinciden, sin Function() por el medio');
+    }
+}
+
+
+/* --- 11. El JSON de testimonios esta al dia -------------------
+
+   Testimonios sigue el mismo reparto que el catalogo: se edita
+   datos/testimonios.js, de ahi sale public/data/testimonios.json,
+   y ese mismo JSON siembra la coleccion del backend. Para que el
+   carrusel no quede con opiniones viejas si cambiaron la fuente y
+   se olvidaron de correr el generador, se regenera y se compara
+   una a una. */
+
+console.log('\nTestimonios');
+
+{
+    const generadorTestimonios = path.join(raiz, 'tools', 'generar-testimonios.js');
+
+    if (!fs.existsSync(generadorTestimonios)) {
+        avisar('falta tools/generar-testimonios.js');
+    } else {
+        try {
+            execFileSync('node', [generadorTestimonios], { cwd: raiz, stdio: 'pipe' });
+        } catch (e) {
+            avisar('el generador de testimonios fallo: ' +
+                String(e.stderr || e.message).trim().split('\n').pop());
+        }
+    }
+
+    const fuente = leerTestimoniosFuente();
+    const delJson = leerTestimoniosJSON();
+
+    if (fuente && delJson) {
+        let malas = 0;
+
+        if (fuente.length !== delJson.length) {
+            avisar('el JSON tiene ' + delJson.length + ' opiniones y la fuente ' + fuente.length +
+                ': el JSON quedo viejo, corré npm run generar:testimonios');
+            malas++;
+        } else {
+            for (let i = 0; i < fuente.length; i++) {
+                const a = fuente[i];
+                const b = delJson[i];
+
+                if (JSON.stringify(a) !== JSON.stringify(b)) {
+                    avisar('opinion ' + i + ' (' + a.autor + ') difiere entre datos/testimonios.js y ' +
+                        'el JSON: corré npm run generar:testimonios');
+                    malas++;
+                }
+            }
+        }
+
+        if (malas === 0) {
+            ok('public/data/testimonios.json al dia con datos/testimonios.js (' + delJson.length +
+                ' opiniones)');
+        }
     }
 }
 
