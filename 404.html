@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F3F1E7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1C2216" media="(prefers-color-scheme: dark)">
+<meta name="robots" content="noindex">
+<title>404 · ZAPI | Esta planta aún no brotó</title>
+
+<!-- ==========================================================
+     TIPOGRAFÍAS (único recurso externo permitido)
+     Bebas Neue para titulares y números; Montserrat para texto
+     y botón. Ambas con fallback local en las variables de abajo.
+     ========================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+<style>
+/* ============================================================
+   1. VARIABLES Y MODO OSCURO
+   ============================================================ */
+:root{
+    /* Paleta clara */
+    --crema:        #F3F1E7;   /* fondo */
+    --tinta:        #2E3820;   /* texto */
+    --tinta-suave:  #5F6B4C;   /* texto secundario */
+    --salvia:       #9DB08A;   /* verde salvia */
+    --oliva:        #5E6E2F;   /* verde oliva */
+    --oliva-oscuro: #46531F;   /* oliva hover */
+    --tierra:       #6B4F3A;   /* tierra */
+
+    /* Derivados */
+    --oliva-claro:  #6E7E38;   /* borde del tazón */
+    --vena:         rgba(46, 56, 32, .28);
+    --brillo:       rgba(157, 176, 138, .22);
+
+    /* Tipografías con fallback (Impact / system-ui) */
+    --display: 'Bebas Neue', Impact, 'Arial Narrow', system-ui, sans-serif;
+    --texto:   'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark){
+    :root{
+        --crema:        #1C2216;
+        --tinta:        #ECEAD9;
+        --tinta-suave:  #BAC4A4;
+        --salvia:       #B7C79F;   /* verdes algo más claros */
+        --oliva:        #8FA35C;
+        --oliva-oscuro: #A9BD72;
+        --tierra:       #8A6A4F;
+
+        --oliva-claro:  #9DB06A;
+        --vena:         rgba(16, 21, 10, .42);
+        --brillo:       rgba(143, 163, 92, .16);
+    }
+}
+
+/* ============================================================
+   2. BASE Y LAYOUT
+   ============================================================ */
+*,*::before,*::after{ box-sizing: border-box; }
+
+body{
+    margin: 0;
+
+    /* Centrado vertical y horizontal, con respiro por las
+       safe-areas del notch en iOS (viewport-fit=cover). */
+    min-height: 100vh;
+    min-height: 100svh;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding:
+        max(1.5rem, env(safe-area-inset-top))
+        max(1.5rem, env(safe-area-inset-right))
+        max(1.5rem, env(safe-area-inset-bottom))
+        max(1.5rem, env(safe-area-inset-left));
+
+    background:
+        radial-gradient(120% 80% at 50% -10%, var(--brillo), transparent 55%),
+        var(--crema);
+    color: var(--tinta);
+    font-family: var(--texto);
+    line-height: 1.6;
+
+    /* En celulares, ni una pizca de scroll horizontal */
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.escena{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 100%;
+}
+
+/* ============================================================
+   3. MARCA
+   ============================================================ */
+.marca{
+    margin: 0 0 .4rem;
+    font-family: var(--display);
+    font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+    line-height: 1;
+    letter-spacing: .55em;
+    padding-left: .55em;          /* compensa el tracking final */
+    text-transform: uppercase;
+    color: var(--oliva);
+    opacity: 0;
+    animation: aparecer .8s ease-out .15s both;
+}
+
+/* ============================================================
+   4. EL "404" (números + tazón SVG como "0")
+   La alineación es por "baseline": la base del tazón cae sobre
+   la línea base de los números, así quedan apoyados parejos.
+   ============================================================ */
+.year{
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: .1rem 0 1.2rem;
+    font-family: var(--display);
+    font-size: clamp(120px, 26vw, 260px);
+    line-height: .8;
+    color: var(--salvia);
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.digit{
+    opacity: 0;                   /* entra con la animación */
+}
+
+/* El SVG ocupa el lugar del "0". Su base (borde inferior) se
+   alinea a la línea base de los dígitos. */
+.tazon-svg{
+    height: .76em;
+    width: auto;
+    overflow: visible;            /* el mecido no se recorta */
+}
+
+/* ---- Piezas del SVG ---- */
+
+/* Tazón: entra con efecto "drop" (scale 0 -> 1 con rebote) */
+.tazon{
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: scale(0);
+}
+.tazon-cuerpo{ fill: var(--oliva); }
+.tazon-borde { fill: var(--oliva-claro); }
+.tierra      { fill: var(--tierra); }
+.tierra-luz  { fill: rgba(255, 255, 255, .10); }
+
+/* Tallo: se dibuja con dasharray/dashoffset (pathLength=1) */
+.tallo{
+    fill: none;
+    stroke: var(--oliva);
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+}
+
+/* Hojas: brotan desde su punto de unión al tallo.
+   transform-origin 0% 50% = extremo pegado al tallo. */
+.hoja{
+    transform-box: fill-box;
+    transform-origin: 0% 50%;
+    transform: scale(0);
+}
+.hoja-cuerpo{ stroke: none; }
+.hoja--salvia .hoja-cuerpo{ fill: var(--salvia); }
+.hoja--oliva  .hoja-cuerpo{ fill: var(--oliva); }
+.hoja-vena{
+    fill: none;
+    stroke: var(--vena);
+    stroke-width: 1.1;
+    stroke-linecap: round;
+}
+
+/* Brote de la punta: entra último */
+.brote{
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: scale(0);
+}
+.brote-cuerpo{ fill: var(--salvia); }
+.brote-linea{
+    fill: none;
+    stroke: var(--vena);
+    stroke-width: 1.1;
+    stroke-linecap: round;
+}
+
+/* La planta entera se mece desde la base */
+.planta{
+    transform-box: view-box;
+    transform-origin: 100px 178px;
+}
+
+/* ============================================================
+   5. ANIMACIONES
+   Todas viven bajo la clase ".go". El JS la quita y la vuelve a
+   poner cada ciclo para reiniciar (forzando reflow).
+   ============================================================ */
+
+/* 5.1 Números: suben con fade (0.8s) */
+@keyframes subir{
+    from{ opacity: 0; transform: translateY(12%); }
+    to  { opacity: 1; transform: translateY(0); }
+}
+.go .digit{ animation: subir .8s ease-out both; }
+
+/* 5.2 Tazón: drop con rebote */
+@keyframes caer{
+    0%  { transform: scale(0);    opacity: 0; }
+    60% { transform: scale(1.06); opacity: 1; }
+    100%{ transform: scale(1);    opacity: 1; }
+}
+.go .tazon{ animation: caer .7s cubic-bezier(.34, 1.56, .64, 1) .15s both; }
+
+/* 5.3 Tallo: se dibuja en ~3.4s */
+@keyframes dibujar{
+    from{ stroke-dashoffset: 1; }
+    to  { stroke-dashoffset: 0; }
+}
+.go .tallo{ animation: dibujar 3.4s ease-out .9s both; }
+
+/* 5.4 Hojas: brotan una por una, alternando lado, con rebote */
+@keyframes brotar{
+    from{ transform: scale(0); }
+    to  { transform: scale(1); }
+}
+.go .hoja{
+    animation: brotar .6s cubic-bezier(.34, 1.56, .64, 1) both;
+}
+.go .hoja.l1{ animation-delay: 1.90s; }
+.go .hoja.l2{ animation-delay: 2.45s; }
+.go .hoja.l3{ animation-delay: 3.00s; }
+.go .hoja.l4{ animation-delay: 3.55s; }
+.go .hoja.l5{ animation-delay: 4.00s; }
+.go .hoja.l6{ animation-delay: 4.35s; }
+
+/* 5.5 Brote de la punta, al final */
+.go .brote{ animation: brotar .5s cubic-bezier(.34, 1.56, .64, 1) 4.45s both; }
+
+/* 5.6 La planta crecida se mece (alternate infinito) y a los
+       ~8s se desvanece antes del siguiente ciclo */
+@keyframes mecer{
+    from{ transform: rotate(-2.5deg); }
+    to  { transform: rotate(2.5deg); }
+}
+@keyframes apagar{
+    to{ opacity: 0; }
+}
+.go .planta{
+    animation:
+        mecer 5s ease-in-out 5s infinite alternate,
+        apagar 1.1s ease-in 8s forwards;
+}
+
+/* ============================================================
+   6. TÍTULO, TEXTO Y BOTÓN
+   ============================================================ */
+.titulo{
+    margin: 0 0 .5rem;
+    font-family: var(--display);
+    font-size: clamp(1.9rem, 4.4vw, 2.9rem);
+    line-height: 1.05;
+    letter-spacing: .06em;
+    color: var(--tinta);
+}
+
+.texto{
+    margin: 0 auto;
+    max-width: 36ch;
+    font-size: clamp(1rem, 2.2vw, 1.15rem);
+    color: var(--tinta-suave);
+}
+
+.boton{
+    display: inline-block;
+    margin-top: 1.7rem;
+    padding: .85rem 1.9rem;
+    border-radius: 999px;
+    background: var(--oliva);
+    color: var(--crema);
+    font-family: var(--texto);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: .01em;
+    text-decoration: none;
+    box-shadow: 0 10px 22px -12px rgba(70, 83, 31, .75);
+    transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+/* Hover/focus: oliva más oscuro y sube 2px */
+.boton:hover,
+.boton:focus-visible{
+    background: var(--oliva-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 26px -12px rgba(70, 83, 31, .85);
+}
+
+.boton:focus-visible{
+    outline: 3px solid var(--salvia);
+    outline-offset: 3px;
+}
+
+/* La marca entra sin depender de ".go" */
+@keyframes aparecer{
+    from{ opacity: 0; transform: translateY(6px); }
+    to  { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   7. REDUCED MOTION
+   Sin animaciones: se muestra la planta ya crecida y quieta,
+   y el JS no arranca el bucle.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce){
+    .marca{ animation: none; opacity: 1; }
+
+    .digit,
+    .tazon,
+    .tallo,
+    .hoja,
+    .brote,
+    .planta{
+        animation: none !important;
+    }
+
+    .digit{ opacity: 1; }
+
+    .tazon{ transform: scale(1); }
+    .tallo{ stroke-dashoffset: 0; }
+    .hoja,
+    .brote{ transform: scale(1); }
+    .planta{ transform: none; opacity: 1; }
+}
+</style>
+</head>
+
+<body>
+<main class="escena">
+
+    <!-- Marca -->
+    <p class="marca">ZAPI</p>
+
+    <!-- El error 404. El h1 lleva el nombre accesible; los dígitos
+         y el SVG son decorativos (aria-hidden). -->
+    <h1 class="year go" id="planta404" aria-label="Error 404">
+        <span class="digit" aria-hidden="true">4</span>
+
+        <!-- El "0" es un tazón del que crece una planta -->
+        <svg class="tazon-svg" viewBox="0 0 200 260" aria-hidden="true" focusable="false">
+            <!-- Tazón con tierra -->
+            <g class="tazon">
+                <path class="tazon-cuerpo"
+                      d="M44 176 L156 176 L140 246 c-2 8 -9 12 -17 12 H77 c-8 0 -15 -4 -17 -12 Z"/>
+                <ellipse class="tazon-borde" cx="100" cy="176" rx="58" ry="13"/>
+                <ellipse class="tierra"      cx="100" cy="177" rx="48" ry="10"/>
+                <ellipse class="tierra-luz"  cx="86"  cy="174" rx="16" ry="4"/>
+            </g>
+
+            <!-- Planta: tallo, hojas y brote; se mece desde la base -->
+            <g class="planta">
+                <path class="tallo" pathLength="1"
+                      d="M100 178 C 93 146, 107 112, 100 82 C 95 58, 104 50, 100 42"/>
+
+                <!-- Hojas: dos tonos (salvia/oliva), alternando lado,
+                     cada una más chica hacia la punta -->
+                <g transform="translate(100,146) rotate(-34)">
+                    <g class="hoja hoja--salvia l1">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena"   d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
+                </g>
+                <g transform="translate(100,124) rotate(212) scale(.95)">
+                    <g class="hoja hoja--oliva l2">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena"   d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
+                </g>
+                <g transform="translate(100,102) rotate(-42) scale(.95)">
+                    <g class="hoja hoja--oliva l3">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena"   d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
+                </g>
+                <g transform="translate(100,82) rotate(206) scale(.9)">
+                    <g class="hoja hoja--salvia l4">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena"   d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
+                </g>
+                <g transform="translate(100,64) rotate(-30) scale(.85)">
+                    <g class="hoja hoja--salvia l5">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena"   d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
+                </g>
+                <g transform="translate(100,50) rotate(218) scale(.8)">
+                    <g class="hoja hoja--oliva l6">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena"   d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
+                </g>
+
+                <!-- Brote en la punta -->
+                <g transform="translate(100,42)">
+                    <g class="brote">
+                        <path class="brote-cuerpo" d="M0 0 C -10 -12, -8 -28, 0 -34 C 8 -28, 10 -12, 0 0 Z"/>
+                        <path class="brote-linea"  d="M0 -3 L 0 -31"/>
+                    </g>
+                </g>
+            </g>
+        </svg>
+
+        <span class="digit" aria-hidden="true">4</span>
+    </h1>
+
+    <!-- Mensaje y salida -->
+    <h2 class="titulo">Esta planta aún no brotó</h2>
+    <p class="texto">
+        La página que buscás no existe o cambió de lugar.
+        Volvamos a sembrar desde el inicio.
+    </p>
+    <a class="boton" href="/">Volver al inicio</a>
+
+</main>
+
+<script>
+/* ============================================================
+   JS: reinicio del ciclo
+   ------------------------------------------------------------
+   La animación de entrada dura ~8s (a los 8s la planta se
+   desvanece). Cada ~9.5s quitamos ".go", forzamos reflow y la
+   volvemos a poner: eso reinicia todas las animaciones de una.
+   Con "prefers-reduced-motion" no se arranca el bucle: la planta
+   queda crecida y quieta (ver CSS).
+   ============================================================ */
+(function () {
+    'use strict';
+
+    var reducir = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var REINICIO_MS = 9500;
+
+    function ciclo() {
+        var escena = document.getElementById('planta404');
+        if (!escena) return;
+
+        window.setInterval(function () {
+            if (reducir.matches) return;          // respeta la preferencia
+
+            escena.classList.remove('go');
+            void escena.offsetWidth;              // fuerza reflow
+            escena.classList.add('go');
+        }, REINICIO_MS);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', ciclo);
+    } else {
+        ciclo();
+    }
+})();
+</script>
+</body>
+</html>
