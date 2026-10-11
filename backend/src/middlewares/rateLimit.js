@@ -61,14 +61,13 @@ function crearLimite(ventanaMs, maximo) {
 const limiteLectura = crearLimite(60 * 1000, config.limiteLectura);
 const limiteEscritura = crearLimite(10 * 60 * 1000, config.limiteEscritura);
 
-/* El asistente va aparte: cada mensaje es una llamada paga al
-   modelo, asi que el tope por minuto es mas bajo que el de
-   escritura y se cuenta por ventana corta. */
-const limiteIA = crearLimite(60 * 1000, config.limiteIA);
+/* El chat del asistente va aparte: mueve mas que una escritura
+   normal y quiere su propia ventana corta. */
+const limiteChat = crearLimite(60 * 1000, config.limiteChat);
 
 /* Solo para las pruebas: deja el mapa limpio entre casos. */
 function reiniciar() {
     registros.clear();
 }
 
-module.exports = { limiteLectura, limiteEscritura, limiteIA, crearLimite, reiniciar };
+module.exports = { limiteLectura, limiteEscritura, limiteChat, crearLimite, reiniciar };

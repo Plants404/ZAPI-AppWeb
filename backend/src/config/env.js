@@ -103,12 +103,6 @@ function construir() {
         throw new Error(`PORT="${puerto}" fuera de rango (1-65535).`);
     }
 
-    /* La API key de DeepSeek es OPCIONAL a proposito: sin ella el
-       asistente arranca en modo degradado (FAQ + catalogo, sin
-       generacion) en vez de no arrancar. Se avisa por log, no se
-       tira el servidor. */
-    const deepseekKey = (process.env.DEEPSEEK_API_KEY || '').trim() || null;
-
     return {
         entorno,
         esProduccion,
@@ -128,34 +122,14 @@ function construir() {
         limiteLectura: leerEntero('ZAPI_LIMITE_LECTURA', 120),
         limiteEscritura: leerEntero('ZAPI_LIMITE_ESCRITURA', 20),
 
-        /* Limite del asistente. Cada mensaje al chat cuesta una
-           llamada al modelo, asi que va aparte y mas ajustado que
-           el de escritura: no es lo mismo guardar una consulta que
-           pagar tokens. */
-        limiteIA: leerEntero('ZAPI_LIMITE_IA', 15),
+        /* Limite del chat del asistente. Va aparte del de escritura
+           porque el chat mueve mas y conviene cortar antes de que
+           alguien lo use para llenar la base de eventos. */
+        limiteChat: leerEntero('ZAPI_LIMITE_CHAT', 15),
 
         /* Umbral (0-1) de parecido para reutilizar una FAQ ya
-           guardada en vez de pedir una respuesta nueva al modelo. */
+           guardada en vez de armar una respuesta nueva. */
         faqUmbral: leerDecimal('ZAPI_FAQ_UMBRAL', 0.55),
-
-        /* Cliente de DeepSeek. baseUrl sin barra final: se le
-           cuelga /chat/completions. Los modelos por defecto son
-            los vigentes a 2026 (deepseek-chat/reasoner quedaron
-            deprecados el 2026-07-24). La lista real la da GET /models:
-            deepseek-flash y deepseek-v4-pro. */
-        deepseek: {
-            configurado: Boolean(deepseekKey),
-            key: deepseekKey,
-            baseUrl: (process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com')
-                .trim()
-                .replace(/\/+$/, ''),
-            modelo: (process.env.DEEPSEEK_MODELO || 'deepseek-flash').trim(),
-            modeloRazon: (process.env.DEEPSEEK_MODELO_RAZON || 'deepseek-v4-pro').trim(),
-            tiempoEspera: leerEntero('ASISTENTE_TIMEOUT', 20000),
-            reintentos: leerEntero('ASISTENTE_REINTENTOS', 2),
-            maxTokens: leerEntero('ASISTENTE_MAX_TOKENS', 700),
-            historial: leerEntero('ASISTENTE_HISTORIAL', 8),
-        },
 
         /* Tiempos de Mongo, en ms. */
         mongoTimeout: leerEntero('ZAPI_MONGO_TIMEOUT', 30000),

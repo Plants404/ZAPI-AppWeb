@@ -2,21 +2,20 @@
 /* ==========================================================
    MODELO: FAQ
    ------------------------------------------------------------
-   La memoria del asistente. Cada pregunta que el modelo responde
-   queda guardada (clave normalizada + tokens) para que la proxima
-   vez que alguien pregunte algo parecido no haya que gastar una
-   llamada nueva: se recupera la respuesta y solo se sube la
-   frecuencia.
+   La memoria del asistente. Cada pregunta que responde el
+   asistente queda guardada (clave normalizada + tokens) para que
+   la proxima vez que alguien pregunte algo parecido no haya que
+   armar la respuesta de nuevo: se recupera la guardada y solo se
+   sube la frecuencia.
 
-   No hay embeddings: DeepSeek no expone un endpoint de ese tipo.
-   El parecido se resuelve con un prefiltro lexico (tokens) en
-   faq.service.js y, cuando hay una candidata, una verificacion
-   corta contra el modelo. Queda documentado como limitacion: no
+   No hay embeddings: el parecido se resuelve con un prefiltro
+   lexico (tokens) en faq.service.js y la decision de reutilizar la
+   toma asistente.service.js. Queda documentado como limitacion: no
    es busqueda vectorial.
 
-   "revisar" arranca en true: las respuestas que inventa el modelo
-   se guardan pero marcadas, para que alguien las apruebe antes de
-   tomarlas como oficiales.
+   "revisar" queda en false: las respuestas salen de reglas
+   curadas, asi que no necesitan aprobacion. El campo se mantiene
+   por si mas adelante hace falta marcar alguna para revisar.
    ========================================================== */
 
 const mongoose = require('mongoose');

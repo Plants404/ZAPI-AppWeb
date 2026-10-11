@@ -7,7 +7,7 @@
 
 const ZAPI_NOMBRE = "Brotecito";
 
-/* Endpoints del asistente con IA. El chat se sirve desde el mismo
+/* Endpoints del asistente. El chat se sirve desde el mismo
    origen que el sitio (la CSP lo permite con connect-src 'self') y,
    si la API no responde, el widget cae a la logica local de abajo:
    el visitante nunca se queda sin respuesta. */
@@ -15,7 +15,7 @@ const ZAPI_API = "/api/asistente";
 const ZAPI_HISTORIAL_MAX = 12;
 const ZAPI_ESPERA_MS = 25000;
 
-let zapiIaActiva = false;
+let zapiAsistenteActivo = false;
 let zapiHistorial = [];
 
 
@@ -725,11 +725,12 @@ function initZapiHeaderMeasure() {
 }
 
 /* ==========================================================
-   ASISTENTE CON IA
-   El chat generativo vive en el backend (/api/asistente/chat).
-   Aca solo se arma la conversacion, se manda y se pinta; toda la
-   regla de negocio (prompt, catalogo, memoria de FAQ) queda del
-   lado del servidor. Si algo falla, se vuelve a la logica local.
+   ASISTENTE
+   El chat vive en el backend (/api/asistente/chat) y responde por
+   reglas. Aca solo se arma la conversacion, se manda y se pinta;
+   la logica de negocio (datos del negocio, catalogo, memoria de
+   FAQ) queda del lado del servidor. Si algo falla, se vuelve a la
+   logica local de abajo.
    ========================================================== */
 
 function zapiEsperar(ms) {
@@ -761,21 +762,8 @@ function zapiSlugProducto() {
     return coincidencia ? coincidencia[1] : "";
 }
 
-function zapiCarritoResumen() {
-    try {
-        if (typeof obtenerCarrito !== "function") return [];
-
-        return obtenerCarrito().slice(0, 20).map(item => ({
-            nombre: item.nombre,
-            cantidad: item.cantidad,
-        }));
-    } catch {
-        return [];
-    }
-}
-
-/* Pregunta al backend si la IA esta activa y ajusta el enlace de
-   WhatsApp con el contacto oficial del negocio. */
+/* Pregunta al backend si el asistente esta disponible y ajusta el
+   enlace de WhatsApp con el contacto oficial del negocio. */
 async function zapiCargarConfig() {
     try {
         const respuesta = await fetch(`${ZAPI_API}/config`);
@@ -784,7 +772,7 @@ async function zapiCargarConfig() {
 
         const datos = await respuesta.json();
 
-        zapiIaActiva = Boolean(datos && datos.ia && datos.ia.configurado);
+        zapiAsistenteActivo = Boolean(datos && datos.asistente);
 
         const enlace = datos && datos.negocio && datos.negocio.contacto
             && datos.negocio.contacto.whatsappUrl;
@@ -795,7 +783,7 @@ async function zapiCargarConfig() {
             if (humano) humano.setAttribute("href", enlace);
         }
     } catch {
-        zapiIaActiva = false;
+        zapiAsistenteActivo = false;
     }
 }
 
@@ -807,12 +795,7 @@ async function zapiConsultar(texto) {
         const respuesta = await fetch(`${ZAPI_API}/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                mensaje: texto,
-                historial: zapiHistorial,
-                carrito: zapiCarritoResumen(),
-                ruta: window.location.pathname,
-            }),
+            body: JSON.stringify({ mensaje: texto }),
             signal: control.signal,
         });
 
@@ -969,7 +952,7 @@ function initZapiBot() {
 
         let salida = null;
 
-        if (zapiIaActiva) {
+        if (zapiAsistenteActivo) {
             salida = await zapiConsultar(texto);
         } else {
             /* La logica local es instantanea; un minimo de espera
@@ -1162,7 +1145,7 @@ function initZapiBot() {
 
     });
 
-    /* Averigua si la IA esta activa y ajusta el contacto. */
+    /* Averigua si el asistente esta disponible y ajusta el contacto. */
 
     zapiCargarConfig();
 
