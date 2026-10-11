@@ -815,15 +815,25 @@
 
     /* Con poca conversación sobraba un bloque vacío entre el
        último mensaje y los atajos: la caja crece (flex: 1) y los
-       mensajes quedan pegados al techo. Pegándolos abajo se
-       apoya justo sobre los botones y el hueco queda arriba,
-       como en cualquier chat. */
+       mensajes quedan pegados al techo. Pegándolos abajo (con
+       margin-top: auto en el primero) se apoyan justo sobre los
+       botones y el hueco queda arriba, como en cualquier chat.
 
-    justify-content: flex-end;
+       Se usa margin-top y NO justify-content: flex-end porque,
+       cuando la conversación desborda, flex-end recorta el primer
+       mensaje y no se puede subir a leerlo. */
 
     background: var(--sand);
 
-    scroll-behavior: smooth;
+}
+
+
+/* Empuja la conversación al fondo cuando es corta, sin romper el
+   scroll cuando es larga (acá el margin-top: auto vale 0). */
+
+.zapi-messages > :first-child {
+
+    margin-top: auto;
 
 }
 

@@ -835,9 +835,32 @@ function initZapiBot() {
 
     /* ------------------------- */
 
-    function scrollAbajo() {
+    /* Si el visitante ya está mirando el final, lo seguimos con cada
+       mensaje nuevo. Si subió a leer algo anterior, no lo arrastramos
+       abajo: se respeta su posición. Antes cada añadido forzaba el
+       scroll y, sumado a scroll-behavior: smooth, se peleaba con
+       quien intentaba leer hacia arriba. */
+
+    const ZAPI_MARGEN_ABAJO = 80;
+    let seguirAbajo = true;
+
+    function estaAbajo() {
+        return messages.scrollHeight
+            - messages.scrollTop
+            - messages.clientHeight <= ZAPI_MARGEN_ABAJO;
+    }
+
+    function scrollAbajo(forzar = false) {
+        if (!forzar && !seguirAbajo) return;
+
         messages.scrollTop = messages.scrollHeight;
     }
+
+    /* Manda el scroll del usuario: si se va del fondo, dejamos de
+       seguirlo; si vuelve al fondo, retomamos. */
+    messages.addEventListener("scroll", () => {
+        seguirAbajo = estaAbajo();
+    }, { passive: true });
     /* El bot escribe marcado propio (<strong>, <br>), asi que
        sus respuestas pueden ir por innerHTML. Lo que escribe el
        visitante no: va como texto plano, porque al pasarlo por
@@ -932,6 +955,18 @@ function initZapiBot() {
         });
 
         messages.appendChild(contenedor);
+
+        /* Las imágenes se cargan después (loading="lazy") y crecen
+           las tarjetas: si estamos siguiendo el final, acompaña. */
+        contenedor.querySelectorAll("img").forEach(img => {
+            const ajustar = () => scrollAbajo();
+
+            if (img.complete) {
+                ajustar();
+            } else {
+                img.addEventListener("load", ajustar, { once: true });
+            }
+        });
 
         scrollAbajo();
     }
@@ -1039,6 +1074,10 @@ function initZapiBot() {
             iniciado = true;
             saludoInicial();
         }
+
+        /* Al abrir, siempre al final, aunque se haya cerrado
+           con la conversación scrolleada hacia arriba. */
+        scrollAbajo(true);
 
         setTimeout(() => input.focus(), 300);
     }
