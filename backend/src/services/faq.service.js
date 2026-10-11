@@ -2,16 +2,15 @@
 /* ==========================================================
    SERVICIO: FAQ (MEMORIA DEL ASISTENTE)
    ------------------------------------------------------------
-   Guarda y recupera respuestas para no pedirle al modelo dos
-   veces lo mismo. Este modulo NO llama a DeepSeek: solo normaliza,
-   mide parecido lexico y persiste. La verificacion con el modelo
-   la hace asistente.service.js, para que aca se pueda testear sin
+   Guarda y recupera respuestas para no armar dos veces lo mismo.
+   Este modulo solo normaliza, mide parecido lexico y persiste: no
+   habla con ningun servicio externo, asi que se puede testear sin
    red.
 
    Metrica de parecido: Jaccard sobre los tokens de la pregunta
-   (interseccion / union). Es tosca, pero con un umbral bajo solo
-   sirve para acercar candidatas; la decision final de reutilizar
-   la toma el modelo con la pregunta y la respuesta a la vista.
+   (interseccion / union). Es tosca, pero con un umbral bajo alcanza
+   para acercar candidatas; asistente.service.js decide si se
+   reutiliza la respuesta guardada.
    ========================================================== */
 
 const config = require('../config/env');
@@ -109,15 +108,14 @@ async function guardar({ pregunta, respuesta, intencion = 'otro' }) {
         tokens: tokenizar(pregunta),
         intencion: limpiarTexto(intencion, 40) || 'otro',
         frecuencia: 1,
-        generado: true,
-        revisar: true,
+        generado: false,
+        revisar: false,
         activo: true,
     });
 }
 
 /* Para el panel de revision (no hay UI todavia, pero deja el
-   endpoint listo y evita que las respuestas generadas queden
-   invisibles). */
+   endpoint listo y evita que las respuestas queden invisibles). */
 async function listar({ soloRevisar = true, limite = 50 } = {}) {
     const filtro = soloRevisar ? { revisar: true } : {};
 
