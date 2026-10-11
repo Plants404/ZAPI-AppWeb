@@ -79,6 +79,8 @@ cp .env.example .env
 | `ZAPI_ADMIN_TOKEN` | vacío | Token de `PUT /api/stock/:id` (cabecera `x-zapi-token`). |
 | `ZAPI_LIMITE_LECTURA` | `120` por minuto | Rate limit de lectura. |
 | `ZAPI_LIMITE_ESCRITURA` | `20` por 10 min | Rate limit de escritura (contacto, carrito, pedidos). |
+| `ZAPI_LIMITE_CHAT` | `15` por minuto | Rate limit del chat del asistente. Va aparte del de escritura porque mueve más. |
+| `ZAPI_FAQ_UMBRAL` | `0.55` | Parecido (0-1) mínimo para reutilizar una FAQ guardada. |
 
 Nunca se versiona un `.env`: solo `.env.example`, con los nombres y valores
 falsos.
@@ -99,6 +101,9 @@ falsos.
 | `POST` | `/api/pedidos` | Cerrar el pedido. Cuerpo `{ nombre, telefono, email?, zona?, notas? }`. Con `items: [{ id, cantidad }]` (el carrito de `localStorage`) se arma de ahí; sin `items`, del carrito de la sesión. |
 | `GET` | `/api/testimonios` | Opiniones publicadas, con la forma que usa el carrusel (`{ testimonios }`). |
 | `POST` | `/api/contacto` | Consulta del formulario. `201 { ok: true }` o `400 { error, campo }`. |
+| `GET` | `/api/asistente/config` | Identidad, contacto, promociones y el motor del asistente (`{ asistente: { motor: 'reglas' } }`). Sin datos sensibles. |
+| `POST` | `/api/asistente/chat` | Un mensaje al asistente. Cuerpo `{ mensaje }`. Devuelve `{ respuesta, intencion, recomendaciones, derivarHumano, contacto, fuente }`. |
+| `POST` | `/api/asistente/tracking` | Evento de navegación. Cuerpo `{ tipo, productoId?, categoria?, pagina?, detalle? }`. `201 { ok: true }`. |
 
 `POST /api/contacto` recibe `{ nombre, correo, telefono, consulta, sitio_web }`.
 `sitio_web` es el honeypot del formulario: si viene relleno, responde `201`
@@ -136,12 +141,37 @@ Colecciones (Mongoose crea los índices al conectar):
 - `testimonios`: opiniones del carrusel. Se siembran al arrancar desde
   `public/data/testimonios.json` (upsert por autor + fecha, sin duplicar) y
   solo se listan las `publicado: true`.
+- `faqs`: memoria del asistente. Cada pregunta respondida se guarda
+  normalizada (con sus tokens) para reutilizar la respuesta sin volver a
+  armarla. Las respuestas salen de reglas curadas, así que `revisar` queda en
+  `false`.
+- `eventos`: registro append-only de navegación (ver producto, agregar al
+  carrito, hablar con el bot). Alimenta las recomendaciones; no guarda datos
+  personales, solo el id de sesión anónimo del carrito.
 
 `datos/testimonios.js` es la fuente de autoría: de ahí sale
 `public/data/testimonios.json` con `npm run generar:testimonios`, que siembra
 la colección del backend y además es el respaldo estático que baja el carrusel
 si la API no está. Las opiniones cargadas hoy son de ejemplo (no de clientes
 reales).
+
+### Asistente (por reglas)
+
+El widget del sitio (`public/js/zapi-bot.js`) responde por palabras clave y,
+si el backend está disponible, consulta `/api/asistente/chat` para una
+respuesta más completa con recomendaciones del catálogo. Si la API no
+responde, cae a la lógica local de siempre. El flujo vive en el backend:
+
+1. `POST /api/asistente/chat` resume los intereses del visitante (de
+   `eventos`) y lee el catálogo.
+2. Busca una **FAQ parecida** (`faqs`) por parecido léxico de tokens; si la
+   encuentra, la reutiliza y sube su frecuencia.
+3. Si no, arma la respuesta con las reglas de negocio
+   (`backend/src/config/business.js`) y la guarda como FAQ para la próxima.
+4. Las recomendaciones se filtran contra el catálogo real, así nunca sale un
+   producto inventado.
+
+El chat no depende de ningún servicio externo: el endpoint nunca queda mudo.
 
 ## Scripts
 
@@ -298,10 +328,11 @@ Lo que agrega el backend:
 | Contraste de color (`npm run contraste`) | ✅ |
 | ESLint (`npm run lint`) | ✅ 0 errores, 6 warnings de `eqeqeq` |
 | `.editorconfig` | ✅ |
-| Tests del backend (`npm test`) | ✅ 33 tests (`node:test` + Supertest + Mongo en memoria) |
+| Tests del backend (`npm test`) | ✅ 43 tests (`node:test` + Supertest + Mongo en memoria) |
 
-Los tests cubren la API de contacto y el módulo de comercio completo
-(catálogo, stock, carrito y pedidos), con el catálogo real del sitio
-sembrado desde `public/data/productos.json`.
+Los tests cubren la API de contacto, el módulo de comercio completo
+(catálogo, stock, carrito y pedidos) y el asistente (respuestas por reglas,
+memoria de FAQ y recomendaciones), con el catálogo real del sitio sembrado
+desde `public/data/productos.json`.
 | Formateador automático | ❌ no hay, a propósito |
 | CI | ❌ no hay |

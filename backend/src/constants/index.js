@@ -21,6 +21,11 @@ const LARGO = {
        maximo igual se pisa para que nadie llene la base. */
     zona: 120,
     notas: 500,
+
+    /* Asistente. El mensaje del cliente se recorta antes de
+       guardarse en la FAQ y el detalle del evento tambien. */
+    mensajeChat: 600,
+    eventoDetalle: 200,
 };
 
 /* Pisos minimos. La consulta pide 10 caracteres y el telefono se
@@ -30,6 +35,7 @@ const MINIMOS = {
     nombre: 2,
     telefonoDigitos: 6,
     consulta: 10,
+    mensajeChat: 1,
 };
 
 /* Lo bastante estricto para agarrar el "@" que falta y el ".com"
