@@ -82,7 +82,7 @@ cp .env.example .env
 | `ZAPI_LIMITE_IA` | `15` por minuto | Rate limit del asistente. Va aparte porque cada mensaje es una llamada paga al modelo. |
 | `DEEPSEEK_API_KEY` | vacío | API key de DeepSeek. **Opcional**: sin ella el asistente funciona en modo degradado. |
 | `DEEPSEEK_BASE_URL` | `https://api.deepseek.com` | Base de la API compatible OpenAI de DeepSeek. |
-| `DEEPSEEK_MODELO` | `deepseek-v4-flash` | Modelo del chat. |
+| `DEEPSEEK_MODELO` | `deepseek-flash` | Modelo del chat. |
 | `DEEPSEEK_MODELO_RAZON` | `deepseek-v4-pro` | Modelo de mayor capacidad. |
 | `ASISTENTE_TIMEOUT` / `ASISTENTE_REINTENTOS` | `20000` / `2` | Timeout por petición (ms) y reintentos con backoff para 429 y 5xx. |
 | `ASISTENTE_MAX_TOKENS` / `ASISTENTE_HISTORIAL` | `700` / `8` | Tope de tokens por respuesta y turnos previos que se mandan de contexto. |
@@ -188,7 +188,7 @@ la memoria de FAQ no usa búsqueda vectorial. El parecido se resuelve con un
 prefiltro de tokens y la verificación del modelo.
 
 **Configuración de opencode:** el repo trae un `opencode.json` con el proveedor
-`deepseek` (modelos `deepseek-v4-flash` y `deepseek-v4-pro`). La key se lee de
+`deepseek` (modelos `deepseek-flash` y `deepseek-v4-pro`). La key se lee de
 la variable de entorno `DEEPSEEK_API_KEY` (`{env:DEEPSEEK_API_KEY}`), nunca del
 archivo. Cargala en el entorno (o exportala desde el shell) y elegí el modelo
 con `/models`. Recordá **reiniciar opencode** después de tocar la config.

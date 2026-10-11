@@ -140,15 +140,16 @@ function construir() {
 
         /* Cliente de DeepSeek. baseUrl sin barra final: se le
            cuelga /chat/completions. Los modelos por defecto son
-           los vigentes a 2026 (deepseek-chat/reasoner quedaron
-           deprecados el 2026-07-24). */
+            los vigentes a 2026 (deepseek-chat/reasoner quedaron
+            deprecados el 2026-07-24). La lista real la da GET /models:
+            deepseek-flash y deepseek-v4-pro. */
         deepseek: {
             configurado: Boolean(deepseekKey),
             key: deepseekKey,
             baseUrl: (process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com')
                 .trim()
                 .replace(/\/+$/, ''),
-            modelo: (process.env.DEEPSEEK_MODELO || 'deepseek-v4-flash').trim(),
+            modelo: (process.env.DEEPSEEK_MODELO || 'deepseek-flash').trim(),
             modeloRazon: (process.env.DEEPSEEK_MODELO_RAZON || 'deepseek-v4-pro').trim(),
             tiempoEspera: leerEntero('ASISTENTE_TIMEOUT', 20000),
             reintentos: leerEntero('ASISTENTE_REINTENTOS', 2),
