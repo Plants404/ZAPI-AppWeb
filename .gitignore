@@ -4,8 +4,15 @@
 # public/data/, que es el catalogo en JSON que si se versiona.
 /data/
 
-# Dependencias. El sitio no carga ninguna: eslint y globals son de
-# desarrollo (npm install --save-dev).
+# Secretos. El backend lee la configuracion de .env (MONGODB_URI,
+# secretos, etc.). Nunca se versiona: se versiona .env.example con los
+# nombres de las variables y valores falsos.
+.env
+.env.local
+.env.*.local
+
+# Dependencias. eslint y globals son de desarrollo; express, mongoose
+# y helmet son del backend.
 node_modules/
 
 # Sistema operativo y editores
