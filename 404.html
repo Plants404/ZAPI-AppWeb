@@ -111,41 +111,6 @@
 
 </main>
 
-<script>
-/* ============================================================
-   JS: reinicio del ciclo
-   ------------------------------------------------------------
-   La animación de entrada dura ~8s (a los 8s la planta se
-   desvanece). Cada ~9.5s quitamos ".go", forzamos reflow y la
-   volvemos a poner: eso reinicia todas las animaciones de una.
-   Con "prefers-reduced-motion" no se arranca el bucle: la planta
-   queda crecida y quieta (ver CSS).
-   ============================================================ */
-(function () {
-    'use strict';
-
-    var reducir = window.matchMedia('(prefers-reduced-motion: reduce)');
-    var REINICIO_MS = 9500;
-
-    function ciclo() {
-        var escena = document.getElementById('planta404');
-        if (!escena) return;
-
-        window.setInterval(function () {
-            if (reducir.matches) return;          // respeta la preferencia
-
-            escena.classList.remove('go');
-            void escena.offsetWidth;              // fuerza reflow
-            escena.classList.add('go');
-        }, REINICIO_MS);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', ciclo);
-    } else {
-        ciclo();
-    }
-})();
-</script>
+<script src="./public/js/404.js"></script>
 </body>
 </html>
