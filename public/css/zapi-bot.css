@@ -1172,6 +1172,174 @@
 
 
 /* ==========================================================
+   RECOMENDACIONES DEL ASISTENTE
+   Tarjetas que acompañan a una respuesta cuando el bot sugiere
+   productos. Viven dentro de .zapi-messages, debajo de la
+   burbuja, y se arman solo con datos del catálogo propio.
+   ========================================================== */
+
+.zapi-recos {
+
+    align-self: stretch;
+
+    display: grid;
+
+    gap: .5rem;
+
+    margin-top: .35rem;
+
+    animation: zapiMsgIn .38s cubic-bezier(.22, 1, .36, 1) both;
+
+}
+
+
+.zapi-reco {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .7rem;
+
+    padding: .55rem .7rem;
+
+    background: var(--white);
+
+    border: 1px solid rgba(31, 58, 46, .1);
+
+    border-radius: 14px;
+
+}
+
+
+.zapi-reco img {
+
+    width: 46px;
+
+    height: 46px;
+
+    border-radius: 10px;
+
+    object-fit: cover;
+
+    flex-shrink: 0;
+
+    background: var(--cream);
+
+}
+
+
+.zapi-reco-info {
+
+    min-width: 0;
+
+    flex: 1 1 auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .1rem;
+
+}
+
+
+.zapi-reco-nombre {
+
+    font-weight: 600;
+
+    color: var(--ink);
+
+    font-size: .92rem;
+
+    text-decoration: none;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+.zapi-reco-nombre:hover {
+
+    text-decoration: underline;
+
+}
+
+
+.zapi-reco-precio {
+
+    font-size: .82rem;
+
+    color: var(--leaf-texto);
+
+    font-weight: 600;
+
+}
+
+
+.zapi-reco-agregar {
+
+    flex-shrink: 0;
+
+    min-height: 40px;
+
+    padding: .4rem .7rem;
+
+    border-radius: 999px;
+
+    background: var(--white);
+
+    border: 1px solid rgba(74, 124, 89, .35);
+
+    color: var(--leaf-texto);
+
+    font-family: inherit;
+
+    font-size: .82rem;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background .2s ease, color .2s ease, transform .2s ease;
+
+}
+
+.zapi-reco-agregar:hover {
+
+    background: var(--leaf);
+
+    color: var(--cream);
+
+}
+
+.zapi-reco-agregar:active {
+
+    transform: scale(.96);
+
+}
+
+.zapi-reco-agregar:focus-visible {
+
+    outline: 2px solid var(--leaf);
+
+    outline-offset: 2px;
+
+}
+
+.zapi-reco-agregar[disabled] {
+
+    opacity: .55;
+
+    cursor: default;
+
+}
+
+
+/* ==========================================================
    INPUT
    ========================================================== */
 
