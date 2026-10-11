@@ -7,6 +7,17 @@
 
 const ZAPI_NOMBRE = "Brotecito";
 
+/* Endpoints del asistente con IA. El chat se sirve desde el mismo
+   origen que el sitio (la CSP lo permite con connect-src 'self') y,
+   si la API no responde, el widget cae a la logica local de abajo:
+   el visitante nunca se queda sin respuesta. */
+const ZAPI_API = "/api/asistente";
+const ZAPI_HISTORIAL_MAX = 12;
+const ZAPI_ESPERA_MS = 25000;
+
+let zapiIaActiva = false;
+let zapiHistorial = [];
+
 
 /* ==========================================================
    BASE DE CONOCIMIENTO
@@ -713,6 +724,108 @@ function initZapiHeaderMeasure() {
     window.addEventListener("load", programar);
 }
 
+/* ==========================================================
+   ASISTENTE CON IA
+   El chat generativo vive en el backend (/api/asistente/chat).
+   Aca solo se arma la conversacion, se manda y se pinta; toda la
+   regla de negocio (prompt, catalogo, memoria de FAQ) queda del
+   lado del servidor. Si algo falla, se vuelve a la logica local.
+   ========================================================== */
+
+function zapiEsperar(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/* Manda un evento de navegacion. Es "best effort": si falla, no
+   se avisa ni se rompe nada. Otras paginas pueden engancharse
+   llamando a window.zapiTrack("agregar_carrito", { productoId }) */
+function zapiTrack(tipo, datos = {}) {
+    try {
+        fetch(`${ZAPI_API}/tracking`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tipo, ...datos }),
+            keepalive: true,
+        }).catch(() => {});
+    } catch {
+        /* sin tracking el chat igual funciona */
+    }
+}
+
+window.zapiTrack = zapiTrack;
+
+function zapiSlugProducto() {
+    const coincidencia = (window.location.pathname || "")
+        .match(/\/productos\/([^/]+)\.html$/i);
+
+    return coincidencia ? coincidencia[1] : "";
+}
+
+function zapiCarritoResumen() {
+    try {
+        if (typeof obtenerCarrito !== "function") return [];
+
+        return obtenerCarrito().slice(0, 20).map(item => ({
+            nombre: item.nombre,
+            cantidad: item.cantidad,
+        }));
+    } catch {
+        return [];
+    }
+}
+
+/* Pregunta al backend si la IA esta activa y ajusta el enlace de
+   WhatsApp con el contacto oficial del negocio. */
+async function zapiCargarConfig() {
+    try {
+        const respuesta = await fetch(`${ZAPI_API}/config`);
+
+        if (!respuesta.ok) return;
+
+        const datos = await respuesta.json();
+
+        zapiIaActiva = Boolean(datos && datos.ia && datos.ia.configurado);
+
+        const enlace = datos && datos.negocio && datos.negocio.contacto
+            && datos.negocio.contacto.whatsappUrl;
+
+        if (enlace) {
+            const humano = document.querySelector(".zapi-humano-link");
+
+            if (humano) humano.setAttribute("href", enlace);
+        }
+    } catch {
+        zapiIaActiva = false;
+    }
+}
+
+async function zapiConsultar(texto) {
+    const control = new AbortController();
+    const reloj = setTimeout(() => control.abort(), ZAPI_ESPERA_MS);
+
+    try {
+        const respuesta = await fetch(`${ZAPI_API}/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                mensaje: texto,
+                historial: zapiHistorial,
+                carrito: zapiCarritoResumen(),
+                ruta: window.location.pathname,
+            }),
+            signal: control.signal,
+        });
+
+        if (!respuesta.ok) return null;
+
+        return await respuesta.json();
+    } catch {
+        return null;
+    } finally {
+        clearTimeout(reloj);
+    }
+}
+
 function initZapiBot() {
 
     if (document.getElementById("zapiBot")) return;
@@ -800,41 +913,115 @@ function initZapiBot() {
 
     /* ------------------------- */
 
-    function responder(texto) {
+    /* Tarjetas de productos sugeridos por el asistente. Se arman
+       con datos que ya vienen validados contra el catalogo del
+       lado del servidor; aca igual se escapa todo por las dudas. */
+    function pintarRecomendaciones(recomendaciones) {
+
+        if (!Array.isArray(recomendaciones) || !recomendaciones.length) return;
+
+        const contenedor = document.createElement("div");
+
+        contenedor.className = "zapi-recos";
+
+        recomendaciones.slice(0, 3).forEach(producto => {
+
+            const tarjeta = document.createElement("div");
+
+            tarjeta.className = "zapi-reco";
+
+            const imagen = producto.imagen
+                ? `<img src="${escaparHTML(producto.imagen)}" alt="" loading="lazy">`
+                : "";
+
+            tarjeta.innerHTML =
+                imagen +
+                `<div class="zapi-reco-info">
+                    <a class="zapi-reco-nombre" href="${escaparHTML(producto.url)}">${escaparHTML(producto.nombre)}</a>
+                    ${(typeof formatearPrecio === "function" && producto.precio !== null && producto.precio !== undefined)
+                        ? `<span class="zapi-reco-precio">${escaparHTML(formatearPrecio(producto.precio))}</span>`
+                        : ""}
+                </div>
+                <button type="button" class="zapi-reco-agregar" data-id="${escaparHTML(producto.id)}">Agregar</button>`;
+
+            contenedor.appendChild(tarjeta);
+
+        });
+
+        messages.appendChild(contenedor);
+
+        scrollAbajo();
+    }
+
+    async function responder(texto) {
 
         agregarMensaje(texto, "user", false);
 
+        zapiHistorial.push({ rol: "user", texto });
+
+        if (zapiHistorial.length > ZAPI_HISTORIAL_MAX) {
+            zapiHistorial = zapiHistorial.slice(-ZAPI_HISTORIAL_MAX);
+        }
+
+        zapiTrack("mensaje_chat", { detalle: texto.slice(0, 120) });
+
         mostrarEscribiendo();
 
-        setTimeout(() => {
+        let salida = null;
 
-            quitarEscribiendo();
+        if (zapiIaActiva) {
+            salida = await zapiConsultar(texto);
+        } else {
+            /* La logica local es instantanea; un minimo de espera
+               mantiene la sensacion de que el bot "escribe". */
+            await zapiEsperar(400 + Math.random() * 400);
+        }
 
-            const faq = detectarIntencion(texto);
+        quitarEscribiendo();
 
-            agregarMensaje(generarRespuesta(texto), "bot");
+        /* Consumir el carrito si el usuario preguntó por él, en
+           cualquiera de los dos caminos. */
 
-            /* Si fue una despedida, sugerir compra */
+        const preguntaCarrito = normalizar(texto).includes("carrito")
+            || normalizar(texto).includes("pedido");
 
-            if (faq && faq.despedida) {
-                setTimeout(() => {
-                    agregarMensaje(
-                        "Por cierto, si querés sumar puntos al Club ZAPI, " +
-                        "hoy tenés <strong>envío gratis</strong> en compras " +
-                        "mayores a $2.500. 🚚 ¿Te ayudo a armar el pedido?",
-                        "bot"
-                    );
-                }, 900);
+        if (salida && typeof salida.respuesta === "string" && salida.respuesta.trim()) {
+
+            agregarMensaje(salida.respuesta, "bot");
+
+            zapiHistorial.push({ rol: "bot", texto: salida.respuesta });
+
+            if (zapiHistorial.length > ZAPI_HISTORIAL_MAX) {
+                zapiHistorial = zapiHistorial.slice(-ZAPI_HISTORIAL_MAX);
             }
 
-            /* Actualizar contador si preguntó por el carrito */
+            pintarRecomendaciones(salida.recomendaciones);
 
-            if (normalizar(texto).includes("carrito") ||
-                normalizar(texto).includes("pedido")) {
-                setTimeout(() => actualizarContador(), 100);
-            }
+            if (preguntaCarrito) setTimeout(() => actualizarContador(), 100);
 
-        }, 700 + Math.random() * 600);
+            return;
+        }
+
+        /* Sin API o sin respuesta: logica local de siempre. */
+
+        const faq = detectarIntencion(texto);
+
+        agregarMensaje(generarRespuesta(texto), "bot");
+
+        if (faq && faq.despedida) {
+            setTimeout(() => {
+                agregarMensaje(
+                    "Por cierto, si querés sumar puntos al Club ZAPI, " +
+                    "hoy tenés <strong>envío gratis</strong> en compras " +
+                    "mayores a $2.500. 🚚 ¿Te ayudo a armar el pedido?",
+                    "bot"
+                );
+            }, 900);
+        }
+
+        if (preguntaCarrito) {
+            setTimeout(() => actualizarContador(), 100);
+        }
     }
 
     /* ------------------------- */
@@ -953,6 +1140,43 @@ function initZapiBot() {
     /* ------------------------- */
 
     pintarChips();
+
+    /* Agregar un producto sugerido al carrito sin salir del chat. */
+
+    messages.addEventListener("click", event => {
+
+        const boton = event.target.closest(".zapi-reco-agregar");
+
+        if (!boton) return;
+
+        try {
+            if (typeof agregarProductoAlCarrito === "function") {
+                agregarProductoAlCarrito(Number(boton.dataset.id));
+                boton.textContent = "Agregado";
+                boton.disabled = true;
+                zapiTrack("agregar_carrito", { productoId: Number(boton.dataset.id) });
+            }
+        } catch {
+            /* sin carrito disponible, el enlace a la ficha queda */
+        }
+
+    });
+
+    /* Averigua si la IA esta activa y ajusta el contacto. */
+
+    zapiCargarConfig();
+
+    /* En una ficha de producto, avisa que ese producto se miro:
+       alimenta las recomendaciones del asistente. */
+
+    const slugActual = zapiSlugProducto();
+
+    if (slugActual) {
+        zapiTrack("ver_producto", {
+            detalle: slugActual,
+            pagina: window.location.pathname,
+        });
+    }
 
     /* El panel se posiciona contra el alto real del
        header del sitio, así que se mide después de

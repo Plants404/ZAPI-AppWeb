@@ -79,9 +79,18 @@ cp .env.example .env
 | `ZAPI_ADMIN_TOKEN` | vacío | Token de `PUT /api/stock/:id` (cabecera `x-zapi-token`). |
 | `ZAPI_LIMITE_LECTURA` | `120` por minuto | Rate limit de lectura. |
 | `ZAPI_LIMITE_ESCRITURA` | `20` por 10 min | Rate limit de escritura (contacto, carrito, pedidos). |
+| `ZAPI_LIMITE_IA` | `15` por minuto | Rate limit del asistente. Va aparte porque cada mensaje es una llamada paga al modelo. |
+| `DEEPSEEK_API_KEY` | vacío | API key de DeepSeek. **Opcional**: sin ella el asistente funciona en modo degradado. |
+| `DEEPSEEK_BASE_URL` | `https://api.deepseek.com` | Base de la API compatible OpenAI de DeepSeek. |
+| `DEEPSEEK_MODELO` | `deepseek-v4-flash` | Modelo del chat. |
+| `DEEPSEEK_MODELO_RAZON` | `deepseek-v4-pro` | Modelo de mayor capacidad. |
+| `ASISTENTE_TIMEOUT` / `ASISTENTE_REINTENTOS` | `20000` / `2` | Timeout por petición (ms) y reintentos con backoff para 429 y 5xx. |
+| `ASISTENTE_MAX_TOKENS` / `ASISTENTE_HISTORIAL` | `700` / `8` | Tope de tokens por respuesta y turnos previos que se mandan de contexto. |
+| `ZAPI_FAQ_UMBRAL` | `0.55` | Parecido (0-1) mínimo para reutilizar una FAQ guardada. |
 
 Nunca se versiona un `.env`: solo `.env.example`, con los nombres y valores
-falsos.
+falsos. La `DEEPSEEK_API_KEY` se completa a mano; si queda vacía, el chat
+sigue respondiendo con los datos del negocio y el catálogo (ver más abajo).
 
 ### Endpoints
 
@@ -99,6 +108,9 @@ falsos.
 | `POST` | `/api/pedidos` | Cerrar el pedido. Cuerpo `{ nombre, telefono, email?, zona?, notas? }`. Con `items: [{ id, cantidad }]` (el carrito de `localStorage`) se arma de ahí; sin `items`, del carrito de la sesión. |
 | `GET` | `/api/testimonios` | Opiniones publicadas, con la forma que usa el carrusel (`{ testimonios }`). |
 | `POST` | `/api/contacto` | Consulta del formulario. `201 { ok: true }` o `400 { error, campo }`. |
+| `GET` | `/api/asistente/config` | Identidad, contacto, promociones y si la IA está activa. Sin datos sensibles. |
+| `POST` | `/api/asistente/chat` | Un mensaje al asistente. Cuerpo `{ mensaje, historial?, carrito?, ruta? }`. Devuelve `{ respuesta, intencion, recomendaciones, derivarHumano, contacto, fuente, ... }`. |
+| `POST` | `/api/asistente/tracking` | Evento de navegación. Cuerpo `{ tipo, productoId?, categoria?, pagina?, detalle? }`. `201 { ok: true }`. |
 
 `POST /api/contacto` recibe `{ nombre, correo, telefono, consulta, sitio_web }`.
 `sitio_web` es el honeypot del formulario: si viene relleno, responde `201`
@@ -136,12 +148,50 @@ Colecciones (Mongoose crea los índices al conectar):
 - `testimonios`: opiniones del carrusel. Se siembran al arrancar desde
   `public/data/testimonios.json` (upsert por autor + fecha, sin duplicar) y
   solo se listan las `publicado: true`.
+- `faqs`: memoria del asistente. Cada pregunta respondida se guarda
+  normalizada (con sus tokens) para reutilizar la respuesta sin volver a
+  llamar al modelo. `revisar: true` marca las que generó la IA.
+- `eventos`: registro append-only de navegación (ver producto, agregar al
+  carrito, hablar con el bot). Alimenta las recomendaciones; no guarda datos
+  personales, solo el id de sesión anónimo del carrito.
 
 `datos/testimonios.js` es la fuente de autoría: de ahí sale
 `public/data/testimonios.json` con `npm run generar:testimonios`, que siembra
 la colección del backend y además es el respaldo estático que baja el carrusel
 si la API no está. Las opiniones cargadas hoy son de ejemplo (no de clientes
 reales).
+
+### Asistente con IA (DeepSeek)
+
+El widget del sitio (`public/js/zapi-bot.js`) pasó de responder solo por
+palabras clave a hacerlo con **DeepSeek**, sin perder la lógica local como red
+de seguridad: si la API no responde, el chat contesta igual con el bot de
+siempre. El flujo vive en el backend:
+
+1. `POST /api/asistente/chat` resume los intereses del visitante (de
+   `eventos`), lee el catálogo y arma el prompt del sistema desde
+   `backend/src/config/business.js`.
+2. Antes de gastar una respuesta, busca una **FAQ parecida** (`faqs`) por
+   parecido léxico de tokens y, si la encuentra, pide al modelo una
+   verificación corta para reutilizarla.
+3. Si no, llama a DeepSeek pidiendo un JSON y **valida la salida**: las
+   recomendaciones se filtran contra el catálogo real, así el modelo no puede
+   inventar productos.
+4. La respuesta nueva se guarda como FAQ marcada para revisar.
+
+Sin `DEEPSEEK_API_KEY` (o si el modelo falla) el asistente **degrada**: contesta
+con los datos del negocio y el catálogo. El endpoint nunca queda mudo por
+culpa de la IA.
+
+**Limitación conocida:** DeepSeek no ofrece un endpoint de *embeddings*, así que
+la memoria de FAQ no usa búsqueda vectorial. El parecido se resuelve con un
+prefiltro de tokens y la verificación del modelo.
+
+**Configuración de opencode:** el repo trae un `opencode.json` con el proveedor
+`deepseek` (modelos `deepseek-v4-flash` y `deepseek-v4-pro`). La key se lee de
+la variable de entorno `DEEPSEEK_API_KEY` (`{env:DEEPSEEK_API_KEY}`), nunca del
+archivo. Cargala en el entorno (o exportala desde el shell) y elegí el modelo
+con `/models`. Recordá **reiniciar opencode** después de tocar la config.
 
 ## Scripts
 
@@ -298,10 +348,10 @@ Lo que agrega el backend:
 | Contraste de color (`npm run contraste`) | ✅ |
 | ESLint (`npm run lint`) | ✅ 0 errores, 6 warnings de `eqeqeq` |
 | `.editorconfig` | ✅ |
-| Tests del backend (`npm test`) | ✅ 33 tests (`node:test` + Supertest + Mongo en memoria) |
+| Tests del backend (`npm test`) | ✅ 44 tests (`node:test` + Supertest + Mongo en memoria) |
 
-Los tests cubren la API de contacto y el módulo de comercio completo
-(catálogo, stock, carrito y pedidos), con el catálogo real del sitio
-sembrado desde `public/data/productos.json`.
+Los tests cubren la API de contacto, el módulo de comercio completo
+(catálogo, stock, carrito y pedidos) y el asistente (con DeepSeek mockeado),
+con el catálogo real del sitio sembrado desde `public/data/productos.json`.
 | Formateador automático | ❌ no hay, a propósito |
 | CI | ❌ no hay |

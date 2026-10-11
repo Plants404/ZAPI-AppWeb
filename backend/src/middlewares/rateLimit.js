@@ -61,9 +61,14 @@ function crearLimite(ventanaMs, maximo) {
 const limiteLectura = crearLimite(60 * 1000, config.limiteLectura);
 const limiteEscritura = crearLimite(10 * 60 * 1000, config.limiteEscritura);
 
+/* El asistente va aparte: cada mensaje es una llamada paga al
+   modelo, asi que el tope por minuto es mas bajo que el de
+   escritura y se cuenta por ventana corta. */
+const limiteIA = crearLimite(60 * 1000, config.limiteIA);
+
 /* Solo para las pruebas: deja el mapa limpio entre casos. */
 function reiniciar() {
     registros.clear();
 }
 
-module.exports = { limiteLectura, limiteEscritura, crearLimite, reiniciar };
+module.exports = { limiteLectura, limiteEscritura, limiteIA, crearLimite, reiniciar };

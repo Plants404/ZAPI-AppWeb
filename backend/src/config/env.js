@@ -30,6 +30,21 @@ function leerEntero(nombre, porDefecto) {
     return Number.isInteger(numero) && numero >= 0 ? numero : porDefecto;
 }
 
+/* Un decimal de entorno, o el default si no esta / no es numero.
+   Se usa para el umbral de reutilizacion de FAQ y se recorta al
+   rango [0, 1] porque fuera de ahi no significa nada. */
+function leerDecimal(nombre, porDefecto) {
+    const crudo = process.env[nombre];
+
+    if (crudo === undefined || crudo === '') return porDefecto;
+
+    const numero = Number(crudo);
+
+    if (!Number.isFinite(numero)) return porDefecto;
+
+    return Math.min(1, Math.max(0, numero));
+}
+
 /* Lista separada por comas, sin espacios y sin vacios. Se usa para
    los origenes autorizados de CORS. */
 function leerLista(nombre) {
@@ -88,6 +103,12 @@ function construir() {
         throw new Error(`PORT="${puerto}" fuera de rango (1-65535).`);
     }
 
+    /* La API key de DeepSeek es OPCIONAL a proposito: sin ella el
+       asistente arranca en modo degradado (FAQ + catalogo, sin
+       generacion) en vez de no arrancar. Se avisa por log, no se
+       tira el servidor. */
+    const deepseekKey = (process.env.DEEPSEEK_API_KEY || '').trim() || null;
+
     return {
         entorno,
         esProduccion,
@@ -106,6 +127,34 @@ function construir() {
            camino. */
         limiteLectura: leerEntero('ZAPI_LIMITE_LECTURA', 120),
         limiteEscritura: leerEntero('ZAPI_LIMITE_ESCRITURA', 20),
+
+        /* Limite del asistente. Cada mensaje al chat cuesta una
+           llamada al modelo, asi que va aparte y mas ajustado que
+           el de escritura: no es lo mismo guardar una consulta que
+           pagar tokens. */
+        limiteIA: leerEntero('ZAPI_LIMITE_IA', 15),
+
+        /* Umbral (0-1) de parecido para reutilizar una FAQ ya
+           guardada en vez de pedir una respuesta nueva al modelo. */
+        faqUmbral: leerDecimal('ZAPI_FAQ_UMBRAL', 0.55),
+
+        /* Cliente de DeepSeek. baseUrl sin barra final: se le
+           cuelga /chat/completions. Los modelos por defecto son
+           los vigentes a 2026 (deepseek-chat/reasoner quedaron
+           deprecados el 2026-07-24). */
+        deepseek: {
+            configurado: Boolean(deepseekKey),
+            key: deepseekKey,
+            baseUrl: (process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com')
+                .trim()
+                .replace(/\/+$/, ''),
+            modelo: (process.env.DEEPSEEK_MODELO || 'deepseek-v4-flash').trim(),
+            modeloRazon: (process.env.DEEPSEEK_MODELO_RAZON || 'deepseek-v4-pro').trim(),
+            tiempoEspera: leerEntero('ASISTENTE_TIMEOUT', 20000),
+            reintentos: leerEntero('ASISTENTE_REINTENTOS', 2),
+            maxTokens: leerEntero('ASISTENTE_MAX_TOKENS', 700),
+            historial: leerEntero('ASISTENTE_HISTORIAL', 8),
+        },
 
         /* Tiempos de Mongo, en ms. */
         mongoTimeout: leerEntero('ZAPI_MONGO_TIMEOUT', 30000),
