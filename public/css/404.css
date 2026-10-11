@@ -2,47 +2,43 @@
    404 · ZAPI
    ------------------------------------------------------------
    Estilos de la pagina 404 (tazon del que crece una planta).
-   Se mantiene en un archivo aparte para respetar la CSP
-   (style-src 'self'): nada de CSS inline.
+
+   Usa los MISMOS tokens que styles.css (paleta forest/moss/
+   sage/leaf/cream/earth, radius y sombras) y las mismas
+   tipografias (Bebas Neue para titulares, Inter para texto),
+   para que el 404 se sienta parte del sitio y no una isla.
+   Va en archivo aparte para respetar la CSP (style-src 'self').
    ============================================================ */
 
 /* ============================================================
-   1. VARIABLES Y MODO OSCURO
+   1. TOKENS (espejo de styles.css)
+   Se repiten aca porque la pagina puede servirse suelta y no
+   importa styles.css; los valores son los mismos del sitio.
    ============================================================ */
 :root{
-    /* Paleta clara */
-    --crema:        #F3F1E7;   /* fondo */
-    --tinta:        #2E3820;   /* texto */
-    --tinta-suave:  #5F6B4C;   /* texto secundario */
-    --salvia:       #9DB08A;   /* verde salvia */
-    --oliva:        #5E6E2F;   /* verde oliva */
-    --oliva-oscuro: #46531F;   /* oliva hover */
-    --tierra:       #6B4F3A;   /* tierra */
+    --forest: #1f3a2e;
+    --moss:   #3d6b4f;
+    --sage:   #8fae91;
+    --leaf:   #4a7c59;
+    --cream:  #f7f4ec;
+    --sand:   #ece5d3;
+    --earth:  #6b5a44;
+    --ink:    #22261f;
+    --muted:  #6a6f65;
 
-    /* Derivados */
-    --oliva-claro:  #6E7E38;   /* borde del tazón */
-    --vena:         rgba(46, 56, 32, .28);
-    --brillo:       rgba(157, 176, 138, .22);
+    --leaf-texto:  #2f5c3c;
+    --muted-texto: #5b6058;
 
-    /* Tipografías con fallback (Impact / system-ui) */
-    --display: 'Bebas Neue', Impact, 'Arial Narrow', system-ui, sans-serif;
-    --texto:   'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-}
+    --radius:    14px;
+    --shadow-sm: 0 2px 10px rgba(31, 58, 46, .06);
+    --shadow-md: 0 12px 30px rgba(31, 58, 46, .10);
 
-@media (prefers-color-scheme: dark){
-    :root{
-        --crema:        #1C2216;
-        --tinta:        #ECEAD9;
-        --tinta-suave:  #BAC4A4;
-        --salvia:       #B7C79F;   /* verdes algo más claros */
-        --oliva:        #8FA35C;
-        --oliva-oscuro: #A9BD72;
-        --tierra:       #8A6A4F;
+    --serif: 'Bebas Neue', Georgia, serif;
+    --sans:  'Inter', system-ui, -apple-system, sans-serif;
 
-        --oliva-claro:  #9DB06A;
-        --vena:         rgba(16, 21, 10, .42);
-        --brillo:       rgba(143, 163, 92, .16);
-    }
+    /* Tintes internos del dibujo */
+    --vena:   rgba(31, 58, 46, .28);
+    --brillo: rgba(143, 174, 145, .22);
 }
 
 /* ============================================================
@@ -66,12 +62,11 @@ body{
         max(1.5rem, env(safe-area-inset-bottom))
         max(1.5rem, env(safe-area-inset-left));
 
-    background:
-        radial-gradient(120% 80% at 50% -10%, var(--brillo), transparent 55%),
-        var(--crema);
-    color: var(--tinta);
-    font-family: var(--texto);
-    line-height: 1.6;
+    /* Mismo fondo y tipografia base que el resto del sitio */
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.65;
 
     /* En celulares, ni una pizca de scroll horizontal */
     overflow-x: hidden;
@@ -92,13 +87,14 @@ body{
    ============================================================ */
 .marca{
     margin: 0 0 .4rem;
-    font-family: var(--display);
-    font-size: clamp(1.2rem, 2.6vw, 1.7rem);
+    font-family: var(--serif);
+    font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+    font-weight: 700;
     line-height: 1;
-    letter-spacing: .55em;
-    padding-left: .55em;          /* compensa el tracking final */
+    letter-spacing: .28em;
+    padding-left: .28em;          /* compensa el tracking final */
     text-transform: uppercase;
-    color: var(--oliva);
+    color: var(--forest);
     opacity: 0;
     animation: aparecer .8s ease-out .15s both;
 }
@@ -113,10 +109,10 @@ body{
     align-items: baseline;
     justify-content: center;
     margin: .1rem 0 1.2rem;
-    font-family: var(--display);
+    font-family: var(--serif);
     font-size: clamp(120px, 26vw, 260px);
     line-height: .8;
-    color: var(--salvia);
+    color: var(--forest);
     -webkit-user-select: none;
     user-select: none;
 }
@@ -141,15 +137,15 @@ body{
     transform-origin: 50% 100%;
     transform: scale(0);
 }
-.tazon-cuerpo{ fill: var(--oliva); }
-.tazon-borde { fill: var(--oliva-claro); }
-.tierra      { fill: var(--tierra); }
-.tierra-luz  { fill: rgba(255, 255, 255, .10); }
+.tazon-cuerpo{ fill: var(--leaf); }
+.tazon-borde { fill: var(--moss); }
+.tierra      { fill: var(--earth); }
+.tierra-luz  { fill: rgba(247, 244, 236, .18); }
 
 /* Tallo: se dibuja con dasharray/dashoffset (pathLength=1) */
 .tallo{
     fill: none;
-    stroke: var(--oliva);
+    stroke: var(--moss);
     stroke-width: 6;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -165,8 +161,8 @@ body{
     transform: scale(0);
 }
 .hoja-cuerpo{ stroke: none; }
-.hoja--salvia .hoja-cuerpo{ fill: var(--salvia); }
-.hoja--oliva  .hoja-cuerpo{ fill: var(--oliva); }
+.hoja--salvia .hoja-cuerpo{ fill: var(--sage); }
+.hoja--oliva  .hoja-cuerpo{ fill: var(--leaf); }
 .hoja-vena{
     fill: none;
     stroke: var(--vena);
@@ -180,7 +176,7 @@ body{
     transform-origin: 50% 100%;
     transform: scale(0);
 }
-.brote-cuerpo{ fill: var(--salvia); }
+.brote-cuerpo{ fill: var(--sage); }
 .brote-linea{
     fill: none;
     stroke: var(--vena);
@@ -259,47 +255,48 @@ body{
    6. TÍTULO, TEXTO Y BOTÓN
    ============================================================ */
 .titulo{
-    margin: 0 0 .5rem;
-    font-family: var(--display);
-    font-size: clamp(1.9rem, 4.4vw, 2.9rem);
-    line-height: 1.05;
-    letter-spacing: .06em;
-    color: var(--tinta);
+    margin: 0 0 .6rem;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+    line-height: 1.15;
+    letter-spacing: -.01em;
+    color: var(--forest);
 }
 
 .texto{
     margin: 0 auto;
     max-width: 36ch;
-    font-size: clamp(1rem, 2.2vw, 1.15rem);
-    color: var(--tinta-suave);
+    font-size: 1rem;
+    color: var(--muted-texto);
 }
 
+/* Botón relleno del sitio (como el primario del hero/contacto) */
 .boton{
     display: inline-block;
     margin-top: 1.7rem;
-    padding: .85rem 1.9rem;
+    padding: .95rem 1.9rem;
     border-radius: 999px;
-    background: var(--oliva);
-    color: var(--crema);
-    font-family: var(--texto);
-    font-weight: 600;
-    font-size: 1rem;
-    letter-spacing: .01em;
+    background: var(--forest);
+    color: var(--cream);
+    font-family: var(--sans);
+    font-size: .95rem;
+    font-weight: 500;
+    letter-spacing: .02em;
     text-decoration: none;
-    box-shadow: 0 10px 22px -12px rgba(70, 83, 31, .75);
-    transition: background-color .2s ease, transform .2s ease, box-shadow .2s ease;
+    box-shadow: var(--shadow-sm);
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
-/* Hover/focus: oliva más oscuro y sube 2px */
 .boton:hover,
 .boton:focus-visible{
-    background: var(--oliva-oscuro);
+    background: var(--moss);
     transform: translateY(-2px);
-    box-shadow: 0 14px 26px -12px rgba(70, 83, 31, .85);
+    box-shadow: var(--shadow-md);
 }
 
 .boton:focus-visible{
-    outline: 3px solid var(--salvia);
+    outline: 2px solid var(--leaf);
     outline-offset: 3px;
 }
 
