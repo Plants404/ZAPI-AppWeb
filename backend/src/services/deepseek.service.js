@@ -25,7 +25,8 @@ const config = require('../config/env');
 const log = require('../utils/log');
 
 /* Codigos: sin_config (no hay key), red (no se llego), timeout,
-   limite (429), servidor (5xx), respuesta (cuerpo ilegible). */
+   limite (429), servidor (5xx), saldo (402), respuesta (cuerpo
+   ilegible). */
 class ErrorIA extends Error {
     constructor(codigo, mensaje, estado) {
         super(mensaje);
@@ -118,6 +119,13 @@ async function unaVez(url, opciones, senal) {
         error.esperaMs = retryAfterMs(respuesta, 0);
 
         throw error;
+    }
+
+    /* 402: la cuenta no tiene saldo. No es red ni formato: reintentar
+       no sirve, pero conviene que el log y el codigo lo digan claro
+       en vez de un generico "respondio 402". */
+    if (respuesta.status === 402) {
+        throw new ErrorIA('saldo', 'DeepSeek: la cuenta no tiene saldo', 402);
     }
 
     if (!respuesta.ok) {

@@ -71,7 +71,7 @@ function mockDeepSeek({ contenido, verificacion = '{"responde": true}', contador
         if (contador) contador.generaciones++;
 
         return respuestaJson({
-            model: 'deepseek-v4-flash',
+            model: 'deepseek-flash',
             choices: [{
                 message: {
                     content: typeof contenido === 'string'
@@ -222,6 +222,26 @@ test('chat cae a modo degradado si el modelo falla', async (t) => {
     assert.equal(respuesta.body.fuente, 'degradado');
     assert.match(respuesta.body.respuesta, /Uruguay/);
     assert.ok(Array.isArray(respuesta.body.recomendaciones));
+});
+
+test('un 402 de DeepSeek se mapea al codigo saldo', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    globalThis.fetch = async () => respuestaJson(
+        { error: { message: 'Insufficient Balance', code: 'invalid_request_error' } },
+        402
+    );
+
+    const { chat } = require('../src/services/deepseek.service');
+
+    await assert.rejects(
+        () => chat({ mensajes: [{ role: 'user', content: 'hola' }] }),
+        (error) => {
+            assert.equal(error.codigo, 'saldo');
+            assert.equal(error.estado, 402);
+            return true;
+        }
+    );
 });
 
 /* ----------------------- tracking ----------------------- */
