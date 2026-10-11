@@ -18,6 +18,9 @@
    GET    /api/salud          estado del servidor y de Mongo
    GET    /api/testimonios    opiniones publicadas
    POST   /api/contacto       consulta del formulario
+   GET    /api/asistente/config     config del asistente (IA activa)
+   POST   /api/asistente/chat       mensaje al asistente con IA
+   POST   /api/asistente/tracking   evento de navegacion
    ========================================================== */
 
 const express = require('express');
@@ -29,6 +32,7 @@ const pedidos = require('./pedidos.routes');
 const contacto = require('./contacto.routes');
 const testimonios = require('./testimonios.routes');
 const salud = require('./salud.routes');
+const asistente = require('./asistente.routes');
 
 const router = express.Router();
 
@@ -39,5 +43,6 @@ router.use('/pedidos', pedidos);
 router.use('/salud', salud);
 router.use('/testimonios', testimonios);
 router.use('/contacto', contacto);
+router.use('/asistente', asistente);
 
 module.exports = router;

@@ -5,11 +5,12 @@
 /data/
 
 # Secretos. El backend lee la configuracion de .env (MONGODB_URI,
-# secretos, etc.). Nunca se versiona: se versiona .env.example con los
-# nombres de las variables y valores falsos.
+# secretos, DEEPSEEK_API_KEY, etc.). Nunca se versiona ningun .env:
+# se versiona .env.example con los nombres de las variables y valores
+# falsos.
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # Dependencias. eslint y globals son de desarrollo; express, mongoose
 # y helmet son del backend.
