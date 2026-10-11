@@ -25,6 +25,7 @@ const database = require('../src/config/database');
 const { crearApp } = require('../src/app');
 const { Mensaje } = require('../src/models/mensaje.model');
 const { Testimonio } = require('../src/models/testimonio.model');
+const { sembrarTestimonios } = require('../src/services/testimonios.service');
 
 let app = null;
 let contenedor = null;
@@ -149,6 +150,35 @@ test('GET /api/testimonios devuelve solo las publicadas', async (t) => {
     assert.equal(respuesta.status, 200);
     assert.equal(respuesta.body.testimonios.length, 1);
     assert.equal(respuesta.body.testimonios[0].autor, 'Ana');
+});
+
+test('sembrarTestimonios carga el JSON y no duplica al correr de nuevo', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const { TESTIMONIOS } = require('../../datos/testimonios.js');
+
+    await sembrarTestimonios();
+
+    const primeraVez = await Testimonio.countDocuments();
+
+    assert.equal(primeraVez, TESTIMONIOS.length);
+
+    /* Correr el arranque dos veces (un reinicio) no puede duplicar
+       las opiniones: el upsert va por autor + fecha. */
+    await sembrarTestimonios();
+
+    assert.equal(await Testimonio.countDocuments(), TESTIMONIOS.length);
+
+    const respuesta = await request(app).get('/api/testimonios');
+
+    assert.equal(respuesta.status, 200);
+    assert.equal(respuesta.body.testimonios.length, TESTIMONIOS.length);
+
+    /* Salen las mas nuevas primero: la fuente tiene la de agosto
+       antes que la de mayo. */
+    const fechas = respuesta.body.testimonios.map(t => new Date(t.fecha).getTime());
+
+    assert.deepEqual(fechas, [...fechas].sort((a, b) => b - a));
 });
 
 test('una ruta de API inexistente responde 404 JSON', async (t) => {

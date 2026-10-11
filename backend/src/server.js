@@ -18,6 +18,7 @@ const database = require('./config/database');
 const log = require('./utils/log');
 const { crearApp } = require('./app');
 const { sembrarCatalogo } = require('./services/catalogo.service');
+const { sembrarTestimonios } = require('./services/testimonios.service');
 
 const ESPERA_CIERRE = 10000;
 
@@ -28,6 +29,10 @@ async function arrancar() {
        un deploy recien clonado tiene productos aunque nunca se
        haya corrido nada. El stock no se toca: se escribe a mano. */
     await sembrarCatalogo();
+
+    /* Los testimonios salen del mismo JSON que baja el carrusel
+       cuando la API no esta: siembra idempotente por autor+fecha. */
+    await sembrarTestimonios();
 
     const app = crearApp();
 
