@@ -3,21 +3,24 @@
 Sitio de ZAPI: una home con secciones, un catálogo de productos con fichas
 individuales y un carrito que termina en pedido.
 
-Es un proyecto sin framework y sin build: HTML en la raíz, recursos en
-`public/`, el catálogo en `datos/` y las herramientas en `tools/`. **Sin
-dependencias de producción.** El navegador carga los archivos tal cual, sin
-transpilar nada.
+Es un proyecto sin framework de frontend y sin build: HTML en la raíz,
+recursos en `public/`, el catálogo en `datos/`, el backend en `backend/` y
+las herramientas en `tools/`. El navegador carga los archivos tal cual, sin
+transpilar nada. El backend sí usa dependencias de producción (`express`,
+`mongoose` y `helmet`).
 
-> El backend se está reescribiendo desde cero: se borraron `server.js` y
-> `server/` (Express + SQLite) y su prueba de API. El sitio hoy es estático:
-> hasta que el backend vuelva, el carrito, los pedidos, el contacto y los
-> testimonios quedan sin funcionar (los `fetch` a `/api/` siguen en el
-> código, esperándolo).
+> El backend nuevo vive en `backend/` (Express + MongoDB con Mongoose) y
+> por ahora cubre lo que el frontend realmente usa: `POST /api/contacto`,
+> `GET /api/salud` y `GET /api/testimonios`. Reemplaza al backend anterior
+> (Express + SQLite), que se había borrado. El carrito sigue en el navegador
+> con checkout por WhatsApp; los pedidos y el stock todavía no tienen API.
 
 ## Requisitos
 
 - **Node 24 o superior** (`package.json` lo fija con `engines`) y npm.
-- No hace falta compilar nada.
+- **MongoDB** para el backend: local (`mongodb://127.0.0.1:27017/zapi`) o
+  Atlas. Las pruebas no necesitan un Mongo instalado: levantan una instancia
+  efímera en memoria. No hace falta compilar nada.
 
 ## Instalación
 
@@ -38,10 +41,77 @@ npx serve          # levanta en http://localhost:3000
 
 O el Live Server de VSCode, o `python -m http.server` desde la carpeta raíz.
 
+## Backend
+
+El backend sirve el sitio estático **y** la API desde el mismo Express. Es
+la forma recomendada de abrir el sitio en desarrollo:
+
+```sh
+npm start          # http://localhost:5501
+```
+
+El servidor se conecta a MongoDB **antes** de escuchar: si la base no
+responde, no arranca (mejor un error al arrancar que un formulario que se
+pierde en silencio). Al recibir `Ctrl+C` cierra el servidor y la base de
+forma ordenada.
+
+### Variables de entorno
+
+`npm start` carga el `.env` solo: el script lleva
+`--env-file-if-exists=.env`, así que **sin el archivo el servidor arranca
+igual** con los valores por defecto. Para copiarlo:
+
+```sh
+# PowerShell
+copy .env.example .env
+# Linux/Mac
+cp .env.example .env
+```
+
+| Variable | Por defecto | Para qué |
+|---|---|---|
+| `NODE_ENV` | `development` | `production` activa caché de estáticos, exige `MONGODB_URI` y oculta las trazas de error. |
+| `PORT` | `5501` | Puerto HTTP. |
+| `MONGODB_URI` | `mongodb://127.0.0.1:27017/zapi` | Cadena de conexión de MongoDB. |
+| `CLIENT_URL` | vacío | Orígenes autorizados para CORS, separados por coma. Vacío = solo mismo origen. |
+| `ZAPI_LIMITE_LECTURA` | `120` por minuto | Rate limit de lectura. |
+| `ZAPI_LIMITE_ESCRITURA` | `20` por 10 min | Rate limit de escritura (contacto). |
+
+Nunca se versiona un `.env`: solo `.env.example`, con los nombres y valores
+falsos.
+
+### Endpoints
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `GET` | `/api/salud` | Estado del servidor y de Mongo. `200` si Mongo responde, `503` si no. |
+| `GET` | `/api/testimonios` | Opiniones publicadas, con la forma que usa el carrusel (`{ testimonios }`). |
+| `POST` | `/api/contacto` | Consulta del formulario. `201 { ok: true }` o `400 { error, campo }`. |
+
+`POST /api/contacto` recibe `{ nombre, correo, telefono, consulta, sitio_web }`.
+`sitio_web` es el honeypot del formulario: si viene relleno, responde `201`
+sin guardar nada. La validación del servidor es la misma que la del
+navegador (`public/js/contacto.js`), porque el formulario se puede mandar
+con `curl`.
+
+### MongoDB
+
+Colecciones (Mongoose crea los índices al conectar):
+
+- `mensajes`: consultas del formulario. Estado `nuevo` por defecto.
+- `testimonios`: opiniones del carrusel. Solo se listan las `publicado: true`.
+
+Todavía no hay una fuente real de testimonios: la API devuelve una lista
+vacía y el front sigue con su respaldo de `public/js/testimonios.js`. Por eso
+`testimonios` no requiere cargar nada para que el sitio ande.
+
 ## Scripts
 
 | Comando | Qué hace |
 |---|---|
+| `npm start` | Levanta el backend Express + MongoDB en `PORT` (5501). Carga `.env` si existe. |
+| `npm run dev` | Igual que `start`, con recarga al guardar (`node --watch`). |
+| `npm test` | Pruebas de la API y del validador (`node:test` + Supertest + MongoDB en memoria). |
 | `npm run verificar` | Verificación estática: regenera el CSS derivado, compara los `slug`, valida assets, IDs y scripts. **Correlo antes de commitear.** |
 | `npm run lint` | ESLint sobre todo el repo. At typos en nombres que nadie declara, código inalcanzable y variables muertas. |
 | `npm run check` | `lint` + `verificar`, para correr antes de commitear. |
@@ -78,6 +148,9 @@ public/js/                                 Scripts del navegador.
 public/css/                                CSS. catalogo.css es la fuente;
                                            las dos catalogo-*.css se generan.
 public/img/                                Imágenes, ya optimizadas (.opt).
+backend/src/                               Express + Mongoose: app.js arma la
+                                           app, server.js conecta y escucha.
+backend/tests/                             Pruebas de la API y del validador.
 tools/                                     Generadores y verificadores.
 ```
 
@@ -154,9 +227,23 @@ Lo que se conserva del sitio estático:
 
 - Toda interpolación pasa por `escaparHTML` antes de tocar el DOM, y
   `npm run verificar` escanea ese patrón (sección XSS).
-- `/data/` fuera de git.
-- Las políticas de servidor (CSP, rate limit, consultas preparadas, honeypot
-  de contacto) vuelven junto con el backend.
+- `/data/` fuera de git, y `.env` (con los secretos) también.
+
+Lo que agrega el backend:
+
+- **CSP estricta** y cabeceras con Helmet (`X-Frame-Options`, `nosniff`,
+  `Referrer-Policy`). La CSP deja `connect-src`/`script-src` en `'self'`:
+  un script inyectado por un XSS no llega a ejecutarse ni a hablar con otro
+  servidor.
+- **Rate limiting** por IP en los endpoints de escritura, sin dependencias.
+- **Límite de 16 kB** en el cuerpo de las peticiones.
+- **Honeypot** `sitio_web` validado en el servidor, y validación por campo
+  con `{ error, campo }` para que el front marque el input correcto.
+- **Rutas bloqueadas**: `/backend`, `/tools`, `/datos`, `/.env`,
+  `/package.json` y compañía nunca se sirven, aunque el sitio se sirva desde
+  la raíz.
+- **CSRF**: el backend no usa cookies de sesión, así que no hay superficie
+  CSRF. Si algún día se agrega login, hay que revisarlo de nuevo.
 
 ## Estado de verificación
 
@@ -166,6 +253,6 @@ Lo que se conserva del sitio estático:
 | Contraste de color (`npm run contraste`) | ✅ |
 | ESLint (`npm run lint`) | ✅ 0 errores, 6 warnings de `eqeqeq` |
 | `.editorconfig` | ✅ |
-| Tests unitarios | ❌ no hay framework |
+| Tests del backend (`npm test`) | ✅ 19 tests (`node:test` + Supertest + Mongo en memoria) |
 | Formateador automático | ❌ no hay, a propósito |
 | CI | ❌ no hay |

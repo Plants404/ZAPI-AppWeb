@@ -1,0 +1,73 @@
+'use strict';
+/* ==========================================================
+   SEGURIDAD: CABECERAS Y CORS
+   ------------------------------------------------------------
+   Helmet pone las cabeceras que no dependen del sitio. La CSP va
+   aparte porque es la unica que hay que ajustar al proyecto: el
+   HTML carga Google Fonts, asi que styles/fonts se permiten de
+   esos dos dominios y nada mas.
+
+   script-src y connect-src sin comodines: un script inyectado por
+   un XSS no llega a ejecutarse ni a hablar con otro servidor. Esa
+   es la defensa real detras de tanto innerHTML en el front.
+   ========================================================== */
+
+const helmet = require('helmet');
+const config = require('../config/env');
+
+const CSP = {
+    /* useDefaults:false para no heredar upgrade-insecure-requests:
+       en desarrollo el sitio se sirve por http y esa directiva
+       forzaria a https las subpeticiones, dejando la pagina sin
+       CSS ni JS. La lista de aca abajo es todo lo que se permite. */
+    useDefaults: false,
+    directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'"],
+        frameAncestors: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        objectSrc: ["'none'"],
+    },
+};
+
+function cabeceras() {
+    return helmet({
+        contentSecurityPolicy: CSP,
+        /* crossOriginEmbedderPolicy rompe Google Fonts sin dar
+           nada a cambio aca; se apaga a proposito. */
+        crossOriginEmbedderPolicy: false,
+        referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+        /* frame-ancestors 'none' ya lo impide en la CSP; la cabecera
+           se agrega igual porque navegadores viejos no miran la CSP. */
+        frameguard: { action: 'deny' },
+    });
+}
+
+/* CORS por lista blanca. El sitio lo sirve este mismo Express, asi
+   que en el caso normal no hace falta ninguna cabecera CORS: la
+   lista blanca es para un frontend en otro origen (por ejemplo un
+   entorno de desarrollo aparte). Vacia = solo mismo origen. */
+function cors(req, res, next) {
+    const origen = req.headers.origin;
+
+    if (origen && config.origenes.includes(origen)) {
+        res.setHeader('Access-Control-Allow-Origin', origen);
+        res.setHeader('Vary', 'Origin');
+        res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+        /* El formulario manda JSON, no cookies: alcanza con eso. */
+        if (req.method === 'OPTIONS') {
+            return res.status(204).end();
+        }
+    }
+
+    next();
+}
+
+module.exports = { cabeceras, cors };
