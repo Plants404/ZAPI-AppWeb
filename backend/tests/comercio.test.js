@@ -278,6 +278,61 @@ test('sin stock suficiente responde 409 y no toca el stock', async (t) => {
     assert.equal(carrito.body.items.length, 1);
 });
 
+test('POST /api/pedidos acepta items del cuerpo y cobra el precio del catalogo', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    await cargarStock(2, 5);
+
+    const catalogo = (await request(app).get('/api/productos')).body.productos;
+    const precioDos = catalogo.find(p => p.id === 2).precio;
+
+    /* El front manda el carrito de localStorage en el cuerpo. El
+       precio manipulado de la peticion se ignora: se cobra el del
+       catalogo. */
+    const pedido = await request(app).post('/api/pedidos').send({
+        nombre: 'Sofia Lopez',
+        telefono: '091987654',
+        items: [{ id: 2, cantidad: 2 }],
+        precioFalso: precioDos * 100,
+    });
+
+    assert.equal(pedido.status, 201);
+    assert.equal(pedido.body.total, precioDos * 2);
+    assert.match(pedido.body.id, /^Z-\d{8}-[A-F0-9]{6}$/);
+
+    const stock = await request(app).get('/api/stock');
+
+    assert.equal(stock.body.stock['2'], 3);
+
+    const guardado = await Pedido.findOne({ id: pedido.body.id }).lean();
+
+    assert.equal(guardado.items[0].nombre, catalogo.find(p => p.id === 2).nombre);
+    assert.equal(guardado.items[0].precio, precioDos);
+});
+
+test('POST /api/pedidos rechaza items mal formados o inexistentes', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    await cargarStock(1, 10);
+
+    const malFormado = await request(app).post('/api/pedidos').send({
+        nombre: 'Ana Perez',
+        telefono: '+598 99 123 456',
+        items: [{ id: 1 }],
+    });
+
+    assert.equal(malFormado.status, 400);
+
+    const inexistente = await request(app).post('/api/pedidos').send({
+        nombre: 'Ana Perez',
+        telefono: '+598 99 123 456',
+        items: [{ id: 9999, cantidad: 1 }],
+    });
+
+    assert.equal(inexistente.status, 400);
+    assert.equal(inexistente.body.error, 'Producto no encontrado');
+});
+
 test('un pedido sin nombre ni telefono no se acepta', async (t) => {
     if (motivoSkip) return t.skip(motivoSkip);
 
