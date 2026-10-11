@@ -66,6 +66,22 @@ function construir() {
         );
     }
 
+    const sesionSecreto = (process.env.ZAPI_SESSION_SECRET || '').trim() || null;
+
+    /* La cookie de sesion se firma con esto. En produccion no se
+       arranca sin el: si fuera aleatorio por proceso, todas las
+       sesiones de los clientes moririan en el proximo reinicio, que
+       es tirar carritos a la basura. En desarrollo se puede llevar
+       vacio y el middleware genera uno efimero (con aviso). */
+    if (esProduccion && !sesionSecreto) {
+        throw new Error(
+            'Falta ZAPI_SESSION_SECRET. Define una cadena larga y aleatoria ' +
+            '(ver .env.example).'
+        );
+    }
+
+    const adminToken = (process.env.ZAPI_ADMIN_TOKEN || '').trim() || null;
+
     const puerto = leerEntero('PORT', PUERTO_POR_DEFECTO);
 
     if (puerto < 1 || puerto > 65535) {
@@ -78,6 +94,8 @@ function construir() {
         esTest: entorno === 'test',
         puerto,
         mongoUri: mongoUri || MONGO_POR_DEFECTO,
+        sesionSecreto,
+        adminToken,
 
         /* Origenes para CORS. Vacio = solo mismo origen, que es el
            caso normal: el propio Express sirve el sitio. */
