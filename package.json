@@ -1,8 +1,11 @@
 {
   "name": "zapi-appweb",
   "private": true,
-  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, catalogo en datos/ y herramientas en tools/.",
+  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, catalogo en datos/, backend en backend/ y herramientas en tools/.",
   "scripts": {
+    "start": "node --env-file-if-exists=.env backend/src/server.js",
+    "dev": "node --env-file-if-exists=.env --watch backend/src/server.js",
+    "test": "node --test \"backend/tests/*.test.js\"",
     "verificar": "node tools/verificar.js",
     "lint": "eslint .",
     "check": "npm run lint && npm run verificar",
@@ -16,6 +19,13 @@
   },
   "devDependencies": {
     "eslint": "^10.12.0",
-    "globals": "^17.13.0"
+    "globals": "^17.13.0",
+    "mongodb-memory-server": "^11.3.0",
+    "supertest": "^7.3.1"
+  },
+  "dependencies": {
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "mongoose": "^9.11.1"
   }
 }
