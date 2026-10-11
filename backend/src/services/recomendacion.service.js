@@ -5,9 +5,10 @@
    Une el catalogo real con los intereses del visitante. La regla
    es simple a proposito: si miro o agrego algo de "Aromaticas",
    se prioriza Aromaticas; si ya vio ese producto, pesa un poco
-   mas. Nada de esto lo decide el modelo: el modelo puede SUGERIR
-   ids, pero aca se validan contra el catalogo antes de salir al
-   navegador. Un id inventado no existe y se descarta.
+   mas. Nada de esto lo decide un modelo generativo: las
+   recomendaciones se arman por reglas y se validan contra el
+   catalogo antes de salir al navegador. Un id inventado no existe
+   y se descarta.
 
    Nunca se recomienda algo agotado (unidades === 0). unidades
    === null es "sin stock cargado", que el sitio ya muestra como
@@ -53,42 +54,4 @@ async function porIntereses(intereses = {}, { limite = 3, excluir = [] } = {}) {
         .map(x => aResumen(x.p));
 }
 
-/* Valida la lista de ids que propuso el modelo. Se preserva el
-   orden sugerido y se descartan los ids que no existen o que
-   estan agotados: el modelo no puede inventar productos. */
-async function desdeIds(ids = [], { limite = 3 } = {}) {
-    const lista = await traerCatalogo();
-    const porId = new Map(lista.map(p => [p.id, p]));
-    const salida = [];
-    const usados = new Set();
-
-    for (const crudo of ids) {
-        const id = Number(crudo);
-
-        if (!Number.isInteger(id) || usados.has(id)) continue;
-
-        const producto = porId.get(id);
-
-        if (!producto || producto.unidades === 0) continue;
-
-        usados.add(id);
-        salida.push(aResumen(producto));
-
-        if (salida.length >= limite) break;
-    }
-
-    return salida;
-}
-
-/* Algunos productos para mostrar cuando no hay ninguna senal de
-   interes: los primeros con stock cargado. */
-async function destacados({ limite = 3 } = {}) {
-    const lista = await traerCatalogo();
-
-    return lista
-        .filter(p => p.unidades !== 0)
-        .slice(0, limite)
-        .map(aResumen);
-}
-
-module.exports = { porIntereses, desdeIds, destacados };
+module.exports = { porIntereses };

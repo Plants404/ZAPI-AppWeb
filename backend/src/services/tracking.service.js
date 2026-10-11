@@ -3,13 +3,12 @@
    SERVICIO: TRACKING DE NAVEGACION
    ------------------------------------------------------------
    Guarda eventos del front y los resume en "intereses" que el
-   asistente le pasa al modelo como contexto. Sin esto el bot
-   recomienda a ciegas; con esto puede decir "veo que miraste las
-   suculentas, te sirve el pack?".
+   asistente usa para recomendar. Sin esto el bot recomienda a
+   ciegas; con esto puede decir "veo que miraste las suculentas, te
+   sirve el pack?".
 
-   El resumen es determinista (pesos por tipo de evento), no pasa
-   por el modelo: asi el contexto que se manda es barato, estable
-   y testeable.
+   El resumen es determinista (pesos por tipo de evento): asi los
+   intereses son estables y testeables.
    ========================================================== */
 
 const { Evento, TIPOS } = require('../models/evento.model');

@@ -6,18 +6,14 @@
    devuelve { datos } o { error, campo }. El nombre del campo es el
    que usa el front para marcar el input.
 
-   El historial y el carrito que manda el navegador son contexto
-   para el modelo, no verdad: se recortan en cantidad y se limpia
-   cada texto. El servidor vuelve a mirar el carrito real cuando
-   arma recomendaciones; lo de aca es solo pista.
+   El mensaje se limpia y se recorta antes de usarlo. Nada mas:
+   los intereses salen del tracking por sesion, no de lo que mande
+   el navegador.
    ========================================================== */
 
 const { LARGO, MINIMOS } = require('../constants');
 const { limpiarTexto } = require('../utils/texto');
 const { TIPOS } = require('../models/evento.model');
-
-const MAX_HISTORIAL = 20;
-const MAX_CARRITO = 50;
 
 function aEntero(valor) {
     if (valor === null || valor === undefined || valor === '') return null;
@@ -34,22 +30,7 @@ function validarMensaje(cuerpo = {}) {
         return { error: 'Escribí tu consulta', campo: 'mensaje' };
     }
 
-    const historial = Array.isArray(cuerpo.historial)
-        ? cuerpo.historial.slice(-MAX_HISTORIAL)
-        : [];
-
-    const carrito = Array.isArray(cuerpo.carrito)
-        ? cuerpo.carrito.slice(0, MAX_CARRITO)
-        : [];
-
-    return {
-        datos: {
-            mensaje,
-            historial,
-            carrito,
-            rutaActual: limpiarTexto(cuerpo.ruta, 200),
-        },
-    };
+    return { datos: { mensaje } };
 }
 
 function validarEvento(cuerpo = {}) {

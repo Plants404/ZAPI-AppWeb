@@ -5,8 +5,8 @@
    Un solo lugar para lo que dice la marca: nombre, contacto,
    horarios, envios, pagos, servicios y promociones. Antes esto
    vivia repartido entre public/js/zapi-bot.js, los HTML y el
-   README; con la IA en el medio hace falta una fuente unica que
-   el prompt del sistema, los endpoints y el front puedan leer.
+   README; ahora hay una fuente unica que el asistente, los
+   endpoints y el front puedan leer.
 
    Nada de esto es secreto ni sale del entorno: son textos
    comerciales. Lo unico que hay que cuidar es no inventar datos:
@@ -107,19 +107,6 @@ const NEGOCIO = {
                 'descuento en tu proxima compra.',
             codigo: null,
         },
-    ],
-
-    /* Limites de lo que el asistente puede prometer. Se le pasan al
-       modelo como reglas duras para que no invente precios, stock
-       ni plazos que el negocio no confirmo. */
-    reglasComerciales: [
-        'Los precios y el stock reales salen del catalogo, nunca del ' +
-        'modelo: no inventes precios ni disponibilidad.',
-        'No confirmes pedidos ni cobros: eso se cierra por WhatsApp ' +
-        'o desde el carrito.',
-        'Si el cliente pide algo que no podes resolver, derivalo al ' +
-        'equipo por WhatsApp.',
-        'Responde en espanol rioplatense, con tono cercano y breve.',
     ],
 };
 

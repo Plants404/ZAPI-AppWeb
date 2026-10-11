@@ -5,9 +5,9 @@
 /data/
 
 # Secretos. El backend lee la configuracion de .env (MONGODB_URI,
-# secretos, DEEPSEEK_API_KEY, etc.). Nunca se versiona ningun .env:
-# se versiona .env.example con los nombres de las variables y valores
-# falsos.
+# ZAPI_SESSION_SECRET, ZAPI_ADMIN_TOKEN, etc.). Nunca se versiona
+# ningun .env: se versiona .env.example con los nombres de las
+# variables y valores falsos.
 .env
 .env.*
 !.env.example

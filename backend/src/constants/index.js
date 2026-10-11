@@ -22,11 +22,9 @@ const LARGO = {
     zona: 120,
     notas: 500,
 
-    /* Asistente. El mensaje del cliente se recorta antes de ir al
-       modelo (cada caracter cuesta tokens) y la respuesta guardada
-       en la FAQ tambien. */
+    /* Asistente. El mensaje del cliente se recorta antes de
+       guardarse en la FAQ y el detalle del evento tambien. */
     mensajeChat: 600,
-    respuestaChat: 4000,
     eventoDetalle: 200,
 };
 

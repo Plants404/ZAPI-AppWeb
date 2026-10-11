@@ -6,7 +6,7 @@
    persona. Cada evento es una accion del front (ver un producto,
    agregarlo al carrito, abrir una categoria, mandar un pedido,
    hablar con el bot): el servicio de recomendaciones los resume
-   en "intereses" que despues viajan como contexto al modelo.
+   en "intereses" que despues usa el asistente para recomendar.
 
    Es un registro append-only y de bajo valor: no guarda datos
    personales, solo el id de sesion anonimo del carrito. Se puede
