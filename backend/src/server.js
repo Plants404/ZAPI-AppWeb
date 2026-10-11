@@ -17,11 +17,17 @@ const config = require('./config/env');
 const database = require('./config/database');
 const log = require('./utils/log');
 const { crearApp } = require('./app');
+const { sembrarCatalogo } = require('./services/catalogo.service');
 
 const ESPERA_CIERRE = 10000;
 
 async function arrancar() {
     await database.conectar();
+
+    /* El catalogo se carga del JSON versionado ANTES de escuchar:
+       un deploy recien clonado tiene productos aunque nunca se
+       haya corrido nada. El stock no se toca: se escribe a mano. */
+    await sembrarCatalogo();
 
     const app = crearApp();
 

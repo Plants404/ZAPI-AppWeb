@@ -74,8 +74,10 @@ cp .env.example .env
 | `PORT` | `5501` | Puerto HTTP. |
 | `MONGODB_URI` | `mongodb://127.0.0.1:27017/zapi` | Cadena de conexión de MongoDB. |
 | `CLIENT_URL` | vacío | Orígenes autorizados para CORS, separados por coma. Vacío = solo mismo origen. |
+| `ZAPI_SESSION_SECRET` | vacío | Clave para firmar la cookie de sesión del carrito. Obligatoria en `production`. |
+| `ZAPI_ADMIN_TOKEN` | vacío | Token de `PUT /api/stock/:id` (cabecera `x-zapi-token`). |
 | `ZAPI_LIMITE_LECTURA` | `120` por minuto | Rate limit de lectura. |
-| `ZAPI_LIMITE_ESCRITURA` | `20` por 10 min | Rate limit de escritura (contacto). |
+| `ZAPI_LIMITE_ESCRITURA` | `20` por 10 min | Rate limit de escritura (contacto, carrito, pedidos). |
 
 Nunca se versiona un `.env`: solo `.env.example`, con los nombres y valores
 falsos.
@@ -85,6 +87,15 @@ falsos.
 | Método | Ruta | Qué hace |
 |---|---|---|
 | `GET` | `/api/salud` | Estado del servidor y de Mongo. `200` si Mongo responde, `503` si no. |
+| `GET` | `/api/productos` | Catálogo con el stock pegado (`{ productos }`). |
+| `GET` | `/api/productos/:id` | Una ficha, por id numérico o por slug. |
+| `GET` | `/api/stock` | Stock de todo el catálogo (`{ stock: { [id]: unidades } }`). |
+| `PUT` | `/api/stock/:id` | Cargar o cambiar el stock. Exige el token de admin. |
+| `GET` | `/api/carrito` | El carrito armado de la sesión (nombres y precios del catálogo). |
+| `POST` | `/api/carrito` | Agregar un producto. Cuerpo `{ id, cantidad? }` (cantidad por defecto `1`). |
+| `PATCH` | `/api/carrito/:id` | Fijar la cantidad. Cuerpo `{ cantidad }`. |
+| `DELETE` | `/api/carrito/:id` | Sacar el producto. |
+| `POST` | `/api/pedidos` | Cerrar el pedido. Cuerpo `{ nombre, telefono, email?, zona?, notas? }`. |
 | `GET` | `/api/testimonios` | Opiniones publicadas, con la forma que usa el carrusel (`{ testimonios }`). |
 | `POST` | `/api/contacto` | Consulta del formulario. `201 { ok: true }` o `400 { error, campo }`. |
 
@@ -94,10 +105,29 @@ sin guardar nada. La validación del servidor es la misma que la del
 navegador (`public/js/contacto.js`), porque el formulario se puede mandar
 con `curl`.
 
+El carrito y los pedidos funcionan con una cookie de sesión firmada
+(`zapi_sesion`, HttpOnly, HMAC-SHA256): no hay login, la sesión se crea sola
+en la primera petición. El `total` del pedido lo calcula el servidor con el
+precio de la base: lo que llegue en el cuerpo del cliente no se cobra. Sin
+stock suficiente responde `409 { error, shortages }` para que el visitante
+baje la cantidad.
+
+**El front del carrito (a localidad en `carrito.html`) todavía usa
+`localStorage + WhatsApp`**: esta API queda disponible y probada, pero
+conectarla cambia el checkout y está pendiente de decisión.
+
 ### MongoDB
 
 Colecciones (Mongoose crea los índices al conectar):
 
+- `productos`: catálogo sembrado desde `public/data/productos.json` al
+  arrancar. `_id` = id del catálogo; el stock no se sobrescribe al sembrar.
+- `stock`: unidades (`null` = "sin datos cargados", no agotado) y cuándo se
+  actualizó. Se escribe solo vía `PUT /api/stock/:id`.
+- `carritos`: un documento por sesión, con las líneas embebidas. TTL de 30
+  días de inactividad.
+- `pedidos`: pedidos cerrados con sus líneas (nombre y precio de la venta),
+  estado `pendiente` por defecto e id corto `Z-AAAA-MM-DD-XXXXXX`.
 - `mensajes`: consultas del formulario. Estado `nuevo` por defecto.
 - `testimonios`: opiniones del carrusel. Solo se listan las `publicado: true`.
 
@@ -239,11 +269,17 @@ Lo que agrega el backend:
 - **Límite de 16 kB** en el cuerpo de las peticiones.
 - **Honeypot** `sitio_web` validado en el servidor, y validación por campo
   con `{ error, campo }` para que el front marque el input correcto.
+- **Cookie de sesión del carrito firmada** con HMAC-SHA256 (`HttpOnly`,
+  `SameSite=Lax`, `Secure` en producción). El id lo firma el servidor: el
+  visitante no puede elegir ni forjar la sesión de otro.
+- **Stock protegido**: `PUT /api/stock/:id` exige el token `ZAPI_ADMIN_TOKEN`
+  en la cabecera `x-zapi-token`, comparado por hash con `timingSafeEqual`.
 - **Rutas bloqueadas**: `/backend`, `/tools`, `/datos`, `/.env`,
   `/package.json` y compañía nunca se sirven, aunque el sitio se sirva desde
   la raíz.
-- **CSRF**: el backend no usa cookies de sesión, así que no hay superficie
-  CSRF. Si algún día se agrega login, hay que revisarlo de nuevo.
+- **CSRF**: la cookie es `SameSite=Lax`, así que no viaja en envíos
+  cross-site y un formulario ajeno no puede disparar pedidos de otro
+  carrito. Si algún día se agrega login real, hay que revisarlo de nuevo.
 
 ## Estado de verificación
 
@@ -253,6 +289,10 @@ Lo que agrega el backend:
 | Contraste de color (`npm run contraste`) | ✅ |
 | ESLint (`npm run lint`) | ✅ 0 errores, 6 warnings de `eqeqeq` |
 | `.editorconfig` | ✅ |
-| Tests del backend (`npm test`) | ✅ 19 tests (`node:test` + Supertest + Mongo en memoria) |
+| Tests del backend (`npm test`) | ✅ 30 tests (`node:test` + Supertest + Mongo en memoria) |
+
+Los tests cubren la API de contacto y el módulo de comercio completo
+(catálogo, stock, carrito y pedidos), con el catálogo real del sitio
+sembrado desde `public/data/productos.json`.
 | Formateador automático | ❌ no hay, a propósito |
 | CI | ❌ no hay |

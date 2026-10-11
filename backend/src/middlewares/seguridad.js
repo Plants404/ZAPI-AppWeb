@@ -51,17 +51,23 @@ function cabeceras() {
 /* CORS por lista blanca. El sitio lo sirve este mismo Express, asi
    que en el caso normal no hace falta ninguna cabecera CORS: la
    lista blanca es para un frontend en otro origen (por ejemplo un
-   entorno de desarrollo aparte). Vacia = solo mismo origen. */
+   entorno de desarrollo aparte). Vacia = solo mismo origen.
+
+   Con cookies en la sesion del carrito hace falta
+   Access-Control-Allow-Credentials y el front tiene que llamar
+   con credentials: 'include'. El token de stock va en
+   x-zapi-token, asi que tambien se permite. */
 function cors(req, res, next) {
     const origen = req.headers.origin;
 
     if (origen && config.origenes.includes(origen)) {
         res.setHeader('Access-Control-Allow-Origin', origen);
         res.setHeader('Vary', 'Origin');
-        res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,PUT,DELETE,OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-zapi-token');
+        res.setHeader('Access-Control-Max-Age', '86400');
 
-        /* El formulario manda JSON, no cookies: alcanza con eso. */
         if (req.method === 'OPTIONS') {
             return res.status(204).end();
         }
