@@ -376,6 +376,24 @@ function renderCart() {
     if (!container || !emptyCart) return;
 
 
+    /* El formulario de checkout sigue al carrito: vacio se oculta,
+       con productos se muestra. El boton de WhatsApp se deja como
+       estaba: de el dependen los que no quieren formulario. */
+
+    const raizCheckout =
+        document.getElementById("checkoutRoot");
+
+    const formularioCheckout =
+        raizCheckout && raizCheckout.querySelector("form");
+
+    if (formularioCheckout) {
+
+        formularioCheckout.hidden =
+            cart.length === 0;
+
+    }
+
+
     /* Carrito vacío */
 
         if (cart.length === 0) {
@@ -962,6 +980,352 @@ Gracias.`;
     );
 
 }
+
+
+/* ==========================================================
+   CHECKOUT: CONFIRMAR PEDIDO
+   ------------------------------------------------------------
+   El checkout de verdad ahora es la API de pedidos: el formulario
+   manda el carrito de localStorage (items) y el servidor relee
+   precios y stock. WhatsApp queda como canal secundario para
+   coordinar la entrega.
+
+   El formulario se construye por JS sobre #checkoutRoot porque la
+   misma pieza vive en carrito.html y dentro de index.html: una
+   sola implementacion, imposible que las dos paginas se
+   desincronicen. Reusa .campo-* de styles.css y .btn-whatsapp de
+   stylecarrito.css.
+   ========================================================== */
+
+const CAMPOS_PEDIDO = {
+
+    nombre:  { input: "pedNombre",  error: "pedErrorNombre" },
+    telefono: { input: "pedTelefono", error: "pedErrorTelefono" }
+
+};
+
+
+/* La misma limpieza que hace el servidor (utils/texto.js): saca
+   caracteres de control y recorta. Asi un salto de linea metido
+   en el nombre no parte el JSON que llega a la base. */
+function limpiarValor(valor) {
+
+    return String(valor || "")
+        .replace(/[\u0000-\u001F\u007F]/g, "")
+        .trim();
+
+}
+
+
+function marcarCampo(nombreCampo, mensaje) {
+
+    const campo = CAMPOS_PEDIDO[nombreCampo];
+
+    if (!campo) return false;
+
+    const input = document.getElementById(campo.input);
+    const error = document.getElementById(campo.error);
+
+    if (input) input.classList.add("campo-con-error");
+
+    if (error) error.textContent = mensaje;
+
+    if (input) input.focus();
+
+    return true;
+
+}
+
+
+function limpiarErrores() {
+
+    const formulario = document.getElementById("checkoutForm");
+
+    if (!formulario) return;
+
+    for (const input of formulario.querySelectorAll(".campo-input")) {
+        input.classList.remove("campo-con-error");
+    }
+
+    for (const error of formulario.querySelectorAll(".campo-error")) {
+        error.textContent = "";
+    }
+
+}
+
+
+function mostrarEstado(mensaje, esError) {
+
+    const estado = document.getElementById("pedEstado");
+
+    if (!estado) return;
+
+    estado.textContent = mensaje;
+
+    estado.hidden = false;
+
+    estado.classList.toggle("checkout-estado-error", Boolean(esError));
+
+}
+
+
+function enviarPedido(evento) {
+
+    evento.preventDefault();
+
+    if (cart.length === 0) {
+        mostrarEstado("Agregá al menos un producto al carrito.", true);
+        return;
+    }
+
+    limpiarErrores();
+
+    const nombre = limpiarValor(
+        document.getElementById("pedNombre").value
+    );
+
+    const telefono = limpiarValor(
+        document.getElementById("pedTelefono").value
+    );
+
+    /* La validacion del navegador es la misma que la del servidor:
+       sin nombre no hay a quien avisarle, y el telefono se cuenta
+       por digitos porque en Uruguay se escribe con + y guiones. */
+    if (nombre.length < 2) {
+        marcarCampo("nombre", "Escribí tu nombre");
+        return;
+    }
+
+    if (telefono.replace(/\D/g, "").length < 6) {
+        marcarCampo("telefono", "Falta un teléfono de contacto");
+        return;
+    }
+
+    const boton = document.getElementById("pedBoton");
+    const textoBoton = boton.textContent;
+
+    boton.disabled = true;
+    boton.textContent = "Enviando pedido...";
+
+    const items = cart.map(item => ({
+        id: Number(item.id),
+        cantidad: Number(item.cantidad)
+    }));
+
+    fetch("/api/pedidos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nombre,
+            telefono,
+            email: limpiarValor(document.getElementById("pedEmail").value) || null,
+            zona: limpiarValor(document.getElementById("pedZona").value) || null,
+            notas: limpiarValor(document.getElementById("pedNotas").value) || null,
+            items
+        })
+    })
+        .then(respuesta => respuesta.json()
+            .then(cuerpo => ({ estado: respuesta.status, cuerpo })))
+        .then(resultado => {
+
+            const { estado, cuerpo } = resultado;
+
+            if (estado === 201) {
+
+                mostrarEstado(
+                    `Pedido ${cuerpo.id} confirmado por ` +
+                    `${formatearPrecio(cuerpo.total)}. ` +
+                    "Te contactamos para coordinar la entrega.",
+                    false
+                );
+
+                cart = [];
+
+                confirmarCarrito();
+
+                return;
+
+            }
+
+            if (estado === 409) {
+
+                /* Falto stock de verdad: se ajusta el carrito a lo
+                   que hay y se avisa, para que el visitante baje la
+                   cantidad y reintente en vez de recibir un error
+                   seco. */
+                const avisos = cuerpo.shortages
+                    .map(shortage => {
+
+                        const item = cart.find(
+                            producto => Number(producto.id) === shortage.id
+                        );
+
+                        if (!item) return "";
+
+                        if (shortage.disponibles === null || shortage.disponibles <= 0) {
+
+                            cart = cart.filter(
+                                producto => Number(producto.id) !== shortage.id
+                            );
+
+                            return (
+                                `Sacamos “${shortage.nombre}” porque no quedan unidades.`
+                            );
+
+                        }
+
+                        if (shortage.disponibles < item.cantidad) {
+
+                            item.cantidad = shortage.disponibles;
+
+                            return (
+                                `Bajamos “${shortage.nombre}” a ${shortage.disponibles}.`
+                            );
+
+                        }
+
+                        return "";
+
+                    })
+                    .filter(Boolean)
+                    .join(" ");
+
+                confirmarCarrito();
+
+                mostrarEstado(
+                    (cuerpo.error || "No hay stock suficiente") + " " + avisos +
+                    " Revisá las cantidades e intentá de nuevo.",
+                    true
+                );
+
+                return;
+
+            }
+
+            if (estado === 400 && cuerpo.campo) {
+
+                marcarCampo(cuerpo.campo, cuerpo.error || "Revisá este campo");
+
+                mostrarEstado(cuerpo.error || "Revisá los datos del pedido.", true);
+
+                return;
+
+            }
+
+            mostrarEstado(
+                cuerpo && cuerpo.error
+                    ? cuerpo.error
+                    : "No se pudo confirmar el pedido. Intentá de nuevo o coordiná por WhatsApp.",
+                true
+            );
+
+        })
+        .catch(() => {
+
+            mostrarEstado(
+                "No se pudo enviar el pedido. " +
+                "Revisá tu conexión o coordiná por WhatsApp.",
+                true
+            );
+
+        })
+        .finally(() => {
+
+            boton.disabled = false;
+
+            boton.textContent = textoBoton;
+
+        });
+
+}
+
+
+/* Construye el formulario una sola vez, adentro del hueco que
+   dejan las dos paginas. Sin JS el hueco queda vacio y el carrito
+   sigue andando por WhatsApp: el formulario es una mejora
+   progresiva, no un requisito. */
+function montarCheckout() {
+
+    const raiz = document.getElementById("checkoutRoot");
+
+    if (!raiz) return;
+
+    raiz.innerHTML = `
+
+        <form id="checkoutForm" class="checkout-form" novalidate>
+
+            <h3>Datos de contacto</h3>
+
+            <label class="campo-label" for="pedNombre">
+                Nombre <span aria-hidden="true">*</span>
+            </label>
+
+            <input class="campo-input" id="pedNombre" name="nombre"
+                type="text" maxlength="120" autocomplete="name"
+                aria-describedby="pedErrorNombre">
+
+            <span class="campo-error" id="pedErrorNombre"></span>
+
+            <label class="campo-label" for="pedTelefono">
+                Teléfono <span aria-hidden="true">*</span>
+            </label>
+
+            <input class="campo-input" id="pedTelefono" name="telefono"
+                type="tel" inputmode="tel" maxlength="40"
+                autocomplete="tel" aria-describedby="pedErrorTelefono">
+
+            <span class="campo-error" id="pedErrorTelefono"></span>
+
+            <label class="campo-label" for="pedEmail">
+                Correo electrónico (opcional)
+            </label>
+
+            <input class="campo-input" id="pedEmail" name="email"
+                type="email" inputmode="email" maxlength="160"
+                autocomplete="email">
+
+            <label class="campo-label" for="pedZona">
+                Zona (opcional)
+            </label>
+
+            <input class="campo-input" id="pedZona" name="zona"
+                type="text" maxlength="120" autocomplete="address-level2">
+
+            <label class="campo-label" for="pedNotas">
+                Notas (opcional)
+            </label>
+
+            <textarea class="campo-input campo-area" id="pedNotas"
+                name="notas" rows="3" maxlength="500"></textarea>
+
+            <button type="submit" class="btn-whatsapp checkout-boton"
+                id="pedBoton">
+
+                <span class="material-symbols-outlined">
+                    check_circle
+                </span>
+
+                Confirmar pedido
+
+            </button>
+
+            <p class="checkout-estado" id="pedEstado"
+                role="status" aria-live="polite" hidden></p>
+
+        </form>
+
+    `;
+
+    const formulario = raiz.querySelector("form");
+
+    formulario.hidden = cart.length === 0;
+
+    formulario.addEventListener("submit", enviarPedido);
+
+}
+
+
+document.addEventListener("DOMContentLoaded", montarCheckout);
 
 
 /* ==========================================================

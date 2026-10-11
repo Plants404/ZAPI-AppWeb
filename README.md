@@ -10,10 +10,11 @@ transpilar nada. El backend sí usa dependencias de producción (`express`,
 `mongoose` y `helmet`).
 
 > El backend nuevo vive en `backend/` (Express + MongoDB con Mongoose) y
-> por ahora cubre lo que el frontend realmente usa: `POST /api/contacto`,
-> `GET /api/salud` y `GET /api/testimonios`. Reemplaza al backend anterior
-> (Express + SQLite), que se había borrado. El carrito sigue en el navegador
-> con checkout por WhatsApp; los pedidos y el stock todavía no tienen API.
+> cubre lo que el sitio usa: `POST /api/contacto`, `GET /api/salud`,
+> `GET /api/testimonios`, el stock con token de admin y el carrito/pedidos
+> con sesión firmada. Reemplaza al backend anterior (Express + SQLite), que
+> se había borrado. La API de pedidos ya está conectada al checkout del
+> carrito; WhatsApp sigue como canal de coordinación de la entrega.
 
 ## Requisitos
 
@@ -95,7 +96,7 @@ falsos.
 | `POST` | `/api/carrito` | Agregar un producto. Cuerpo `{ id, cantidad? }` (cantidad por defecto `1`). |
 | `PATCH` | `/api/carrito/:id` | Fijar la cantidad. Cuerpo `{ cantidad }`. |
 | `DELETE` | `/api/carrito/:id` | Sacar el producto. |
-| `POST` | `/api/pedidos` | Cerrar el pedido. Cuerpo `{ nombre, telefono, email?, zona?, notas? }`. |
+| `POST` | `/api/pedidos` | Cerrar el pedido. Cuerpo `{ nombre, telefono, email?, zona?, notas? }`. Con `items: [{ id, cantidad }]` (el carrito de `localStorage`) se arma de ahí; sin `items`, del carrito de la sesión. |
 | `GET` | `/api/testimonios` | Opiniones publicadas, con la forma que usa el carrusel (`{ testimonios }`). |
 | `POST` | `/api/contacto` | Consulta del formulario. `201 { ok: true }` o `400 { error, campo }`. |
 
@@ -108,13 +109,16 @@ con `curl`.
 El carrito y los pedidos funcionan con una cookie de sesión firmada
 (`zapi_sesion`, HttpOnly, HMAC-SHA256): no hay login, la sesión se crea sola
 en la primera petición. El `total` del pedido lo calcula el servidor con el
-precio de la base: lo que llegue en el cuerpo del cliente no se cobra. Sin
-stock suficiente responde `409 { error, shortages }` para que el visitante
-baje la cantidad.
+precio de la base: lo que llegue en el cuerpo del cliente (precio, nombre,
+subtotales) no se cobra ni se guarda tal cual. Sin stock suficiente responde
+`409 { error, shortages }` para que el visitante baje la cantidad.
 
-**El front del carrito (a localidad en `carrito.html`) todavía usa
-`localStorage + WhatsApp`**: esta API queda disponible y probada, pero
-conectarla cambia el checkout y está pendiente de decisión.
+**El checkout del carrito ya está conectado a esta API**: `carrito.js`
+construye el formulario sobre `#checkoutRoot` (en `carrito.html` y dentro de
+`index.html`) y manda el carrito de `localStorage` como `items`. Un `409`
+ajusta las cantidades a las unidades disponibles y avisa; WhatsApp queda como
+canal secundario para coordinar la entrega. Sin JS (o sin backend) el hueco
+queda vacío y el carrito sigue funcionando por WhatsApp como siempre.
 
 ### MongoDB
 
@@ -289,7 +293,7 @@ Lo que agrega el backend:
 | Contraste de color (`npm run contraste`) | ✅ |
 | ESLint (`npm run lint`) | ✅ 0 errores, 6 warnings de `eqeqeq` |
 | `.editorconfig` | ✅ |
-| Tests del backend (`npm test`) | ✅ 30 tests (`node:test` + Supertest + Mongo en memoria) |
+| Tests del backend (`npm test`) | ✅ 32 tests (`node:test` + Supertest + Mongo en memoria) |
 
 Los tests cubren la API de contacto y el módulo de comercio completo
 (catálogo, stock, carrito y pedidos), con el catálogo real del sitio

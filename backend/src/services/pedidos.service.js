@@ -25,6 +25,9 @@ const crypto = require('crypto');
 
 const { Pedido } = require('../models/pedido.model');
 const { Stock } = require('../models/stock.model');
+const { Producto } = require('../models/producto.model');
+const { cantidadSegura, idNumerico } = require('../utils/numero');
+const { LIMITE_CANTIDAD } = require('../constants');
 
 function redondear(numero) {
     return Math.round(numero * 100) / 100;
@@ -69,8 +72,9 @@ async function problemasDe(lineas) {
 /* datos: { sesion, nombre, telefono, email, zona, notas,
    lineas: [{ producto_id, nombre, precio, cantidad }] }
    Las lineas ya vienen con el precio del catalogo ARMADO por el
-   servicio de carrito; aca no se vuelve a confiar en el
-   navegador. Devuelve { tipo: 'ok', id, total } o
+   controlador (del servicio de carrito o del cuerpo, pero siempre
+   con nombre y precio releidos de la base); aca no se vuelve a
+   confiar en el navegador. Devuelve { tipo: 'ok', id, total } o
    { tipo: 'shortage', problemas }. */
 async function nuevoPedido(datos) {
     const id = generarId();
@@ -125,4 +129,54 @@ async function nuevoPedido(datos) {
     return { tipo: 'ok', id, total, creado };
 }
 
-module.exports = { nuevoPedido };
+/* El front arma el pedido con su carrito de localStorage y lo
+   manda en el cuerpo como [{ id, cantidad }]. Aca se valida el
+   formato, se suman las cantidades repetidas (con tope, como en
+   el carrito), se relee nombre y precio del catalogo y se
+   descarta que el cliente mande un precio. Devuelve:
+     { tipo: 'ok', lineas }      listo para cobrar/descontar
+     { tipo: 'formato' }         items mal formados
+     { tipo: 'inexistente' }     algun producto no esta en el catalogo
+     { tipo: 'vacio' }           no trajo ninguna linea util */
+async function lineasDesdeBruto(items) {
+    if (!Array.isArray(items) || items.length === 0) {
+        return { tipo: 'formato' };
+    }
+
+    const cantidades = new Map();
+
+    for (const bruto of items) {
+        if (!bruto || typeof bruto !== 'object') return { tipo: 'formato' };
+
+        const id = idNumerico(bruto.id);
+        const cantidad = cantidadSegura(bruto.cantidad);
+
+        if (id === null || cantidad === null) return { tipo: 'formato' };
+
+        cantidades.set(id, Math.min(LIMITE_CANTIDAD, (cantidades.get(id) || 0) + cantidad));
+    }
+
+    if (cantidades.size === 0) return { tipo: 'vacio' };
+
+    const ids = [...cantidades.keys()];
+
+    const productos = await Producto.find({ _id: { $in: ids }, activo: true }).lean();
+    const porId = new Map(productos.map(p => [p._id, p]));
+
+    if (porId.size !== ids.length) return { tipo: 'inexistente' };
+
+    const lineas = [...cantidades.entries()].map(([id, cantidad]) => {
+        const producto = porId.get(id);
+
+        return {
+            producto_id: producto._id,
+            nombre: producto.nombre,
+            precio: producto.precio,
+            cantidad,
+        };
+    });
+
+    return { tipo: 'ok', lineas };
+}
+
+module.exports = { nuevoPedido, lineasDesdeBruto };
