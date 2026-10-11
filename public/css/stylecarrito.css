@@ -836,6 +836,119 @@
 
 
 /* ==========================================================
+   CHECKOUT: CONFIRMAR PEDIDO
+   ------------------------------------------------------------
+   El formulario de datos se construye por JS sobre
+   #checkoutRoot (ver carrito.js), porque la misma pieza vive en
+   carrito.html y dentro de index.html. Reusa los estilos del
+   formulario de contacto (styles.css) y el boton verde del
+   checkout, asi no hay dos idiomas visuales en el resumen.
+   ========================================================== */
+
+.checkout-root {
+
+    /* Sin JS el hueco esta vacio y no debe empujar nada: el
+       margen lo lleva el formulario que construye carrito.js. */
+
+}
+
+.checkout-form {
+
+    margin-top: 1.25rem;
+
+}
+
+.checkout-form h3 {
+
+    margin: 0 0 .35rem;
+
+    font-size: 1rem;
+
+}
+
+.checkout-form .campo-label {
+
+    display: block;
+
+    margin-top: .85rem;
+
+}
+
+.checkout-form .campo-label:first-of-type {
+
+    margin-top: 0;
+
+}
+
+.checkout-form .campo-input {
+
+    margin-top: .35rem;
+
+}
+
+.checkout-form .campo-error {
+
+    min-height: 0;
+
+    margin-top: .25rem;
+
+}
+
+.checkout-boton {
+
+    margin-top: 1rem;
+
+    /* El mismo CTA que WhatsApp, sin el latido: confirmar dos
+       veces seguidas no tiene que parecerse a una promocion. */
+    animation: none;
+
+}
+
+.checkout-boton:disabled {
+
+    opacity: .7;
+
+    transform: none;
+
+    cursor: wait;
+
+}
+
+/* [hidden] tiene que ganarle al display del boton (flex) y al
+   bloque del formulario, igual que con .formulario en styles.css. */
+.checkout-form[hidden],
+.checkout-estado[hidden] {
+
+    display: none;
+
+}
+
+.checkout-estado {
+
+    margin: .85rem 0 0;
+
+    padding: .75rem .9rem;
+
+    border-radius: 10px;
+
+    background: rgba(74, 124, 89, .10);
+
+    font-size: .85rem;
+
+    line-height: 1.5;
+
+    color: var(--ink);
+
+}
+
+.checkout-estado.checkout-estado-error {
+
+    background: rgba(163, 52, 31, .10);
+
+}
+
+
+/* ==========================================================
    RECOMENDACIONES
    ------------------------------------------------------------
    La atencion se pide por el FONDO: tres manchas de color
