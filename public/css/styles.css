@@ -1087,6 +1087,46 @@ body.no-scroll {
   margin: 0;
 }
 
+/* Botón que abre la ventana para dejar una opinión. Se usa centrado
+   en la sección de testimonios y a lo ancho en el resumen del carrito
+   (ahí con .btn-testimonio-bloque). */
+.testimonios-accion {
+  display: flex;
+  justify-content: center;
+  margin: 2.5rem auto 0;
+}
+
+.btn-testimonio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 46px;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--forest);
+  background: transparent;
+  color: var(--forest);
+  font: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-testimonio:hover {
+  background: var(--sand);
+}
+
+.btn-testimonio:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+.btn-testimonio-bloque {
+  width: 100%;
+  margin-top: 1rem;
+}
+
 /* GRILLA DE TESTIMONIOS
    Antes habia un carrusel que mostraba de a paginas (3 en
    escritorio, 2 en tablet, 1 en celular) y escondia el resto detras

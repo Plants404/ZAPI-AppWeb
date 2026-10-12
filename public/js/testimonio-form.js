@@ -13,10 +13,9 @@
    datos): lo que escribe la persona se pone con textContent o
    .value, nunca armando HTML.
 
-   Deja window.abrirTestimonio para que carrito.js la abra al
-   marcar la casilla del checkout. Acepta un aviso opcional que
-   corre al cerrarse. Solo abre con sesión: la opinión queda a
-   nombre de la cuenta.
+   Deja window.abrirTestimonio y engancha solo los botones marcados
+   con data-abrir-testimonio. Solo abre con sesión: la opinión queda
+   a nombre de la cuenta y, sin cuenta, se manda al login.
 
    Va en archivo aparte para respetar la CSP (script-src 'self').
    ============================================================ */
@@ -29,7 +28,6 @@
     let raiz = null;
     let valor = 0;
     let ultimoFoco = null;
-    let alCerrar = null;
 
     /* --- El cascarón de la ventana, una sola vez --- */
     function construir() {
@@ -160,6 +158,14 @@
         return campo;
     }
 
+    /* El id sale en camelCase (testimonioAutor) para coincidir con
+       los campos escritos a mano (testimonioLugar, testimonioTexto). */
+    function idCampo(nombre) {
+
+        return "testimonio" + nombre.charAt(0).toUpperCase() + nombre.slice(1);
+
+    }
+
     function construirCampoTexto(nombre, etiqueta, maximo, autocompletar) {
 
         const campo = document.createElement("div");
@@ -167,13 +173,13 @@
 
         const label = document.createElement("label");
         label.className = "testimonio-etiqueta";
-        label.setAttribute("for", "testimonio" + nombre);
+        label.setAttribute("for", idCampo(nombre));
         label.textContent = etiqueta;
 
         const input = document.createElement("input");
         input.type = "text";
         input.className = "testimonio-input";
-        input.id = "testimonio" + nombre;
+        input.id = idCampo(nombre);
         input.name = nombre;
         input.maxLength = maximo;
         input.autocomplete = autocompletar;
@@ -280,14 +286,6 @@
 
         raiz.hidden = true;
         document.body.classList.remove("con-testimonio-abierto");
-
-        /* El aviso se dispara una sola vez: si quien abrio necesita
-           enterarse del cierre (por ejemplo, destildar la casilla
-           del carrito), aca lo sabe. */
-        const aviso = alCerrar;
-        alCerrar = null;
-
-        if (typeof aviso === "function") aviso();
 
         if (ultimoFoco && typeof ultimoFoco.focus === "function") ultimoFoco.focus();
     }
@@ -398,7 +396,7 @@
             return;
         }
 
-        const campo = document.getElementById("testimonio" + nombre);
+        const campo = document.getElementById(idCampo(nombre));
 
         if (campo) {
             campo.classList.add("con-error");
@@ -498,7 +496,7 @@
 
     /* --- Punto de entrada público --- */
 
-    async function abrirTestimonio(alCerrarse) {
+    async function abrirTestimonio() {
 
         /* Solo con sesión: la opinión queda a nombre de la cuenta
            y el POST la exige. Se espera a que auth-ui haya
@@ -511,13 +509,41 @@
             }
         }
 
-        if (!window.zapiAuth || !window.zapiAuth.autenticado) return;
+        if (!window.zapiAuth || !window.zapiAuth.autenticado) {
 
-        alCerrar = typeof alCerrarse === "function" ? alCerrarse : null;
+            /* Sin cuenta no hay a dónde mandar la opinión: se ofrece
+               entrar, igual que el resto del sitio. */
+            if (window.zapiAuth && typeof window.zapiAuth.exigirCuenta === "function") {
+                window.zapiAuth.exigirCuenta();
+            }
+
+            return;
+        }
 
         abrir();
     }
 
     window.abrirTestimonio = abrirTestimonio;
+
+    /* Los botones marcados con data-abrir-testimonio abren la
+       ventana. Van por atributo y no por id para no repetir el
+       enganche en cada página donde aparece el botón. */
+    function engancharBotones() {
+
+        document.querySelectorAll("[data-abrir-testimonio]").forEach(function (boton) {
+
+            boton.addEventListener("click", function (evento) {
+
+                evento.preventDefault();
+
+                abrirTestimonio();
+
+            });
+
+        });
+
+    }
+
+    document.addEventListener("DOMContentLoaded", engancharBotones);
 
 })();

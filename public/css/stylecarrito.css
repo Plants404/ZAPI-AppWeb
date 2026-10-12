@@ -953,42 +953,6 @@
 
 }
 
-.checkout-check {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: .55rem;
-
-    margin-top: 1rem;
-
-    font-size: .9rem;
-
-    line-height: 1.4;
-
-    color: var(--ink);
-
-    cursor: pointer;
-
-}
-
-.checkout-check input {
-
-    flex: 0 0 auto;
-
-    width: 1.05rem;
-
-    height: 1.05rem;
-
-    margin: 0;
-
-    accent-color: var(--leaf);
-
-    cursor: pointer;
-
-}
-
 /* [hidden] tiene que ganarle al display del boton (flex) y al
    bloque del formulario, igual que con .formulario en styles.css. */
 .checkout-form[hidden],
