@@ -2,11 +2,10 @@
 /* ============================================================
    TESTIMONIO · VENTANA FLOTANTE
    ------------------------------------------------------------
-   Después de mandar el pedido por WhatsApp se ofrece dejar una
-   opinión. La ventana pide una calificación (1 a 5 estrellas),
-   el nombre (que arranca del de la cuenta), de dónde escribe y
-   el texto. Al enviar, se guarda con POST /api/testimonios y la
-   opinión aparece en la sección de testimonios de la home.
+   La ventana pide una calificación (1 a 5 estrellas), el nombre
+   (que arranca del de la cuenta), de dónde escribe y el texto.
+   Al enviar, se guarda con POST /api/testimonios y la opinión
+   aparece en la sección de testimonios de la home.
 
    Se construye una sola vez, por JS, porque las dos páginas que
    usan carrito.html y el checkout dentro de index.html comparten
@@ -14,9 +13,9 @@
    datos): lo que escribe la persona se pone con textContent o
    .value, nunca armando HTML.
 
-   Deja window.abrirTestimonio para que carrito.js la abra al
-   tocar el botón de WhatsApp. Solo abre con sesión: la opinión
-   queda a nombre de la cuenta.
+   Deja window.abrirTestimonio y engancha solo los botones marcados
+   con data-abrir-testimonio. Solo abre con sesión: la opinión queda
+   a nombre de la cuenta y, sin cuenta, se manda al login.
 
    Va en archivo aparte para respetar la CSP (script-src 'self').
    ============================================================ */
@@ -61,7 +60,7 @@
 
         const bajada = document.createElement("p");
         bajada.className = "testimonio-bajada";
-        bajada.textContent = "Tu pedido ya salió por WhatsApp. Contanos cómo te fue con ZAPI.";
+        bajada.textContent = "Contanos cómo te fue con ZAPI. Tu opinión nos ayuda a mejorar.";
 
         const form = document.createElement("form");
         form.className = "testimonio-form";
@@ -159,6 +158,14 @@
         return campo;
     }
 
+    /* El id sale en camelCase (testimonioAutor) para coincidir con
+       los campos escritos a mano (testimonioLugar, testimonioTexto). */
+    function idCampo(nombre) {
+
+        return "testimonio" + nombre.charAt(0).toUpperCase() + nombre.slice(1);
+
+    }
+
     function construirCampoTexto(nombre, etiqueta, maximo, autocompletar) {
 
         const campo = document.createElement("div");
@@ -166,13 +173,13 @@
 
         const label = document.createElement("label");
         label.className = "testimonio-etiqueta";
-        label.setAttribute("for", "testimonio" + nombre);
+        label.setAttribute("for", idCampo(nombre));
         label.textContent = etiqueta;
 
         const input = document.createElement("input");
         input.type = "text";
         input.className = "testimonio-input";
-        input.id = "testimonio" + nombre;
+        input.id = idCampo(nombre);
         input.name = nombre;
         input.maxLength = maximo;
         input.autocomplete = autocompletar;
@@ -389,7 +396,7 @@
             return;
         }
 
-        const campo = document.getElementById("testimonio" + nombre);
+        const campo = document.getElementById(idCampo(nombre));
 
         if (campo) {
             campo.classList.add("con-error");
@@ -502,11 +509,41 @@
             }
         }
 
-        if (!window.zapiAuth || !window.zapiAuth.autenticado) return;
+        if (!window.zapiAuth || !window.zapiAuth.autenticado) {
+
+            /* Sin cuenta no hay a dónde mandar la opinión: se ofrece
+               entrar, igual que el resto del sitio. */
+            if (window.zapiAuth && typeof window.zapiAuth.exigirCuenta === "function") {
+                window.zapiAuth.exigirCuenta();
+            }
+
+            return;
+        }
 
         abrir();
     }
 
     window.abrirTestimonio = abrirTestimonio;
+
+    /* Los botones marcados con data-abrir-testimonio abren la
+       ventana. Van por atributo y no por id para no repetir el
+       enganche en cada página donde aparece el botón. */
+    function engancharBotones() {
+
+        document.querySelectorAll("[data-abrir-testimonio]").forEach(function (boton) {
+
+            boton.addEventListener("click", function (evento) {
+
+                evento.preventDefault();
+
+                abrirTestimonio();
+
+            });
+
+        });
+
+    }
+
+    document.addEventListener("DOMContentLoaded", engancharBotones);
 
 })();

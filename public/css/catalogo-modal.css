@@ -574,6 +574,61 @@ color: var(--muted);
 
 }
 
+/* Contador de stock del detalle. Mismo criterio que el de
+la tarjeta: verde, mostaza con pocas y rojo agotado. */
+.modal-stock {
+
+display: inline-flex;
+
+align-items: center;
+
+gap: .45rem;
+
+margin-bottom: 1.1rem;
+
+font-size: .9rem;
+
+font-weight: 600;
+
+color: var(--leaf-texto);
+
+}
+
+.modal-stock::before {
+
+content: "";
+
+width: .55rem;
+
+height: .55rem;
+
+border-radius: 50%;
+
+background: currentColor;
+
+flex: 0 0 auto;
+
+}
+
+.modal-stock.pocas {
+
+color: var(--earth);
+
+}
+
+.modal-stock.agotado {
+
+color: var(--error);
+
+}
+
+.modal-stock:empty,
+.modal-stock[hidden] {
+
+display: none;
+
+}
+
 /* Mobile first: el agregar queda sticky abajo, porque es la
 accion principal y no puede quedar escondido en un scroll. */
 .modal-agregar {

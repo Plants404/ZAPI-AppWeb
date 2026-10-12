@@ -304,6 +304,7 @@ ${paraJsonLd(migas)}
                 <p class="producto-precio" data-precio="${producto.precioBase}">
                     ${escapar(formatearPrecio(producto.precioBase))}
                 </p>
+                <p class="producto-stock" data-stock="${producto.id}" hidden></p>
                 <p class="producto-descripcion">${escapar(producto.descripcion)}</p>
 
                 <ul class="producto-info">

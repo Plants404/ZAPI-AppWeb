@@ -32,10 +32,64 @@
         document.documentElement.dataset.auth = usuario ? 'si' : 'no';
 
         const nombre = document.getElementById('navUsuarioNombre');
-        if (nombre && usuario) nombre.textContent = usuario.nombre;
+        if (nombre && usuario) nombre.textContent = 'Hola ' + usuario.nombre;
 
         const salir = document.getElementById('navSalir');
         if (salir) salir.addEventListener('click', window.zapiAuth.salir);
+    }
+
+    /* ============================================================
+       MENU DE CUENTA
+       ------------------------------------------------------------
+       El nombre de usuario abre una ventanita con el carrito y
+       Salir. Se cierra al elegir algo, al hacer clic fuera y con
+       Escape. En index.html el carrito enruta con data-section y
+       en catalogo.html es un enlace a carrito.html; la ventanita
+       es la misma para los dos.
+       ============================================================ */
+    function prepararMenuDeCuenta() {
+        const boton = document.getElementById('navUsuarioBoton');
+        const menu = document.getElementById('navUsuarioMenu');
+
+        if (!boton || !menu) return;
+
+        let abierto = false;
+
+        function abrir() {
+            abierto = true;
+            boton.setAttribute('aria-expanded', 'true');
+            menu.hidden = false;
+        }
+
+        function cerrar() {
+            if (!abierto) return;
+            abierto = false;
+            boton.setAttribute('aria-expanded', 'false');
+            menu.hidden = true;
+        }
+
+        /* stopPropagation evita que el clic que abre caiga tambien
+           en el listener del documento y lo cierre en el acto. */
+        boton.addEventListener('click', function (evento) {
+            evento.stopPropagation();
+            if (abierto) cerrar();
+            else abrir();
+        });
+
+        document.addEventListener('click', function (evento) {
+            if (!abierto) return;
+            if (!menu.contains(evento.target)) cerrar();
+        });
+
+        document.addEventListener('keydown', function (evento) {
+            if (!abierto || evento.key !== 'Escape') return;
+            cerrar();
+            boton.focus({ preventScroll: true });
+        });
+
+        /* Al elegir el carrito o Salir la ventanita se cierra; el
+           clic sigue de largo hacia su seccion o su enlace. */
+        menu.addEventListener('click', cerrar);
     }
 
     /* Devuelve true si hay cuenta. Si no, manda al login con la
@@ -75,6 +129,7 @@
         })
         .then(function () {
             pintar();
+            prepararMenuDeCuenta();
         });
 
     window.zapiAuth = {
