@@ -1,13 +1,4 @@
-/* ==========================================================
-   MIS PEDIDOS
-   ------------------------------------------------------------
-   Historial de la cuenta. El header, el footer, el aviso de login
-   (#cartLogin) y el estado vacio (.empty-cart) los toma
-   stylecarrito.css; aca vive solo la lista de pedidos.
 
-   La pagina se muestra cuando auth-ui.js marca <html data-auth="si">.
-   Sin sesion queda el aviso de login y esta seccion no se dibuja ni
-   por un instante. */
 html:not([data-auth="si"]) main.pedidos-page {
     display: none;
 }
@@ -32,7 +23,6 @@ html:not([data-auth="si"]) main.pedidos-page {
     color: var(--muted-texto);
 }
 
-/* Aviso de error de la consulta. */
 .pedidos-aviso {
     margin: 0 0 1.5rem;
     padding: .9rem 1.1rem;

@@ -1,20 +1,5 @@
-/* ============================================================
-   404 · ZAPI
-   ------------------------------------------------------------
-   Estilos de la pagina 404 (tazon del que crece una planta).
 
-   Usa los MISMOS tokens que styles.css (paleta forest/moss/
-   sage/leaf/cream/earth, radius y sombras) y las mismas
-   tipografias (Bebas Neue para titulares, Inter para texto),
-   para que el 404 se sienta parte del sitio y no una isla.
-   Va en archivo aparte para respetar la CSP (style-src 'self').
-   ============================================================ */
 
-/* ============================================================
-   1. TOKENS (espejo de styles.css)
-   Se repiten aca porque la pagina puede servirse suelta y no
-   importa styles.css; los valores son los mismos del sitio.
-   ============================================================ */
 :root{
     --forest: #1f3a2e;
     --moss:   #3d6b4f;
@@ -36,21 +21,15 @@
     --serif: 'Bebas Neue', Georgia, serif;
     --sans:  'Inter', system-ui, -apple-system, sans-serif;
 
-    /* Tintes internos del dibujo */
     --vena:   rgba(31, 58, 46, .28);
     --brillo: rgba(143, 174, 145, .22);
 }
 
-/* ============================================================
-   2. BASE Y LAYOUT
-   ============================================================ */
 *,*::before,*::after{ box-sizing: border-box; }
 
 body{
     margin: 0;
 
-    /* Centrado vertical y horizontal, con respiro por las
-       safe-areas del notch en iOS (viewport-fit=cover). */
     min-height: 100vh;
     min-height: 100svh;
     min-height: 100dvh;
@@ -62,13 +41,11 @@ body{
         max(1.5rem, env(safe-area-inset-bottom))
         max(1.5rem, env(safe-area-inset-left));
 
-    /* Mismo fondo y tipografia base que el resto del sitio */
     background: var(--cream);
     color: var(--ink);
     font-family: var(--sans);
     line-height: 1.65;
 
-    /* En celulares, ni una pizca de scroll horizontal */
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -82,9 +59,6 @@ body{
     max-width: 100%;
 }
 
-/* ============================================================
-   3. MARCA
-   ============================================================ */
 .marca{
     margin: 0 0 .4rem;
     font-family: var(--serif);
@@ -92,18 +66,13 @@ body{
     font-weight: 700;
     line-height: 1;
     letter-spacing: .28em;
-    padding-left: .28em;          /* compensa el tracking final */
+    padding-left: .28em;
     text-transform: uppercase;
     color: var(--forest);
     opacity: 0;
     animation: aparecer .8s ease-out .15s both;
 }
 
-/* ============================================================
-   4. EL "404" (números + tazón SVG como "0")
-   La alineación es por "baseline": la base del tazón cae sobre
-   la línea base de los números, así quedan apoyados parejos.
-   ============================================================ */
 .year{
     display: flex;
     align-items: baseline;
@@ -118,20 +87,16 @@ body{
 }
 
 .digit{
-    opacity: 0;                   /* entra con la animación */
+    opacity: 0;
 }
 
-/* El SVG ocupa el lugar del "0". Su base (borde inferior) se
-   alinea a la línea base de los dígitos. */
 .tazon-svg{
     height: .76em;
     width: auto;
-    overflow: visible;            /* el mecido no se recorta */
+    overflow: visible;
 }
 
-/* ---- Piezas del SVG ---- */
 
-/* Tazón: entra con efecto "drop" (scale 0 -> 1 con rebote) */
 .tazon{
     transform-box: fill-box;
     transform-origin: 50% 100%;
@@ -142,7 +107,6 @@ body{
 .tierra      { fill: var(--earth); }
 .tierra-luz  { fill: rgba(247, 244, 236, .18); }
 
-/* Tallo: se dibuja con dasharray/dashoffset (pathLength=1) */
 .tallo{
     fill: none;
     stroke: var(--moss);
@@ -153,8 +117,6 @@ body{
     stroke-dashoffset: 1;
 }
 
-/* Hojas: brotan desde su punto de unión al tallo.
-   transform-origin 0% 50% = extremo pegado al tallo. */
 .hoja{
     transform-box: fill-box;
     transform-origin: 0% 50%;
@@ -170,7 +132,6 @@ body{
     stroke-linecap: round;
 }
 
-/* Brote de la punta: entra último */
 .brote{
     transform-box: fill-box;
     transform-origin: 50% 100%;
@@ -184,26 +145,18 @@ body{
     stroke-linecap: round;
 }
 
-/* La planta entera se mece desde la base */
 .planta{
     transform-box: view-box;
     transform-origin: 100px 178px;
 }
 
-/* ============================================================
-   5. ANIMACIONES
-   Todas viven bajo la clase ".go". El JS la quita y la vuelve a
-   poner cada ciclo para reiniciar (forzando reflow).
-   ============================================================ */
 
-/* 5.1 Números: suben con fade (0.8s) */
 @keyframes subir{
     from{ opacity: 0; transform: translateY(12%); }
     to  { opacity: 1; transform: translateY(0); }
 }
 .go .digit{ animation: subir .8s ease-out both; }
 
-/* 5.2 Tazón: drop con rebote */
 @keyframes caer{
     0%  { transform: scale(0);    opacity: 0; }
     60% { transform: scale(1.06); opacity: 1; }
@@ -211,14 +164,12 @@ body{
 }
 .go .tazon{ animation: caer .7s cubic-bezier(.34, 1.56, .64, 1) .15s both; }
 
-/* 5.3 Tallo: se dibuja en ~3.4s */
 @keyframes dibujar{
     from{ stroke-dashoffset: 1; }
     to  { stroke-dashoffset: 0; }
 }
 .go .tallo{ animation: dibujar 3.4s ease-out .9s both; }
 
-/* 5.4 Hojas: brotan una por una, alternando lado, con rebote */
 @keyframes brotar{
     from{ transform: scale(0); }
     to  { transform: scale(1); }
@@ -233,11 +184,8 @@ body{
 .go .hoja.l5{ animation-delay: 4.00s; }
 .go .hoja.l6{ animation-delay: 4.35s; }
 
-/* 5.5 Brote de la punta, al final */
 .go .brote{ animation: brotar .5s cubic-bezier(.34, 1.56, .64, 1) 4.45s both; }
 
-/* 5.6 La planta crecida se mece (alternate infinito) y a los
-       ~8s se desvanece antes del siguiente ciclo */
 @keyframes mecer{
     from{ transform: rotate(-2.5deg); }
     to  { transform: rotate(2.5deg); }
@@ -251,9 +199,6 @@ body{
         apagar 1.1s ease-in 8s forwards;
 }
 
-/* ============================================================
-   6. TÍTULO, TEXTO Y BOTÓN
-   ============================================================ */
 .titulo{
     margin: 0 0 .6rem;
     font-family: var(--serif);
@@ -271,7 +216,6 @@ body{
     color: var(--muted-texto);
 }
 
-/* Botón relleno del sitio (como el primario del hero/contacto) */
 .boton{
     display: inline-block;
     margin-top: 1.7rem;
@@ -300,17 +244,11 @@ body{
     outline-offset: 3px;
 }
 
-/* La marca entra sin depender de ".go" */
 @keyframes aparecer{
     from{ opacity: 0; transform: translateY(6px); }
     to  { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================================
-   7. REDUCED MOTION
-   Sin animaciones: se muestra la planta ya crecida y quieta,
-   y el JS no arranca el bucle.
-   ============================================================ */
 @media (prefers-reduced-motion: reduce){
     .marca{ animation: none; opacity: 1; }
 

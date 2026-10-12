@@ -1,18 +1,4 @@
-/* ==========================================================
-   CATÁLOGO COMPARTIDO ZAPI
-   Datos de productos con precios fijos.
-   Lo cargan tanto catalogo.html como carrito.html.
-   ========================================================== */
 
-
-/* ==========================================================
-   ESCAPAR TEXTO PARA EL DOM
-   ------------------------------------------------------------
-   Todo texto que venga del visitante (o del almacenamiento)
-   tiene que pasar por acá antes de entrar en un innerHTML.
-   Escapar el texto es lo seguro; permitir HTML sin sanitize
-   seria abrir la puerta a XSS.
-   ========================================================== */
 
 const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter => ({
     "&": "&amp;",
@@ -22,60 +8,12 @@ const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter =>
     "'": "&#39;"
 }[caracter]));
 
-
-/* ==========================================================
-   EL CATALOGO
-   ------------------------------------------------------------
-   PRODUCTOS arranca vacio y se llena solo, bajando
-   public/data/productos.json. Ese JSON lo escribe
-   tools/generar-productos.js desde datos/catalogo.js, que es la
-   fuente que se edita a mano.
-
-   Por que no viene incrustado
-   ----------------------------
-   El catalogo estuvo un tiempo dentro de este mismo archivo, como
-   un array. Servia para que la pagina abriera con doble clic. A
-   cambio no habia forma de leerlo sin ejecutar el archivo entero:
-   usa window y document, asi que habia que arrancarlo a mano y
-   ejecutar el array con Function() solo para sacarle los datos.
-   Ese era el punto mas fragil de todo el proyecto: un cambio de
-   espaciado, unas comillas simples o un corchete en un comentario
-   partian el catalogo.
-
-   Ahora viaja en JSON aparte y el navegador lo pide por HTTP. El
-   sitio anda de una sola forma, que es la que hace falta: por HTTP.
-
-   Que el catalogo llegue un instante despues
-   ------------------------------------------
-   Antes era sincrono, ahora es un fetch. Hay codigo que lo necesita
-   apenas carga la pagina y no puede esperar: es el catalogo de la
-   grilla, el carrito guardado y el boton de agregar de las fichas.
-
-   Por eso existe alCargarElCatalogo(). Se registra lo que hay que
-   hacer, y el navegador lo corre en el instante en que los datos
-   llegan, una sola vez. Los que dependen del catalogo usan esa
-   funcion en vez de leer PRODUCTOS directo al arrancar; leerlo
-   directo daria una lista vacia y, en el caso del carrito, peor:
-   un carrito guardado con productos se descartaria por no
-   encontrarlos en el catalogo todavia vacio.
-   ========================================================== */
-
 let PRODUCTOS = [];
 
-/* Se suscribe lo que hay que correr cuando el catalogo este.
-   Guarda las funciones para poder llamarlas todas juntas cuando el
-   fetch termine, sin importar en que orden se registraron. */
 const esperandoElCatalogo = [];
 
-/* Va declarado antes de alCargarElCatalogo porque esa funcion lo
-   mira: si el fetch ya termino, corre en el acto, y si no, se
-   encola. */
 let catalogoCargado = false;
 
-/* Corre fn apenas el catalogo este disponible. Si ya llego, corre
-   en el acto: asi da lo mismo suscribirse antes o despues del fetch.
-   El try/catch es para que un fallo al dibujar una pantalla no
-   cancele las demas. */
 function alCargarElCatalogo(fn) {
     if (catalogoCargado) {
         try {
@@ -88,12 +26,7 @@ function alCargarElCatalogo(fn) {
     }
 }
 
-/* Baja el JSON y llena PRODUCTOS y precios. Cuando termina, corre
-   todo lo que se haya suscrito con alCargarElCatalogo.
-
-   La ruta es absoluta porque las fichas de producto viven en
-   productos/ y si fuera relativa, desde ahi buscaria
-   productos/public/data/... y no lo encontraria. */
+/* Ruta absoluta: las fichas viven en productos/ y una relativa se rompe. */
 function cargarCatalogo() {
 
     fetch("/public/data/productos.json")
@@ -111,12 +44,6 @@ function cargarCatalogo() {
 
             PRODUCTOS = productos;
 
-            /* precios se arma recien ahora, no al cargar el archivo.
-               Antes se llenaba una vez y para siempre al tope del
-               script, con lo que el catalogo ya venia entero. Con el
-               fetch, si se llenara en ese momento, se quedaria
-               vacio para siempre y las tarjetas del catalogo
-               mostrarian el precio en blanco. */
             for (const producto of PRODUCTOS) {
                 precios[producto.id] = producto.precioBase;
             }
@@ -140,16 +67,6 @@ function cargarCatalogo() {
 
 }
 
-/* Si el fetch falla, la grilla y el carrito quedan con lo ultimo que
-   有的. No es una pagina rota del todo -el esqueleto esta ahi- pero
-   si necesita un aviso: sin productos, la grilla se dibuja vacia y
-   no hay forma de que el visitante entienda por que.
-
-   El caso que mas conviene tratar aparte es el doble clic. El
-   sitio ya no anda con file:// porque el navegador le bloquea el
-   fetch del catalogo por CORS, y el visitante ve una pagina sin
-   productos sin ninguna pista de por que. Se le dice que sirva el
-   sitio por HTTP. */
 function avisarCatalogoNoCargado() {
 
     const grilla = document.getElementById("productGrid");
@@ -158,10 +75,6 @@ function avisarCatalogoNoCargado() {
     const aviso = document.createElement("p");
     aviso.className = "catalog-empty";
 
-    /* Se arma con createElement y no con innerHTML. No hace falta
-       meter HTML aca: asi el texto queda siempre escapado por el
-       navegador y el escaner de XSS de verificar.js no tiene nada
-       que revisar. */
     if (location.protocol === "file:") {
         aviso.appendChild(document.createTextNode(
             "Este sitio necesita servirse por HTTP para cargar el catálogo. "
@@ -179,21 +92,7 @@ function avisarCatalogoNoCargado() {
 
 }
 
-/* El fetch arranca recien, sin await. El resto del archivo lo usa
-   a traves de alCargarElCatalogo y ya no depende del momento. */
 cargarCatalogo();
-
-
-
-/* ==========================================================
-   FORMATO DE DINERO
-   ------------------------------------------------------------
-   Un solo lugar donde se decide como se ve un precio. Lo usan
-   el catalogo, el carrito y la ventana de detalle, asi que
-   "$ 150" se escribe siempre igual en toda la pagina.
-   Intl se ocupa del separador de miles y del simbolo segun
-   el pais; sin decimales porque el vivero no los maneja.
-   ========================================================== */
 
 function formatearPrecio(value) {
     return new Intl.NumberFormat("es-UY", {
@@ -203,28 +102,7 @@ function formatearPrecio(value) {
     }).format(value);
 }
 
-
-/* ==========================================================
-   STOCK DISPONIBLE
-   ------------------------------------------------------------
-   Cuantas unidades quedan de cada producto. No viene en el JSON
-   del catalogo: es estado vivo del servidor, asi que se pide
-   aparte a GET /api/stock (unidades por id) y se pinta en todo
-   lo que este marcado con data-stock.
-
-   El catalogo y el stock llegan por caminos distintos y en
-   cualquier orden. Por eso el numero no se escribe al dibujar la
-   tarjeta sino despues, con pintarStockEnPantalla: si el stock
-   llega antes, lo pinta al dibujar; si llega despues, repinta lo
-   que ya esta. Para que una tarjeta recien dibujada tambien lo
-   tome, renderCatalog llama a pintarStockEnPantalla al terminar.
-   ========================================================== */
-
 let STOCK = {};
-
-
-/* Unidades de un producto, o null si todavia no se sabe: el stock
-   aun no llego o ese id no vino en la respuesta. */
 
 function unidadesDe(id) {
 
@@ -236,9 +114,6 @@ function unidadesDe(id) {
 
 }
 
-
-/* El texto del contador. Corto, para que entre en una tarjeta. */
-
 function textoDeStock(unidades) {
 
     if (unidades <= 0) return "Sin stock";
@@ -249,16 +124,9 @@ function textoDeStock(unidades) {
 
 }
 
-
-/* Pinta un solo elemento [data-stock]: el numero que queda y una
-   clase segun este agotado o por acabarse. */
-
 function pintarStockDe(elemento) {
 
     const unidades = unidadesDe(elemento.dataset.stock);
-
-    /* Sin dato se esconde: es mejor no decir nada que mostrar un
-       numero viejo o uno inventado. */
 
     if (unidades === null) {
 
@@ -276,18 +144,11 @@ function pintarStockDe(elemento) {
 
 }
 
-
 function pintarStockEnPantalla() {
 
     document.querySelectorAll("[data-stock]").forEach(pintarStockDe);
 
 }
-
-
-/* Pide el stock y repinta. Devuelve la promesa para poder
-   encadenar (por ejemplo, al cerrar un pedido). Un fallo se avisa
-   por consola y no rompe la pagina: si el stock no llega, los
-   contadores quedan escondidos. */
 
 function cargarStock() {
 
@@ -321,46 +182,15 @@ function cargarStock() {
 
 }
 
-
-/* Al volver a la pestaña se refresca, para no seguir mostrando un
-   numero viejo si el stock cambio mientras estaba en segundo
-   plano. */
-
 document.addEventListener("visibilitychange", function () {
 
     if (document.visibilityState === "visible") cargarStock();
 
 });
 
-
-/* Entrada para que otras partes (el checkout, al cerrar un
-   pedido) refresquen el stock sin conocer los detalles. */
-
 window.actualizarStock = cargarStock;
 
-
-/* El fetch arranca ya, en paralelo con el catalogo. */
-
 cargarStock();
-
-
-/* ==========================================================
-   CARRITO COMPARTIDO
-   ------------------------------------------------------------
-   Aca vive la unica definicion de como se lee, se modifica y
-   se guarda "zapiCart". Cuando catalogo y carrito conviven en
-   la misma pagina (index.html) cada uno tiene su propia vista
-   de los datos; si cada uno escribiera por su cuenta, el
-   ultimo en guardar pisaria lo que sumo el otro. Por eso solo
-   este archivo escribe, y el resto se avisa con
-   suscribirAlCarrito.
-   ========================================================== */
-
-   /* Recupera el item guardado a partir del catalogo. Las
-      versiones anteriores del sitio guardaban solo {id, precio,
-      cantidad} y con rutas de imagen viejas, asi que los datos
-      que faltan o quedaron desactualizados se completan con los
-      del producto en vez de romper la pagina. */
 
    function normalizarCarrito(carrito) {
 
@@ -368,10 +198,6 @@ cargarStock();
 
            const producto = PRODUCTOS.find(p => p.id == item.id);
 
-           /* Un id que ya no existe en el catalogo no se
-              puede dibujar: antes se colaba en la lista y
-              terminaba mostrando "undefined" y una imagen
-              rota. Se descarta y el resto del carrito sigue. */
            if (!producto) return null;
 
            return {
@@ -388,17 +214,6 @@ cargarStock();
        }).filter(Boolean);
 
    }
-
-
-   /* ==========================================================
-      ALMACENAMIENTO DEL CARRITO
-      ------------------------------------------------------------
-      En modo privado, con cookies de terceros bloqueadas o
-      con la cuota llena, localStorage puede lanzar. Sin este
-      rodeo, obtenerCarrito() rompia la pagina entera. Ahora
-      el carrito sigue funcionando en memoria durante la
-      sesion, solo que no sobrevive a la recarga.
-      ========================================================== */
 
    let carritoSinGuardar = null;
 
@@ -436,15 +251,6 @@ cargarStock();
 
    }
 
-
-/* ==========================================================
-   AVISAR QUE CAMBIO EL CARRITO
-   ------------------------------------------------------------
-   Quien dibuja una lista de productos (el carrito) se
-   suscribe para redibujarse; quien solo muestra un numero
-   alcanza con la llamada directa a actualizarContador.
-   ========================================================== */
-
    const suscriptoresDelCarrito = [];
 
    function suscribirAlCarrito(fn) {
@@ -455,24 +261,10 @@ cargarStock();
        suscriptoresDelCarrito.forEach(fn => fn());
    }
 
-
-/* ==========================================================
-   SUMAR UN PRODUCTO
-   ------------------------------------------------------------
-   El camino unico para agregar, para que el boton de la
-   tarjeta, el de la recomendacion y el de la ventana de
-   detalle hagan exactamente lo mismo. Suma la unidad, deja el
-   contador al dia, suena y avisa a los suscriptores.
-   ========================================================== */
-
    function agregarProductoAlCarrito(id) {
 
        const auth = window.zapiAuth;
 
-       /* Comprar exige cuenta. Si auth-ui.js todavia esta resolviendo
-          /api/auth/yo, se espera y recien ahi se decide: sumar (si hay
-          sesion) o mandar al login. Sin auth-ui.js cargado, el carrito
-          funciona como siempre. */
        if (auth && !auth.autenticado) {
 
            auth.listo.then(function () {
@@ -519,12 +311,6 @@ cargarStock();
 
    }
 
-
-/* El boton de la ventana de detalle dispara "modal:agregar".
-   Se escucha una sola vez, aca, y no en cada pagina: con las dos
-   paginas cargadas en index.html un solo clic sumaba dos
-   unidades. */
-
 document.addEventListener("modal:agregar", function (evento) {
 
     agregarProductoAlCarrito(evento.detail.id);
@@ -535,9 +321,6 @@ document.addEventListener("modal:agregar", function (evento) {
       const total = obtenerCarrito().reduce(
           (suma, item) => suma + item.cantidad, 0
       );
-
-      /* El enlace del header anuncia la cantidad: su globo está
-         marcado como aria-hidden para no leerla dos veces. */
 
       const navCarrito = document.getElementById("navLinkCarrito");
 
@@ -552,24 +335,15 @@ document.addEventListener("modal:agregar", function (evento) {
 
       }
 
-      /* Los dos globos (header y botón flotante) se actualizan
-         siempre juntos. */
-
       document.querySelectorAll("[data-cart-count]").forEach((badge) => {
 
           badge.textContent = total;
-
-          /* Con productos el contador queda rojo; si el carrito se
-             vacía se quita la clase y el color vuelve por la
-             transición. En el header eso además lo muestra. */
 
           badge.classList.toggle("con-productos", total > 0);
 
           if (!animar) return;
 
-          /* Para que la animación corra de nuevo hay que sacarla,
-             forzar el reflow y volver a ponerla. */
-
+          /* Sacar, forzar reflow y volver a poner: si no, no se repite. */
           badge.classList.remove("pop", "destello");
 
           void badge.offsetWidth;
@@ -579,11 +353,6 @@ document.addEventListener("modal:agregar", function (evento) {
       });
 
   }
-
-  /* Se registra una sola vez a nivel de documento. Si el destello
-     termina, sus clases se van y el fondo queda en manos de
-     "con-productos", sin cambios visibles porque el último keyframe
-     ya es el mismo rojo. */
 
   document.addEventListener("animationend", (evento) => {
 
@@ -598,37 +367,6 @@ document.addEventListener("modal:agregar", function (evento) {
       badge.classList.remove("pop", "destello");
 
   });
-
-
-/* ==========================================================
-   CONFIRMACION SONORA
-   ------------------------------------------------------------
-   El "pop" que suena al sumar un producto. Va aca, y no en una
-   de las paginas, porque las dos lo necesitan: el boton de la
-   tarjeta del catalogo, el boton de la tarjeta de
-   recomendaciones y el "Agregar al carrito" de la ventana
-   flotante terminan todos en la misma suma.
-
-   Se sintetiza con Web Audio en vez de cargar un archivo: no
-   suma bytes ni peticiones, y el tono se ajusta cambiando las
-   dos frecuencias de "notas".
-
-   El contexto se crea en el primer toque y no en el primer clic: en
-   iOS Safari el clic llega despues del gesto y ya no cuenta como
-   gesto del usuario, asi que un contexto creado ahi queda suspendido
-   y el primer "pop" no suena. Por eso despertarAudio() lo crea en
-   el pointerdown. Si despues queda suspendido (se puede pasar con un
-   alt-tab) se reanuda; si el navegador no soporta Web Audio se
-   devuelve null y el carrito sigue funcionando igual, solo que
-   en silencio.
-
-   Queda una sola forma de apagarlos y no es el sitio: si la
-   persona pidio menos animacion en el sistema, lo mas probable es
-   que tampoco quiera un tono en cada accion. Antes ademas habia un
-   interruptor en el header de las tres paginas que guardaba la
-   eleccion en localStorage; ese boton se saco y con el se fue la
-   preferencia guardada.
-   ========================================================== */
 
 function sonidoHabilitado() {
 
@@ -656,19 +394,7 @@ function contextoAudio() {
 
 }
 
-/* iOS Safari entrega el gesto como pointerdown o touchstart, y el
-   click llega despues, ya afuera del gesto. Si el AudioContext se
-   creara adentro del click del boton, el navegador lo dejaria
-   suspended y el primer "pop" del carrito no sonaria: habria que
-   tocar dos veces.
-
-   Este listener crea y reanuda el contexto en el primer toque de la
-   pagina, con captura para correr antes que cualquier otro handler.
-   Es de un solo uso: apenas entra, se saca de los tres eventos, y si
-   el sonido esta apagado ni siquiera crea el contexto. Se escucha
-   keydown tambien, para que el boton funcione con Enter o Espacio
-   desde el teclado. */
-
+/* iOS deja el AudioContext suspendido si se crea en el click: se crea en el primer gesto. */
 function despertarAudio() {
 
     document.removeEventListener("pointerdown", despertarAudio, true);
@@ -699,8 +425,6 @@ function sonidoAgregar() {
 
     maestro.gain.value = 0.18;
 
-    /* Pasa los agudos para que el tono no salga aspero. */
-
     const filtro = ctx.createBiquadFilter();
 
     filtro.type = "lowpass";
@@ -708,8 +432,6 @@ function sonidoAgregar() {
 
     filtro.connect(maestro);
     maestro.connect(ctx.destination);
-
-    /* Dos notas ascendentes: se percibe como "sumado". */
 
     const notas = [[587.33, 0], [880, 0.09]];
 
@@ -738,37 +460,11 @@ function sonidoAgregar() {
 
 }
 
-
-/* ==========================================================
-   PRECIOS FIJOS
-   El precio de cada producto es siempre
-   su precioBase, sin variaciones.
-   ========================================================== */
-
 const precios = {};
 
 PRODUCTOS.forEach(producto => {
     precios[producto.id] = producto.precioBase;
 });
-
-
-/* ==========================================================
-   IMAGENES QUE NO CARGAN
-   ------------------------------------------------------------
-   Un producto puede quedar con la ruta de la foto mal escrita, o
-   con el archivo borrado. Antes eso dejaba el
-   icono de imagen rota del navegador adentro del marco, con el
-   fondo gris y el texto alt al lado.
-
-   Se escucha el evento "error" de forma global y se cambia la
-   foto por un marcador con los colores de la marca. Va con
-   data: URI para no sumar un request a un archivo que solo se
-   usa cuando algo ya salio mal.
-
-   El evento "error" no burbujea, asi que hace falta capturarlo
-   en la fase de captura: un listener comun en <img> o en su
-   contenedor padre no lo veria.
-   ========================================================== */
 
 const IMAGEN_FALLBACK = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150" ' +
@@ -787,17 +483,11 @@ document.addEventListener("error", (evento) => {
 
     if (!(imagen instanceof HTMLImageElement)) return;
 
-    /* La marca evita el bucle: si el propio marcador fallara,
-       el evento vuelve a disparar el handler. */
-
     if (imagen.dataset.fallbackImagen === "si") return;
 
     imagen.dataset.fallbackImagen = "si";
 
     imagen.src = IMAGEN_FALLBACK;
-
-    /* Si la foto original no tenia texto alternativo, el marcador
-       no aporta nada, asi que se deja claro que no hay imagen. */
 
     if (!imagen.alt) imagen.alt = "Imagen no disponible";
 

@@ -1,24 +1,4 @@
 'use strict';
-/* ============================================================
-   TESTIMONIO · VENTANA FLOTANTE
-   ------------------------------------------------------------
-   La ventana pide una calificación (1 a 5 estrellas), el nombre
-   (que arranca del de la cuenta), de dónde escribe y el texto.
-   Al enviar, se guarda con POST /api/testimonios y la opinión
-   aparece en la sección de testimonios de la home.
-
-   Se construye una sola vez, por JS, porque las dos páginas que
-   usan carrito.html y el checkout dentro de index.html comparten
-   las mismas piezas. El markup es estático (sin interpolar
-   datos): lo que escribe la persona se pone con textContent o
-   .value, nunca armando HTML.
-
-   Deja window.abrirTestimonio y engancha solo los botones marcados
-   con data-abrir-testimonio. Solo abre con sesión: la opinión queda
-   a nombre de la cuenta y, sin cuenta, se manda al login.
-
-   Va en archivo aparte para respetar la CSP (script-src 'self').
-   ============================================================ */
 (function () {
 
     const ESTRELLAS = 5;
@@ -29,7 +9,6 @@
     let valor = 0;
     let ultimoFoco = null;
 
-    /* --- El cascarón de la ventana, una sola vez --- */
     function construir() {
 
         raiz = document.createElement("div");
@@ -158,8 +137,6 @@
         return campo;
     }
 
-    /* El id sale en camelCase (testimonioAutor) para coincidir con
-       los campos escritos a mano (testimonioLugar, testimonioTexto). */
     function idCampo(nombre) {
 
         return "testimonio" + nombre.charAt(0).toUpperCase() + nombre.slice(1);
@@ -263,8 +240,6 @@
         return error;
     }
 
-    /* --- Abrir y cerrar --- */
-
     function abrir() {
 
         if (!raiz) construir();
@@ -290,8 +265,6 @@
         if (ultimoFoco && typeof ultimoFoco.focus === "function") ultimoFoco.focus();
     }
 
-    /* Deja la ventana como nueva: nombre de la cuenta puesto, el
-       resto vacío, sin errores y con el formulario a la vista. */
     function reiniciar() {
 
         const autor = raiz.querySelector("#testimonioAutor");
@@ -329,7 +302,7 @@
         if (evento.key === "Escape" && raiz && !raiz.hidden) cerrar();
     }
 
-    /* --- Estrellas --- */
+    
 
     function elegirEstrellas(evento) {
 
@@ -354,7 +327,7 @@
         });
     }
 
-    /* --- Errores en pantalla --- */
+    
 
     function limpiarErrores() {
 
@@ -404,7 +377,7 @@
         }
     }
 
-    /* --- Enviar --- */
+    
 
     async function enviarOpinion(evento) {
 
@@ -494,25 +467,17 @@
         window.setTimeout(cerrar, 1800);
     }
 
-    /* --- Punto de entrada público --- */
-
     async function abrirTestimonio() {
 
-        /* Solo con sesión: la opinión queda a nombre de la cuenta
-           y el POST la exige. Se espera a que auth-ui haya
-           resuelto quién es el usuario. */
         if (window.zapiAuth && window.zapiAuth.listo) {
             try {
                 await window.zapiAuth.listo;
             } catch (error) {
-                /* si la consulta falló, se sigue: abajo decide */
             }
         }
 
         if (!window.zapiAuth || !window.zapiAuth.autenticado) {
 
-            /* Sin cuenta no hay a dónde mandar la opinión: se ofrece
-               entrar, igual que el resto del sitio. */
             if (window.zapiAuth && typeof window.zapiAuth.exigirCuenta === "function") {
                 window.zapiAuth.exigirCuenta();
             }
@@ -525,9 +490,6 @@
 
     window.abrirTestimonio = abrirTestimonio;
 
-    /* Los botones marcados con data-abrir-testimonio abren la
-       ventana. Van por atributo y no por id para no repetir el
-       enganche en cada página donde aparece el botón. */
     function engancharBotones() {
 
         document.querySelectorAll("[data-abrir-testimonio]").forEach(function (boton) {
