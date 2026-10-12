@@ -353,6 +353,63 @@ main {
 
 }
 
+/* Contador de stock de la ficha. Mientras no llegue el dato queda
+   escondido, para no dejar un hueco ni mostrar un numero viejo. Va
+   debajo del precio y comparte el color con el resto del sitio:
+   verde con stock, mostaza con pocas, rojo agotado. */
+.producto-stock {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .45rem;
+
+    margin: -.5rem 0 1rem;
+
+    font-size: .9rem;
+
+    font-weight: 600;
+
+    color: var(--leaf-texto);
+
+}
+
+.producto-stock::before {
+
+    content: "";
+
+    width: .55rem;
+
+    height: .55rem;
+
+    border-radius: 50%;
+
+    background: currentColor;
+
+    flex: 0 0 auto;
+
+}
+
+.producto-stock.pocas {
+
+    color: var(--earth);
+
+}
+
+.producto-stock.agotado {
+
+    color: var(--error);
+
+}
+
+.producto-stock:empty,
+.producto-stock[hidden] {
+
+    display: none;
+
+}
+
 .producto-descripcion {
 
     margin: 0 0 1.25rem;

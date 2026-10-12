@@ -189,6 +189,8 @@ function tarjetaProducto(producto) {
                 </div>
 
                 <div class="product-footer">
+                    <span class="product-stock" data-stock="${producto.id}"></span>
+
                     <div class="product-price">
                         <span class="current">${formatearPrecio(precios[producto.id] ?? producto.precioBase)}</span>
                         <span class="since">precio por unidad</span>
@@ -274,6 +276,12 @@ function renderCatalog() {
     }
 
     grid.innerHTML = productosFiltrados.map(tarjetaProducto).join("");
+
+    /* El stock llega aparte del catalogo y puede haber llegado
+       antes que este render: se repinta lo que se acaba de
+       dibujar, o si todavia no llego, quedan escondidos hasta
+       que cargarStock repinte. */
+    pintarStockEnPantalla();
 
 }
 

@@ -374,6 +374,64 @@
 }
 
 
+/* Cuanto queda de ese producto. Va debajo del precio y solo
+   aparece cuando el stock ya llego: mientras tanto queda vacio y
+   escondido, sin dejar un hueco en la tarjeta. */
+
+.cart-item-stock {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: .4rem;
+
+    margin-top: .35rem;
+
+    font-size: .8rem;
+
+    font-weight: 600;
+
+    color: var(--leaf-texto);
+
+}
+
+.cart-item-stock::before {
+
+    content: "";
+
+    width: .5rem;
+
+    height: .5rem;
+
+    border-radius: 50%;
+
+    background: currentColor;
+
+    flex: 0 0 auto;
+
+}
+
+.cart-item-stock.pocas {
+
+    color: var(--earth);
+
+}
+
+.cart-item-stock.agotado {
+
+    color: var(--error);
+
+}
+
+.cart-item-stock:empty,
+.cart-item-stock[hidden] {
+
+    display: none;
+
+}
+
+
 /* ==========================================================
    CONTROLES DE CANTIDAD
    ========================================================== */
