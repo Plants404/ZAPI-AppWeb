@@ -578,6 +578,23 @@
 
       </div>
     </section>
+
+    <!-- Aviso flotante. Lo usa contacto.js cuando el backend guarda la
+         consulta pero el aviso por correo (EmailJS) no sale: aparece
+         abajo a la derecha, se cierra solo y no bloquea la pagina.
+         role="alert" para que el lector de pantalla lo anuncie. -->
+    <div class="aviso-flotante" id="avisoFlotante" role="alert" hidden>
+      <span class="material-symbols-outlined aviso-flotante-icono" aria-hidden="true">report</span>
+
+      <div class="aviso-flotante-texto">
+        <strong id="avisoFlotanteTitulo"></strong>
+        <span id="avisoFlotanteMensaje"></span>
+      </div>
+
+      <button class="aviso-flotante-cerrar" type="button" id="avisoFlotanteCerrar" aria-label="Cerrar aviso">
+        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+      </button>
+    </div>
   </main>
 
   <!-- Ventana flotante de detalle de producto. Va una sola vez por
