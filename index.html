@@ -41,23 +41,17 @@
     <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 
   <header>
-    <!-- boton de menu. Solo existe en el DOM, no en pantalla: la
-         hamburguesa se dibuja con tres <span> para poder
-         transformarlos en una X al abrir. aria-expanded lo
-         mantiene menu.js sincronizado con el estado real. -->
+    
     <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
       aria-label="Abrir menu de navegacion">
       <span class="nav-toggle-barra" aria-hidden="true"></span>
       <span class="nav-toggle-barra" aria-hidden="true"></span>
       <span class="nav-toggle-barra" aria-hidden="true"></span>
-      <!-- Globo del carrito en la hamburguesa (solo mobile): refleja
-           lo que se agregó, aunque el menú esté cerrado. -->
+      
       <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
     </button>
 
-    <!--logo. Es un <a> y no un div con role=button para que
-         funcione con Enter y Espacio por teclado, tenga foco
-         real y se pueda enlazar desde otras paginas. -->
+    
     <a class="logo" href="./index.html" data-section="inicio" aria-label="ZAPI, ir al inicio">
       <article class="logo-items-text">
         <h4>ZAPI</h4>
@@ -67,9 +61,7 @@
       </article>
     </a>
 
-    <!-- buscador. El <form> evita tener que atrapar Enter a mano y
-         el boton limpiar es un <button type="button"> justamente
-         para que no envien el formulario. -->
+    
     <form class="header-search" id="headerSearch" role="search" autocomplete="off">
       <label class="visually-hidden" for="searchInput">Buscar productos</label>
       <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
@@ -80,9 +72,7 @@
       </button>
     </form>
 
-    <!--nav bar. En mobile es el panel lateral que abre la
-         hamburguesa, en desktop vuelve a ser una barra horizontal.
-         El id lo referencia aria-controls del boton. -->
+    
     <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
       <ul>
         <li><button type="button" class="nav-link active" data-section="inicio" aria-current="page">Inicio</button></li>
@@ -91,21 +81,14 @@
         <li><button type="button" class="nav-link" data-section="nosotros">Nosotros</button></li>
         <li><button type="button" class="nav-link" data-section="contacto">Contacto</button></li>
 
-        <!-- Cuenta. Sin sesion se ve "Ingresar"; con sesion,
-             auth-ui.js rellena el nombre y el nombre abre un menu
-             con el carrito y Salir. El id y el data-cart-count del
-             carrito los necesita productos.js: el id para el
-             aria-label y el atributo para pintar la cantidad; el
-             boton usa data-section para que navigation.js lo enrute
-             como al resto. -->
+        
         <li class="nav-cuenta">
           <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
           <div class="nav-usuario">
             <button type="button" class="nav-usuario-boton" id="navUsuarioBoton" aria-expanded="false"
               aria-haspopup="true" aria-controls="navUsuarioMenu">
               <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
-              <!-- El globo va en el nombre: es el mismo efecto que
-                   tenia el carrito (rojo + pop + destello). -->
+              
               <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
             </button>
             <div class="nav-usuario-menu" id="navUsuarioMenu" hidden>
@@ -124,27 +107,21 @@
     </nav>
   </header>
 
-  <!-- Fondo oscurecido del menu lateral. Es decorativo: el cierre
-       real lo maneja menu.js, que escucha el clic en el backdrop
-       igual que el Escape o el boton. -->
+  
   <div class="nav-backdrop" id="navBackdrop" hidden></div>
 
-  <!-- Aviso para lectores de pantalla: cada vez que el buscador
-       cambia la grilla, anuncia cuantos productos quedan. aria-live
-       en un elemento que siempre esta en el DOM, porque si se
-       inserta junto al texto nuevo no lo anunciaria. -->
+  
   <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
 
   <main id="contenido" tabindex="-1">
-    <!-- hero section -->
+    
     <section class="section hero" id="inicio">
       <h1>Transformamos en espacios con naturaleza. </h1>
 
       <h3>ZAPI es una plataforma especializada en soluciones agroecológicas que conecta a las personas con la naturaleza
         mediante plantas de calidad, asesoramiento profesional y herramientas inteligentes para facilitar su cuidado.
       </h3>
-      <!-- El espacio en el nombre del archivo va codificado como %20:
-           sin esto la URL queda cortada en el primer espacio. -->
+      
       <img src="././public/img/plants-hero.opt.jpg"
         alt="Plantas de interior verdes y sanas en un ambiente luminoso, que evocan calma e inspiracion para el cuidado de las plantas"
         width="1200" height="800"
@@ -157,16 +134,12 @@
         acompañar al usuario antes, durante y después de cada compra.
       </h2>
 
-      <!--buttons-->
+      
       <button type="button" data-section="catalogo">Explorar Catálogo</button>
       <button type="button" data-section="servicios">Conocer nuestros servicios</button>
     </section>
 
-    <!-- Testimonios. data-parte-de="inicio" los ata al inicio: el
-         router de navigation.js muestra las dos secciones juntas
-         cuando la activa es "inicio", asi que se ven al abrir la
-         pagina sin pasar por el menu. La grilla la dibuja
-         public/js/testimonios.js. -->
+    
     <section class="section testimonios" id="testimonios" data-parte-de="inicio">
       <div class="testimonios-cabecera">
         <span class="contacto-eyebrow">TESTIMONIOS</span>
@@ -176,14 +149,11 @@
         <p>Historias de quienes ya transformaron sus espacios con ZAPI.</p>
       </div>
 
-      <!-- El markup de la grilla lo arma testimonios.js. El
-           contenedor queda con role="list" para que el lector de
-           pantalla anuncie cuantas opiniones hay; cada tarjeta que
-           dibuja el script lleva role="listitem". -->
+      
       <div class="testimonios-grilla" id="testimoniosCarrusel" role="list"
         aria-label="Testimonios de clientes"></div>
 
-      <!-- Botón que abre la ventana flotante para dejar una opinión -->
+      
 
       <div class="testimonios-accion">
         <button type="button" class="btn-testimonio" data-abrir-testimonio>
@@ -194,7 +164,7 @@
       </div>
     </section>
 
-    <!-- catalog section -->
+    
     <section class="section catalog hidden" id="catalogo">
       <div class="catalog-header">
         <span class="catalog-eyebrow">Catálogo ZAPI</span>
@@ -211,20 +181,17 @@
         </span>
       </div>
 
-      <!-- Los botones de categoría los dibuja catalogo.js a partir
-           de los productos reales, para que nunca quede una
-           categoría sin productos. -->
+      
       <div class="catalog-filters" id="catalogFilters" role="group" aria-label="Filtrar productos por categoría">
-        <!-- JavaScript genera los filtros -->
+        
       </div>
 
       <div id="productGrid" class="catalog-grid">
-        <!-- JavaScript genera los productos -->
+        
       </div>
     </section>
 
-    <!-- cart section. El markup es el de carrito.html, dentro de una
-         sección para que navigation.js la enrute como las demás. -->
+    
     <section class="section cart-page hidden" id="carrito">
 
       <div class="cart-content">
@@ -249,12 +216,12 @@
 
         </div>
 
-        <!-- PRODUCTOS -->
+        
         <div id="cartItems" class="cart-items">
-          <!-- JavaScript genera los productos -->
+          
         </div>
 
-        <!-- CARRITO VACÍO -->
+        
         <div id="emptyCart" class="empty-cart hidden">
           <span class="material-symbols-outlined">
             shopping_basket
@@ -278,7 +245,7 @@
 
         </div>
 
-        <!-- RECOMENDACIONES -->
+        
         <section class="recommendations" id="recommendations" hidden>
 
           <div class="recommendations-header">
@@ -290,14 +257,14 @@
           </div>
 
           <div id="recommendationsList" class="recommendations-list">
-            <!-- JavaScript genera las recomendaciones -->
+            
           </div>
 
         </section>
 
       </div>
 
-      <!-- RESUMEN -->
+      
       <aside class="cart-summary">
 
         <div class="summary-header">
@@ -330,7 +297,7 @@
           </strong>
         </div>
 
-        <!-- DATOS DE ENTREGA -->
+        
         <div class="delivery-box">
           <span class="material-symbols-outlined">
             local_shipping
@@ -346,7 +313,7 @@
           </div>
         </div>
 
-        <!-- WHATSAPP -->
+        
         <div id="checkoutRoot" class="checkout-root"></div>
 
         <button type="button" class="btn-whatsapp" id="whatsappButton">
@@ -366,7 +333,7 @@
           directamente con ZAPI.
         </p>
 
-        <!-- Abre la ventana flotante para dejar una opinión -->
+        
 
         <button type="button" class="btn-testimonio btn-testimonio-bloque" data-abrir-testimonio>
           <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
@@ -378,9 +345,9 @@
 
     </section>
 
-    <!-- services section -->
+    
     <section class="section services-view hidden" id="servicios">
-      <!--service section-->
+      
       <div id="service" class="service">
         <h2>Soluciones para cada proyecto</h2>
         <p>
@@ -389,7 +356,7 @@
         </p>
         <h3>Servicios</h3>
 
-        <!--service items-->
+        
         <article class="service-items">
           <ul>
             <li>Asesoramiento personalizado.</li>
@@ -403,7 +370,7 @@
         </article>
       </div>
     </section>
-    <!---Benefits / nosotros section-->
+    
     <section class="section benefits hidden" id="nosotros">
       <h2>Beneficios</h2>
       <article class="benefits-items">
@@ -433,9 +400,7 @@
         </ul>
       </article>
 
-      <!-- Mapa de la ubicacion. El iframe lo sirve Google Maps y su
-           dominio esta permitido en frame-src de la CSP
-           (backend/src/middlewares/seguridad.js). -->
+      
       <div class="benefits-mapa">
         <h3>Dónde encontrarnos</h3>
         <p class="benefits-mapa-direccion">Congreso de Abril, Montevideo, Uruguay</p>
@@ -449,13 +414,11 @@
       </div>
     </section>
 
-    <!--contacto section. Dos columnas: a la izquierda el texto y los
-         accesos rapidos al catalogo y a los servicios, a la derecha
-         el formulario. En movil se apilan, con el texto primero. -->
+    
     <section class="section call-to-actions-view hidden" id="contacto">
       <div class="contacto">
 
-        <!-- Columna de texto -->
+        
         <div class="contacto-info">
           <span class="contacto-eyebrow">CONTACTO</span>
 
@@ -464,10 +427,7 @@
           <p>Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada
             etapa del proceso.</p>
 
-          <!-- Los botones de accion siguen siendo los mismos de
-               siempre: catalogo y servicios. Ahora quedan abajo del
-               texto, al lado del formulario, en vez de perdidos
-               abajo de un bloque sin forma. -->
+          
           <div class="contacto-acciones">
             <button type="button" data-section="catalogo">Explorar Catálogo</button>
             <button type="button" data-section="servicios">Conocer nuestros servicios</button>
@@ -479,16 +439,13 @@
           </p>
         </div>
 
-        <!-- Columna del formulario -->
+        
         <div class="contacto-panel">
           <h3 class="contacto-panel-titulo" id="contactoPanelTitulo">Escribinos</h3>
           <p class="contacto-panel-sub">Contanos qué necesitás y te respondemos a la brevedad.</p>
 
           <form class="formulario" id="contactoForm" novalidate aria-labelledby="contactoPanelTitulo">
-            <!-- Campo trampa contra robots: escondido para la
-                 persona (se queda fuera de pantalla y sin foco) y
-                 visible para el que completa todos los inputs. Si
-                 viene relleno se descarta. -->
+            
             <div class="formulario-trampa" aria-hidden="true">
               <label for="contactoSitio">No completes este campo</label>
               <input type="text" id="contactoSitio" name="sitio_web" tabindex="-1" autocomplete="off">
@@ -544,10 +501,7 @@
                 maxlength="2000" required aria-required="true" aria-describedby="errorConsulta"
                 placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..."></textarea>
               <div class="campo-ayuda">
-                <!-- El contador va aria-hidden: es una ayuda visual y
-                     su texto ("2000") no significa nada leído solo. El
-                     error si se anuncia, porque esta en el
-                     aria-describedby del textarea. -->
+                
                 <span class="campo-error" id="errorConsulta"></span>
                 <span class="campo-contador" id="contactoContador" aria-hidden="true">2000</span>
               </div>
@@ -562,24 +516,15 @@
               <p class="formulario-obligatorio">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
             </div>
 
-            <!-- region de estado: el mismo elemento para el error y
-                 para el exito, porque solo hay una cosa que anunciar
-                 a la vez. aria-live polite para no cortar lo que el
-                 lector de pantalla este leyendo. -->
+            
             <p class="formulario-estado" id="contactoEstado" role="status" aria-live="polite"></p>
           </form>
 
-          <!-- Panel de exito. Vive siempre en el DOM pero escondido:
-               asi el cambio de estado lo anuncia el live region del
-               formulario sin tener que insertar texto nuevo. -->
+          
           <div class="formulario-ok" id="contactoOk" role="group" aria-labelledby="contactoOkTitulo" hidden>
             <span class="material-symbols-outlined formulario-ok-icono" aria-hidden="true">mark_email_read</span>
 
-            <!-- tabindex="-1" para que el foco se pueda llevar al
-                 titulo cuando el formulario se oculta: si el foco
-                 se queda en el boton de enviar, que acaba de
-                 desaparecer de la pagina, el lector de pantalla se
-                 queda sin contexto. -->
+            
             <h3 class="formulario-ok-titulo" id="contactoOkTitulo" tabindex="-1">¡Gracias por escribirnos!</h3>
 
             <p>Recibimos tu mensaje y te vamos a responder al correo o al teléfono que dejaste.</p>
@@ -594,10 +539,7 @@
       </div>
     </section>
 
-    <!-- Aviso flotante. Lo usa contacto.js cuando el backend guarda la
-         consulta pero el aviso por correo (EmailJS) no sale: aparece
-         abajo a la derecha, se cierra solo y no bloquea la pagina.
-         role="alert" para que el lector de pantalla lo anuncie. -->
+    
     <div class="aviso-flotante" id="avisoFlotante" role="alert" hidden>
       <span class="material-symbols-outlined aviso-flotante-icono" aria-hidden="true">report</span>
 
@@ -612,9 +554,7 @@
     </div>
   </main>
 
-  <!-- Ventana flotante de detalle de producto. Va una sola vez por
-       pagina: catalogo.html y carrito.html tienen cada una su copia
-       y por eso el modal solo se activaba en la primera. -->
+  
   <div class="modal-producto" id="modalProducto" hidden>
 
     <div class="modal-fondo" data-cerrar-modal></div>
@@ -664,10 +604,7 @@
           Agregar al carrito
         </button>
 
-        <!-- Enlace a la pagina estatica del producto, que es la que
-             pueden indexar los buscadores. El href lo completa
-             modal.js con el slug de cada producto; sin JavaScript
-             queda como texto, no como un link roto. -->
+        
         <a class="modal-ficha" id="modalFicha" hidden></a>
       </div>
     </div>
@@ -678,9 +615,7 @@
 
     <p class="footer-direccion">Congreso de Abril, Montevideo, Uruguay</p>
 
-    <!-- El sitio vive en una sola pagina (esta), pero catalogo.html
-         y carrito.html se siguen manteniendo como accesos directos
-         y se dejan enlazados entre si. -->
+    
     <nav aria-label="Páginas del sitio">
       <a href="./index.html">Inicio</a>
       <a href="./catalogo.html">Catálogo</a>
@@ -688,32 +623,19 @@
     </nav>
   </footer>
 
-  <!-- El orden importa: auth-ui.js deja window.zapiAuth (por si
-       productos.js necesita exigir cuenta); despues productos.js
-       define PRODUCTOS, precios y el carrito compartido; modal.js
-       engancha la ventana de detalle a esos datos; luego los dos
-       scripts que dibujan, que se registran como suscriptores del
-       carrito; y navigation.js enruta las secciones. -->
+  
   <script src="./public/js/auth-ui.js" defer></script>
   <script src="./public/js/productos.js" defer></script>
   <script src="./public/js/modal.js" defer></script>
 <script src="./public/js/catalogo.js" defer></script>
 <script src="./public/js/carrito.js" defer></script>
 <script src="./public/js/testimonio-form.js" defer></script>
-<!-- buscador.js y menu.js faltaban aca: el buscador del header y el
-     panel de navegacion estan en el HTML de index, pero sin estos dos
-     scripts no respondian. El buscador necesita a catalogo.js, que
-     expone window.aplicarBusqueda. -->
+
 <script src="./public/js/buscador.js" defer></script>
 <script src="./public/js/zapi-bot.js" defer></script>
-<!-- testimonios.js dibuja el carrusel de opiniones y contacto.js
-     valida y envia el formulario: los dos dependen solo del markup
-     del index, asi que pueden ir despues del bot. -->
+
 <script src="./public/js/testimonios.js" defer></script>
-<!-- SDK de EmailJS desde el CDN (v4). contacto.js lo usa para mandar
-     el aviso por correo; el dominio esta permitido en la CSP de
-     backend/src/middlewares/seguridad.js. Si el CDN no carga, el
-     formulario igual guarda la consulta en el backend. -->
+
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
 <script src="./public/js/contacto.js" defer></script>
 <script src="./public/js/navigation.js" defer></script>

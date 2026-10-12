@@ -12,30 +12,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Google Fonts: tipografia del sitio y Material Symbols en una
-         sola peticion (antes eran dos <link> al mismo origen, y la
-         segunda bloqueaba el render). El eje italico de Inter no se
-         usa, asi que no se pide. -->
+    
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
 
-    <!-- Tu CSS principal -->
+    
     <link rel="stylesheet" href="./public/css/styles.css">
 
-    <!-- CSS del carrito -->
+    
     <link rel="stylesheet" href="./public/css/stylecarrito.css">
 
-    <!-- CSS de la ventana flotante de producto. Se carga DESPUES
-         del del carrito, para que sus reglas ganen: el modal es el
-         mismo en las dos paginas.
-
-         Es catalogo-modal.css y no catalogo.css a proposito: el
-         carrito no dibuja la grilla de productos, asi que no
-         carga esas ~11KB de reglas. Los dos archivos se generan
-         desde catalogo.css con node tools/extraer-modal-css.js -->
+    
     <link rel="stylesheet" href="./public/css/catalogo-modal.css">
 
-    <!-- CSS del chat ZAPI -->
+    
     <link rel="stylesheet" href="./public/css/zapi-bot.css">
 </head>
 
@@ -43,7 +33,7 @@
 
     <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 
-    <!-- HEADER -->
+    
 
     <header class="cart-header">
 
@@ -67,8 +57,7 @@
             <a href="index.html">Inicio</a>
             <a href="catalogo.html">Catálogo</a>
             <a href="pedidos.html">Mis pedidos</a>
-            <!-- Cuenta. auth-ui.js rellena el nombre y muestra "Salir"
-                 cuando hay sesión. -->
+            
             <span class="nav-cuenta">
                 <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
                 <span class="nav-usuario">
@@ -81,8 +70,7 @@
     </header>
 
 
-    <!-- Aviso para quien no inició sesión. Se muestra solo con
-         data-auth="no"; el carrito de abajo se muestra con "si". -->
+    
     <section class="cart-login" id="cartLogin">
         <span class="material-symbols-outlined">lock</span>
         <h2>Necesitás una cuenta</h2>
@@ -91,11 +79,11 @@
     </section>
 
 
-    <!-- CONTENIDO -->
+    
 
     <main class="cart-page" id="contenido" tabindex="-1">
 
-        <!-- CARRITO -->
+        
 
         <section class="cart-content">
 
@@ -124,14 +112,14 @@
             </div>
 
 
-            <!-- PRODUCTOS -->
+            
 
             <div id="cartItems" class="cart-items">
-                <!-- JavaScript genera los productos -->
+                
             </div>
 
 
-            <!-- CARRITO VACÍO -->
+            
 
             <div id="emptyCart" class="empty-cart hidden">
 
@@ -160,7 +148,7 @@
             </div>
 
 
-            <!-- RECOMENDACIONES -->
+            
 
             <section
                 class="recommendations"
@@ -180,7 +168,7 @@
                 <div
                     id="recommendationsList"
                     class="recommendations-list">
-                    <!-- JavaScript genera las recomendaciones -->
+                    
                 </div>
 
             </section>
@@ -188,7 +176,7 @@
         </section>
 
 
-        <!-- RESUMEN -->
+        
 
         <aside class="cart-summary">
 
@@ -229,7 +217,7 @@
             </div>
 
 
-            <!-- DATOS DE ENTREGA -->
+            
 
             <div class="delivery-box">
 
@@ -249,13 +237,12 @@
             </div>
 
 
-            <!-- CHECKOUT: lo construye carrito.js sobre este hueco,
-                 porque el mismo bloque vive dentro de index.html -->
+            
 
             <div id="checkoutRoot" class="checkout-root"></div>
 
 
-            <!-- WHATSAPP -->
+            
 
            <button
     type="button"
@@ -282,7 +269,7 @@
             </p>
 
 
-            <!-- Abre la ventana flotante para dejar una opinión -->
+            
 
             <button
                 type="button"
@@ -301,7 +288,7 @@
     </main>
 
 
-    <!-- Ventana flotante de detalle de producto, la misma del catalogo -->
+    
     <div class="modal-producto" id="modalProducto" hidden>
 
         <div class="modal-fondo" data-cerrar-modal></div>
@@ -360,10 +347,7 @@
                     Agregar al carrito
                 </button>
 
-                <!-- Lo llena modal.js con la pagina estatica del producto
-                     (productos/<slug>.html). Sin JavaScript queda solo el
-                     texto "Ver la ficha completa" y el [hidden], que no
-                     engana a nadie. -->
+                
                 <a class="modal-ficha" id="modalFicha" hidden>Ver la ficha completa</a>
             </div>
         </div>

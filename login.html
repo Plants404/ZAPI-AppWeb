@@ -6,10 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Ingresar · ZAPI</title>
 
-<!-- ==========================================================
-     TIPOGRAFÍAS (Bebas Neue para títulos, Montserrat para texto)
-     Son las que ya usa el sitio; acá se cargan una sola vez.
-     ========================================================== -->
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
@@ -24,16 +21,10 @@
 
 <div class="wrap">
 
-    <!-- El "shake" del error se aplica acá para sacudir solo al personaje -->
+    
     <div id="shake">
 
-        <!--
-            Personaje "Brotecito". Las 12 caras son <img> apilados en el
-            mismo encuadre (235,30 x 257,40), alineadas para cambiar de
-            una a otra sin saltos: se ve solo la que pide data-face.
-            .tilt inclina la cabeza con el cursor (--r/--tx), .bob la hace
-            respirar y .pp da el "pop" al cambiar de expresión.
-        -->
+        
         <div class="head" id="hd" data-state="happy" data-face="1" role="img"
              aria-label="Personaje con un brote en la cabeza">
             <div class="tilt" id="tilt"><div class="pp" id="pp"><div class="bob">
@@ -60,7 +51,7 @@
         <h1 id="titulo">Bienvenido</h1>
         <p class="msg" id="msg" aria-live="polite">¡Hola! Ingresá para seguir creciendo</p>
 
-        <!-- El nombre solo se pide al crear la cuenta; login lo esconde. -->
+        
         <div class="f" id="fn" hidden>
             <label for="n">Nombre</label>
             <input id="n" type="text" autocomplete="name" placeholder="Tu nombre">

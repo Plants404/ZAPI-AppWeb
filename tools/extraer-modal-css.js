@@ -92,14 +92,9 @@ function sinSangria(bloque) {
 const { bloque: catalogo, compartido } = recortarCompartido(lineas.slice(0, corte));
 const modal = lineas.slice(corte);
 
-const CABECERA_COMPARTIDA =
-    '/* Boton agregar: lo usan las tarjetas del catalogo y el modal,\n' +
-    '   que tambien esta en carrito.html. Por eso viaja en las dos\n' +
-    '   mitades de la hoja. */\n\n';
-
 fs.writeFileSync(
     path.join(CSS, 'catalogo-modal.css'),
-    AVISO + CABECERA_COMPARTIDA + compartido.replace(/^[ \t]+/gm, '') + '\n\n' + sinSangria(modal) + '\n'
+    AVISO + compartido.replace(/^[ \t]+/gm, '') + '\n\n' + sinSangria(modal) + '\n'
 );
 
 fs.writeFileSync(

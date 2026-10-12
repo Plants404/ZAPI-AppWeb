@@ -1,18 +1,4 @@
 'use strict';
-/* ============================================================
-   MIS PEDIDOS · ZAPI
-   ------------------------------------------------------------
-   Pide el historial de la cuenta (GET /api/pedidos) y dibuja una
-   tarjeta por pedido: codigo, fecha, estado, lineas y total.
-
-   La pagina pide cuenta. auth-ui.js resuelve la sesion y marca
-   <html data-auth>; el CSS muestra el aviso de login o la lista.
-   Aca solo se consulta cuando zapiAuth dice que hay sesion, y todo
-   lo que viene del servidor se escapa antes de entrar al HTML.
-
-   formatearPrecio y escaparHTML se definen locales: esta pagina no
-   carga productos.js, asi que no puede apoyarse en sus globales.
-   ============================================================ */
 (function () {
 
     const lista = document.getElementById('pedidosLista');
@@ -20,9 +6,6 @@
     const aviso = document.getElementById('pedidosError');
 
     if (!lista || !vacio) return;
-
-    /* Las mismas reglas que usa el resto del sitio para estos dos
-       helpers, recortadas a lo que necesita esta pagina. */
 
     const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter => ({
         "&": "&amp;",
@@ -117,9 +100,6 @@
                 headers: { Accept: 'application/json' },
             });
 
-            /* La sesion pudo vencer entre la consulta de auth-ui y
-               esta: no es un error que haya que mostrar, la pagina
-               ya cambia sola al aviso de login. */
             if (respuesta.status === 401) return;
 
             if (!respuesta.ok) {
