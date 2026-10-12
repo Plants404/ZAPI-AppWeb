@@ -30,6 +30,8 @@ const CSP = {
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         imgSrc: ["'self'", 'data:'],
         connectSrc: ["'self'", 'https://api.emailjs.com'],
+        /* El mapa de la seccion Nosotros se embebe desde Google Maps. */
+        frameSrc: ["'self'", 'https://www.google.com'],
         frameAncestors: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],

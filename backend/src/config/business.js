@@ -26,7 +26,7 @@ const NEGOCIO = {
         'aromaticas, hortalizas, suculentas y cactus, mas servicios ' +
         'de diseno y mantenimiento de espacios verdes.',
 
-    ubicacion: 'Canelones, Uruguay',
+    ubicacion: 'Montevideo, Uruguay',
     horario:
         'Lunes a viernes de 9 a 18 hs y sabados de 9 a 13 hs. ' +
         'Fuera de horario respondemos lo antes posible.',

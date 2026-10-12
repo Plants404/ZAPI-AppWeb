@@ -1064,6 +1064,42 @@ body.no-scroll {
   padding: 0 1.75rem;
 }
 
+/* Mapa de la ubicacion (seccion Nosotros). El iframe lo sirve Google
+   Maps; su dominio esta permitido en frame-src de la CSP. */
+.benefits-mapa {
+  max-width: 900px;
+  margin: 3rem auto 0;
+  text-align: center;
+}
+
+.benefits-mapa h3 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  color: var(--forest);
+  margin-bottom: .5rem;
+}
+
+.benefits-mapa-direccion {
+  font-family: var(--sans);
+  font-size: .95rem;
+  color: var(--muted);
+  margin: 0 0 1.5rem;
+}
+
+.benefits-mapa-marco {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--white);
+}
+
+.benefits-mapa-frame {
+  display: block;
+  width: 100%;
+  height: 380px;
+  border: 0;
+}
+
 /* TESTIMONIOS
    Los dibuja public/js/testimonios.js: el contenedor .testimonios-
    grilla llega vacio del HTML y se arma aca. */
@@ -1802,6 +1838,10 @@ footer p,
 footer P {
   margin: 0;
   color: rgba(247, 244, 236, .7);
+}
+
+footer .footer-direccion {
+  margin-top: .6rem;
 }
 
 /* Enlaces del pie. El sitio ya vive entero en index.html, asi
