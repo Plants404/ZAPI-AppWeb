@@ -1,8 +1,8 @@
 /* ==========================================================
    FORMULARIO DE CONTACTO
    ------------------------------------------------------------
-   Valida en el navegador, manda a POST /api/contacto y muestra el
-   resultado.
+   Valida en el navegador, manda a POST /api/contacto, avisa por
+   correo con EmailJS y muestra el resultado.
 
    Por que valida dos veces
    -----------------------
@@ -15,6 +15,10 @@
    Los errores del servidor traen el nombre del campo (campo:
    "correo"), asi que se marca ese input y se le lleva el foco en
    vez de pintar un error suelto.
+
+   El orden de envio es backend primero y correo despues: lo que no
+   se puede perder es la consulta guardada. Si EmailJS no esta o
+   falla, el exito igual se muestra.
    ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -50,11 +54,20 @@ document.addEventListener("DOMContentLoaded", () => {
             corto: "Revisá el correo electrónico"
         },
         {
+            id: "contactoAsunto",
+            name: "asunto",
+            error: "errorAsunto",
+            vacio: "Escribí el asunto",
+            corto: "Escribí un asunto más descriptivo"
+        },
+        {
             id: "contactoTelefono",
             name: "telefono",
             error: "errorTelefono",
-            vacio: "Escribí un teléfono",
-            corto: "Revisá el teléfono de contacto"
+            vacio: "",
+            corto: "Revisá el teléfono de contacto",
+            /* Opcional: si queda vacio no se marca error. */
+            opcional: true
         },
         {
             id: "contactoConsulta",
@@ -69,6 +82,44 @@ document.addEventListener("DOMContentLoaded", () => {
        el ".com" que no esta, sin rechazar direcciones raras que si
        funcionan. */
     const CORREO = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+    /* ------------------------------------------------------------
+       Aviso por correo (EmailJS)
+       ------------------------------------------------------------
+       Ademas de guardar la consulta en el backend, se manda un aviso
+       por correo con EmailJS. La public key es publica por diseno;
+       la proteccion real es la allow-list de dominios del panel de
+       EmailJS (Account > Security). El SDK se carga con un <script>
+       antes que este archivo, asi que se toma de window.
+       ------------------------------------------------------------ */
+    const EMAILJS = {
+        publicKey: "svGiYtyfrTzCv-GhG",
+        serviceId: "service_n6oyujo",
+        templateId: "template_35zqdvg"
+    };
+
+    const emailjs = window.emailjs;
+
+    if (emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId) {
+        emailjs.init({ publicKey: EMAILJS.publicKey });
+    }
+
+    /* Los nombres de abajo son las variables del template:
+       {{nombre}}, {{correo}}, {{asunto}}, {{telefono}}, {{mensaje}},
+       {{reply_to}}. El campo se guarda como "consulta" en el backend
+       pero al template va como "mensaje", que es lo que muestra. */
+    async function avisarPorCorreo(datos) {
+        if (!emailjs || !EMAILJS.serviceId || !EMAILJS.templateId) return;
+
+        await emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, {
+            nombre: datos.nombre,
+            correo: datos.correo,
+            asunto: datos.asunto,
+            telefono: datos.telefono || "No dejó teléfono",
+            mensaje: datos.consulta,
+            reply_to: datos.correo
+        });
+    }
 
     /* ------------------------------------------------------------
        Pintado de los errores
@@ -103,6 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const valor = input.value.trim();
 
         if (!valor) {
+            /* El telefono es opcional: vacio no es un error. */
+            if (campo.opcional) {
+                marcarError(campo, "");
+                return "";
+            }
+
             marcarError(campo, campo.vacio);
             return campo.vacio;
         }
@@ -113,6 +170,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (campo.id === "contactoCorreo" && !CORREO.test(valor)) {
+            marcarError(campo, campo.corto);
+            return campo.corto;
+        }
+
+        if (campo.id === "contactoAsunto" && valor.length < 3) {
             marcarError(campo, campo.corto);
             return campo.corto;
         }
@@ -222,6 +284,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            /* La consulta quedo guardada. El aviso por correo va
+               aparte: si falla, el exito igual se muestra, porque lo
+               que no se puede perder (la consulta) ya esta a salvo.
+               El honeypot relleno no dispara ningun correo. */
+            if (!datos.sitio_web) {
+                try {
+                    await avisarPorCorreo(datos);
+                } catch {
+                    /* EmailJS caido o mal configurado: la consulta
+                       quedo guardada en el backend. */
+                }
+            }
+
             formulario.hidden = true;
 
             if (panelOk) {
@@ -242,7 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } finally {
             boton.disabled = false;
 
-            if (textoBoton) textoBoton.textContent = "Enviar consulta";
+            if (textoBoton) textoBoton.textContent = "Enviar mensaje";
         }
     }
 
