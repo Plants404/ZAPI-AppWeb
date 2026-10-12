@@ -841,91 +841,78 @@ if (clearCartButton) {
 /* ==========================================================
    WHATSAPP
    ------------------------------------------------------------
-   Este es el checkout de la tienda. No hay pasarela de pago:
-   se arma el pedido como texto y se abre una conversacion
-   con ZAPI, donde se confirman stock, precio y entrega.
+   Ultimo paso del checkout. Ya no es una accion suelta: con el
+   pedido creado en la API se arma el texto con el detalle y se
+   abre la conversacion con ZAPI para coordinar la entrega.
+
+   La llama enviarPedido, despues del 201. El boton de WhatsApp
+   no tiene accion propia: dispara el mismo checkout que el
+   formulario (validacion, API y, si sale bien, este mensaje).
    ========================================================== */
 
-const whatsappButton =
-    document.getElementById("whatsappButton");
+function abrirWhatsappPedido() {
+
+    /* Sin productos no hay nada que mandar */
+
+    if (cart.length === 0) return;
 
 
-if (whatsappButton) {
+    /* Calcular subtotal */
 
-    whatsappButton.addEventListener(
-        "click",
-        function() {
+    const subtotal =
+        cart.reduce(
+            (total, item) => {
 
-            /* Verificar carrito */
+                return total +
+                    (item.precio * item.cantidad);
 
-            if (cart.length === 0) {
+            },
 
-                alert(
-                    "Agregá al menos un producto al carrito."
-                );
-
-                return;
-
-            }
+            0
+        );
 
 
-            /* Calcular subtotal */
+    /* Calcular envío */
 
-            const subtotal =
-                cart.reduce(
-                    (total, item) => {
-
-                        return total +
-                            (item.precio * item.cantidad);
-
-                    },
-
-                    0
-                );
+    const shipping =
+        SHIPPING_COST;
 
 
-            /* Calcular envío */
+    /* Calcular total */
 
-            const shipping =
-                SHIPPING_COST;
-
-
-            /* Calcular total */
-
-            const total =
-                subtotal + shipping;
+    const total =
+        subtotal + shipping;
 
 
-            /* ==================================================
-               CONSTRUIR DETALLE DE PRODUCTOS
-               Una linea por producto: nombre, unidades y el
-               total de esa linea (precio x cantidad).
-               ================================================== */
+    /* ==================================================
+       DETALLE DE PRODUCTOS
+       Una linea por producto: nombre, unidades y el total de
+       esa linea (precio x cantidad).
+       ================================================== */
 
-            const productsText =
-                cart.map(item => {
+    const productsText =
+        cart.map(item => {
 
-                    const itemTotal =
-                        item.precio *
-                        item.cantidad;
-
-
-                    return (
-                        `• ${item.nombre} x${item.cantidad} — ` +
-                        `${formatearPrecio(itemTotal)}`
-                    );
-
-                }).join("\n");
+            const itemTotal =
+                item.precio *
+                item.cantidad;
 
 
-            /* ==================================================
-               CREAR MENSAJE
-               El texto tal cual lo va a leer el cliente en
-               WhatsApp: pedido, totales y la pregunta por la
-               entrega.
-               ================================================== */
+            return (
+                `• ${item.nombre} x${item.cantidad} — ` +
+                `${formatearPrecio(itemTotal)}`
+            );
 
-            const message = `Hola ZAPI 🌱
+        }).join("\n");
+
+
+    /* ==================================================
+       MENSAJE
+       El texto tal cual lo va a leer el cliente en WhatsApp:
+       pedido, totales y la pregunta por la entrega.
+       ================================================== */
+
+    const message = `Hola ZAPI 🌱
 
 Quiero realizar el siguiente pedido:
 
@@ -943,66 +930,75 @@ TOTAL: ${formatearPrecio(total)}
 Gracias.`;
 
 
-            /* ==================================================
-               CODIFICAR MENSAJE
-               El mensaje va dentro de la URL, asi que hay que
-               escapar los saltos de linea, el simbolo $ y los
-               acentos. Sin esto WhatsApp lo cortaria a la
-               primera linea.
-               ================================================== */
+    /* ==================================================
+       CODIFICAR MENSAJE
+       El mensaje va dentro de la URL, asi que hay que escapar
+       los saltos de linea, el simbolo $ y los acentos. Sin
+       esto WhatsApp lo cortaria a la primera linea.
+       ================================================== */
 
-            const encodedMessage =
-                encodeURIComponent(message);
-
-
-            /* ==================================================
-               CREAR ENLACE ESTÁNDAR DE WHATSAPP
-               ================================================== */
-
-            const whatsappURL =
-                `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+    const encodedMessage =
+        encodeURIComponent(message);
 
 
-            /* ==================================================
-               ABRIR WHATSAPP
-               Pestana nueva para no perder el carrito, y
-               noopener/noreferrer para que la pagina no
-               reciba acceso a la ventana abierta.
-               ================================================== */
+    /* ==================================================
+       ABRIR WHATSAPP
+       Pestana nueva para no perder el carrito, y
+       noopener/noreferrer para que la pagina no reciba acceso
+       a la ventana abierta.
+       ================================================== */
 
-            window.open(
-                whatsappURL,
-                "_blank",
-                "noopener,noreferrer"
-            );
-
-
-            /* Después de abrir WhatsApp se ofrece dejar una
-               opinión. Solo abre si el script está y hay sesión;
-               sin eso no pasa nada. */
-            if (typeof window.abrirTestimonio !== "function") return;
-
-            window.abrirTestimonio();
-
-        }
+    window.open(
+        `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`,
+        "_blank",
+        "noopener,noreferrer"
     );
+
+
+    /* Después de abrir WhatsApp se ofrece dejar una opinión. Solo
+       abre si el script está y hay sesión; sin eso no pasa nada. */
+
+    if (typeof window.abrirTestimonio === "function") {
+        window.abrirTestimonio();
+    }
+
+}
+
+
+/* El boton de WhatsApp dispara el checkout completo. Se engancha
+   aca y no dentro de un <form> porque el boton vive fuera, en el
+   resumen, y el formulario que valida lo construye montarCheckout. */
+
+const whatsappButton =
+    document.getElementById("whatsappButton");
+
+
+if (whatsappButton) {
+
+    whatsappButton.addEventListener("click", enviarPedido);
 
 }
 
 
 /* ==========================================================
-   CHECKOUT: CONFIRMAR PEDIDO
+   CHECKOUT: ENVIAR PEDIDO
    ------------------------------------------------------------
-   El checkout de verdad ahora es la API de pedidos: el formulario
-   manda el carrito de localStorage (items) y el servidor relee
-   precios y stock. WhatsApp queda como canal secundario para
-   coordinar la entrega.
+   Un solo boton, el de enviar, hace todo el checkout: valida los
+   datos de contacto, manda el carrito de localStorage (items) a la
+   API de pedidos, donde el servidor relee precios y stock, y con el
+   pedido creado abre WhatsApp para coordinar la entrega.
 
-   El formulario se construye por JS sobre #checkoutRoot porque la
-   misma pieza vive en carrito.html y dentro de index.html: una
-   sola implementacion, imposible que las dos paginas se
-   desincronicen. Reusa .campo-* de styles.css y .btn-whatsapp de
-   stylecarrito.css.
+   El formulario de contacto se construye por JS sobre #checkoutRoot
+   porque la misma pieza vive en carrito.html y dentro de index.html:
+   una sola implementacion, imposible que las dos paginas se
+   desincronicen. Reusa .campo-* de styles.css; el boton de enviar es
+   el .btn-whatsapp del resumen, con su listener en el bloque
+   WHATSAPP de mas arriba.
+
+   El estado (#pedEstado) queda fuera del formulario a proposito:
+   cuando el pedido sale bien el carrito se vacia y el formulario se
+   oculta, pero el mensaje de confirmacion tiene que seguir a la
+   vista.
    ========================================================== */
 
 const CAMPOS_PEDIDO = {
@@ -1109,11 +1105,16 @@ function enviarPedido(evento) {
         return;
     }
 
-    const boton = document.getElementById("pedBoton");
-    const textoBoton = boton.textContent;
+    /* El unico boton del checkout es el de enviar, que vive en el
+       resumen. Se guarda su HTML (no solo el texto) para devolverle
+       el icono cuando termina el envio. */
+    const boton = document.getElementById("whatsappButton");
+    const contenidoBoton = boton ? boton.innerHTML : "";
 
-    boton.disabled = true;
-    boton.textContent = "Enviando pedido...";
+    if (boton) {
+        boton.disabled = true;
+        boton.textContent = "Enviando pedido...";
+    }
 
     const items = cart.map(item => ({
         id: Number(item.id),
@@ -1146,6 +1147,11 @@ function enviarPedido(evento) {
                     "Te contactamos para coordinar la entrega.",
                     false
                 );
+
+                /* Con el pedido ya creado se abre WhatsApp con el
+                   detalle. Va antes de vaciar el carrito: el mensaje
+                   se arma leyendo "cart". */
+                abrirWhatsappPedido();
 
                 cart = [];
 
@@ -1239,19 +1245,21 @@ function enviarPedido(evento) {
         })
         .finally(() => {
 
+            if (!boton) return;
+
             boton.disabled = false;
 
-            boton.textContent = textoBoton;
+            boton.innerHTML = contenidoBoton;
 
         });
 
 }
 
 
-/* Construye el formulario una sola vez, adentro del hueco que
-   dejan las dos paginas. Sin JS el hueco queda vacio y el carrito
-   sigue andando por WhatsApp: el formulario es una mejora
-   progresiva, no un requisito. */
+/* Construye el formulario de contacto una sola vez, adentro del
+   hueco que dejan las dos paginas. Ya no tiene boton propio: lo
+   dispara el boton de enviar del resumen. Sin JS el hueco queda
+   vacio y no hay checkout (la API exige sesion de todos modos). */
 function montarCheckout() {
 
     const raiz = document.getElementById("checkoutRoot");
@@ -1306,21 +1314,10 @@ function montarCheckout() {
             <textarea class="campo-input campo-area" id="pedNotas"
                 name="notas" rows="3" maxlength="500"></textarea>
 
-            <button type="submit" class="btn-whatsapp checkout-boton"
-                id="pedBoton">
-
-                <span class="material-symbols-outlined">
-                    check_circle
-                </span>
-
-                Confirmar pedido
-
-            </button>
-
-            <p class="checkout-estado" id="pedEstado"
-                role="status" aria-live="polite" hidden></p>
-
         </form>
+
+        <p class="checkout-estado" id="pedEstado"
+            role="status" aria-live="polite" hidden></p>
 
     `;
 

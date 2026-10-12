@@ -836,13 +836,14 @@
 
 
 /* ==========================================================
-   CHECKOUT: CONFIRMAR PEDIDO
+   CHECKOUT: DATOS DE CONTACTO
    ------------------------------------------------------------
    El formulario de datos se construye por JS sobre
    #checkoutRoot (ver carrito.js), porque la misma pieza vive en
    carrito.html y dentro de index.html. Reusa los estilos del
-   formulario de contacto (styles.css) y el boton verde del
-   checkout, asi no hay dos idiomas visuales en el resumen.
+   formulario de contacto (styles.css). El boton que lo dispara es
+   el de enviar (.btn-whatsapp) del resumen: este formulario ya no
+   trae boton propio.
    ========================================================== */
 
 .checkout-root {
@@ -891,26 +892,6 @@
     min-height: 0;
 
     margin-top: .25rem;
-
-}
-
-.checkout-boton {
-
-    margin-top: 1rem;
-
-    /* El mismo CTA que WhatsApp, sin el latido: confirmar dos
-       veces seguidas no tiene que parecerse a una promocion. */
-    animation: none;
-
-}
-
-.checkout-boton:disabled {
-
-    opacity: .7;
-
-    transform: none;
-
-    cursor: wait;
 
 }
 
