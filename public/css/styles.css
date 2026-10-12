@@ -1699,6 +1699,94 @@ body.no-scroll {
   overflow: hidden;
 }
 
+/* AVISO FLOTANTE
+   Ventana que aparece abajo a la derecha cuando el backend guardo la
+   consulta pero EmailJS no pudo mandar el aviso por correo. No bloquea
+   la pagina: se cierra sola o con la cruz. El z-index queda por debajo
+   del modal (10050) y por encima del bot (100). */
+.aviso-flotante {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 9000;
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  width: min(360px, calc(100vw - 2.5rem));
+  padding: 1rem 1rem 1rem 1.15rem;
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid rgba(163, 52, 31, .22);
+  border-left: 4px solid var(--error);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  animation: aviso-entra .25s ease-out;
+}
+
+.aviso-flotante[hidden] {
+  display: none;
+}
+
+.aviso-flotante-icono {
+  flex: none;
+  font-size: 1.4rem;
+  color: var(--error);
+}
+
+.aviso-flotante-texto {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  font-family: var(--sans);
+  font-size: .9rem;
+  line-height: 1.35;
+}
+
+.aviso-flotante-texto strong {
+  font-size: .95rem;
+  color: var(--forest);
+}
+
+.aviso-flotante-cerrar {
+  flex: none;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .15rem;
+  border: none;
+  background: transparent;
+  color: var(--muted-texto);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.aviso-flotante-cerrar:hover {
+  background: var(--sand);
+  color: var(--forest);
+}
+
+.aviso-flotante-cerrar:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+.aviso-flotante-cerrar .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+@keyframes aviso-entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* FOOTER */
 footer {
   background: var(--ink);
@@ -2273,5 +2361,9 @@ body.con-testimonio-abierto {
 
   .testimonio-estrella:hover {
     transform: none;
+  }
+
+  .aviso-flotante {
+    animation: none;
   }
 }
