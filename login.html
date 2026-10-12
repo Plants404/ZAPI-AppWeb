@@ -28,42 +28,30 @@
     <div id="shake">
 
         <!--
-            Personaje. Cada capa es un <img> a pantalla completa sobre
-            un contenedor con la proporción 815 / 760. El <div class="tilt">
-            inclina la cabeza con el cursor y <div class="bob"> la hace
-            respirar. Las dos manos son los únicos elementos en %.
+            Personaje "Brotecito". Las 12 caras son <img> apilados en el
+            mismo encuadre (235,30 x 257,40), alineadas para cambiar de
+            una a otra sin saltos: se ve solo la que pide data-face.
+            .tilt inclina la cabeza con el cursor (--r/--tx), .bob la hace
+            respirar y .pp da el "pop" al cambiar de expresión.
         -->
-        <div class="head" id="hd" data-state="happy" role="img"
+        <div class="head" id="hd" data-state="happy" data-face="1" role="img"
              aria-label="Personaje con un brote en la cabeza">
-            <div class="tilt" id="tilt"><div class="bob">
+            <div class="tilt" id="tilt"><div class="pp" id="pp"><div class="bob">
 
-                <!-- de abajo hacia arriba -->
-                <img class="ly l-h"  src="/personaje/cabeza-v2.png"     alt="" draggable="false">
-                <img class="ly l-eo l-bl" src="/personaje/ojos-blanco.png" alt="" draggable="false">
-                <div class="ly l-eo l-irw" id="irw">
-                    <img class="ly l-ir" src="/personaje/iris.png" alt="" draggable="false">
-                </div>
-                <img class="ly l-eo l-pp" src="/personaje/ojos-parpados.png" alt="" draggable="false">
-                <img class="ly l-eh" src="/personaje/ojos-felices.png"  alt="" draggable="false">
-                <img class="ly l-ec" src="/personaje/ojos-llorando.png" alt="" draggable="false">
-                <img class="ly l-tr" src="/personaje/lagrimas.png"      alt="" draggable="false">
-                <img class="ly l-ms" src="/personaje/boca-sonrisa.png"  alt="" draggable="false">
-                <img class="ly l-mo" src="/personaje/boca-risa.png"     alt="" draggable="false">
-                <img class="ly l-mc" src="/personaje/boca-llanto.png"   alt="" draggable="false">
-                <img class="ly l-mk" src="/personaje/boca-picara.png"   alt="" draggable="false">
-                <img class="ly l-es" src="/personaje/ojos-sorpresa.png" alt="" draggable="false">
-                <img class="ly l-mp" src="/personaje/boca-o.png"        alt="" draggable="false">
-                <img class="ly l-pe" src="/personaje/pelo.png"          alt="" draggable="false">
-                <img class="ly l-gl" src="/personaje/lentes.png"        alt="" draggable="false">
-                <img class="ly l-br" src="/personaje/brote.png"         alt="" draggable="false">
-                <img class="ly l-st" src="/personaje/estrellas.png"     alt="" draggable="false">
-                <img class="ly l-sg" src="/personaje/signos.png"        alt="" draggable="false">
+                <img class="ex f1"  src="./personaje/01-feliz.svg"        alt="" draggable="false" decoding="async">
+                <img class="ex f2"  src="./personaje/02-duda.svg"         alt="" draggable="false" decoding="async">
+                <img class="ex f3"  src="./personaje/03-llanto.svg"       alt="" draggable="false" decoding="async">
+                <img class="ex f4"  src="./personaje/04-lentes.svg"       alt="" draggable="false" decoding="async">
+                <img class="ex f5"  src="./personaje/05-ojos-tapados.svg" alt="" draggable="false" decoding="async">
+                <img class="ex f6"  src="./personaje/06-diablito.svg"     alt="" draggable="false" decoding="async">
+                <img class="ex f7"  src="./personaje/07-guino.svg"        alt="" draggable="false" decoding="async">
+                <img class="ex f8"  src="./personaje/08-corazon.svg"      alt="" draggable="false" decoding="async">
+                <img class="ex f9"  src="./personaje/09-aburrido.svg"     alt="" draggable="false" decoding="async">
+                <img class="ex f10" src="./personaje/10-susto.svg"        alt="" draggable="false" decoding="async">
+                <img class="ex f11" src="./personaje/11-enojo.svg"        alt="" draggable="false" decoding="async">
+                <img class="ex f12" src="./personaje/12-apenado.svg"      alt="" draggable="false" decoding="async">
 
-                <!-- Encima de todo: las dos manos que tapan los ojos -->
-                <img class="hand hl" src="/personaje/mano-tapar.png" alt="" draggable="false">
-                <img class="hand hr" src="/personaje/mano-tapar.png" alt="" draggable="false">
-
-            </div></div>
+            </div></div></div>
         </div>
 
     </div>

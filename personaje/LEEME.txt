@@ -1,0 +1,20 @@
+PERSONAJE "BROTECITO" - ZAPI-AppWeb
+
+Esta carpeta contiene el arte del personaje listo para integrar en el login.
+
+12 expresiones en SVG (todas con el mismo encuadre: 235.3 x 257.4, alineadas para poder cambiar de una a otra sin saltos):
+  01-feliz.svg           risa con ojos cerrados (al cargar y en reposo)
+  02-duda.svg            sorprendido con signos de pregunta (correo invalido)
+  03-llanto.svg          llorando (error)
+  04-lentes.svg          lentes de sol (ingreso correcto)
+  05-ojos-tapados.svg    el pelo le tapa los ojos (campo de contraseña)
+  06-diablito.svg        sin uso por ahora
+  07-guino.svg           guiño (se asoma con "ver contraseña" y guiña en reposo)
+  08-corazon.svg         abraza un corazon (final del ingreso correcto)
+  09-aburrido.svg        sin uso por ahora
+  10-susto.svg           sin uso por ahora
+  11-enojo.svg           sin uso por ahora
+  12-apenado.svg         sin uso por ahora
+
+referencia-login.html: ejemplo funcional (HTML, CSS y JS) del comportamiento. Es solo una referencia: no se copia al proyecto.
+Para verlo, servir esta carpeta por HTTP (por ejemplo: python -m http.server) y abrir referencia-login.html.

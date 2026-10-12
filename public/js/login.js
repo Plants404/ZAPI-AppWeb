@@ -2,15 +2,20 @@
 /* ============================================================
    LOGIN · ZAPI
    ------------------------------------------------------------
-   Comportamiento del personaje animado y del formulario.
+   Comportamiento del personaje "Brotecito" (12 caras SVG
+   apiladas en #hd) y del formulario.
 
-   Estados del contenedor (#hd[data-state]):
-   - happy   al cargar (1,8 s) y vuelve a idle
-   - idle    ojos abiertos y sonrisa suave
-   - hide    foco en la contraseña (las manos tapan los ojos)
-   - error   correo válido pero contraseña < 4: llanto + sacudida
-   - ok      datos correctos: lentes, estrellas, pícara y saltitos
-   - confuse correo inválido: sorpresa, boca "o", signos y cabeza -4°
+   Estados (#hd[data-state]) y cara que muestran:
+   - happy   al cargar (1,8 s); cara 1 y vuelve a idle
+   - idle    reposo: cara 1, sigue el cursor y guiña de a ratos
+   - look    foco en el correo: cara 1, inclina -3° y corre -2 %
+   - hide    foco en la contraseña: cara 5 (las manos tapan los ojos)
+   - confuse correo inválido: cara 2, inclina -4° y vuelve a los 2,2 s
+   - error   el servidor rechazó: cara 3 + sacudida
+   - ok      entró: cara 4, a los 1,3 s la 8 y redirige a los 1,5 s
+
+   Con la contraseña a la vista (data-peek) el estado hide muestra
+   la cara 7 (guiño), como si se asomara.
 
    Va en archivo aparte para respetar la CSP (script-src 'self').
    ============================================================ */
@@ -19,6 +24,7 @@
     const $ = (s) => document.querySelector(s);
     const hd = $('#hd');
     const tilt = $('#tilt');
+    const pp = $('#pp');
     const msg = $('#msg');
     const u = $('#u');
     const p = $('#p');
@@ -32,29 +38,53 @@
     const shake = $('#shake');
     const form = $('#f');
 
-    /* La máscara del iris llega por JS (no por style inline: la CSP
-       del sitio solo permite style-src 'self'). */
-    $('#irw').style.setProperty('--m', 'url(/personaje/ojos-blanco.png)');
-
     const cl = (v, a, b) => Math.max(a, Math.min(b, v));
 
-    /* st: cambia el estado del personaje y, si viene, el mensaje. */
-    function st(s, m) {
-        hd.dataset.state = s;
-        if (m) msg.textContent = m;
+    /* Cara que corresponde a cada estado. */
+    const CARA = { happy: 1, idle: 1, look: 1, hide: 5, confuse: 2, error: 3, ok: 4 };
+    let estado = 'happy';
+    let tm;
+
+    /* La contraseña a la vista asoma la cara que guiña. */
+    function caraActual() {
+        return estado === 'hide' && hd.hasAttribute('data-peek') ? 7 : CARA[estado];
     }
 
+    /* setCara: cambia la cara visible. Con quiet no hace el "pop"
+       (el guiño del reposo no debe saltar). */
+    function setCara(numero, quiet) {
+        if (+hd.dataset.face === numero) return;
+        hd.dataset.face = numero;
+        if (quiet) return;
+        pp.classList.remove('pop');
+        void pp.offsetWidth;
+        pp.classList.add('pop');
+    }
+
+    /* st: cambia el estado y, si viene, el mensaje. */
+    function st(s, m) {
+        estado = s;
+        hd.dataset.state = s;
+        if (m) msg.textContent = m;
+        setCara(caraActual());
+        if (s === 'ok') {
+            setTimeout(function () { if (estado === 'ok') setCara(8); }, 1300);
+        }
+    }
+
+    /* lean: inclina la cabeza (--r) y la corre de lado (--tx). */
+    function lean(r, x) {
+        tilt.style.setProperty('--r', r + 'deg');
+        tilt.style.setProperty('--tx', x + '%');
+    }
+
+    function rest() { lean(0, 0); }
+
     const DEF = '¡Hola! Ingresá para seguir creciendo';
-    let tm;
 
     /* Mismo formato que pide el diseño: acepta .com, .com.uy, etc. */
     function valid(v) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
-    }
-
-    /* restore: deja la inclinación en cero. */
-    function rest() {
-        tilt.style.setProperty('--r', '0deg');
     }
 
     /* Confusión por correo inválido. A los 2,2 s vuelve a idle,
@@ -62,66 +92,60 @@
     function confuse() {
         clearTimeout(tm);
         st('confuse', 'Revisá el correo: falta el @ o el .com');
-        tilt.style.setProperty('--r', '-4deg');
+        lean(-4, 0);
         tm = setTimeout(function () {
-            if (hd.dataset.state !== 'confuse') return;
+            if (estado !== 'confuse') return;
             rest();
             if (document.activeElement === p) st('hide', 'Shh, no estoy mirando');
             else st('idle', DEF);
         }, 2200);
     }
 
-    /* aim: mueve el iris. x e y llegan normalizados a ~[-60, 60]
-       y ~[-50, 50]; el desplazamiento máximo es 2,2 % del ancho
-       (horizontal) y 1,6 % (vertical). */
-    function aim(x, y) {
-        const w = hd.clientWidth;
-        hd.style.setProperty('--ix', (x / 60 * w * 0.022).toFixed(2) + 'px');
-        hd.style.setProperty('--iy', (y / 50 * w * 0.016).toFixed(2) + 'px');
-    }
-
-    /* Los ojos siguen el cursor y la cabeza se inclina hasta ±3°,
-       pero solo en reposo (idle). */
+    /* La cabeza sigue el cursor, solo en reposo (idle). */
     document.addEventListener('pointermove', function (e) {
-        if (hd.dataset.state !== 'idle') return;
+        if (estado !== 'idle') return;
         const r = hd.getBoundingClientRect();
-        const dx = cl((e.clientX - r.left - r.width / 2) / (r.width * 1.2), -1, 1);
-        const dy = cl((e.clientY - r.top - r.height * 0.7) / (r.height * 1.2), -1, 1);
-        aim(dx * 60, dy * 50);
-        tilt.style.setProperty('--r', (dx * 3).toFixed(2) + 'deg');
+        const dx = cl((e.clientX - r.left - r.width / 2) / (r.width * 1.4), -1, 1);
+        lean((dx * 4).toFixed(2), (dx * 2).toFixed(2));
     });
 
-    /* Parpadeo: 140 ms entre ojos felices y abiertos, cada 2,4-5,2 s. */
-    function blink() {
-        hd.classList.add('blink');
-        setTimeout(() => hd.classList.remove('blink'), 140);
-        setTimeout(blink, 2400 + Math.random() * 2800);
+    /* Guiño en reposo: cara 7 durante 750 ms, cada 3,2-6,4 s,
+       sin "pop" para que no salte. */
+    function guino() {
+        setTimeout(function () {
+            if (estado === 'idle' || estado === 'look') {
+                setCara(7, true);
+                setTimeout(function () {
+                    if (estado === 'idle' || estado === 'look') setCara(1, true);
+                }, 750);
+            }
+            guino();
+        }, 3200 + Math.random() * 3200);
     }
-    blink();
+    guino();
 
     /* Entrada: saluda (happy) y a los 1,8 s queda en idle. */
     st('happy');
-    setTimeout(() => st('idle'), 1800);
+    setTimeout(function () { if (estado === 'happy') st('idle'); }, 1800);
 
     /* --- Correo --- */
     u.addEventListener('focus', function () {
         clearTimeout(tm);
-        st('idle', DEF);
-        aim(0, 40);
-        rest();
+        st('look', DEF);
+        lean(-3, -2);
+    });
+    /* Al escribir, la inclinación crece con el largo del correo. */
+    u.addEventListener('input', function () {
+        lean(cl((u.value.length - 10) * .3, -3, 4), cl((u.value.length - 10) * .3, -2, 3));
     });
     u.addEventListener('blur', function () {
         if (u.value.trim() && !valid(u.value.trim())) confuse();
-    });
-    /* Al escribir mira hacia abajo y hacia el lado, según el largo. */
-    u.addEventListener('input', function () {
-        aim(cl((u.value.length - 10) * 5, -45, 45), 40);
-        tilt.style.setProperty('--r', cl((u.value.length - 10) * 0.25, -2.5, 2.5) + 'deg');
+        else if (estado === 'look') { st('idle'); rest(); }
     });
 
     /* --- Contraseña --- */
     p.addEventListener('focus', function () {
-        if (hd.dataset.state === 'confuse') return;
+        if (estado === 'confuse') return;
         st('hide', 'Shh, no estoy mirando');
         rest();
     });
@@ -130,18 +154,19 @@
            vuelve a enfocar el campo enseguida. */
         if (e.relatedTarget === t) return;
         hd.removeAttribute('data-peek');
-        if (hd.dataset.state === 'confuse') return;
+        if (estado === 'confuse') return;
         st('idle', DEF);
     });
 
     /* --- Botón VER / OCULTAR --- */
     t.addEventListener('click', function () {
-        const show = p.type === 'password';
-        p.type = show ? 'text' : 'password';
-        t.textContent = show ? 'OCULTAR' : 'VER';
+        const mostrar = p.type === 'password';
+        p.type = mostrar ? 'text' : 'password';
+        t.textContent = mostrar ? 'OCULTAR' : 'VER';
         p.focus();
-        if (show) hd.setAttribute('data-peek', '');
+        if (mostrar) hd.setAttribute('data-peek', '');
         else hd.removeAttribute('data-peek');
+        setCara(caraActual());
     });
 
     /* --- Modo: ingresar o crear cuenta --- */
@@ -157,9 +182,7 @@
         swapTexto.textContent = registro ? '¿Ya tenés cuenta?' : '¿No tenés cuenta?';
         swap.textContent = registro ? 'Ingresar' : 'Crear una';
         p.autocomplete = registro ? 'new-password' : 'current-password';
-        st('idle', registro
-            ? '¡Hola! Creá tu cuenta y empecemos'
-            : DEF);
+        st('idle', registro ? '¡Hola! Creá tu cuenta y empecemos' : DEF);
     }
 
     swap.addEventListener('click', function () {
@@ -167,13 +190,13 @@
         (modo === 'registro' ? n : u).focus();
     });
 
-    /* Sacude al personaje cuando los datos no cierran. */
+    /* Sacude al personaje cuando el servidor rechaza los datos. */
     function sacudir() {
         shake.classList.remove('shake');
         void shake.offsetWidth;
         shake.classList.add('shake');
         setTimeout(function () {
-            if (hd.dataset.state === 'error') st('idle', DEF);
+            if (estado === 'error') st('idle', DEF);
         }, 2400);
     }
 
@@ -229,7 +252,7 @@
             st('ok', '¡Listo! Entrando…');
             window.setTimeout(function () {
                 window.location.href = destino();
-            }, 900);
+            }, 1500);
         } catch (error) {
             st('error', 'No pudimos conectarnos. Probá de nuevo en un momento');
             sacudir();
