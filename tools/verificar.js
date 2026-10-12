@@ -10,14 +10,14 @@ const raiz = path.join(__dirname, '..');
 /* Los HTML siguen en la raiz para no cambiar las URLs publicas
    (/catalogo.html, /productos/albahaca.html). Los estilos, scripts e
    imagenes viven en public/. */
-const HTML = ['index.html', 'catalogo.html', 'carrito.html', 'login.html',
-    '404.html'];
+const HTML = ['index.html', 'catalogo.html', 'carrito.html', 'pedidos.html',
+    'login.html', '404.html'];
 const CSS = ['styles.css', 'catalogo.css', 'catalogo-modal.css',
-    'catalogo-catalogo.css', 'stylecarrito.css', 'zapi-bot.css',
+    'catalogo-catalogo.css', 'stylecarrito.css', 'pedidos.css', 'zapi-bot.css',
     'login.css',
     '404.css'];
 const JS = ['auth-ui.js', 'productos.js', 'modal.js', 'catalogo.js',
-    'carrito.js', 'testimonio-form.js', 'zapi-bot.js',
+    'carrito.js', 'pedidos.js', 'testimonio-form.js', 'zapi-bot.js',
     'navigation.js', 'buscador.js',
     'menu.js', 'testimonios.js', 'contacto.js', 'login.js', '404.js'];
 

@@ -19,9 +19,9 @@
    productos/ con readdirSync. Así una ficha nueva entra al sitemap
    apenas se genera, sin que haya que acordarse de agregarla.
 
-   carrito.html queda afuera a proposito: lleva
+   carrito.html y pedidos.html quedan afuera a proposito: llevan
    <meta name="robots" content="noindex, follow">, o sea que no se
-   quiere en el indice. Tampoco se lo bloquea en robots.txt: si se
+   quieren en el indice. Tampoco se los bloquea en robots.txt: si se
    bloquea, el buscador no puede leer el noindex y lo termina
    mostrando igual. */
 
@@ -145,6 +145,6 @@ console.log(`  ${validas.length} URLs en el sitemap:`);
 for (const item of validas) {
     console.log(`    ${item.loc}`);
 }
-console.log('  carrito.html NO va: lleva noindex, follow.');
+console.log('  carrito.html y pedidos.html NO van: llevan noindex, follow.');
 console.log(`  Revisar SITIO: ahora apunta a ${SITIO}. Si el dominio final`);
 console.log('  es otro, cambiar esa constante y volver a correr el generador.');

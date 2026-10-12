@@ -1,0 +1,139 @@
+/* ==========================================================
+   MIS PEDIDOS
+   ------------------------------------------------------------
+   Historial de la cuenta. El header, el footer, el aviso de login
+   (#cartLogin) y el estado vacio (.empty-cart) los toma
+   stylecarrito.css; aca vive solo la lista de pedidos.
+
+   La pagina se muestra cuando auth-ui.js marca <html data-auth="si">.
+   Sin sesion queda el aviso de login y esta seccion no se dibuja ni
+   por un instante. */
+html:not([data-auth="si"]) main.pedidos-page {
+    display: none;
+}
+
+.pedidos-page {
+    width: min(760px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 2.5rem 0 4rem;
+}
+
+.pedidos-heading {
+    margin-bottom: 2rem;
+}
+
+.pedidos-heading h2 {
+    margin: .3rem 0 .5rem;
+}
+
+.pedidos-heading p {
+    margin: 0;
+    max-width: 60ch;
+    color: var(--muted-texto);
+}
+
+/* Aviso de error de la consulta. */
+.pedidos-aviso {
+    margin: 0 0 1.5rem;
+    padding: .9rem 1.1rem;
+    border: 1px solid var(--error);
+    border-radius: var(--radius);
+    background: var(--white);
+    color: var(--error);
+    font-size: .95rem;
+}
+
+.pedidos-lista {
+    display: grid;
+    gap: 1.25rem;
+}
+
+.pedido-card {
+    padding: 1.4rem 1.5rem;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.pedido-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .6rem 1rem;
+    padding-bottom: .9rem;
+    border-bottom: 1px solid var(--sand);
+}
+
+.pedido-cabecera > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.pedido-codigo {
+    color: var(--forest);
+    font-weight: 600;
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.pedido-fecha {
+    color: var(--muted-texto);
+    font-size: .85rem;
+}
+
+.pedido-estado {
+    padding: .3rem .85rem;
+    border-radius: 999px;
+    background: var(--sand);
+    color: var(--forest);
+    font-size: .78rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    letter-spacing: .03em;
+}
+
+.pedido-lineas {
+    display: grid;
+    gap: .5rem;
+    padding: 1rem 0;
+}
+
+.pedido-linea {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: .35rem .8rem;
+    font-size: .95rem;
+}
+
+.pedido-linea-cantidad {
+    color: var(--muted-texto);
+    font-variant-numeric: tabular-nums;
+}
+
+.pedido-linea-nombre {
+    color: var(--ink);
+}
+
+.pedido-linea-precio {
+    color: var(--forest);
+    font-weight: 600;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.pedido-pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: .9rem;
+    border-top: 1px solid var(--sand);
+    color: var(--forest);
+    font-weight: 600;
+}
+
+.pedido-pie strong {
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums;
+}
