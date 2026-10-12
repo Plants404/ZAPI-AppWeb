@@ -11,11 +11,10 @@
    npm run generar:testimonios: una sola copia de cada opinion,
    imposible que la base y el respaldo disparen.
 
-   Se limita el resultado: con un catalogo chico no hace falta
-   traer todo, y el front no muestra mas de cinco por pagina de
-   todas formas. La consulta lleva lean() porque es de solo
-   lectura y no se necesitan los documentos de Mongoose: se
-   serializa mas rapido.
+   Se limita el resultado: la seccion publica muestra como maximo
+   diez opiniones, asi que traer mas no tiene sentido. La consulta
+   lleva lean() porque es de solo lectura y no se necesitan los
+   documentos de Mongoose: se serializa mas rapido.
    ========================================================== */
 
 const fs = require('fs');
@@ -25,7 +24,7 @@ const mongoose = require('mongoose');
 const { Testimonio } = require('../models/testimonio.model');
 const log = require('../utils/log');
 
-const MAXIMO = 50;
+const MAXIMO = 10;
 
 /* La vista de administracion trae publicadas y ocultas: lleva un
    tope mas alto que la publica, pero igual acotado. */
@@ -184,9 +183,38 @@ async function cambiarPublicado(id, publicado) {
     return documento ? aAdmin(documento) : null;
 }
 
+/* Guarda una opinion que llega por la API: una persona con sesion
+   la escribe en la ventana flotante, despues de mandar el pedido
+   por WhatsApp. Nace publicada (es una opinion de cliente, no un
+   borrador) y sin producto asociado; el admin puede ocultarla
+   despues con cambiarPublicado. Devuelve la misma forma publica
+   que listarPublicados. */
+async function crear(datos, usuarioId = null) {
+    const documento = await Testimonio.create({
+        autor: datos.autor,
+        lugar: datos.lugar,
+        texto: datos.texto,
+        estrellas: datos.estrellas,
+        fecha: new Date(),
+        producto_id: null,
+        publicado: true,
+        usuario: usuarioId || null,
+    });
+
+    return {
+        autor: documento.autor,
+        lugar: documento.lugar || '',
+        texto: documento.texto,
+        estrellas: documento.estrellas,
+        fecha: documento.fecha,
+        producto_id: documento.producto_id || null,
+    };
+}
+
 module.exports = {
     sembrarTestimonios,
     listarPublicados,
     listarTodos,
     cambiarPublicado,
+    crear,
 };
