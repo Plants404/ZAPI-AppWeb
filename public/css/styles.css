@@ -1378,10 +1378,20 @@ body.no-scroll {
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
   border: 1px solid rgba(31, 58, 46, .06);
+  /* Acento de marca arriba de la tarjeta: un filo verde que la
+     despega del fondo sin recargarla. */
+  border-top: 4px solid var(--leaf);
 }
 
 .contacto-panel-titulo {
-  margin-bottom: 1.5rem;
+  margin-bottom: .35rem;
+}
+
+.contacto-panel-sub {
+  margin: 0 0 1.5rem;
+  font-family: var(--sans);
+  font-size: .95rem;
+  color: var(--muted-texto);
 }
 
 /* FORMULARIO
@@ -1411,6 +1421,41 @@ body.no-scroll {
   color: var(--leaf);
 }
 
+/* El telefono dice "(opcional)" y no lleva asterisco: el gris lo
+   separa del verde de los obligatorios. */
+.campo-label .campo-opcional {
+  font-weight: 400;
+  color: var(--muted-texto);
+}
+
+/* El wrapper deja sitio para el icono: el input arranca corrido a
+   la derecha y el icono va por encima, sin robar el click. */
+.campo-control {
+  position: relative;
+  display: flex;
+}
+
+.campo-control .campo-input {
+  padding-left: 2.75rem;
+}
+
+.campo-icono {
+  position: absolute;
+  left: .95rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.15rem;
+  color: var(--moss);
+  pointer-events: none;
+  transition: color .18s ease;
+}
+
+/* El icono acompana al campo cuando se escribe o se pasa el mouse. */
+.campo-control:focus-within .campo-icono,
+.campo-control:hover .campo-icono {
+  color: var(--leaf);
+}
+
 .campo-input {
   width: 100%;
   min-width: 0;
@@ -1427,10 +1472,18 @@ body.no-scroll {
      que se ve bien contra el blanco. */
   border: 2px solid var(--borde-input);
   border-radius: 10px;
+  transition: border-color .18s ease, box-shadow .18s ease;
 }
 
 .campo-input::placeholder {
   color: var(--muted);
+}
+
+/* Al pasar el mouse el borde toma el verde del foco; el foco real se
+   distingue por el aro. Si el campo esta con error, esa regla de mas
+   abajo tiene la ultima palabra. */
+.campo-input:hover:not(:focus) {
+  border-color: var(--leaf);
 }
 
 .campo-input:focus {
@@ -1518,12 +1571,18 @@ body.no-scroll {
   font-weight: 500;
   letter-spacing: .02em;
   box-shadow: var(--shadow-sm);
+  transition: background .2s ease, transform .15s ease, box-shadow .2s ease;
 }
 
 .formulario-enviar:hover {
   background: var(--moss);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.formulario-enviar:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
 }
 
 .formulario-enviar:focus-visible {

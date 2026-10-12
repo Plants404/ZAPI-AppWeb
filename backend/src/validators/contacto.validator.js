@@ -21,6 +21,7 @@ function validarContacto(cuerpo = {}) {
     const datos = {
         nombre: limpiarTexto(cuerpo.nombre, LARGO.nombre),
         correo: limpiarTexto(cuerpo.correo, LARGO.correo),
+        asunto: limpiarTexto(cuerpo.asunto, LARGO.asunto),
         telefono: limpiarTexto(cuerpo.telefono, LARGO.telefono),
         consulta: limpiarTexto(cuerpo.consulta, LARGO.consulta),
     };
@@ -33,7 +34,13 @@ function validarContacto(cuerpo = {}) {
         return { error: 'Revisá el correo electrónico', campo: 'correo' };
     }
 
-    if (soloDigitos(datos.telefono).length < MINIMOS.telefonoDigitos) {
+    if (datos.asunto.length < MINIMOS.asunto) {
+        return { error: 'Escribí el asunto', campo: 'asunto' };
+    }
+
+    /* El telefono es opcional: si viene vacio no se revisa, y si
+       viene algo se cuentan los digitos como siempre. */
+    if (datos.telefono && soloDigitos(datos.telefono).length < MINIMOS.telefonoDigitos) {
         return { error: 'Revisá el teléfono de contacto', campo: 'telefono' };
     }
 

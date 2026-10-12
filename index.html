@@ -466,9 +466,10 @@
 
         <!-- Columna del formulario -->
         <div class="contacto-panel">
-          <h3 class="contacto-panel-titulo">Escribinos</h3>
+          <h3 class="contacto-panel-titulo" id="contactoPanelTitulo">Escribinos</h3>
+          <p class="contacto-panel-sub">Contanos qué necesitás y te respondemos a la brevedad.</p>
 
-          <form class="formulario" id="contactoForm" novalidate>
+          <form class="formulario" id="contactoForm" novalidate aria-labelledby="contactoPanelTitulo">
             <!-- Campo trampa contra robots: escondido para la
                  persona (se queda fuera de pantalla y sin foco) y
                  visible para el que completa todos los inputs. Si
@@ -480,27 +481,50 @@
 
             <div class="campo">
               <label class="campo-label" for="contactoNombre">Nombre <span aria-hidden="true">*</span></label>
-              <input class="campo-input" type="text" id="contactoNombre" name="nombre" autocomplete="name"
-                maxlength="120" required aria-required="true" aria-describedby="errorNombre">
+              <div class="campo-control">
+                <span class="material-symbols-outlined campo-icono" aria-hidden="true">person</span>
+                <input class="campo-input" type="text" id="contactoNombre" name="nombre" autocomplete="name"
+                  maxlength="120" required aria-required="true" aria-describedby="errorNombre"
+                  placeholder="Tu nombre y apellido">
+              </div>
               <span class="campo-error" id="errorNombre"></span>
             </div>
 
             <div class="campo">
               <label class="campo-label" for="contactoCorreo">Correo electrónico <span aria-hidden="true">*</span></label>
-              <input class="campo-input" type="email" id="contactoCorreo" name="correo" autocomplete="email"
-                inputmode="email" maxlength="160" required aria-required="true" aria-describedby="errorCorreo">
+              <div class="campo-control">
+                <span class="material-symbols-outlined campo-icono" aria-hidden="true">mail</span>
+                <input class="campo-input" type="email" id="contactoCorreo" name="correo" autocomplete="email"
+                  inputmode="email" maxlength="160" required aria-required="true" aria-describedby="errorCorreo"
+                  placeholder="tunombre@correo.com">
+              </div>
               <span class="campo-error" id="errorCorreo"></span>
             </div>
 
             <div class="campo">
-              <label class="campo-label" for="contactoTelefono">Teléfono <span aria-hidden="true">*</span></label>
-              <input class="campo-input" type="tel" id="contactoTelefono" name="telefono" autocomplete="tel"
-                inputmode="tel" maxlength="40" required aria-required="true" aria-describedby="errorTelefono">
+              <label class="campo-label" for="contactoAsunto">Asunto <span aria-hidden="true">*</span></label>
+              <div class="campo-control">
+                <span class="material-symbols-outlined campo-icono" aria-hidden="true">sell</span>
+                <input class="campo-input" type="text" id="contactoAsunto" name="asunto"
+                  maxlength="160" required aria-required="true" aria-describedby="errorAsunto"
+                  placeholder="¿Sobre qué querés escribirnos?">
+              </div>
+              <span class="campo-error" id="errorAsunto"></span>
+            </div>
+
+            <div class="campo">
+              <label class="campo-label" for="contactoTelefono">Teléfono <span class="campo-opcional">(opcional)</span></label>
+              <div class="campo-control">
+                <span class="material-symbols-outlined campo-icono" aria-hidden="true">call</span>
+                <input class="campo-input" type="tel" id="contactoTelefono" name="telefono" autocomplete="tel"
+                  inputmode="tel" maxlength="40" aria-describedby="errorTelefono"
+                  placeholder="098 268 560">
+              </div>
               <span class="campo-error" id="errorTelefono"></span>
             </div>
 
             <div class="campo">
-              <label class="campo-label" for="contactoConsulta">Consulta <span aria-hidden="true">*</span></label>
+              <label class="campo-label" for="contactoConsulta">Mensaje <span aria-hidden="true">*</span></label>
               <textarea class="campo-input campo-area" id="contactoConsulta" name="consulta" rows="5"
                 maxlength="2000" required aria-required="true" aria-describedby="errorConsulta"
                 placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..."></textarea>
@@ -517,7 +541,7 @@
             <div class="formulario-pie">
               <button class="formulario-enviar" type="submit" id="contactoEnviar">
                 <span class="material-symbols-outlined" aria-hidden="true">send</span>
-                <span id="contactoEnviarTexto">Enviar consulta</span>
+                <span id="contactoEnviarTexto">Enviar mensaje</span>
               </button>
 
               <p class="formulario-obligatorio">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
@@ -543,11 +567,11 @@
                  queda sin contexto. -->
             <h3 class="formulario-ok-titulo" id="contactoOkTitulo" tabindex="-1">¡Gracias por escribirnos!</h3>
 
-            <p>Recibimos tu consulta y te vamos a responder al correo o al teléfono que dejaste.</p>
+            <p>Recibimos tu mensaje y te vamos a responder al correo o al teléfono que dejaste.</p>
 
             <button class="formulario-ok-boton" type="button" id="contactoReiniciar">
               <span class="material-symbols-outlined" aria-hidden="true">add</span>
-              Enviar otra consulta
+              Enviar otro mensaje
             </button>
           </div>
         </div>
@@ -652,6 +676,11 @@
      valida y envia el formulario: los dos dependen solo del markup
      del index, asi que pueden ir despues del bot. -->
 <script src="./public/js/testimonios.js" defer></script>
+<!-- SDK de EmailJS desde el CDN (v4). contacto.js lo usa para mandar
+     el aviso por correo; el dominio esta permitido en la CSP de
+     backend/src/middlewares/seguridad.js. Si el CDN no carga, el
+     formulario igual guarda la consulta en el backend. -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
 <script src="./public/js/contacto.js" defer></script>
 <script src="./public/js/navigation.js" defer></script>
 <script src="./public/js/menu.js" defer></script>

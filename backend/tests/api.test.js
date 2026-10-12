@@ -39,6 +39,7 @@ let motivoSkip = null;
 const CONSULTA = {
     nombre: 'María Gómez',
     correo: 'maria@example.com',
+    asunto: 'Presupuesto para el patio',
     telefono: '+598 9 123 4567',
     consulta: 'Quiero un presupuesto para una huerta en el patio.',
 };
@@ -89,7 +90,39 @@ test('POST /api/contacto guarda la consulta y responde 201', async (t) => {
 
     assert.equal(guardados.length, 1);
     assert.equal(guardados[0].correo, 'maria@example.com');
+    assert.equal(guardados[0].asunto, 'Presupuesto para el patio');
     assert.equal(guardados[0].estado, 'nuevo');
+});
+
+test('POST /api/contacto acepta el telefono vacio', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const respuesta = await request(app)
+        .post('/api/contacto')
+        .send({ ...CONSULTA, telefono: '' });
+
+    assert.equal(respuesta.status, 201);
+
+    const guardados = await Mensaje.find().lean();
+
+    assert.equal(guardados.length, 1);
+    assert.equal(guardados[0].telefono, '');
+});
+
+test('POST /api/contacto sin asunto responde 400 con el campo', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const sinAsunto = { ...CONSULTA };
+
+    delete sinAsunto.asunto;
+
+    const respuesta = await request(app)
+        .post('/api/contacto')
+        .send(sinAsunto);
+
+    assert.equal(respuesta.status, 400);
+    assert.equal(respuesta.body.campo, 'asunto');
+    assert.equal(await Mensaje.countDocuments(), 0);
 });
 
 test('POST /api/contacto invalido responde 400 con el campo', async (t) => {
