@@ -17,6 +17,11 @@ process.env.NODE_ENV = 'test';
 process.env.ZAPI_LIMITE_ESCRITURA = '10000';
 process.env.ZAPI_LIMITE_LECTURA = '10000';
 
+/* El token de admin que piden las rutas de testimonios. Se fija
+   antes de requerir el backend porque config/env.js lo lee una sola
+   vez, al cargarse. */
+process.env.ZAPI_ADMIN_TOKEN = 'token-admin-de-prueba';
+
 const { test, before, after, beforeEach } = require('node:test');
 const assert = require('node:assert/strict');
 const request = require('supertest');
@@ -37,6 +42,9 @@ const CONSULTA = {
     telefono: '+598 9 123 4567',
     consulta: 'Quiero un presupuesto para una huerta en el patio.',
 };
+
+/* El mismo que ZAPI_ADMIN_TOKEN de arriba. */
+const TOKEN = 'token-admin-de-prueba';
 
 before(async () => {
     try {
@@ -179,6 +187,118 @@ test('sembrarTestimonios carga el JSON y no duplica al correr de nuevo', async (
     const fechas = respuesta.body.testimonios.map(t => new Date(t.fecha).getTime());
 
     assert.deepEqual(fechas, [...fechas].sort((a, b) => b - a));
+});
+
+test('sembrarTestimonios conserva el producto_id de la fuente', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const { TESTIMONIOS } = require('../../datos/testimonios.js');
+
+    await sembrarTestimonios();
+
+    const respuesta = await request(app).get('/api/testimonios');
+
+    assert.equal(respuesta.status, 200);
+
+    /* La opinion de María Gómez apunta a Albahaca (id 1) y la de la
+       Familia Bentancor al kit (id 7): el producto_id tiene que
+       sobrevivir la siembra y la serializacion. */
+    const maria = respuesta.body.testimonios.find(x => x.autor === 'María Gómez');
+
+    assert.equal(maria.producto_id, 1);
+
+    /* Y las opiniones sin producto salen con null, no con el campo
+       ausente, para que el front no tenga que adivinar. */
+    const lucia = respuesta.body.testimonios.find(x => x.autor === 'Lucía Sánchez');
+
+    assert.equal(lucia.producto_id, null);
+
+    assert.ok(TESTIMONIOS.some(x => x.producto_id === 7));
+});
+
+test('GET /api/testimonios/todos exige el token de admin', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const sinToken = await request(app).get('/api/testimonios/todos');
+
+    assert.equal(sinToken.status, 403);
+
+    const conToken = await request(app)
+        .get('/api/testimonios/todos')
+        .set('x-zapi-token', TOKEN);
+
+    assert.equal(conToken.status, 200);
+    assert.ok(Array.isArray(conToken.body.testimonios));
+});
+
+test('PATCH /api/testimonios/:id publica y despublica con el token', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    await sembrarTestimonios();
+
+    /* La lista de admin trae las ocultas y trae el id, que es lo que
+       la publica no da. */
+    const todos = await request(app)
+        .get('/api/testimonios/todos')
+        .set('x-zapi-token', TOKEN);
+
+    const maria = todos.body.testimonios.find(x => x.autor === 'María Gómez');
+
+    assert.ok(maria.id);
+    assert.equal(maria.publicado, true);
+
+    const despublicar = await request(app)
+        .patch('/api/testimonios/' + maria.id)
+        .set('x-zapi-token', TOKEN)
+        .send({ publicado: false });
+
+    assert.equal(despublicar.status, 200);
+    assert.equal(despublicar.body.testimonio.publicado, false);
+
+    /* Ya no sale en la lista publica. */
+    const publicas = await request(app).get('/api/testimonios');
+
+    assert.ok(!publicas.body.testimonios.some(x => x.autor === 'María Gómez'));
+
+    /* Y volver a correr la siembra (un reinicio) NO la republica:
+       el $setOnInsert de publicado respeta la decision del admin. */
+    await sembrarTestimonios();
+
+    const publicas2 = await request(app).get('/api/testimonios');
+
+    assert.ok(!publicas2.body.testimonios.some(x => x.autor === 'María Gómez'));
+
+    const republicar = await request(app)
+        .patch('/api/testimonios/' + maria.id)
+        .set('x-zapi-token', TOKEN)
+        .send({ publicado: true });
+
+    assert.equal(republicar.status, 200);
+    assert.equal(republicar.body.testimonio.publicado, true);
+});
+
+test('PATCH /api/testimonios/:id valida token, cuerpo e id', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const sinToken = await request(app)
+        .patch('/api/testimonios/000000000000000000000000')
+        .send({ publicado: false });
+
+    assert.equal(sinToken.status, 403);
+
+    const cuerpoMalo = await request(app)
+        .patch('/api/testimonios/000000000000000000000000')
+        .set('x-zapi-token', TOKEN)
+        .send({ publicado: 'si' });
+
+    assert.equal(cuerpoMalo.status, 400);
+
+    const idInexistente = await request(app)
+        .patch('/api/testimonios/000000000000000000000000')
+        .set('x-zapi-token', TOKEN)
+        .send({ publicado: false });
+
+    assert.equal(idInexistente.status, 404);
 });
 
 test('una ruta de API inexistente responde 404 JSON', async (t) => {
