@@ -432,6 +432,21 @@
           </p>
         </ul>
       </article>
+
+      <!-- Mapa de la ubicacion. El iframe lo sirve Google Maps y su
+           dominio esta permitido en frame-src de la CSP
+           (backend/src/middlewares/seguridad.js). -->
+      <div class="benefits-mapa">
+        <h3>Dónde encontrarnos</h3>
+        <p class="benefits-mapa-direccion">Congreso de Abril, Montevideo, Uruguay</p>
+
+        <div class="benefits-mapa-marco">
+          <iframe class="benefits-mapa-frame"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2998.275360784418!2d-56.2904353244652!3d-34.81855576887559!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95a1d3ff57bd9c4d%3A0x1cf65c4ff11dbdd6!2sCongreso%20de%20Abril%2C%2012600%20Montevideo%2C%20Departamento%20de%20Montevideo!5e1!3m2!1ses-419!2suy!4v1791834277368!5m2!1ses-419!2suy"
+            title="Mapa de la ubicación de ZAPI en Montevideo" loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+      </div>
     </section>
 
     <!--contacto section. Dos columnas: a la izquierda el texto y los
@@ -660,6 +675,8 @@
 
   <footer>
     <p>ZAPI © 2026. Todos los derechos reservados.</p>
+
+    <p class="footer-direccion">Congreso de Abril, Montevideo, Uruguay</p>
 
     <!-- El sitio vive en una sola pagina (esta), pero catalogo.html
          y carrito.html se siguen manteniendo como accesos directos
