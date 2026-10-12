@@ -205,6 +205,146 @@ function formatearPrecio(value) {
 
 
 /* ==========================================================
+   STOCK DISPONIBLE
+   ------------------------------------------------------------
+   Cuantas unidades quedan de cada producto. No viene en el JSON
+   del catalogo: es estado vivo del servidor, asi que se pide
+   aparte a GET /api/stock (unidades por id) y se pinta en todo
+   lo que este marcado con data-stock.
+
+   El catalogo y el stock llegan por caminos distintos y en
+   cualquier orden. Por eso el numero no se escribe al dibujar la
+   tarjeta sino despues, con pintarStockEnPantalla: si el stock
+   llega antes, lo pinta al dibujar; si llega despues, repinta lo
+   que ya esta. Para que una tarjeta recien dibujada tambien lo
+   tome, renderCatalog llama a pintarStockEnPantalla al terminar.
+   ========================================================== */
+
+let STOCK = {};
+
+
+/* Unidades de un producto, o null si todavia no se sabe: el stock
+   aun no llego o ese id no vino en la respuesta. */
+
+function unidadesDe(id) {
+
+    const clave = String(id);
+
+    return Object.prototype.hasOwnProperty.call(STOCK, clave)
+        ? STOCK[clave]
+        : null;
+
+}
+
+
+/* El texto del contador. Corto, para que entre en una tarjeta. */
+
+function textoDeStock(unidades) {
+
+    if (unidades <= 0) return "Sin stock";
+
+    if (unidades === 1) return "Queda 1 unidad";
+
+    return "Quedan " + unidades + " unidades";
+
+}
+
+
+/* Pinta un solo elemento [data-stock]: el numero que queda y una
+   clase segun este agotado o por acabarse. */
+
+function pintarStockDe(elemento) {
+
+    const unidades = unidadesDe(elemento.dataset.stock);
+
+    /* Sin dato se esconde: es mejor no decir nada que mostrar un
+       numero viejo o uno inventado. */
+
+    if (unidades === null) {
+
+        elemento.hidden = true;
+        elemento.textContent = "";
+
+        return;
+
+    }
+
+    elemento.hidden = false;
+    elemento.textContent = textoDeStock(unidades);
+    elemento.classList.toggle("agotado", unidades <= 0);
+    elemento.classList.toggle("pocas", unidades > 0 && unidades <= 3);
+
+}
+
+
+function pintarStockEnPantalla() {
+
+    document.querySelectorAll("[data-stock]").forEach(pintarStockDe);
+
+}
+
+
+/* Pide el stock y repinta. Devuelve la promesa para poder
+   encadenar (por ejemplo, al cerrar un pedido). Un fallo se avisa
+   por consola y no rompe la pagina: si el stock no llega, los
+   contadores quedan escondidos. */
+
+function cargarStock() {
+
+    return fetch("/api/stock")
+        .then(respuesta => {
+            if (!respuesta.ok) throw new Error("el servidor devolvio " + respuesta.status);
+            return respuesta.json();
+        })
+        .then(cuerpo => {
+
+            const stock = cuerpo && cuerpo.stock;
+
+            if (!stock || typeof stock !== "object") return;
+
+            STOCK = {};
+
+            Object.keys(stock).forEach(id => {
+
+                const unidades = Number(stock[id]);
+
+                if (Number.isFinite(unidades)) STOCK[id] = unidades;
+
+            });
+
+            pintarStockEnPantalla();
+
+        })
+        .catch(error => {
+            console.warn("No se pudo cargar el stock:", error);
+        });
+
+}
+
+
+/* Al volver a la pestaña se refresca, para no seguir mostrando un
+   numero viejo si el stock cambio mientras estaba en segundo
+   plano. */
+
+document.addEventListener("visibilitychange", function () {
+
+    if (document.visibilityState === "visible") cargarStock();
+
+});
+
+
+/* Entrada para que otras partes (el checkout, al cerrar un
+   pedido) refresquen el stock sin conocer los detalles. */
+
+window.actualizarStock = cargarStock;
+
+
+/* El fetch arranca ya, en paralelo con el catalogo. */
+
+cargarStock();
+
+
+/* ==========================================================
    CARRITO COMPARTIDO
    ------------------------------------------------------------
    Aca vive la unica definicion de como se lee, se modifica y

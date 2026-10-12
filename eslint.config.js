@@ -23,6 +23,8 @@ const DEL_CATALOGO = {
     suscribirAlCarrito: 'readonly',
     IMAGEN_FALLBACK: 'readonly',
     alCargarElCatalogo: 'readonly',
+    pintarStockEnPantalla: 'readonly',
+    pintarStockDe: 'readonly',
 };
 
 const COMUNES = {
