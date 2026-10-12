@@ -50,6 +50,9 @@
       <span class="nav-toggle-barra" aria-hidden="true"></span>
       <span class="nav-toggle-barra" aria-hidden="true"></span>
       <span class="nav-toggle-barra" aria-hidden="true"></span>
+      <!-- Globo del carrito en la hamburguesa (solo mobile): refleja
+           lo que se agregó, aunque el menú esté cerrado. -->
+      <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
     </button>
 
     <!--logo. Es un <a> y no un div con role=button para que
@@ -88,25 +91,33 @@
         <li><button type="button" class="nav-link" data-section="nosotros">Nosotros</button></li>
         <li><button type="button" class="nav-link" data-section="contacto">Contacto</button></li>
 
-        <!-- El id y el data-cart-count los necesita productos.js:
-             el id para el aria-label y el atributo para pintar
-             la cantidad. El boton usa data-section para que el
-             router de navigation.js lo trate como el resto. -->
-        <li>
-          <button type="button" class="nav-link nav-link-carrito" data-section="carrito" id="navLinkCarrito">
-            Carrito
-            <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
-          </button>
-        </li>
-
         <!-- Cuenta. Sin sesion se ve "Ingresar"; con sesion,
-             auth-ui.js rellena el nombre y aparece "Salir". -->
+             auth-ui.js rellena el nombre y el nombre abre un menu
+             con el carrito y Salir. El id y el data-cart-count del
+             carrito los necesita productos.js: el id para el
+             aria-label y el atributo para pintar la cantidad; el
+             boton usa data-section para que navigation.js lo enrute
+             como al resto. -->
         <li class="nav-cuenta">
           <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
-          <span class="nav-usuario">
-            <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
-            <button type="button" class="nav-salir" id="navSalir">Salir</button>
-          </span>
+          <div class="nav-usuario">
+            <button type="button" class="nav-usuario-boton" id="navUsuarioBoton" aria-expanded="false"
+              aria-haspopup="true" aria-controls="navUsuarioMenu">
+              <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
+              <!-- El globo va en el nombre: es el mismo efecto que
+                   tenia el carrito (rojo + pop + destello). -->
+              <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
+            </button>
+            <div class="nav-usuario-menu" id="navUsuarioMenu" hidden>
+              <button type="button" class="nav-usuario-item nav-link-carrito" data-section="carrito"
+                id="navLinkCarrito">
+                Carrito
+                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+              </button>
+              <a class="nav-usuario-item" href="./pedidos.html">Mis pedidos</a>
+              <button type="button" class="nav-usuario-item" id="navSalir">Salir</button>
+            </div>
+          </div>
         </li>
 
         </ul>

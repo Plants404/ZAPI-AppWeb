@@ -175,10 +175,11 @@
     // Al elegir un destino el menu se cierra. Se escucha en el nav
     // porque todos los controles de navegacion viven adentro, tanto
     // los botones data-section de index.html como los enlaces de
-    // catalogo.html.
+    // catalogo.html. Los items del menu de cuenta (carrito, Salir)
+    // tambien cierran el panel.
     nav.addEventListener('click', function (evento) {
         if (!(evento.target instanceof Element)) return;
-        const control = evento.target.closest('.nav-link, [data-section]');
+        const control = evento.target.closest('.nav-link, [data-section], .nav-usuario-item');
         if (control && nav.contains(control)) cerrar();
     });
 
