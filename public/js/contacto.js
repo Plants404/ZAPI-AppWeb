@@ -1,26 +1,3 @@
-/* ==========================================================
-   FORMULARIO DE CONTACTO
-   ------------------------------------------------------------
-   Valida en el navegador, manda a POST /api/contacto, avisa por
-   correo con EmailJS y muestra el resultado.
-
-   Por que valida dos veces
-   -----------------------
-   El navegador valida para dar una respuesta rapida y en el mismo
-   lugar donde se escribio el error. El servidor valida aparte
-   porque es la unica validacion que no se puede esquivar: el
-   formulario se puede mandar con curl. Los dos usan las mismas
-   reglas a proposito; si se cambian, hay que cambiar los dos.
-
-   Los errores del servidor traen el nombre del campo (campo:
-   "correo"), asi que se marca ese input y se le lleva el foco en
-   vez de pintar un error suelto.
-
-   El orden de envio es backend primero y correo despues: lo que no
-   se puede perder es la consulta guardada. Si EmailJS no esta o
-   falla, el exito igual se muestra.
-   ========================================================== */
-
 document.addEventListener("DOMContentLoaded", () => {
 
     const formulario = document.getElementById("contactoForm");
@@ -39,9 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const avisoMensaje = document.getElementById("avisoFlotanteMensaje");
     const avisoCerrar = document.getElementById("avisoFlotanteCerrar");
 
-    /* Cada campo con su regla y su mensaje. El texto del error va
-       tambien en el mensaje del servidor, asi que se comparte la
-       redaccion. */
     const CAMPOS = [
         {
             id: "contactoNombre",
@@ -70,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
             error: "errorTelefono",
             vacio: "",
             corto: "Revisá el teléfono de contacto",
-            /* Opcional: si queda vacio no se marca error. */
             opcional: true
         },
         {
@@ -82,20 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     ];
 
-    /* Correo: lo bastante estricto para agarrar el "@" que falta y
-       el ".com" que no esta, sin rechazar direcciones raras que si
-       funcionan. */
     const CORREO = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
-    /* ------------------------------------------------------------
-       Aviso por correo (EmailJS)
-       ------------------------------------------------------------
-       Ademas de guardar la consulta en el backend, se manda un aviso
-       por correo con EmailJS. La public key es publica por diseno;
-       la proteccion real es la allow-list de dominios del panel de
-       EmailJS (Account > Security). El SDK se carga con un <script>
-       antes que este archivo, asi que se toma de window.
-       ------------------------------------------------------------ */
     const EMAILJS = {
         publicKey: "svGiYtyfrTzCv-GhG",
         serviceId: "service_n6oyujo",
@@ -108,13 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
         emailjs.init({ publicKey: EMAILJS.publicKey });
     }
 
-    /* Los nombres de abajo son las variables del template:
-       {{nombre}}, {{correo}}, {{asunto}}, {{telefono}}, {{mensaje}},
-       {{reply_to}}. El campo se guarda como "consulta" en el backend
-       pero al template va como "mensaje", que es lo que muestra. */
     async function avisarPorCorreo(datos) {
-        /* Si el SDK no esta (CDN bloqueado o caido) o falta config, se
-           tira para que el que llama lo avise en pantalla. */
         if (!emailjs || !EMAILJS.serviceId || !EMAILJS.templateId) {
             throw new Error("EmailJS no disponible");
         }
@@ -129,14 +84,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /* ------------------------------------------------------------
-       Pintado de los errores
-       ------------------------------------------------------------ */
-
-    /* El mensaje va en el <span> que aria-describedby ya apunta, y
-       el input se marca con aria-invalid. Con los dos, el lector de
-       pantalla lee el error al llegar al campo en vez de tener que
-       cazarlo en un aviso general. */
     function marcarError(campo, mensaje) {
         const input = document.getElementById(campo.id);
         const destino = document.getElementById(campo.error);
@@ -162,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const valor = input.value.trim();
 
         if (!valor) {
-            /* El telefono es opcional: vacio no es un error. */
             if (campo.opcional) {
                 marcarError(campo, "");
                 return "";
@@ -187,11 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return campo.corto;
         }
 
-        /* El telefono se cuenta por digitos, no por largo: en
-           Uruguay se escribe con +, con guiones y con espacios, y
-           un "+598 9 123 4567" tiene menos caracteres que un
-           "09 123 456" y es un numero mejor. Lo que importa es que
-           haya suficientes numeros para llamar. */
+        /* El teléfono se cuenta por dígitos: en Uruguay se escribe con +, guiones y espacios. */
         if (campo.id === "contactoTelefono" && valor.replace(/\D/g, "").length < 6) {
             marcarError(campo, campo.corto);
             return campo.corto;
@@ -206,10 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return "";
     }
 
-    /* ------------------------------------------------------------
-       Estado general
-       ------------------------------------------------------------ */
-
     function avisar(mensaje, tipo) {
         if (!estado) return;
 
@@ -218,12 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
         estado.classList.toggle("estado-ok", tipo === "ok");
     }
 
-    /* ------------------------------------------------------------
-       Aviso flotante
-       ------------------------------------------------------------
-       Ventana que aparece abajo a la derecha para avisar que la
-       consulta quedo guardada pero el correo no salio. Se esconde
-       sola a los segundos o con la cruz, sin bloquear la pagina. */
     let avisoReloj = null;
 
     function ocultarAviso() {
@@ -241,8 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (avisoTitulo) avisoTitulo.textContent = titulo;
         if (avisoMensaje) avisoMensaje.textContent = mensaje;
 
-        /* El texto se escribe antes de mostrarlo: asi el role="alert"
-           lo anuncia en el momento en que aparece. */
         avisoFlotante.hidden = false;
 
         if (avisoReloj) clearTimeout(avisoReloj);
@@ -250,10 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (avisoCerrar) avisoCerrar.addEventListener("click", ocultarAviso);
-
-    /* ------------------------------------------------------------
-       Envio
-       ------------------------------------------------------------ */
 
     async function enviar(evento) {
         evento.preventDefault();
@@ -268,9 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        /* Con algo mal se corta aca y el foco va al primer campo
-           que falta. Mandar el formulario igual llenaria la bandeja
-           de consultas a medias. */
         if (primerFallo) {
             avisar("Revisá los campos marcados.", "error");
 
@@ -295,8 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (input) datos[campo.name] = input.value.trim();
         }
 
-        /* El campo trampa viaja con el resto: si viene relleno, el
-           servidor responde ok sin guardar nada. */
+        /* El campo trampa (honeypot) viaja con el resto: si viene relleno, el servidor responde ok sin guardar nada. */
         datos.sitio_web = (document.getElementById("contactoSitio") || {}).value || "";
 
         try {
@@ -309,10 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const cuerpo = await respuesta.json().catch(() => ({}));
 
             if (!respuesta.ok) {
-                /* Si el servidor dijo que campo esta mal, se marca
-                   ese. Si no, el error es de la pagina entera (se
-                   cayo el servidor, no hay red) y se avisa sin
-                   señalar ningun input. */
                 const fallido = CAMPOS.find(campo => campo.id.replace("contacto", "").toLowerCase() === cuerpo.campo);
 
                 if (fallido) {
@@ -325,17 +243,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            /* La consulta quedo guardada. El aviso por correo va
-               aparte: si falla, el exito igual se muestra, porque lo
-               que no se puede perder (la consulta) ya esta a salvo.
-               El honeypot relleno no dispara ningun correo. */
             if (!datos.sitio_web) {
                 try {
                     await avisarPorCorreo(datos);
                 } catch {
-                    /* EmailJS caido o mal configurado: la consulta ya
-                       quedo guardada, pero se avisa en pantalla para
-                       que no parezca que el correo salio bien. */
                     mostrarAviso(
                         "El aviso por correo no salió",
                         "Tu mensaje quedó guardado igual y lo vamos a leer."
@@ -349,16 +260,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 panelOk.hidden = false;
             }
 
-            /* El boton de envio desaparece con el formulario y el
-               foco no puede quedarse en algo que ya no esta: se
-               lleva al titulo del panel de exito, que es lo que
-               hay que leer ahora. */
             document.getElementById("contactoOkTitulo")?.focus();
         } catch (error) {
-            /* Un fetch que falla no lanza siempre con un mensaje
-               util (a veces ni lanza, solo queda pending y lo corta
-               el navegador), asi que el texto es fijo: lo que
-               importa es que quede claro que hay que reintentar. */
             avisar("No pudimos enviar la consulta. Revisá tu conexión y probá de nuevo.", "error");
         } finally {
             boton.disabled = false;
@@ -367,15 +270,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    /* ------------------------------------------------------------
-       Enganches
-       ------------------------------------------------------------ */
-
     formulario.addEventListener("submit", enviar);
 
-    /* El error de un campo se borra en cuanto se empieza a corregir:
-       dejarlo pegado mientras se escribe obliga a leer un texto que
-       ya no es cierto. */
     for (const campo of CAMPOS) {
         const input = document.getElementById(campo.id);
 
@@ -387,16 +283,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        /* Al salir del campo se revisa solo: asi el error aparece
-           cuando la persona ya termino de escribir y no mientras
-           esta en la mitad de la palabra. */
         input.addEventListener("blur", () => {
             if (input.value.trim()) revisarCampo(campo);
         });
     }
 
-    /* El contador de caracteres de la consulta. Va del largo que
-       queda, no del permitido: es lo que la persona quiere ver. */
     function actualizarContador() {
         if (!contador || !consulta) return;
 
@@ -412,10 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarContador();
     }
 
-    /* "Enviar otra consulta": el formulario vuelve a su estado
-       inicial con todo limpio, y el foco vuelve al primer campo
-       para que se pueda seguir escribiendo sin buscarlo con el
-       mouse. */
     if (reiniciar) {
         reiniciar.addEventListener("click", () => {
             formulario.reset();

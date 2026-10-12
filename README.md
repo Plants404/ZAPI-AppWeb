@@ -1,27 +1,27 @@
 # ZAPI
 
-Sitio de ZAPI: una home con secciones, un catálogo de productos con fichas
-individuales y un carrito que termina en pedido.
+Sitio del vivero ZAPI: una home de una sola página por secciones, un
+catálogo con fichas estáticas, un carrito con checkout, cuentas de
+usuario y un asistente por reglas.
 
-Es un proyecto sin framework de frontend y sin build: HTML en la raíz,
-recursos en `public/`, el catálogo en `datos/`, el backend en `backend/` y
-las herramientas en `tools/`. El navegador carga los archivos tal cual, sin
-transpilar nada. El backend sí usa dependencias de producción (`express`,
-`mongoose` y `helmet`).
+El front no usa framework ni build: HTML en la raíz, recursos en
+`public/`, catálogo y testimonios en `datos/`. El navegador carga los
+archivos tal cual. El backend es Express + MongoDB (Mongoose) y sirve
+el sitio estático y la API desde el mismo proceso.
 
-> El backend nuevo vive en `backend/` (Express + MongoDB con Mongoose) y
-> cubre lo que el sitio usa: `POST /api/contacto`, `GET /api/salud`,
-> `GET /api/testimonios`, el stock con token de admin y el carrito/pedidos
-> con sesión firmada. Reemplaza al backend anterior (Express + SQLite), que
-> se había borrado. La API de pedidos ya está conectada al checkout del
-> carrito; WhatsApp sigue como canal de coordinación de la entrega.
+## Stack
+
+- **Frontend:** HTML + CSS + JavaScript clásico (sin módulos ni bundler).
+- **Backend:** Node (>= 24), Express 5, Mongoose 9, Helmet.
+- **Base de datos:** MongoDB (local o Atlas).
+- **Pruebas:** `node:test` + Supertest + `mongodb-memory-server`.
 
 ## Requisitos
 
-- **Node 24 o superior** (`package.json` lo fija con `engines`) y npm.
-- **MongoDB** para el backend: local (`mongodb://127.0.0.1:27017/zapi`) o
-  Atlas. Las pruebas no necesitan un Mongo instalado: levantan una instancia
-  efímera en memoria. No hace falta compilar nada.
+- Node 24 o superior y npm.
+- MongoDB para correr el backend (local `mongodb://127.0.0.1:27017/zapi`
+  o Atlas). Las pruebas no necesitan Mongo instalado: levantan una
+  instancia efímera en memoria.
 
 ## Instalación
 
@@ -29,38 +29,28 @@ transpilar nada. El backend sí usa dependencias de producción (`express`,
 npm install
 ```
 
-## Cómo ver el sitio
+## Cómo correrlo
 
-El sitio se abre **solo por HTTP**, con cualquier servidor estático. Abrir
-`index.html` con doble clic ya no funciona: el navegador le bloquea al pedido
-de `productos.json` y el catálogo queda vacío. La razón de esto está al
-principio de `datos/catalogo.js`.
+El sitio se sirve **solo por HTTP**. Abrir `index.html` con doble clic
+no funciona: el navegador bloquea el `fetch` del catálogo y la grilla
+queda vacía.
 
-```sh
-npx serve          # levanta en http://localhost:3000
-```
-
-O el Live Server de VSCode, o `python -m http.server` desde la carpeta raíz.
-
-## Backend
-
-El backend sirve el sitio estático **y** la API desde el mismo Express. Es
-la forma recomendada de abrir el sitio en desarrollo:
+De forma recomendada, con el backend (sirve estáticos + API):
 
 ```sh
 npm start          # http://localhost:5501
+npm run dev        # igual, con recarga al guardar (--watch)
 ```
 
-El servidor se conecta a MongoDB **antes** de escuchar: si la base no
-responde, no arranca (mejor un error al arrancar que un formulario que se
-pierde en silencio). Al recibir `Ctrl+C` cierra el servidor y la base de
-forma ordenada.
+Para ver solo el front, cualquier servidor estático desde la raíz
+sirve (por ejemplo `npx serve`), pero el carrito, el login, los
+pedidos y el asistente necesitan el backend.
 
-### Variables de entorno
+## Variables de entorno
 
-`npm start` carga el `.env` solo: el script lleva
-`--env-file-if-exists=.env`, así que **sin el archivo el servidor arranca
-igual** con los valores por defecto. Para copiarlo:
+`npm start` y `npm run dev` cargan `.env` con
+`--env-file-if-exists=.env`: sin el archivo el servidor arranca igual
+con los valores por defecto. Para crearlo:
 
 ```sh
 # PowerShell
@@ -74,265 +64,176 @@ cp .env.example .env
 | `NODE_ENV` | `development` | `production` activa caché de estáticos, exige `MONGODB_URI` y oculta las trazas de error. |
 | `PORT` | `5501` | Puerto HTTP. |
 | `MONGODB_URI` | `mongodb://127.0.0.1:27017/zapi` | Cadena de conexión de MongoDB. |
-| `CLIENT_URL` | vacío | Orígenes autorizados para CORS, separados por coma. Vacío = solo mismo origen. |
-| `ZAPI_SESSION_SECRET` | vacío | Clave para firmar la cookie de sesión del carrito. Obligatoria en `production`. |
-| `ZAPI_ADMIN_TOKEN` | vacío | Token de `PUT /api/stock/:id` (cabecera `x-zapi-token`). |
-| `ZAPI_LIMITE_LECTURA` | `120` por minuto | Rate limit de lectura. |
-| `ZAPI_LIMITE_ESCRITURA` | `20` por 10 min | Rate limit de escritura (contacto, carrito, pedidos). |
-| `ZAPI_LIMITE_CHAT` | `15` por minuto | Rate limit del chat del asistente. Va aparte del de escritura porque mueve más. |
-| `ZAPI_FAQ_UMBRAL` | `0.55` | Parecido (0-1) mínimo para reutilizar una FAQ guardada. |
+| `CLIENT_URL` | `http://localhost:5501` | Orígenes autorizados para CORS, separados por coma. |
+| `ZAPI_LIMITE_LECTURA` | `120` por minuto | Rate limit de lectura (catálogo, testimonios, salud). |
+| `ZAPI_LIMITE_ESCRITURA` | `20` por 10 min | Rate limit de escritura (contacto, carrito, pedidos, testimonios). |
+| `ZAPI_LIMITE_AUTH` | `10` por 10 min | Rate limit de registro y login. |
+| `ZAPI_LIMITE_CHAT` | `15` por minuto | Rate limit del chat del asistente. |
+| `ZAPI_FAQ_UMBRAL` | `0.55` | Parecido (0–1) mínimo para reutilizar una FAQ guardada. |
+| `ZAPI_SESSION_SECRET` | vacío | Clave para firmar la cookie de la sesión anónima del carrito. Obligatoria en `production`. |
+| `ZAPI_ADMIN_TOKEN` | vacío | Token de administración (`PUT /api/stock/:id`, testimonios admin). Va en la cabecera `x-zapi-token`. |
 
-Nunca se versiona un `.env`: solo `.env.example`, con los nombres y valores
-falsos.
-
-### Endpoints
-
-| Método | Ruta | Qué hace |
-|---|---|---|
-| `GET` | `/api/salud` | Estado del servidor y de Mongo. `200` si Mongo responde, `503` si no. |
-| `GET` | `/api/productos` | Catálogo con el stock pegado (`{ productos }`). |
-| `GET` | `/api/productos/:id` | Una ficha, por id numérico o por slug. |
-| `GET` | `/api/stock` | Stock de todo el catálogo (`{ stock: { [id]: unidades } }`). |
-| `PUT` | `/api/stock/:id` | Cargar o cambiar el stock. Exige el token de admin. |
-| `GET` | `/api/carrito` | El carrito armado de la sesión (nombres y precios del catálogo). |
-| `POST` | `/api/carrito` | Agregar un producto. Cuerpo `{ id, cantidad? }` (cantidad por defecto `1`). |
-| `PATCH` | `/api/carrito/:id` | Fijar la cantidad. Cuerpo `{ cantidad }`. |
-| `DELETE` | `/api/carrito/:id` | Sacar el producto. |
-| `POST` | `/api/pedidos` | Cerrar el pedido. Cuerpo `{ nombre, telefono, email?, zona?, notas? }`. Con `items: [{ id, cantidad }]` (el carrito de `localStorage`) se arma de ahí; sin `items`, del carrito de la sesión. |
-| `GET` | `/api/testimonios` | Opiniones publicadas, con la forma que usa el carrusel (`{ testimonios }`). |
-| `POST` | `/api/contacto` | Consulta del formulario. `201 { ok: true }` o `400 { error, campo }`. |
-| `GET` | `/api/asistente/config` | Identidad, contacto, promociones y el motor del asistente (`{ asistente: { motor: 'reglas' } }`). Sin datos sensibles. |
-| `POST` | `/api/asistente/chat` | Un mensaje al asistente. Cuerpo `{ mensaje }`. Devuelve `{ respuesta, intencion, recomendaciones, derivarHumano, contacto, fuente }`. |
-| `POST` | `/api/asistente/tracking` | Evento de navegación. Cuerpo `{ tipo, productoId?, categoria?, pagina?, detalle? }`. `201 { ok: true }`. |
-
-`POST /api/contacto` recibe `{ nombre, correo, telefono, consulta, sitio_web }`.
-`sitio_web` es el honeypot del formulario: si viene relleno, responde `201`
-sin guardar nada. La validación del servidor es la misma que la del
-navegador (`public/js/contacto.js`), porque el formulario se puede mandar
-con `curl`.
-
-El carrito y los pedidos funcionan con una cookie de sesión firmada
-(`zapi_sesion`, HttpOnly, HMAC-SHA256): no hay login, la sesión se crea sola
-en la primera petición. El `total` del pedido lo calcula el servidor con el
-precio de la base: lo que llegue en el cuerpo del cliente (precio, nombre,
-subtotales) no se cobra ni se guarda tal cual. Sin stock suficiente responde
-`409 { error, shortages }` para que el visitante baje la cantidad.
-
-**El checkout del carrito ya está conectado a esta API**: `carrito.js`
-construye el formulario sobre `#checkoutRoot` (en `carrito.html` y dentro de
-`index.html`) y manda el carrito de `localStorage` como `items`. Un `409`
-ajusta las cantidades a las unidades disponibles y avisa; WhatsApp queda como
-canal secundario para coordinar la entrega. Sin JS (o sin backend) el hueco
-queda vacío y el carrito sigue funcionando por WhatsApp como siempre.
-
-### MongoDB
-
-Colecciones (Mongoose crea los índices al conectar):
-
-- `productos`: catálogo sembrado desde `public/data/productos.json` al
-  arrancar. `_id` = id del catálogo; el stock no se sobrescribe al sembrar.
-- `stock`: unidades (`null` = "sin datos cargados", no agotado) y cuándo se
-  actualizó. Se escribe solo vía `PUT /api/stock/:id`.
-- `carritos`: un documento por sesión, con las líneas embebidas. TTL de 30
-  días de inactividad.
-- `pedidos`: pedidos cerrados con sus líneas (nombre y precio de la venta),
-  estado `pendiente` por defecto e id corto `Z-AAAA-MM-DD-XXXXXX`.
-- `mensajes`: consultas del formulario. Estado `nuevo` por defecto.
-- `testimonios`: opiniones del carrusel. Se siembran al arrancar desde
-  `public/data/testimonios.json` (upsert por autor + fecha, sin duplicar) y
-  solo se listan las `publicado: true`.
-- `faqs`: memoria del asistente. Cada pregunta respondida se guarda
-  normalizada (con sus tokens) para reutilizar la respuesta sin volver a
-  armarla. Las respuestas salen de reglas curadas, así que `revisar` queda en
-  `false`.
-- `eventos`: registro append-only de navegación (ver producto, agregar al
-  carrito, hablar con el bot). Alimenta las recomendaciones; no guarda datos
-  personales, solo el id de sesión anónimo del carrito.
-
-`datos/testimonios.js` es la fuente de autoría: de ahí sale
-`public/data/testimonios.json` con `npm run generar:testimonios`, que siembra
-la colección del backend y además es el respaldo estático que baja el carrusel
-si la API no está. Las opiniones cargadas hoy son de ejemplo (no de clientes
-reales).
-
-### Asistente (por reglas)
-
-El widget del sitio (`public/js/zapi-bot.js`) responde por palabras clave y,
-si el backend está disponible, consulta `/api/asistente/chat` para una
-respuesta más completa con recomendaciones del catálogo. Si la API no
-responde, cae a la lógica local de siempre. El flujo vive en el backend:
-
-1. `POST /api/asistente/chat` resume los intereses del visitante (de
-   `eventos`) y lee el catálogo.
-2. Busca una **FAQ parecida** (`faqs`) por parecido léxico de tokens; si la
-   encuentra, la reutiliza y sube su frecuencia.
-3. Si no, arma la respuesta con las reglas de negocio
-   (`backend/src/config/business.js`) y la guarda como FAQ para la próxima.
-4. Las recomendaciones se filtran contra el catálogo real, así nunca sale un
-   producto inventado.
-
-El chat no depende de ningún servicio externo: el endpoint nunca queda mudo.
+Nunca se versiona un `.env`: solo `.env.example`, con valores falsos.
 
 ## Scripts
 
 | Comando | Qué hace |
 |---|---|
-| `npm start` | Levanta el backend Express + MongoDB en `PORT` (5501). Carga `.env` si existe. |
-| `npm run dev` | Igual que `start`, con recarga al guardar (`node --watch`). |
-| `npm test` | Pruebas de la API y del validador (`node:test` + Supertest + MongoDB en memoria). |
-| `npm run verificar` | Verificación estática: regenera el CSS derivado, compara los `slug`, valida assets, IDs y scripts. **Correlo antes de commitear.** |
-| `npm run lint` | ESLint sobre todo el repo. At typos en nombres que nadie declara, código inalcanzable y variables muertas. |
-| `npm run check` | `lint` + `verificar`, para correr antes de commitear. |
-| `npm run contraste` | Comprueba que los pares de color cumplen el mínimo de contraste. |
-| `npm run generar` | Regenera las fichas de `productos/` desde `datos/catalogo.js`. También **poda** las fichas cuyo producto ya no está en el catálogo. |
-| `npm run generar:testimonios` | Regenera `public/data/testimonios.json` desde `datos/testimonios.js` (lo siembra el backend y es el respaldo del carrusel). |
+| `npm start` | Levanta el backend (Express + MongoDB) en `PORT`. |
+| `npm run dev` | Igual, con recarga al guardar. |
+| `npm test` | Pruebas de la API y los validadores (`node:test` + Supertest + Mongo en memoria). |
+| `npm run lint` | ESLint sobre todo el repo. |
+| `npm run verificar` | Verificación estática (CSS, ARIA, IDs, referencias, XSS, reduced motion, generados). Regenera el CSS derivado y las fichas. |
+| `npm run check` | `lint` + `verificar`. Correr antes de commitear. |
+| `npm run contraste` | Verifica el contraste de los pares de color. |
+| `npm run generar` | Regenera `productos/*.html` desde `datos/catalogo.js` (y poda fichas huérfanas). |
+| `npm run generar:testimonios` | Regenera `public/data/testimonios.json` desde `datos/testimonios.js`. |
+| `npm run css` | Regenera `catalogo-modal.css` y `catalogo-catalogo.css` desde `catalogo.css`. |
 | `npm run sitemap` | Regenera `sitemap.xml`. |
-| `npm run css` | Regenera `public/css/catalogo-modal.css` y `catalogo-catalogo.css` desde `public/css/catalogo.css`. |
-
-### Sobre la poda de fichas
-
-Si renombrás o sacás un producto, su ficha vieja se queda en `productos/` y,
-como `generar-sitemap.js` lee esa carpeta, entra al sitemap con el precio
-anterior. Por eso el generador la borra.
-
-Solo borra lo que se puede demostrar que generó él: un `canonical` que apunta
-a la URL pública de esa misma ficha más el JSON-LD de `Product`. Un `.html`
-escrito a mano no tiene las dos cosas, así que queda intacto y el generador lo
-avisa. Para correr sin borrar nada: `node tools/generar-productos.js --sin-poda`.
-
-`npm run verificar` también corre el generador, así que podar le toca a
-él; por eso reporta las fichas que borra en vez de hacerlo callado.
+| `npm run crear:usuario` | Crea una cuenta desde la terminal. |
 
 ## Estructura
 
 ```
-index.html, catalogo.html, carrito.html   Páginas. Los HTML viven en la raíz.
-productos/                                 Fichas estáticas, generadas.
-datos/catalogo.js                           Fuente del catálogo. La
-                                           edita el humano, la leen los
-                                           generadores, el navegador no.
-public/data/productos.json                  Catálogo que baja el navegador
-                                           con fetch. Se genera.
-public/js/                                 Scripts del navegador.
-public/css/                                CSS. catalogo.css es la fuente;
-                                           las dos catalogo-*.css se generan.
-public/img/                                Imágenes, ya optimizadas (.opt).
-backend/src/                               Express + Mongoose: app.js arma la
-                                           app, server.js conecta y escucha.
-backend/tests/                             Pruebas de la API y del validador.
-tools/                                     Generadores y verificadores.
+index.html, catalogo.html, carrito.html, pedidos.html,
+login.html, 404.html            Páginas. Los HTML viven en la raíz.
+productos/                      Fichas estáticas, generadas.
+datos/                          Fuentes que se editan a mano
+                                (catalogo.js, testimonios.js).
+public/data/                    JSON que baja el navegador (generados).
+public/js/                      Scripts del navegador.
+public/css/                     Hojas de estilo (catalogo.css es la
+                                fuente; catalogo-*.css se generan).
+public/img/                     Imágenes optimizadas.
+backend/src/                    Express + Mongoose (app.js, server.js).
+backend/tests/                  Pruebas.
+tools/                          Generadores y verificadores.
 ```
 
-## El catálogo tiene una sola fuente
+## API
 
-`datos/catalogo.js` es la fuente de verdad del catálogo. De ahí salen las
-tarjetas del navegador, las fichas de `productos/` (`npm run generar`) y
-`sitemap.xml`.
+Todo cuelga de `/api`.
 
-Como `datos/catalogo.js` es un `.js` de Node, el navegador nunca lo ve: de ahí
-`npm run generar` escribe `public/data/productos.json`, que es lo que el
-navegador baja con `fetch` y se versiona para que `npm run verificar` pueda
-comprobar que no quedó viejo.
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `GET` | `/api/salud` | Estado del servidor y de Mongo. |
+| `GET` | `/api/productos` | Catálogo con el stock pegado. |
+| `GET` | `/api/productos/:id` | Una ficha, por id o slug. |
+| `GET` | `/api/stock` | Stock de todo el catálogo. |
+| `PUT` | `/api/stock/:id` | Cargar o cambiar el stock (token de admin). |
+| `GET` | `/api/carrito` | Carrito de la sesión. |
+| `POST` | `/api/carrito` | Agregar un producto `{ id, cantidad? }`. |
+| `PATCH` | `/api/carrito/:id` | Fijar la cantidad `{ cantidad }`. |
+| `DELETE` | `/api/carrito/:id` | Sacar el producto. |
+| `GET` | `/api/pedidos` | Historial de la cuenta (exige cuenta). |
+| `POST` | `/api/pedidos` | Cerrar el pedido (exige cuenta). |
+| `POST` | `/api/auth/registro` | Crear cuenta `{ nombre, email, clave }`. |
+| `POST` | `/api/auth/login` | Ingresar `{ email, clave }`. |
+| `POST` | `/api/auth/logout` | Cerrar sesión. |
+| `GET` | `/api/auth/yo` | La cuenta de la sesión, o `null`. |
+| `GET` | `/api/testimonios` | Opiniones publicadas. |
+| `POST` | `/api/testimonios` | Guardar una opinión (exige cuenta). |
+| `GET` | `/api/testimonios/todos` | Todas, con id y estado (token). |
+| `PATCH` | `/api/testimonios/:id` | Publicar o despublicar (token). |
+| `POST` | `/api/contacto` | Consulta del formulario. |
+| `GET` | `/api/asistente/config` | Config del asistente. |
+| `POST` | `/api/asistente/chat` | Mensaje al asistente `{ mensaje }`. |
+| `POST` | `/api/asistente/tracking` | Evento de navegación. |
 
-Antes el catálogo viajaba dentro de `public/js/productos.js` y para leerlo
-sin `require()` —el archivo usa `window` y `document`— había que arrancar
-el texto a mano con un contador de llaves y evaluarlo con `Function()`. Ese
-`emparejar()` era **frágil ante cambios de formato**: un reformateo, unas
-comillas simples o un corchete dentro de un comentario partían el catálogo.
-`JSON.parse` no tiene ese problema.
+El total de un pedido lo calcula el servidor con el precio de la base:
+lo que llegue del cliente (precio, subtotal) no se guarda ni se cobra.
+Sin stock suficiente responde `409 { error, shortages }`.
 
-Si tocás un precio, tocá **un solo lugar**: `datos/catalogo.js`. Después
-`npm run generar` y `npm run verificar`. El mismo orden de siempre: generar
-primero, porque verificar corre el generador antes de mirar lo que hay en
-disco.
+`POST /api/contacto` recibe `{ nombre, correo, asunto, telefono,
+consulta, sitio_web }`. `sitio_web` es el honeypot: si viene relleno,
+responde `201` sin guardar nada. `asunto` es obligatorio; `telefono`
+es opcional.
 
-## Convenciones
+## Datos: una sola fuente
 
-- **Comentarios que explican el porqué**, no el qué. Es la convención del
-  repo, no una regla impuesta: seguila cuando agregues código.
-- **Identación de 4 espacios.** Las comillas dobles son las mayoritarias;
-  algunos archivos (los más viejos) usan simples. No hay formateador
-  automático: cuidado con reformatear masivamente.
-- **No borrar CSS sin verificar.** Varios archivos mezclan el
-  español/inglés de cuando se renombraron las clases; ya se limpiaron los
-  restos, pero la idea sigue vigente.
+- **Catálogo:** `datos/catalogo.js` es la fuente. De ahí salen las
+  tarjetas del navegador (`public/data/productos.json`), las fichas de
+  `productos/` (`npm run generar`) y `sitemap.xml`. Para cambiar un
+  precio se toca solo `datos/catalogo.js`, y después `npm run generar`
+  y `npm run verificar`.
+- **Testimonios:** `datos/testimonios.js` es la fuente. De ahí sale
+  `public/data/testimonios.json` (`npm run generar:testimonios`), que
+  siembra el backend y sirve de respaldo al carrusel si la API no está.
 
-### Linter
+`npm run verificar` regenera el CSS derivado y las fichas, así que hay
+que commitear también esos archivos generados cuando cambie la fuente.
 
-```sh
-npm install          # instala eslint y globals, que son de desarrollo
-npm run lint
-```
+## Cuentas y sesiones
 
-`eslint.config.js` no es una lista de estilo genérica. El sitio carga los
-scripts de `public/js` con `<script>` clásicos, uno detrás de otro, sin
-módulos, así que **todo lo que `productos.js` declara al nivel superior
-queda disponible en los que se cargan después**. ESLint analiza archivo por
-archivo y ve esos nombres como no definidos, así que la lista `DEL_CATALOGO`
-de la config declara el contrato entre scripts:
+Hay dos cookies y no se pisan:
 
-| Nombre | Qué es |
-|---|---|
-| `PRODUCTOS`, `precios` | el catálogo y el mapa de precios |
-| `escaparHTML`, `formatearPrecio` | helpers de texto y de precio |
-| `obtenerCarrito`, `guardarCarrito` | leer y guardar el carrito |
-| `agregarProductoAlCarrito`, `suscribirAlCarrito`, `actualizarContador` | suma y avisos de cambio |
+- `zapi_sesion`: sesión **anónima** del carrito. Valor firmado con
+  HMAC-SHA256 (`ZAPI_SESSION_SECRET`), `HttpOnly`, `SameSite=Lax`,
+  `Secure` en producción. Se crea sola en la primera petición.
+- `zapi_auth`: sesión de **cuenta**. Token opaco que se guarda en la
+  colección `sesiones`; sin firma porque no lleva datos que
+  falsificar. `HttpOnly`, `SameSite=Lax`, `Secure` en producción.
 
-Si agregás un global nuevo de `productos.js`, agregalo ahí también, o el
-linter va a marcar al archivo que lo consume. Esa lista es la única parte
-del proyecto donde el orden de carga de los `<script>` importa de verdad.
+Ver el historial y cerrar un pedido exigen cuenta (`exigirSesion`).
+Registro y login van con su propio rate limit (`ZAPI_LIMITE_AUTH`).
 
-Además de `no-undef`, la config prende reglas de error obvio
-(`no-unreachable`, `no-dupe-keys`, `no-var`, `no-implicit-globals` en las
-herramientas). `eqeqeq` está en **warning**, no en error: hay 6 `==`
-pendientes de revisar y no vale la pena romper el build por eso.
+## Formulario de contacto
 
-`.editorconfig` fija UTF-8, LF, 4 espacios y sin espacios al final de línea,
-para que dos editores no peleen por el mismo archivo.
+`index.html` → `public/js/contacto.js` valida y manda a
+`POST /api/contacto`. Si el backend responde `201`, además se dispara
+un aviso por correo con **EmailJS** (SDK desde jsdelivr). El aviso es
+best-effort: la consulta ya quedó guardada en el backend, así que si
+EmailJS falla aparece un aviso flotante en pantalla y no se pierde
+nada.
+
+El mapa de la sección "Nosotros" es un embed de Google Maps
+(`frame-src https://www.google.com`, `connect-src`/`script-src`
+acotados a los dominios que el sitio usa).
+
+## Asistente
+
+`public/js/zapi-bot.js` responde por palabras clave y, si el backend
+está disponible, consulta `POST /api/asistente/chat` para una
+respuesta con recomendaciones del catálogo. El flujo vive en el
+backend: resume los intereses del visitante (colección `eventos`),
+busca una FAQ parecida y, si no la encuentra, arma la respuesta con las
+reglas de negocio (`backend/src/config/business.js`) y la guarda. Las
+recomendaciones se filtran contra el catálogo real: nunca sale un
+producto inventado. No depende de ningún servicio externo.
 
 ## Seguridad
 
-Lo que se conserva del sitio estático:
-
-- Toda interpolación pasa por `escaparHTML` antes de tocar el DOM, y
-  `npm run verificar` escanea ese patrón (sección XSS).
-- `/data/` fuera de git, y `.env` (con los secretos) también.
-
-Lo que agrega el backend:
-
-- **CSP estricta** y cabeceras con Helmet (`X-Frame-Options`, `nosniff`,
-  `Referrer-Policy`). La CSP deja `connect-src`/`script-src` en `'self'`:
-  un script inyectado por un XSS no llega a ejecutarse ni a hablar con otro
-  servidor.
-- **Rate limiting** por IP en los endpoints de escritura, sin dependencias.
+- **CSP estricta** con Helmet (`script-src`/`connect-src`/`frame-src`
+  acotados) y cabeceras `X-Frame-Options`, `nosniff`,
+  `Referrer-Policy`.
+- **Rate limiting** por IP en los endpoints de escritura, sin
+  dependencias.
 - **Límite de 16 kB** en el cuerpo de las peticiones.
-- **Honeypot** `sitio_web` validado en el servidor, y validación por campo
-  con `{ error, campo }` para que el front marque el input correcto.
-- **Cookie de sesión del carrito firmada** con HMAC-SHA256 (`HttpOnly`,
-  `SameSite=Lax`, `Secure` en producción). El id lo firma el servidor: el
-  visitante no puede elegir ni forjar la sesión de otro.
-- **Stock protegido**: `PUT /api/stock/:id` exige el token `ZAPI_ADMIN_TOKEN`
-  en la cabecera `x-zapi-token`, comparado por hash con `timingSafeEqual`.
-- **Rutas bloqueadas**: `/backend`, `/tools`, `/datos`, `/.env`,
-  `/package.json` y compañía nunca se sirven, aunque el sitio se sirva desde
-  la raíz.
-- **CSRF**: la cookie es `SameSite=Lax`, así que no viaja en envíos
-  cross-site y un formulario ajeno no puede disparar pedidos de otro
-  carrito. Si algún día se agrega login real, hay que revisarlo de nuevo.
+- **Honeypot** `sitio_web` y validación por campo (`{ error, campo }`).
+- **Cookies `HttpOnly`** firmadas o con token opaco; `Secure` en
+  producción.
+- **Stock y administración** detrás de `ZAPI_ADMIN_TOKEN`
+  (`x-zapi-token`), comparado por hash con `timingSafeEqual`.
+- **Rutas sensibles bloqueadas** (`/backend`, `/tools`, `/datos`,
+  `/.env`, `/package.json`).
+- **XSS:** toda interpolación pasa por `escaparHTML`, y
+  `npm run verificar` escanea ese patrón.
+
+## Convenciones
+
+- Indentación de 4 espacios; sin formateador automático.
+- `.editorconfig` fija UTF-8, LF, 4 espacios y sin espacios al final
+  de línea.
+- Tras editar `catalogo.css` hay que correr `npm run css` (ese archivo es
+  la fuente de `catalogo-catalogo.css` y `catalogo-modal.css`).
 
 ## Estado de verificación
 
 | Qué | Estado |
 |---|---|
-| Verificación estática (`npm run verificar`) | ✅ |
-| Contraste de color (`npm run contraste`) | ✅ |
-| ESLint (`npm run lint`) | ✅ 0 errores, 6 warnings de `eqeqeq` |
-| `.editorconfig` | ✅ |
-| Tests del backend (`npm test`) | ✅ 43 tests (`node:test` + Supertest + Mongo en memoria) |
-
-Los tests cubren la API de contacto, el módulo de comercio completo
-(catálogo, stock, carrito y pedidos) y el asistente (respuestas por reglas,
-memoria de FAQ y recomendaciones), con el catálogo real del sitio sembrado
-desde `public/data/productos.json`.
-| Formateador automático | ❌ no hay, a propósito |
-| CI | ❌ no hay |
+| Verificación estática (`npm run verificar`) | OK |
+| Contraste de color (`npm run contraste`) | OK |
+| ESLint (`npm run lint`) | 0 errores, 6 warnings (históricos) |
+| Tests del backend (`npm test`) | 62 en verde |
+| Formateador automático | no hay, a propósito |
+| CI | no hay |

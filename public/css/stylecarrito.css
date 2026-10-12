@@ -1,15 +1,4 @@
-/* ==========================================================
-   CARRITO ZAPI
-   ========================================================== */
 
-/* styles.css centra con "margin-inline: auto" a todo hijo
-   directo de un <section>, una regla pensada para las secciones
-   de una sola columna del index. El carrito es de dos columnas,
-   asi que esos margenes se comen el espacio libre y separan el
-   resumen lateral de la lista. En carrito.html no pasaba nada
-   porque ahi .cart-content y .cart-summary son hijos de <main>,
-   no de un <section>; al meter el carrito como una seccion mas
-   del index hay que neutralizarlo. */
 
 .section.cart-page>* {
     max-width: none;
@@ -36,7 +25,6 @@
 }
 
 
-/* LOGO */
 
 .cart-header .logo {
     display: flex;
@@ -54,9 +42,6 @@
     margin: 0;
 }
 
-/* Enlaces a las otras paginas. El sitio ya vive entero en
-   index.html; esta pagina y catalogo.html quedan como accesos
-   directos, enlazados entre si. */
 .cart-nav {
     display: flex;
     gap: 1.25rem;
@@ -85,7 +70,6 @@
 }
 
 
-/* TÍTULO */
 
 .cart-title {
     display: flex;
@@ -103,13 +87,6 @@
 }
 
 
-/* ==========================================================
-   CONTENEDOR PRINCIPAL
-   ========================================================== */
-/* Mobile first: en el telefono los productos van arriba y el
-   resumen abajo, en una sola columna. De 851px para arriba el
-   resumen pasa a una columna fija de 380px al costado, con el
-   ancho completo del contenedor. */
 .cart-page {
 
     width: min(680px, calc(100% - 2rem));
@@ -129,9 +106,6 @@
     align-items: flex-start;
 
 }
-/* La columna de productos toma lo que sobra del resumen, que se
-   queda en 380px. basis 0 + min-width 0 dejan que encoja de verdad
-   en vez de desbordar cuando la pantalla achica. */
 .cart-content {
 
     flex: 1 1 0;
@@ -141,9 +115,6 @@
 }
 
 
-/* ==========================================================
-   CABECERA DEL CARRITO
-   ========================================================== */
 
 .cart-heading {
 
@@ -186,9 +157,6 @@
 }
 
 
-/* ==========================================================
-   BOTÃ“N VACIAR
-   ========================================================== */
 
 .clear-cart {
 
@@ -223,9 +191,6 @@
 }
 
 
-/* ==========================================================
-   PRODUCTOS
-   ========================================================== */
 
 .cart-items {
 
@@ -283,11 +248,9 @@
 }
 
 
-/* IMAGEN */
 
 .cart-item-image {
 
-    /* columna 1 del reparto anterior: 100px fijos, sin encogerse */
     flex: 0 0 100px;
 
     width: 100px;
@@ -298,9 +261,6 @@
 
     overflow: hidden;
 
-    /* Cuadrado contra fotos verticales: con "cover" se perdia la
-       parte de arriba y de abajo de la planta. El fondo hace que
-       las bandas laterales queden como parte de la foto. */
     background: var(--sand);
 }
 
@@ -325,9 +285,6 @@
 }
 
 
-/* La columna del medio: se estira con flex-grow 1 y deja el total a
-   la derecha. min-width: 0 deja que el texto encoja en vez de
-   desbordar la fila. */
 .cart-item-info {
 
     flex: 1 1 0;
@@ -337,7 +294,6 @@
 }
 
 
-/* INFORMACIÃ“N */
 
 .cart-item-info h3 {
 
@@ -363,7 +319,6 @@
 }
 
 
-/* PRECIO */
 
 .cart-item-price {
 
@@ -374,9 +329,6 @@
 }
 
 
-/* Cuanto queda de ese producto. Va debajo del precio y solo
-   aparece cuando el stock ya llego: mientras tanto queda vacio y
-   escondido, sin dejar un hueco en la tarjeta. */
 
 .cart-item-stock {
 
@@ -432,9 +384,6 @@
 }
 
 
-/* ==========================================================
-   CONTROLES DE CANTIDAD
-   ========================================================== */
 
 .quantity-control {
 
@@ -455,8 +404,6 @@
 }
 
 
-/* 44px es el piso practico en movil para que el boton no se
-   equivoque con el que esta al lado. Antes media 34px. */
 .quantity-control button {
 
     width: 44px;
@@ -501,9 +448,6 @@
 }
 
 
-/* ==========================================================
-   TOTAL DEL ITEM
-   ========================================================== */
 
 .cart-item-total {
 
@@ -515,7 +459,6 @@
 
     gap: .7rem;
 
-    /* columna 3 del reparto anterior: la que se ajusta al contenido */
     flex: 0 0 auto;
 
 }
@@ -534,8 +477,6 @@
 
 .remove-item {
 
-    /* La papelera tambien sube a 44px: estaba en 34px y es el
-       control mas importante de la fila. */
     width: 44px;
 
     height: 44px;
@@ -571,13 +512,7 @@
 }
 
 
-/* ==========================================================
-   RESUMEN
-   ========================================================== */
 
-/* Mobile first: en el telefono el resumen es un bloque normal al
-   final de la lista, sin sticky. De 851px para arriba se vuelve
-   la columna lateral de 380px que acompaña el scroll. */
 .cart-summary {
 
     position: static;
@@ -666,7 +601,6 @@
 }
 
 
-/* TOTAL */
 
 .summary-total {
 
@@ -701,9 +635,6 @@
 }
 
 
-/* ==========================================================
-   ENTREGA
-   ========================================================== */
 
 .delivery-box {
 
@@ -755,9 +686,6 @@
 }
 
 
-/* ==========================================================
-   WHATSAPP
-   ========================================================== */
 
 .btn-whatsapp {
 
@@ -777,11 +705,6 @@
 
     border-radius: 999px;
 
-    /* El verde oficial de WhatsApp con texto blanco daba 1.99:1:
-       era el boton de checkout, el CTA mas importante del
-       carrito, y era practicamente ilegible. Se usa el verde
-       profundo de la marca (#075E54) con sus tintes, que si
-       llega a 4.5:1 conservando la identidad del canal. */
     background: linear-gradient(135deg, #0A7B6E, #075E54);
 
     color: #ffffff;
@@ -893,21 +816,9 @@
 }
 
 
-/* ==========================================================
-   CHECKOUT: DATOS DE CONTACTO
-   ------------------------------------------------------------
-   El formulario de datos se construye por JS sobre
-   #checkoutRoot (ver carrito.js), porque la misma pieza vive en
-   carrito.html y dentro de index.html. Reusa los estilos del
-   formulario de contacto (styles.css). El boton que lo dispara es
-   el de enviar (.btn-whatsapp) del resumen: este formulario ya no
-   trae boton propio.
-   ========================================================== */
 
 .checkout-root {
 
-    /* Sin JS el hueco esta vacio y no debe empujar nada: el
-       margen lo lleva el formulario que construye carrito.js. */
 
 }
 
@@ -953,8 +864,6 @@
 
 }
 
-/* [hidden] tiene que ganarle al display del boton (flex) y al
-   bloque del formulario, igual que con .formulario en styles.css. */
 .checkout-form[hidden],
 .checkout-estado[hidden] {
 
@@ -987,34 +896,7 @@
 }
 
 
-/* ==========================================================
-   RECOMENDACIONES
-   ------------------------------------------------------------
-   La atencion se pide por el FONDO: tres manchas de color
-   (salvia, verde gris y un verde muy claro) que derivan
-   lentamente sobre una base crema y, encima, laten.
-   ========================================================== */
 
-/* --------------------------------------------------
-   LATIDO DEL FONDO
-   --------------------------------------------------
-   Las manchas no solo derivan: tambien laten. La
-   intensidad sale de una sola variable, --pulso, que va
-   de 0 a 1 y se declara aca con @property.
-
-   @property es lo que hace que funcione: sin el, una
-   variable "--pulso" corriente es solo texto y el
-   navegador no la podria interpolar. Con ella declarada,
-   el valor pasa de un numero a otro y el degrade se
-   vuelve a pintar en cada paso. Si el navegador no
-   soporta @property se ignora esta seccion y las alfa
-   fijas de abajo dejan el fondo igual que antes: sin
-   latido, pero igual de legible.
-
-   El costo es el que ya pagaba el fondo al derivar: se
-   repinta la banda una vez por cuadro. Las tarjetas son
-   translucidas, asi que el latido se ve a traves de ellas.
-   -------------------------------------------------- */
 
 @property --pulso {
 
@@ -1027,19 +909,6 @@
 }
 
 
-/* --------------------------------------------------
-   FONDO DE LA BANDA
-   --------------------------------------------------
-   Se anima background-position, que es lo unico que se
-   mueve ademas del latido: nada de transform ni de
-   filtros, para no costar repintados ni tocar el layout.
-
-   Importante: el ancho de la lista no se toca. A 1280 y 1440
-   mide 656px justos, que es 3 tarjetas de 13rem mas dos gaps
-   de 16px: cualquier relleno horizontal sacaria la tercera
-   tarjeta de la fila. Por eso el padding es solo vertical y
-   los halos van en box-shadow, que no ocupan lugar.
-   ========================================================== */
 
 .recommendations {
 
@@ -1049,15 +918,10 @@
 
     margin-top: 3rem;
 
-    /* Solo vertical: el ancho de la lista queda intacto */
     padding: 2.3rem 0 2.4rem;
 
     border-radius: calc(var(--radius) + 6px);
 
-    /* La banda solo lleva la base crema. Las manchas de color
-       viven todas en ::after: si estuvieran aqui tambien, las dos
-       capas se sumarian y el fondo saldria el doble de saturado
-       de lo que pide --pulso. */
 
     background-image:
 
@@ -1079,9 +943,6 @@
 
         0 0 0 1px rgba(74, 124, 89, .18),
 
-        /* El halo que antes vivia en ::after entra aqui: los
-           shadows no ocupan lugar, asi que sigue sin poder
-           romper el ancho de la lista. */
         0 0 0 7px rgba(143, 174, 145, .12),
 
         0 22px 44px -30px rgba(31, 58, 46, .55);
@@ -1089,8 +950,6 @@
 }
 
 
-/* Las tres manchas: derivan con el tiempo y laten con --pulso.
-   Con "alternate" van y vienen sin el salto del reinicio. */
 @keyframes recomendacionesFondo {
 
     0% {
@@ -1108,10 +967,6 @@
 }
 
 
-/* Un latido, no un vaiven: dos golpes, el segundo mas suave.
-   El "ease-out" de cada subida la hace rapida y el "linear"
-   del 39% al 56% la deja bajar sola, que es como se oye un
-   corazon. Los topes en 0% y 100% cierran el ciclo sin salto. */
 @keyframes recomendacionesPulso {
 
     0%, 100% {
@@ -1155,29 +1010,6 @@
 }
 
 
-/* Capa de adelante: aqui viven las tres manchas.
-
-   Van sobre "transparent", sin la base crema: asi se ve la base
-   que esta debajo y el color queda controlado por un solo lugar
-   (si las manchas estuvieran tambien en .recommendations, las dos
-   capas se sumarian y el fondo se veria el doble de saturado).
-
-   Cada mancha es mas grande que la caja (150-190%) para que al
-   desplazarla el color entre y salga por el otro lado en vez de
-   dejar un borde vacio.
-
-   La intensidad sale de --pulso: cada mancha sube y baja entre
-   su piso y su tope. El primer numero es el tope, el segundo el
-   piso, y el punto y coma separa los canales rgba.
-
-   Va antes que las tarjetas por el "z-index: -1", y para que
-   eso no lo empuje todavia mas hacia atras, la banda declara
-   "isolation: isolate" y forma su propio contexto de
-   apilamiento. Por eso el latido se ve a traves de las
-   tarjetas y no las tinte.
-
-   El selector es ::after y no ::before porque ::before ya lo
-   usa el filete de color del borde superior. */
 .recommendations::after {
 
     content: "";
@@ -1190,10 +1022,6 @@
 
     border-radius: inherit;
 
-    /* La banda no hereda --pulso (@property lo declara con
-       "inherits: false", a proposito), asi que la capa tiene que
-       declarar su propio valor. El que manda es el de la
-       animacion; este solo define el estado en reposo. */
     --pulso: 0;
 
     pointer-events: none;
@@ -1242,7 +1070,6 @@
 
 }
 
-/* Filete de color en el borde superior */
 .recommendations::before {
 
     content: "";
@@ -1286,13 +1113,11 @@
 
     margin-bottom: 1.5rem;
 
-    /* Hueco para el punto que late */
     padding-left: .95rem;
 
 }
 
 
-/* Subrayado de color bajo el titulo */
 .recommendations-header h2::after {
 
     content: "";
@@ -1312,14 +1137,6 @@
 }
 
 
-/* El punto late. Va en .cart-eyebrow y no en la clase suelta
-   porque el catalogo tambien la usa.
-
-   Aqui el eyebrow se pone en --forest, no en --leaf ni en
-   --moss: el texto va directo sobre la banda y el fondo pasa
-   de crema a un verde claro. Medido sobre los pixeles de la
-   pagina en cuatro momentos del ciclo, con --moss bajaba a
-   4,13:1 y con --forest queda en 8,3:1. */
 .recommendations .cart-eyebrow {
 
     display: inline-flex;
@@ -1380,25 +1197,6 @@
 }
 
 
-/* La lista trae como maximo 3 tarjetas. Sin basis fijo el grow
-   repartia el ancho y la tercera de la fila se estiraba al tope
-   (199/199/352), y con basis en porcentaje se angostaba a 91px y el
-   overflow hidden de la tarjeta recortaba el boton Agregar. Se usa
-   un ancho uniforme de 13rem: tres entran en fila en pantallas anchas,
-   en las estrechas bajan a 2 o 1 y todas miden igual. El boton nunca
-   se deforma porque el pie puede partirse en dos lineas.
-
-   El fondo translucido y la franja de arriba son los que hacen
-   que el bloque se lea como una recomendacion y no como otra fila
-   del carrito. La tarjeta es semitransparente a proposito: deja
-   pasar el fondo animado que hay detras. Por eso el blanco es
-   rgba y no un color solido; el 80% mantiene el texto legible
-   aunque la mancha de color pase por debajo (medido: 4,66:1 en el
-   peor momento del ciclo). La entrada se escalona con --i, que es
-   la posicion que escribe renderRecommendations en cada tarjeta. */
-/* Mobile first: la recomendacion ocupa el ancho entero en el
-   telefono. De 488px para arriba vuelve al ancho de 13rem que
-   deja varias en fila. */
 .recommendation-card {
 
     flex: 0 1 100%;
@@ -1433,13 +1231,11 @@
 
     animation: recommendationIn .5s cubic-bezier(.2, .8, .3, 1) both;
 
-    /* Escalonado: cada tarjeta entra despues que la anterior */
     animation-delay: calc(var(--i, 0) * 110ms);
 
 }
 
 
-/* Franja de color en el borde superior de la tarjeta */
 .recommendation-card::before {
 
     content: "";
@@ -1497,7 +1293,6 @@
 }
 
 
-/* Tarjeta enfocada con teclado: mismo realce que el hover */
 .recommendation-card:focus-visible {
 
     outline: none;
@@ -1530,9 +1325,6 @@
 
     height: 100%;
 
-    /* 16:10 contra fotos verticales: con "cover" solo se veía
-       una franja de la planta. "contain" la muestra entera y las
-       bandas caen sobre el fondo arena del contenedor. */
     object-fit: contain;
 
     transition: transform .4s ease;
@@ -1554,12 +1346,6 @@
 }
 
 
-/* La categoria va como pastilla de color: es otra marca visual
-   de que la tarjeta es una sugerencia y no un producto pedido.
-
-   El texto usa --moss y no --leaf a proposito: el verde claro
-   de la pastilla dejaba el texto en 4,08:1 y queda por debajo
-   del 4,5:1 que pide WCAG AA. Con --moss sube a 5,16:1. */
 .recommendation-category {
 
     display: inline-block;
@@ -1597,8 +1383,6 @@
 
 }
 
-/* El nombre abre el detalle del producto. Hereda la tipografia
-   del h3 para que la tarjeta no cambie de aspecto. */
 .recommendation-link {
 
     font: inherit;
@@ -1739,14 +1523,8 @@
 }
 
 
-/* Con "reducir movimiento" en el sistema se apagan el fondo
-   animado, el latido y la entrada escalonada: el color se
-   mantiene, porque informa igual que la animacion. */
 @media (prefers-reduced-motion: reduce) {
 
-    /* El latido y la deriva viven los dos en ::after. Si se
-       apagara solo la banda, el fondo seguiria respirando a
-       traves de las tarjetas translucidas. */
 
     .recommendations::after,
 
@@ -1766,10 +1544,6 @@
     }
 
 
-    /* Faltaban los bucles del boton de WhatsApp, la entrada de
-       las filas del carrito, el resumen y el estado vacio: con
-       reduced-motion activo el boton de checkout seguia
-       pulsando en loop y las filas entraban animadas. */
 
     .btn-whatsapp {
 
@@ -1790,9 +1564,6 @@
 }
 
 
-/* ==========================================================
-   CARRITO VACÍO
-   ========================================================== */
 
 .empty-cart {
 
@@ -1848,9 +1619,6 @@
 
     font-size: 54px;
 
-    /* Era var(--sage), que sobre blanco da 2.43:1 y no llega al 3:1
-       que pide WCAG. Aunque sea un icono, es lo unico que dibuja el
-       estado vacio. --moss mantiene el tono apagado y cumple con 6:1. */
 
     color: var(--moss);
 
@@ -1873,9 +1641,6 @@
 }
 
 
-/* ==========================================================
-   BOTÃ“N PRINCIPAL
-   ========================================================== */
 
 .primary-button {
 
@@ -1915,24 +1680,9 @@
 }
 
 
-/* ==========================================================
-   UTILIDAD
-   ------------------------------------------------------------
-   La clase .hidden no se repite aqui: ya esta en styles.css, que
-   las dos paginas cargan siempre y antes que este archivo. Estaba
-   duplicada al pedo y las dos copias eran identicas.
-   ========================================================== */
 
 
-/* ==========================================================
-   RESPONSIVE (mobile first)
-   ------------------------------------------------------------
-   Todo lo de arriba es la version telefono. Aca se restaura la
-   disposicion de escritorio a partir del ancho necesario.
-   ========================================================== */
 
-/* La recomendacion ocupa el ancho entero en el telefono y se
-   suma a una fila de ahi para arriba. */
 @media (min-width: 488px) {
 
     .recommendation-card {
@@ -1990,8 +1740,6 @@
 
     .cart-item-total {
 
-        /* Vuelve a la fila del medio, con el nombre a la izquierda
-           y los controles a la derecha. */
         flex: 0 0 auto;
 
         margin-left: 0;
@@ -2022,14 +1770,10 @@
 
 }
 
-/* A partir de 851px el resumen vuelve a ser la columna lateral
-   de 380px que se pega al scroll. */
 @media (min-width: 851px) {
 
     .cart-page {
 
-        /* En columna el flex-basis pasa a ser alto, asi que el nowrap
-           evita que un carrito largo se desborde hacia un lado. */
         flex-direction: row;
 
         flex-wrap: wrap;
@@ -2043,7 +1787,6 @@
     }
 
 
-    /* en columna los dos bloques vuelven a su alto de contenido */
     .cart-content {
 
         flex: 1 1 0;
@@ -2058,8 +1801,6 @@
 
         top: 105px;
 
-        /* la columna lateral: 380px fijos y el resto es para los
-           productos (ver .cart-content) */
         flex: 0 0 380px;
 
         width: auto;

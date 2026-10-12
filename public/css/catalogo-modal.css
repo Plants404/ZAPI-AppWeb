@@ -1,19 +1,12 @@
 /* Archivo generado. No editar a mano.
    Fuente: catalogo.css   Generar: node tools/extraer-modal-css.js */
 
-/* Boton agregar: lo usan las tarjetas del catalogo y el modal,
-   que tambien esta en carrito.html. Por eso viaja en las dos
-   mitades de la hoja. */
-
 .add-cart {
 display: inline-flex;
 align-items: center;
 justify-content: center;
 gap: .5rem;
 padding: .75rem 1.25rem;
-/* El alto sale del padding (.75rem x 2) mas la linea, y queda
-apenas por encima de 44px. Se fija el minimo para que un
-cambio de line-height no lo baje del area tactil. */
 min-height: 44px;
 border-radius: 999px;
 background: var(--forest);
@@ -33,11 +26,9 @@ box-shadow: var(--shadow-md);
 background: var(--leaf);
 }
 
-/* ==========================================================
+/*
 VENTANA FLOTANTE DE PRODUCTO
-Modal con carrusel de fotos, detalle y agregar al carrito.
-========================================================== */
-
+*/
 body.modal-abierto {
 
 overflow: hidden;
@@ -50,24 +41,16 @@ position: fixed;
 
 inset: 0;
 
-/* por encima del chat, que vive en 9999 */
 z-index: 10000;
 
 display: flex;
 
-/* Mobile first: en el telefono el modal se pega abajo y
-ocupa todo el ancho. De 821px para arriba vuelve a ser
-una caja centrada con aire alrededor. */
 align-items: flex-end;
 
 justify-content: center;
 
 padding: 0;
 
-/* Sin "visibility": el sitio aplica transition: all a todos
-los elementos, y al heredarse cada descendiente abre su
-propia transición y queda invisible. El estado se maneja
-con [hidden] y con opacity, que no se hereda. */
 opacity: 0;
 
 transition: opacity .25s ease;
@@ -86,7 +69,6 @@ opacity: 1;
 
 }
 
-/* Mientras se desvanece no debe seguir robando clicks */
 
 .modal-producto.cerrando {
 
@@ -114,36 +96,20 @@ position: relative;
 
 display: flex;
 
-/* Mobile first: columna, pegada abajo, con esquinas
-solo arriba. De 821px para arriba pasa a fila
-centrada de ancho fijo. */
 flex-direction: column;
 
 width: 100%;
 
-/* El alto lo impone el max-height de abajo. Con flex las dos
-columnas se estiran a la misma altura y el detalle scrollea
-solo; el min-height: 0 de cada una es lo que deja recortar
-la columna en vez de empujar el boton de agregar fuera de
-la caja. */
 max-height: 94vh;
 
 background: var(--white);
 
-/* Sin translateY en el estado cerrado: la caja queda
-pegada abajo y correcta, y el offset empujaba el
-boton de agregar fuera del viewport. */
 border-radius: var(--radius) var(--radius) 0 0;
 
 box-shadow: var(--shadow-lg);
 
 overflow: hidden;
 
-/* Sin transform en el estado cerrado: el offset hacia abajo
-empujaba la caja fuera del viewport en movil y dejaba el
-boton de agregar debajo del borde. La entrada es solo el
-fade del contenedor, que no depende de la transicion de
-transform para ser correcta. */
 
 }
 
@@ -199,7 +165,6 @@ font-size: 1.3rem;
 
 }
 
-/* ---------- Carrusel ---------- */
 
 .modal-carrusel {
 
@@ -207,10 +172,6 @@ display: flex;
 
 flex-direction: column;
 
-/* Mobile first: en columna el flex-basis pasa a ser alto,
-asi que la imagen se queda con el alto de abajo y el
-detalle toma lo que sobra. De 821px para arriba vuelve
-a ser una columna con ancho fijo. */
 flex: none;
 
 min-height: 0;
@@ -225,10 +186,6 @@ background: var(--sand);
 
 position: relative;
 
-/* Mobile first: alto fijo en vez de aspect-ratio, porque
-una imagen muy alta deja sin lugar al detalle en
-pantallas chicas. De 821px para arriba vuelve a
-flex: 1, que reparte la columna con el detalle. */
 flex: none;
 
 height: min(38vh, 300px);
@@ -245,11 +202,6 @@ width: 100%;
 
 height: 100%;
 
-/* "contain" y no "cover" para que se vea la foto
-entera. El marco es mas ancho que alto y las fotos
-son verticales, asi que con "cover" se perdia la
-parte de arriba y de abajo. Las bandas que quedan
-caen sobre el fondo arena de .modal-carrusel. */
 object-fit: contain;
 
 display: block;
@@ -410,7 +362,6 @@ border-color: var(--leaf);
 
 }
 
-/* con una sola foto no hay carrusel que mostrar */
 
 .modal-carrusel.sin-carrusel .carrusel-flecha,
 
@@ -422,7 +373,6 @@ display: none;
 
 }
 
-/* ---------- Detalle ---------- */
 
 .modal-detalle {
 
@@ -430,8 +380,6 @@ display: flex;
 
 flex-direction: column;
 
-/* Mobile first: el detalle se come el alto restante y
-scrollea solo. */
 flex: 1 1 auto;
 
 padding: 1.4rem 1.3rem 1.2rem;
@@ -472,8 +420,6 @@ margin-bottom: .8rem;
 
 font-family: var(--serif);
 
-/* Mobile first: 1.8rem en el telefono, 2.1rem de 821px
-para arriba (ver la capa responsive del modal). */
 font-size: 1.8rem;
 
 color: var(--forest);
@@ -574,8 +520,6 @@ color: var(--muted);
 
 }
 
-/* Contador de stock del detalle. Mismo criterio que el de
-la tarjeta: verde, mostaza con pocas y rojo agotado. */
 .modal-stock {
 
 display: inline-flex;
@@ -629,8 +573,6 @@ display: none;
 
 }
 
-/* Mobile first: el agregar queda sticky abajo, porque es la
-accion principal y no puede quedar escondido en un scroll. */
 .modal-agregar {
 
 position: sticky;
@@ -647,9 +589,6 @@ box-shadow: 0 -12px 18px rgba(255, 255, 255, .92);
 
 }
 
-/* El enlace a la ficha estatica del producto. Va debajo del
-boton, con estilo de texto: la accion del boton ya esta
-tomada, esto es un atajo para lectores y buscadores. */
 
 .modal-ficha {
 
@@ -675,7 +614,6 @@ color: var(--moss);
 
 }
 
-/* Foco visible solo para teclado */
 
 .modal-producto :focus-visible {
 
@@ -686,13 +624,6 @@ outline-offset: 2px;
 }
 
 
-/* ==========================================================
-RESPONSIVE DEL MODAL (mobile first)
-------------------------------------------------------------
-Todo lo de arriba es la version telefono: hoja pegada
-abajo, carrusel de alto fijo y agregar sticky. Aca, de
-821px para arriba, vuelve a ser la caja de dos columnas.
-========================================================== */
 
 @media (min-width: 821px) {
 
@@ -724,17 +655,12 @@ height: auto;
 
 }
 
-/* 52.5% = 1.05 de las 2 partes del reparto original
-(1.05 / 2). Se usa base en porcentaje y no flex-grow
-porque el reparto por grow no daba 1.05 exacto con
-basis 0: midia 463/477 en vez de 493/446. */
 .modal-carrusel {
 
 flex: 0 0 52.5%;
 
 }
 
-/* la parte restante, .95 del reparto original */
 .modal-detalle {
 
 flex: 1 1 0;
@@ -761,10 +687,6 @@ box-shadow: none;
 
 }
 
-/* prefers-reduced-motion: apagar los loops infinitos del
-boton flotante y los destellos del contador. Antes solo
-se frenaban las transiciones del modal, y el boton
-seguía flotando y el contador seguía parpadeando. */
 
 @media (prefers-reduced-motion: reduce) {
 

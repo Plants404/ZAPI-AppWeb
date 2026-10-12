@@ -1,16 +1,5 @@
-/* ==========================================================
-   ZAPI BOT
-   Asistente virtual del vivero.
-   Responde preguntas frecuentes, promociona
-   y ayuda a fidelizar la compra.
-   ========================================================== */
-
 const ZAPI_NOMBRE = "Brotecito";
 
-/* Endpoints del asistente. El chat se sirve desde el mismo
-   origen que el sitio (la CSP lo permite con connect-src 'self') y,
-   si la API no responde, el widget cae a la logica local de abajo:
-   el visitante nunca se queda sin respuesta. */
 const ZAPI_API = "/api/asistente";
 const ZAPI_HISTORIAL_MAX = 12;
 const ZAPI_ESPERA_MS = 25000;
@@ -18,11 +7,6 @@ const ZAPI_ESPERA_MS = 25000;
 let zapiAsistenteActivo = false;
 let zapiHistorial = [];
 
-
-/* ==========================================================
-   BASE DE CONOCIMIENTO
-   Palabras clave -> respuesta.
-   ========================================================== */
 
 const ZAPI_FAQ = [
 
@@ -174,10 +158,6 @@ const ZAPI_FAQ = [
 ];
 
 
-/* ==========================================================
-   PROMOCIONES Y FIDELIZACIÓN
-   ========================================================== */
-
 const ZAPI_PROMOS = {
 
     primera: {
@@ -224,18 +204,6 @@ const ZAPI_PROMOS = {
 };
 
 
-/* ==========================================================
-   ATAJOS DEL MENÚ
-   ========================================================== */
-
-/* 5 atajos, todos temas (envíos / cuidados / club / servicios /
-   promociones). La acción "ver carrito" NO va acá: se separó a un
-   ícono de carrito fijo en el header del chat, porque mezclar
-   temas con acciones rompe la lógica de la fila. Para un vivero
-   "Cuidados" es el diferencial, así que abre la lista y
-   Promociones va al final (no se empuja primero). Los íconos son
-   de línea (Material Symbols) en vez de emojis sueltos, para que
-   el conjunto se vea parejo. */
 const ZAPI_MENU = [
     { etiqueta: "Cuidados", icono: "eco", clave: "cuidado" },
     { etiqueta: "Envíos", icono: "local_shipping", clave: "envio" },
@@ -244,10 +212,6 @@ const ZAPI_MENU = [
     { etiqueta: "Promociones", icono: "local_offer", clave: "promo" }
 ];
 
-
-/* ==========================================================
-   AYUDAS DE TEXTO
-   ========================================================== */
 
 const ZAPI_DIACRITICOS = new RegExp("[\\u0300-\\u036f]", "g");
 
@@ -262,10 +226,6 @@ function normalizar(texto) {
 function detectarIntencion(texto) {
 
     const limpio = normalizar(texto);
-
-    /* Prioridad: patrones más específicos primero.
-       Si no, una sola coincidencia como "tienen"
-       puede ganar sobre la FAQ realmente relevante. */
 
     const especificas = [
         ["cactus"], ["suculenta", "suculentas"],
@@ -290,15 +250,11 @@ function detectarIntencion(texto) {
         }
     }
 
-    /* Saludo y agradecimiento */
-
     const social = ["gracias", "genial", "perfecto", "copado", "joya", "barbaro"];
 
     if (social.some(clave => limpio.includes(clave))) {
         return ZAPI_FAQ.find(faq => faq.claves.includes("gracias"));
     }
-
-    /* Último recurso: coincidencia por cualquier clave */
 
     for (const faq of ZAPI_FAQ) {
         if (faq.claves.some(clave => limpio.includes(normalizar(clave)))) {
@@ -309,10 +265,6 @@ function detectarIntencion(texto) {
     return null;
 }
 
-
-/* ==========================================================
-   CONSTRUCCIÓN DE RESPUESTAS
-   ========================================================== */
 
 function respuestaPromociones() {
 
@@ -421,15 +373,9 @@ function respuestaServicios() {
 }
 
 
-/* ==========================================================
-   RESPUESTA PRINCIPAL
-   ========================================================== */
-
 function generarRespuesta(texto) {
 
     const pregunta = normalizar(texto.trim());
-
-    /* Atajos del menú */
 
     if (pregunta.includes("envio") || pregunta.includes("envío") ||
         pregunta.includes("envios") || pregunta.includes("envíos")) {
@@ -454,8 +400,6 @@ function generarRespuesta(texto) {
         return respuestaServicios();
     }
 
-    /* Salir y hablar con una persona */
-
     if (pregunta.includes("humano") || pregunta.includes("persona") ||
         pregunta.includes("asesor") || pregunta.includes("whatsapp") ||
         pregunta.includes("telefono") || pregunta.includes("teléfono") ||
@@ -467,8 +411,6 @@ function generarRespuesta(texto) {
             "y te contestamos enseguida. 📲"
         );
     }
-
-    /* Código de descuento */
 
     const codigo = ZAPI_PROMOS.primera.codigo.toLowerCase();
 
@@ -483,15 +425,11 @@ function generarRespuesta(texto) {
         );
     }
 
-    /* Búsqueda por coincidencia */
-
     const faq = detectarIntencion(texto);
 
     if (faq) {
         return faq.respuesta;
     }
-
-    /* Sin coincidencia: sugerimos opciones */
 
     return (
         "Mmm, no encontré eso en mi base. 🤔<br><br>" +
@@ -508,10 +446,6 @@ function generarRespuesta(texto) {
     );
 }
 
-
-/* ==========================================================
-   INTERFAZ
-   ========================================================== */
 
 const ZAPI_BOT_HTML = `
     <button
@@ -635,15 +569,6 @@ const ZAPI_BOT_HTML = `
 `;
 
 
-/* ==========================================================
-   MEDICIÓN DEL HEADER DEL SITIO
-   El widget se posiciona fixed abajo a la derecha, así que
-   su alto máximo depende de cuánto ocupa el header fijo o
-   sticky de la página. En lugar de hardcodear un valor,
-   medimos la barra más baja que esté anclada arriba y la
-   publicamos en --site-header-h para que el CSS la descuente.
-   ========================================================== */
-
 const ZAPI_BARRAS_SUPERIORES =
     "header, .cart-header, .topbar, .top-bar, .barra-superior";
 
@@ -668,15 +593,9 @@ function initZapiHeaderMeasure() {
 
             if (posicion !== "fixed" && posicion !== "sticky") return;
 
-            /* Si está oculto el rect viene en cero y
-               ya se descarta en la comprobación de abajo */
-
             const caja = el.getBoundingClientRect();
 
             if (!caja.width || !caja.height) return;
-
-            /* Solo barras ancladas al borde superior
-               y anchas: excluye widgets flotantes */
 
             if (caja.top > 8 || caja.width < limite) return;
 
@@ -694,9 +613,6 @@ function initZapiHeaderMeasure() {
         frame = requestAnimationFrame(medir);
     }
 
-    /* El header puede cambiar de alto: resize, rotación,
-       wrap del nav en mobile, o carga tardía de fuentes */
-
     window.addEventListener("resize", programar);
     window.addEventListener("orientationchange", programar);
 
@@ -707,9 +623,6 @@ function initZapiHeaderMeasure() {
         document.querySelectorAll(ZAPI_BARRAS_SUPERIORES)
             .forEach(el => observador.observe(el));
 
-        /* El body también: si el contenido cambia,
-           el header sticky puede recalcular su alto */
-
         observador.observe(document.body);
     }
 
@@ -717,29 +630,14 @@ function initZapiHeaderMeasure() {
         document.fonts.ready.then(programar);
     }
 
-    /* Primera medición y una pasada diferida: some
-       scripts_positionan el header después del load */
-
     medir();
     window.addEventListener("load", programar);
 }
-
-/* ==========================================================
-   ASISTENTE
-   El chat vive en el backend (/api/asistente/chat) y responde por
-   reglas. Aca solo se arma la conversacion, se manda y se pinta;
-   la logica de negocio (datos del negocio, catalogo, memoria de
-   FAQ) queda del lado del servidor. Si algo falla, se vuelve a la
-   logica local de abajo.
-   ========================================================== */
 
 function zapiEsperar(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-/* Manda un evento de navegacion. Es "best effort": si falla, no
-   se avisa ni se rompe nada. Otras paginas pueden engancharse
-   llamando a window.zapiTrack("agregar_carrito", { productoId }) */
 function zapiTrack(tipo, datos = {}) {
     try {
         fetch(`${ZAPI_API}/tracking`, {
@@ -749,7 +647,6 @@ function zapiTrack(tipo, datos = {}) {
             keepalive: true,
         }).catch(() => {});
     } catch {
-        /* sin tracking el chat igual funciona */
     }
 }
 
@@ -762,8 +659,6 @@ function zapiSlugProducto() {
     return coincidencia ? coincidencia[1] : "";
 }
 
-/* Pregunta al backend si el asistente esta disponible y ajusta el
-   enlace de WhatsApp con el contacto oficial del negocio. */
 async function zapiCargarConfig() {
     try {
         const respuesta = await fetch(`${ZAPI_API}/config`);
@@ -833,14 +728,6 @@ function initZapiBot() {
     let abierto = false;
     let iniciado = false;
 
-    /* ------------------------- */
-
-    /* Si el visitante ya está mirando el final, lo seguimos con cada
-       mensaje nuevo. Si subió a leer algo anterior, no lo arrastramos
-       abajo: se respeta su posición. Antes cada añadido forzaba el
-       scroll y, sumado a scroll-behavior: smooth, se peleaba con
-       quien intentaba leer hacia arriba. */
-
     const ZAPI_MARGEN_ABAJO = 80;
     let seguirAbajo = true;
 
@@ -856,17 +743,10 @@ function initZapiBot() {
         messages.scrollTop = messages.scrollHeight;
     }
 
-    /* Manda el scroll del usuario: si se va del fondo, dejamos de
-       seguirlo; si vuelve al fondo, retomamos. */
     messages.addEventListener("scroll", () => {
         seguirAbajo = estaAbajo();
     }, { passive: true });
-    /* El bot escribe marcado propio (<strong>, <br>), asi que
-       sus respuestas pueden ir por innerHTML. Lo que escribe el
-       visitante no: va como texto plano, porque al pasarlo por
-       innerHTML un "<img onerror=...>" se ejecutaba. Por eso el
-       parametro es explicito y no se deduce del tipo. */
-
+    /* Las respuestas del bot van por innerHTML; lo del visitante, como texto plano (XSS). */
     function agregarMensaje(texto, tipo, esHTML = true) {
 
         const div = document.createElement("div");
@@ -904,8 +784,6 @@ function initZapiBot() {
         if (typing) typing.remove();
     }
 
-    /* ------------------------- */
-
     function pintarChips() {
 
         chips.innerHTML = ZAPI_MENU.map(item =>
@@ -917,11 +795,7 @@ function initZapiBot() {
 
     }
 
-    /* ------------------------- */
-
-    /* Tarjetas de productos sugeridos por el asistente. Se arman
-       con datos que ya vienen validados contra el catalogo del
-       lado del servidor; aca igual se escapa todo por las dudas. */
+    /* Tarjetas de productos sugeridos por el asistente: se escapa todo por las dudas. */
     function pintarRecomendaciones(recomendaciones) {
 
         if (!Array.isArray(recomendaciones) || !recomendaciones.length) return;
@@ -956,8 +830,6 @@ function initZapiBot() {
 
         messages.appendChild(contenedor);
 
-        /* Las imágenes se cargan después (loading="lazy") y crecen
-           las tarjetas: si estamos siguiendo el final, acompaña. */
         contenedor.querySelectorAll("img").forEach(img => {
             const ajustar = () => scrollAbajo();
 
@@ -990,15 +862,10 @@ function initZapiBot() {
         if (zapiAsistenteActivo) {
             salida = await zapiConsultar(texto);
         } else {
-            /* La logica local es instantanea; un minimo de espera
-               mantiene la sensacion de que el bot "escribe". */
             await zapiEsperar(400 + Math.random() * 400);
         }
 
         quitarEscribiendo();
-
-        /* Consumir el carrito si el usuario preguntó por él, en
-           cualquiera de los dos caminos. */
 
         const preguntaCarrito = normalizar(texto).includes("carrito")
             || normalizar(texto).includes("pedido");
@@ -1020,8 +887,6 @@ function initZapiBot() {
             return;
         }
 
-        /* Sin API o sin respuesta: logica local de siempre. */
-
         const faq = detectarIntencion(texto);
 
         agregarMensaje(generarRespuesta(texto), "bot");
@@ -1042,15 +907,8 @@ function initZapiBot() {
         }
     }
 
-    /* ------------------------- */
-
     function saludoInicial() {
 
-        /* Una sola burbuja. Antes eran dos: la primera listaba los
-           temas y la segunda empujaba "empecemos por las
-           promociones", que además ya estaba en los atajos. La
-           lista de temas no hacía falta: los botones la muestran
-           solos, así que sobra repetirla. */
         agregarMensaje(
             `¡Hola! 🌿 Soy <strong>${ZAPI_NOMBRE}</strong>, el asistente de ZAPI. ` +
             "¿En qué te ayudo hoy?",
@@ -1058,8 +916,6 @@ function initZapiBot() {
         );
 
     }
-
-    /* ------------------------- */
 
     function abrir() {
 
@@ -1075,8 +931,6 @@ function initZapiBot() {
             saludoInicial();
         }
 
-        /* Al abrir, siempre al final, aunque se haya cerrado
-           con la conversación scrolleada hacia arriba. */
         scrollAbajo(true);
 
         setTimeout(() => input.focus(), 300);
@@ -1094,13 +948,8 @@ function initZapiBot() {
         badge.textContent = "";
         badge.style.display = "none";
 
-        /* Devuelve el foco al botón para no
-           perder la navegación con teclado */
-
         toggle.focus();
     }
-
-    /* ------------------------- */
 
     toggle.addEventListener("click", () => {
         abierto ? cerrar() : abrir();
@@ -1108,12 +957,7 @@ function initZapiBot() {
 
     close.addEventListener("click", cerrar);
 
-    /* Cerrar el chat con la tecla Escape.
-       El chat no se cierra si la ventana de producto está abierta:
-       ese Escape es de la modal, no del chat. Se mira "cerrando"
-       también porque la modal lo marca de forma síncrona al cerrarse,
-       así el orden de los dos listeners da igual. */
-
+    /* El Escape no cierra el chat si la ventana de producto está abierta: ese Escape es de la modal. */
     document.addEventListener("keydown", (event) => {
 
         if (event.key !== "Escape" || !abierto) return;
@@ -1152,18 +996,10 @@ function initZapiBot() {
 
         const item = ZAPI_MENU.find(m => m.clave === clave);
 
-        /* Se manda la etiqueta tal cual. Antes había que sacarle
-           el emoji del principio con un replace y ahora no hay
-           ninguno: la etiqueta sola ya dispara la intención
-           ("Cuidados", "Envíos", "Club ZAPI..."). */
         if (item) responder(item.etiqueta);
     });
 
-    /* ------------------------- */
-
     pintarChips();
-
-    /* Agregar un producto sugerido al carrito sin salir del chat. */
 
     messages.addEventListener("click", event => {
 
@@ -1179,17 +1015,11 @@ function initZapiBot() {
                 zapiTrack("agregar_carrito", { productoId: Number(boton.dataset.id) });
             }
         } catch {
-            /* sin carrito disponible, el enlace a la ficha queda */
         }
 
     });
 
-    /* Averigua si el asistente esta disponible y ajusta el contacto. */
-
     zapiCargarConfig();
-
-    /* En una ficha de producto, avisa que ese producto se miro:
-       alimenta las recomendaciones del asistente. */
 
     const slugActual = zapiSlugProducto();
 
@@ -1199,10 +1029,6 @@ function initZapiBot() {
             pagina: window.location.pathname,
         });
     }
-
-    /* El panel se posiciona contra el alto real del
-       header del sitio, así que se mide después de
-       inyectar el widget en el DOM */
 
     initZapiHeaderMeasure();
 

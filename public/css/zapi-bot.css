@@ -1,20 +1,9 @@
-/* ==========================================================
-   ZAPI BOT · WIDGET
-   ========================================================== */
 
 .zapi-bot {
 
-    /* Medidas de referencia del widget.
-
-       --site-header-h: alto real de las barras fijas del sitio.
-       Se declara acá como fallback y lo sobrescribe el JS
-       (initZapiBot) leyendo el DOM, así que nunca queda en 0
-       si el sitio tiene header. */
 
     --site-header-h: 0px;
 
-    /* --zapi-edge se cuenta UNA sola vez: es el margen
-       inferior. La zona superior la cubre --zapi-top-offset. */
 
     --zapi-gap: .85rem;
 
@@ -22,11 +11,9 @@
 
     --zapi-toggle-size: 66px;
 
-    /* Separación entre el panel y la barra del sitio */
 
     --zapi-top-gap: .75rem;
 
-    /* Cuánto se reserva abajo (botón) + arriba (header del sitio) */
 
     --zapi-top-offset: calc(var(--site-header-h) + var(--zapi-top-gap));
 
@@ -41,24 +28,11 @@
 
     bottom: var(--zapi-edge);
 
-    /* El chat queda por debajo del menu lateral para que, con el
-       menu abierto, el panel y su velo sean lo de arriba. Antes
-       el chat estaba en 9999 y se podia clickear por encima del
-       menu, dejando dos overlays apilados sin coordinacion.
-
-       Los valores se suben por pasos: header 50, boton flotante
-       del carrito 60, backdrop del menu 200, panel del menu 210.
-       El widget arranca en 100 para quedar por encima del
-       contenido y del boton flotante, y menu.js sube esta regla
-       a 0 con .menu-abierto para que quede debajo del velo. */
 
     z-index: 100;
 
     display: flex;
 
-    /* Con el menu lateral abierto, el chat baja por debajo del
-       velo. Sin esto el boton del chat quedaba clickeable por
-       encima del menu y se abrian los dos overlays juntos. */
     :root.menu-abierto & {
         z-index: 0;
     }
@@ -71,23 +45,14 @@
 
     max-width: 100vw;
 
-    /* El contenedor no captura clics: solo lo hacen
-       el botón y el panel abierto */
 
     pointer-events: none;
 
-    /* Montserrat, no la --sans del sitio (Inter): el chat se
-       escribía en una tipografía que no era la de la marca y se
-       leía como un agregado. El título del panel sigue en
-       --serif (Bebas Neue), igual que el logo. */
     font-family: 'Montserrat', var(--sans);
 
 }
 
 
-/* Neutraliza `section > *` de styles.css
-   (max-width: var(--container) + márgenes auto), que
-   restringiría el ancho de las secciones internas */
 
 .zapi-panel > * {
 
@@ -100,14 +65,6 @@
 }
 
 
-/* CONTRATO FLEX DE LA VENTANA (columna):
-
-   .zapi-header      → flex: 0 0 auto  (altura propia, no cede)
-   .zapi-messages    → flex: 1 1 auto + min-height: 0  (ABSORBE el resto)
-   .zapi-chips       → flex: 0 0 auto  (solo lo que necesita)
-   .zapi-input-area  → flex: 0 0 auto  (siempre visible)
-
-   La ventana no scrollea: solo la conversación. */
 
 .zapi-panel {
 
@@ -117,8 +74,6 @@
 
 .zapi-toggle {
 
-    /* Único lugar donde se declara el orden:
-       el panel va arriba y el botón flotante abajo */
 
     order: 2;
 
@@ -142,7 +97,6 @@
 
     position: relative;
 
-    /* Único elemento clickeable con el chat cerrado */
 
     pointer-events: auto;
 
@@ -166,7 +120,6 @@
 }
 
 
-/* Halo pulsante alrededor del botón */
 
 .zapi-toggle::before {
 
@@ -239,7 +192,6 @@
 }
 
 
-/* Burbuja de notificación */
 
 .zapi-badge {
 
@@ -257,8 +209,6 @@
 
     border-radius: 999px;
 
-    /* #d9484b con blanco daba 4.22:1. Se oscurece un paso
-       para llegar a 5.2:1 sin cambiar el tono de alerta. */
     background: #c23a3d;
 
     color: #fff;
@@ -283,9 +233,6 @@
 }
 
 
-/* ==========================================================
-   PANEL
-   ========================================================== */
 
 .zapi-panel {
 
@@ -293,11 +240,6 @@
 
     position: relative;
 
-    /* El alto se calcula contra el espacio REAL libre:
-       viewport - botón flotante - header del sitio.
-       --zapi-reserve ya descuenta --site-header-h, que
-       inyecta el JS, así que el panel nunca invade la
-       barra "VER CARRITO" ni el header. */
 
     width: min(480px, calc(100vw - 2rem));
 
@@ -319,17 +261,11 @@
 
     flex-direction: column;
 
-    /* CRÍTICO: styles.css aplica `section { padding: 6rem 1.5rem }`
-       y el panel es un <section>. Sin neutralizarlo se pierden
-       192px de alto (96px arriba + 96px abajo) y la conversación
-       queda comprimida. Acá no se usa padding: todo el alto
-       se reparte entre las cuatro secciones. */
 
     padding: 0;
 
     margin: 0;
 
-    /* La ventana no scrollea: solo la conversación */
 
     overflow: hidden;
 
@@ -351,8 +287,6 @@
 }
 
 
-/* Alturas seguras: dvh evita que la barra de
-   direcciones del móvil tape el input */
 
 @supports (height: 100dvh) {
 
@@ -380,7 +314,6 @@
 }
 
 
-/* Brillo que recorre el panel al abrir */
 
 .zapi-panel::after {
 
@@ -421,12 +354,7 @@
 }
 
 
-/* CABECERA */
 
-/* Anula el velo del sitio. Va como regla propia y no anidada
-   dentro de .zapi-header: anidada compilaría a descendiente
-   (.zapi-header .zapi-header::before) y no matchearía nada,
-   dejando el header igual de lavado. */
 .zapi-header::before {
 
     display: none;
@@ -435,23 +363,12 @@
 
 .zapi-header {
 
-    /* El widget reusa <header> y el sitio le aplica
-       header::before (un velo crema translúcido, rgba(...,.85),
-       el cristal del encabezado). Como este header es position
-       relative con z-index, ese velo se pinta encima del fondo
-       verde y debajo del texto: quedaba texto crema sobre un
-       verde clarificado, ilegible. Fijar top/wrap/z-index
-       propios evita además heredar el comportamiento de barra
-       fija del encabezado del sitio. */
     top: auto;
 
     flex-wrap: nowrap;
 
     z-index: auto;
 
-    /* Ocupa solo su altura natural: nunca crece
-       ni se encoge, para no comerse la
-       conversación */
 
     flex: 0 0 auto;
 
@@ -474,9 +391,6 @@
 
 .zapi-avatar {
 
-    /* El sprout quedaba chico dentro del círculo y el punto de
-       "en línea" caía encima. Con 44px el ícono entra bien y el
-       punto va en la esquina, sin taparlo. */
     width: 44px;
 
     height: 44px;
@@ -552,8 +466,6 @@
 }
 
 
-/* Permite que el nombre y el estado
-   cedan espacio sin desbordar */
 
 .zapi-header-text {
 
@@ -659,11 +571,6 @@
 
 }
 
-/* Carrito del header: la acción de "ver carrito" que estaba
-   mezclada entre los atajos. Comparte medidas y colores con el
-   botón de cerrar, así que los dos se leen como un mismo par.
-   El margen automático vive acá y no en el cerrar porque son
-   los dos últimos hijos los que se pegan al borde derecho. */
 
 .zapi-header-accion {
 
@@ -709,10 +616,6 @@
 
 }
 
-/* Salida a una persona. Siempre visible entre los atajos y el
-   campo: si el bot no entiende, el que tiene que resolver
-   (cliente o bot) no debería tener que adivinar que existe
-   un WhatsApp escondido en la burbuja de respuesta. */
 
 .zapi-humano {
 
@@ -769,18 +672,9 @@
 }
 
 
-/* ==========================================================
-   MENSAJES
-   ========================================================== */
 
 .zapi-messages {
 
-    /* El único elemento que absorbe el espacio libre.
-
-       min-height: 0 es imprescindible: por defecto
-       vale "auto" y la conversación crecería hasta
-       la altura de su contenido, empujando atajos
-       e input fuera de la ventana. */
 
     flex: 1 1 auto;
 
@@ -790,14 +684,6 @@
 
     overscroll-behavior: contain;
 
-    /* scrollbar-gutter reserva el canal de la barra
-       siempre: el texto no salta cuando aparece y la
-       barra queda dentro del padding, sin comerse la
-       curva del border-radius del panel.
-
-       Fallback: scrollbar-width/color para Firefox y
-       las reglas ::-webkit-scrollbar para Chrome, Edge
-       y Safari, que ignoran scrollbar-gutter si no. */
 
     scrollbar-gutter: stable;
 
@@ -813,23 +699,12 @@
 
     gap: .75rem;
 
-    /* Con poca conversación sobraba un bloque vacío entre el
-       último mensaje y los atajos: la caja crece (flex: 1) y los
-       mensajes quedan pegados al techo. Pegándolos abajo (con
-       margin-top: auto en el primero) se apoyan justo sobre los
-       botones y el hueco queda arriba, como en cualquier chat.
-
-       Se usa margin-top y NO justify-content: flex-end porque,
-       cuando la conversación desborda, flex-end recorta el primer
-       mensaje y no se puede subir a leerlo. */
 
     background: var(--sand);
 
 }
 
 
-/* Empuja la conversación al fondo cuando es corta, sin romper el
-   scroll cuando es larga (acá el margin-top: auto vale 0). */
 
 .zapi-messages > :first-child {
 
@@ -860,8 +735,6 @@
 
     border-radius: 999px;
 
-    /* Borde del panel a 1px: la barra nunca
-       se superpone al de --cream del panel */
 
     border: 1px solid var(--sand);
 
@@ -1000,7 +873,6 @@
 }
 
 
-/* Indicador de escritura */
 
 .zapi-typing {
 
@@ -1050,15 +922,9 @@
 }
 
 
-/* ==========================================================
-   ATAJOS
-   ========================================================== */
 
 .zapi-chips {
 
-    /* Sin max-height ni scroll propio: los atajos
-       fluyen en 2-3 filas y nunca roban espacio
-       a la conversación */
 
     flex: 0 0 auto;
 
@@ -1081,10 +947,6 @@
 
     padding: .45rem .8rem;
 
-    /* Con el padding solo (.45rem) el chip queda en 32px de alto,
-       por debajo de los 44px que piden las guidelines de area
-       tactil. min-height mas el centrado resuelven sin estirar el
-       texto ni romper la pastilla. */
 
     min-height: 44px;
 
@@ -1102,10 +964,6 @@
 
     font-family: inherit;
 
-    /* .82rem con --moss quedaba chico y medio apagado sobre
-       crema. Se sube un escalón el tamaño y el verde se oscurece
-       a --leaf-texto, que es el que ya usan los links del sitio
-       sobre fondo claro. */
 
     font-size: .875rem;
 
@@ -1153,9 +1011,6 @@
 
 }
 
-/* Ícono de línea del atajo, en vez de emojis sueltos: así la
-   fila se ve del mismo estilo. Hereda el color del texto para no
-   quedar desfasado al hacer hover. */
 
 .zapi-chip-icono {
 
@@ -1181,12 +1036,6 @@
 }
 
 
-/* ==========================================================
-   RECOMENDACIONES DEL ASISTENTE
-   Tarjetas que acompañan a una respuesta cuando el bot sugiere
-   productos. Viven dentro de .zapi-messages, debajo de la
-   burbuja, y se arman solo con datos del catálogo propio.
-   ========================================================== */
 
 .zapi-recos {
 
@@ -1349,15 +1198,9 @@
 }
 
 
-/* ==========================================================
-   INPUT
-   ========================================================== */
 
 .zapi-input-area {
 
-    /* Siempre visible al pie: altura propia,
-       nunca se encoge ni se desplaza con
-       los mensajes */
 
     flex: 0 0 auto;
 
@@ -1369,13 +1212,6 @@
 
     padding: .7rem 1rem;
 
-    /* 1rem de aire mínimo + safe-area en iPhone.
-       Antes (.7rem) quedaba pegado al borde inferior
-       en cualquier pantalla donde inset-bottom da 0.
-
-       El aire lateral es de 1rem y no de .7rem a propósito:
-       el botón de enviar quedaba pegado al borde derecho y
-       con el margen igual al del lado izquierdo del campo. */
 
     padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
 
@@ -1402,8 +1238,6 @@
 
     font-family: inherit;
 
-    /* 16px es el mínimo en iOS: por debajo
-       el navegador hace zoom al escribir */
 
     font-size: 1rem;
 
@@ -1486,11 +1320,7 @@
 }
 
 
-/* ==========================================================
-   RESPONSIVE
-   ========================================================== */
 
-/* ---------- TABLET (601px a 1024px) ---------- */
 
 @media (min-width: 601px) and (max-width: 1024px) {
 
@@ -1517,7 +1347,6 @@
 }
 
 
-/* ---------- MOBILE (hasta 600px) ---------- */
 
 @media (max-width: 600px) {
 
@@ -1533,10 +1362,6 @@
 
     }
 
-    /* El panel ocupa casi toda la pantalla, pero arranca
-       POR DEBAJO del header del sitio: en mobile la barra
-       "VER CARRITO" + header ocupan ~90-110px y el panel
-       no puede pisarlos. */
 
     .zapi-panel {
 
@@ -1574,8 +1399,6 @@
 
     }
 
-    /* Con el panel abierto el botón flotante estorba:
-       el cierre ya está en el header del chat */
 
     .zapi-bot.is-open .zapi-toggle {
 
@@ -1608,7 +1431,6 @@
 }
 
 
-/* ---------- PANTALLAS MUY ALTAS ---------- */
 
 @media (min-width: 1025px) and (min-height: 1000px) {
 
@@ -1621,11 +1443,6 @@
 }
 
 
-/* ---------- PANTALLAS BAJAS (laptops 768px de alto) ----------
-
-   No hace falta tocar height: el max-height de la regla
-   base ya descuenta --zapi-reserve (que incluye el header
-   del sitio). Acá solo se compacta el header. */
 
 @media (max-height: 700px) {
 
@@ -1646,11 +1463,6 @@
 }
 
 
-/* ---------- ALTO ESCASO: la conversación gana terreno ----------
-
-   Cuando falta altura, lo primero que se compacta son los
-   atajos y los paddings: el input y el header se mantienen
-   porque son elementos de uso obligatorio. */
 
 @media (max-height: 820px) {
 
@@ -1685,12 +1497,9 @@
 }
 
 
-/* ---------- MUY POCA ALTURA (ventanas bajas, landscape) ------ */
 
 @media (max-height: 620px) {
 
-    /* El estado NO se oculta: solo se compacta
-       el resto para no perder texto */
 
     .zapi-header-text h4 {
 
@@ -1733,7 +1542,6 @@
 }
 
 
-/* ---------- ACCESIBILIDAD: menos movimiento ---------- */
 
 @media (prefers-reduced-motion: reduce) {
 
@@ -1763,7 +1571,6 @@
 
     }
 
-    /* El brillo del boton no estaba cubierto. */
 
     .zapi-toggle::after {
 

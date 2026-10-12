@@ -1,20 +1,5 @@
-﻿/* ==========================================================
-   INDICE DE ESTA HOJA
-   ------------------------------------------------------------
-   catalogo.html necesita el catalogo entero (grilla, filtros,
-   boton flotante) y la ventana de producto.
-   carrito.html solo usa la ventana de producto, asi que en esa
-   pagina se carga catalogo-modal.css, que son los ultimos
-   ~40 KB: la grilla del catalogo nunca se dibuja ahi.
-
-   Los bloques van marcados con [CAT] o [MODAL] para poder
-   partir la hoja sin romper el orden de las cascadas.
-   ========================================================== */
 
 
-/* ==========================================================
-           CATÁLOGO   [CAT]
-           ========================================================== */
 
         .catalog {
             background: var(--sand);
@@ -38,8 +23,6 @@
             border: 1px solid rgba(61, 107, 79, .25);
             background: var(--white);
             color: var(--ink);
-            /* min-height en vez de padding fijo: el filtro queda en
-               44px de alto sin que el texto se descentre. */
             min-height: 44px;
             padding: .45rem 1.1rem;
             border-radius: 999px;
@@ -51,9 +34,6 @@
             white-space: nowrap;
         }
 
-        /* El hover y el foco por teclado se separan: antes el foco
-           no mostraba nada (un verde al 8% es casi invisible), y
-           con teclado no se distinguia el filtro elegido. */
         .catalog-filter:hover {
             background: rgba(74, 124, 89, .10);
             border-color: var(--leaf-texto);
@@ -79,10 +59,6 @@
             font-weight: 500;
         }
 
-        /* Atajo que aparece en el estado vacio, para no obligar a
-           al visitante a encontrar el boton de limpiar del header.
-           Se muestra en bloque para que la linea del mensaje y la
-           del boton no queden pegadas. */
         .catalog-empty-clear {
             display: block;
             margin: 1rem auto 0;
@@ -141,26 +117,6 @@
             font-size: 1.1rem;
         }
 
-        /* ==========================================================
-           GRILLA SIMETRICA
-           ==========================================================
-           Grid y no flex-wrap, por el alto. Con flex cada tarjeta
-           se mide por su contenido y arranca arriba: la mas corta
-           deja un escalon al pie y la fila queda despareja. Ese
-           escalon era justo lo que el masonry venia a tapar,
-           placing cada tarjeta en la columna mas corta, y el
-           resultado era peor: columnas terminadas en alturas
-           distintas y sin ninguna fila que las alineara.
-
-           Con display:grid el alto por defecto es "stretch": todas
-           las tarjetas de una misma fila se estiran a la mas alta y
-           el pie queda parejo. Las columnas tambien quedan del
-           mismo ancho sin cuentas de flex-basis, porque 1fr
-           reparte solo.
-
-           Y no hace falta ningun JS para acomodar: las tarjetas van
-           en el flujo, el navegador las coloca y no hay nada que
-           recalcular cuando carga una foto o cambia el ancho. */
         .catalog-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -177,9 +133,6 @@
             display: flex;
             flex-direction: column;
 
-            /* Mobile first: una sola columna en el telefono.
-               El min-width:0 evita que un titulo largo estire la
-               columna de la grilla. */
             min-width: 0;
         }
 
@@ -188,12 +141,6 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* Cuantas columnas entran segun el ancho, de ahi para arriba.
-           Los cortes son los mismos que usaba el JS del masonry, asi
-           que la grilla no cambia de forma al pasar por el ancho que
-           antes lo cambiaba a tierra. 1fr reparte el ancho sobrante
-           en partes iguales, asi que las columnas quedan del mismo
-           ancho y la fila llena exacto el contenedor. */
         @media (min-width: 572px) {
             .catalog-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -212,25 +159,10 @@
             }
         }
 
-        /* Ya no hay masonry ni posicion absoluta. Ver el bloque
-           GRILLA SIMETRICA de arriba: las tarjetas van en el
-           flujo y las coloca el grid del navegador. Cuando
-           estaba el masonry, cada tarjeta iba con left/top a la
-           columna mas corta y las columnas quedaban desparejas.
-           Ese era el problema que se queria tapar con el escalon
-           del flex, pero el escalon se ve menos que una columna
-           corta. Con stretch no hay ninguno de los dos. */
 
         .product-visual {
             position: relative;
 
-            /* 2:3, que es la proporción de las fotos de producto
-               (798 x 1200). Con el 4:3 de antes la imagen se
-               recortaba por arriba y por abajo y se perdía la
-               planta entera. El fondo va porque el kit de huerta
-               es cuadrado: con "contain" completa y las bandas
-               laterales caen sobre blanco, que es el mismo fondo
-               de la foto. */
             aspect-ratio: 2 / 3;
 
             overflow: hidden;
@@ -329,9 +261,6 @@
             text-transform: uppercase;
         }
 
-        /* El nombre es el boton que abre el detalle. Hereda la
-           tipografia del h3 para que la tarjeta se vea igual que
-           antes, y el foco se ve como el de los otros botones. */
         .product-link {
             font: inherit;
             letter-spacing: inherit;
@@ -381,9 +310,6 @@
             color: var(--muted);
         }
 
-        /* Contador de stock de la tarjeta. Va arriba del precio,
-           dentro del pie. Se esconde solo mientras no haya dato
-           (stock sin cargar), para no dejar un hueco. */
         .product-stock {
             display: inline-flex;
             align-items: center;
@@ -416,20 +342,12 @@
             display: none;
         }
 
-        /* El boton agregar vive en dos paginas: las tarjetas del
-           catalogo y el modal, que tambien esta en el carrito. Por
-           eso la base va en un bloque compartido, no dentro de la
-           seccion [CAT]: si se quedara alla, el boton del modal
-           aparecia sin fondo ni forma en carrito.html. */
 .add-cart {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: .5rem;
   padding: .75rem 1.25rem;
-  /* El alto sale del padding (.75rem x 2) mas la linea, y queda
-     apenas por encima de 44px. Se fija el minimo para que un
-     cambio de line-height no lo baje del area tactil. */
   min-height: 44px;
   border-radius: 999px;
             background: var(--forest);
@@ -449,9 +367,6 @@
             background: var(--leaf);
         }
 
-        /* ==========================================================
-           BOTÓN VER CARRITO · FLOTANTE (abajo izquierda)
-           ========================================================== */
 
         .cart-link-text {
 
@@ -459,10 +374,6 @@
 
         }
 
-        /* Mobile first: en el telefono el boton va pegado a las
-           esquinas, solo con el ícono, para no tapar el
-           contenido. De 600px para arriba aparece la etiqueta y
-           se separa de los bordes. */
 
         .cart-link-float {
 
@@ -474,9 +385,6 @@
 
             z-index: 60;
 
-            /* Igual que el chat: con el menu lateral abierto el
-               boton flotante del carrito baja por debajo del
-               velo, para que no se pueda clickear a traves de el. */
             :root.menu-abierto & {
                 z-index: 0;
             }
@@ -507,8 +415,6 @@
 
         }
 
-        /* En el telefono solo el ícono: la pastilla con texto
-           ocupa media pantalla y tapa las tarjetas de abajo. */
 
         .cart-link-float .cart-link-text {
 
@@ -542,7 +448,6 @@
 
         }
 
-        /* Rebote del ícono al agregar un producto */
 
         .cart-link-float.animado .material-symbols-outlined {
 
@@ -575,21 +480,12 @@
             transition: transform .3s ease, background .5s ease, color .35s ease;
         }
 
-        /* Con productos en el carrito el contador queda rojo.
-           Al vaciarse se lo quita y el color vuelve solo. */
 
         .cart-count.con-productos {
             background: #c14a3c;
             color: var(--white);
         }
 
-        /* Globo del header. Va en la esquina del enlace y solo
-           aparece con productos: lo decide la misma clase
-           .con-productos, no hace falta JavaScript extra.
-           Estas reglas repiten background, color y font-weight
-           porque .nav-bar li a tiene especificidad (0,1,2) y le
-           ganaría a .cart-count (0,1,0), dejando el globo
-           transparente y con el color del enlace. */
 
         .cart-count.cart-count-header {
             position: absolute;
@@ -618,8 +514,6 @@
 
         }
 
-        /* Destello al agregar: rojo vivo que se va suavizando
-           hasta el tono con el que se queda. */
 
         .cart-count.destello {
 
@@ -667,11 +561,10 @@
 
         }
 
-        /* ==========================================================
-           VENTANA FLOTANTE DE PRODUCTO
-           Modal con carrusel de fotos, detalle y agregar al carrito.
-           ========================================================== */
 
+/*
+VENTANA FLOTANTE DE PRODUCTO
+*/
         body.modal-abierto {
 
             overflow: hidden;
@@ -684,24 +577,16 @@
 
             inset: 0;
 
-            /* por encima del chat, que vive en 9999 */
             z-index: 10000;
 
             display: flex;
 
-            /* Mobile first: en el telefono el modal se pega abajo y
-               ocupa todo el ancho. De 821px para arriba vuelve a ser
-               una caja centrada con aire alrededor. */
             align-items: flex-end;
 
             justify-content: center;
 
             padding: 0;
 
-            /* Sin "visibility": el sitio aplica transition: all a todos
-               los elementos, y al heredarse cada descendiente abre su
-               propia transición y queda invisible. El estado se maneja
-               con [hidden] y con opacity, que no se hereda. */
             opacity: 0;
 
             transition: opacity .25s ease;
@@ -720,7 +605,6 @@
 
         }
 
-        /* Mientras se desvanece no debe seguir robando clicks */
 
         .modal-producto.cerrando {
 
@@ -748,36 +632,20 @@
 
             display: flex;
 
-            /* Mobile first: columna, pegada abajo, con esquinas
-               solo arriba. De 821px para arriba pasa a fila
-               centrada de ancho fijo. */
             flex-direction: column;
 
             width: 100%;
 
-            /* El alto lo impone el max-height de abajo. Con flex las dos
-               columnas se estiran a la misma altura y el detalle scrollea
-               solo; el min-height: 0 de cada una es lo que deja recortar
-               la columna en vez de empujar el boton de agregar fuera de
-               la caja. */
             max-height: 94vh;
 
             background: var(--white);
 
-            /* Sin translateY en el estado cerrado: la caja queda
-               pegada abajo y correcta, y el offset empujaba el
-               boton de agregar fuera del viewport. */
             border-radius: var(--radius) var(--radius) 0 0;
 
             box-shadow: var(--shadow-lg);
 
             overflow: hidden;
 
-            /* Sin transform en el estado cerrado: el offset hacia abajo
-               empujaba la caja fuera del viewport en movil y dejaba el
-               boton de agregar debajo del borde. La entrada es solo el
-               fade del contenedor, que no depende de la transicion de
-               transform para ser correcta. */
 
         }
 
@@ -833,7 +701,6 @@
 
         }
 
-        /* ---------- Carrusel ---------- */
 
         .modal-carrusel {
 
@@ -841,10 +708,6 @@
 
             flex-direction: column;
 
-            /* Mobile first: en columna el flex-basis pasa a ser alto,
-               asi que la imagen se queda con el alto de abajo y el
-               detalle toma lo que sobra. De 821px para arriba vuelve
-               a ser una columna con ancho fijo. */
             flex: none;
 
             min-height: 0;
@@ -859,10 +722,6 @@
 
             position: relative;
 
-            /* Mobile first: alto fijo en vez de aspect-ratio, porque
-               una imagen muy alta deja sin lugar al detalle en
-               pantallas chicas. De 821px para arriba vuelve a
-               flex: 1, que reparte la columna con el detalle. */
             flex: none;
 
             height: min(38vh, 300px);
@@ -879,11 +738,6 @@
 
             height: 100%;
 
-            /* "contain" y no "cover" para que se vea la foto
-               entera. El marco es mas ancho que alto y las fotos
-               son verticales, asi que con "cover" se perdia la
-               parte de arriba y de abajo. Las bandas que quedan
-               caen sobre el fondo arena de .modal-carrusel. */
             object-fit: contain;
 
             display: block;
@@ -1044,7 +898,6 @@
 
         }
 
-        /* con una sola foto no hay carrusel que mostrar */
 
         .modal-carrusel.sin-carrusel .carrusel-flecha,
 
@@ -1056,7 +909,6 @@
 
         }
 
-        /* ---------- Detalle ---------- */
 
         .modal-detalle {
 
@@ -1064,8 +916,6 @@
 
             flex-direction: column;
 
-            /* Mobile first: el detalle se come el alto restante y
-               scrollea solo. */
             flex: 1 1 auto;
 
             padding: 1.4rem 1.3rem 1.2rem;
@@ -1106,8 +956,6 @@
 
             font-family: var(--serif);
 
-            /* Mobile first: 1.8rem en el telefono, 2.1rem de 821px
-               para arriba (ver la capa responsive del modal). */
             font-size: 1.8rem;
 
             color: var(--forest);
@@ -1208,8 +1056,6 @@
 
         }
 
-        /* Contador de stock del detalle. Mismo criterio que el de
-           la tarjeta: verde, mostaza con pocas y rojo agotado. */
         .modal-stock {
 
             display: inline-flex;
@@ -1263,8 +1109,6 @@
 
         }
 
-        /* Mobile first: el agregar queda sticky abajo, porque es la
-           accion principal y no puede quedar escondido en un scroll. */
         .modal-agregar {
 
             position: sticky;
@@ -1281,9 +1125,6 @@
 
         }
 
-        /* El enlace a la ficha estatica del producto. Va debajo del
-           boton, con estilo de texto: la accion del boton ya esta
-           tomada, esto es un atajo para lectores y buscadores. */
 
         .modal-ficha {
 
@@ -1309,7 +1150,6 @@
 
         }
 
-        /* Foco visible solo para teclado */
 
         .modal-producto :focus-visible {
 
@@ -1320,13 +1160,6 @@
         }
 
 
-        /* ==========================================================
-           RESPONSIVE DEL MODAL (mobile first)
-           ------------------------------------------------------------
-           Todo lo de arriba es la version telefono: hoja pegada
-           abajo, carrusel de alto fijo y agregar sticky. Aca, de
-           821px para arriba, vuelve a ser la caja de dos columnas.
-           ========================================================== */
 
         @media (min-width: 821px) {
 
@@ -1358,17 +1191,12 @@
 
             }
 
-            /* 52.5% = 1.05 de las 2 partes del reparto original
-               (1.05 / 2). Se usa base en porcentaje y no flex-grow
-               porque el reparto por grow no daba 1.05 exacto con
-               basis 0: midia 463/477 en vez de 493/446. */
             .modal-carrusel {
 
                 flex: 0 0 52.5%;
 
             }
 
-            /* la parte restante, .95 del reparto original */
             .modal-detalle {
 
                 flex: 1 1 0;
@@ -1395,10 +1223,6 @@
 
         }
 
-        /* prefers-reduced-motion: apagar los loops infinitos del
-           boton flotante y los destellos del contador. Antes solo
-           se frenaban las transiciones del modal, y el boton
-           seguía flotando y el contador seguía parpadeando. */
 
         @media (prefers-reduced-motion: reduce) {
 

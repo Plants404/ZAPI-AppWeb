@@ -1,24 +1,5 @@
-/* ============================================================
-   LOGIN · ZAPI
-   ------------------------------------------------------------
-   Pantalla de ingreso con el personaje animado (solo la cabeza).
-   Portado desde la implementación de referencia, con dos cambios:
-   - los colores usan los tokens de styles.css (paleta forest/
-     moss/sage/leaf/cream/sand/earth, radius y sombras del sitio);
-   - las rutas de las imágenes son /personaje/... (absolutas).
 
-   Va en archivo aparte para respetar la CSP (style-src 'self'):
-   nada de CSS inline. Incluso --m (la máscara del iris) la fija
-   login.js con style.setProperty, no el HTML.
-   ============================================================ */
 
-/* ============================================================
-   1. TOKENS (espejo de styles.css)
-   Se repiten acá porque la página puede servirse suelta y no
-   importa styles.css; los valores son los mismos del sitio.
-   El texto del login usa Montserrat (lo pide el diseño); el
-   resto del sitio usa Inter en --sans.
-   ============================================================ */
 :root{
     --forest: #1f3a2e;
     --moss:   #3d6b4f;
@@ -42,16 +23,12 @@
     --sans:  'Montserrat', system-ui, sans-serif;
 }
 
-/* ============================================================
-   2. BASE Y LAYOUT
-   ============================================================ */
 *{ box-sizing: border-box; }
 
 html,body{ min-height: 100%; }
 
 body{
     margin: 0;
-    /* Tinte de marca arriba que baja a crema: mismo token, sin colores nuevos */
     background:
         radial-gradient(circle at 50% 12%, var(--login-tinte), var(--cream) 62%)
         var(--cream);
@@ -61,7 +38,6 @@ body{
     align-items: center;
     justify-content: center;
 
-    /* Respiro con safe-areas del notch en iOS (viewport-fit=cover) */
     padding:
         max(20px, env(safe-area-inset-top))
         max(20px, env(safe-area-inset-right))
@@ -78,15 +54,7 @@ body{
     text-align: center;
 }
 
-/* ============================================================
-   3. PERSONAJE "BROTECITO"
-   Las 12 caras SVG van apiladas en el mismo encuadre
-   (235,30 x 257,40): se ve una sola por vez según [data-face].
-   .tilt inclina la cabeza con el cursor (--r/--tx), .bob la hace
-   respirar y .pp da el "pop" al cambiar de expresión.
-   ============================================================ */
 
-/* Tintes derivados del token de marca (no se duplica la paleta) */
 :root{
     --login-tinte: color-mix(in srgb, var(--forest) 8%, var(--cream));
     --login-halo:  color-mix(in srgb, var(--sage)  55%, transparent);
@@ -97,12 +65,11 @@ body{
     width: clamp(210px, 62vw, 300px);
     aspect-ratio: 235.30 / 257.40;
     margin: 0 auto 14px;
-    isolation: isolate; /* que el halo no se escape por detrás del fondo */
+    isolation: isolate;
     user-select: none;
     -webkit-user-select: none;
 }
 
-/* Halo suave detrás del personaje, también derivado de la paleta */
 .head::before{
     content: "";
     position: absolute;
@@ -112,7 +79,6 @@ body{
     background: radial-gradient(circle at 50% 55%, var(--login-halo), transparent 68%);
 }
 
-/* Inclinación de la cabeza siguiendo el cursor (--r/--tx, los setea el JS) */
 .tilt{
     position: absolute;
     inset: 0;
@@ -120,10 +86,8 @@ body{
     transition: transform .3s ease-out;
 }
 
-/* Respiración continua */
 .pp,.bob{ position: absolute; inset: 0; }
 
-/* "Pop" al cambiar de expresión (el JS lo aplica a .pp) */
 .pp.pop{ animation: pop .38s ease-out; }
 
 .bob{
@@ -131,7 +95,6 @@ body{
     transform-origin: 50% 92%;
 }
 
-/* Cada cara ocupa todo el contenedor y se muestra con opacity */
 .ex{
     position: absolute;
     inset: 0;
@@ -143,7 +106,6 @@ body{
     pointer-events: none;
 }
 
-/* --- Cara visible según data-face --- */
 .head[data-face="1"]  .f1,
 .head[data-face="2"]  .f2,
 .head[data-face="3"]  .f3,
@@ -157,15 +119,10 @@ body{
 .head[data-face="11"] .f11,
 .head[data-face="12"] .f12{ opacity: 1; }
 
-/* Sacudida del error (la aplica el JS a #shake) */
 .shake{ animation: shake .5s; }
 
-/* Saltitos del ingreso correcto */
 [data-state=ok] .bob{ animation: hop .5s ease-in-out 3; }
 
-/* ============================================================
-   4. TARJETA Y FORMULARIO
-   ============================================================ */
 .card{
     background: var(--white);
     border-radius: 26px;
@@ -268,8 +225,6 @@ button.go:focus-visible{
     color: var(--muted-texto);
 }
 
-/* Botón que se ve como enlace: cambia entre ingresar y crear cuenta.
-   Es un <button> para que funcione con teclado y lectores. */
 button.link{
     border: 0;
     background: none;
@@ -297,10 +252,6 @@ button.link:focus-visible{
     color: var(--muted);
 }
 
-/* Botón secundario para volver, anclado arriba a la izquierda.
-   Queda visible aunque la tarjeta crezca (position fixed) y
-   respeta las safe-areas del notch. Estilo de botón con borde
-   del sitio (transparente -> forest al pasar el cursor). */
 .volver{
     position: fixed;
     top: max(16px, env(safe-area-inset-top));
@@ -329,9 +280,6 @@ button.link:focus-visible{
     outline-offset: 3px;
 }
 
-/* ============================================================
-   5. ANIMACIONES
-   ============================================================ */
 @keyframes bob{
     from{ transform: translateY(0) rotate(-1.4deg); }
     to  { transform: translateY(-1.2%) rotate(1.4deg); }
@@ -349,8 +297,6 @@ button.link:focus-visible{
     50%{ transform: translateY(-5%); }
 }
 
-/* Con reduced-motion no corre ninguna animación ni transición:
-   el personaje queda quieto y sin seguir el cursor. */
 @media (prefers-reduced-motion: reduce){
     *{
         animation: none !important;

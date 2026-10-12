@@ -22,18 +22,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- Google Fonts: tipografia del sitio y Material Symbols en una
-         sola peticion (antes eran dos <link> al mismo origen, y la
-         segunda bloqueaba el render). El eje italico de Inter no se
-         usa, asi que no se pide. -->
+
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
 
-    <!-- CSS principal -->
+    
     <link rel="stylesheet" href="./public/css/styles.css">
 
-    <!-- El catalogo entero: grilla, filtros, boton flotante y la
-         ventana de producto. -->
+    
     <link rel="stylesheet" href="./public/css/catalogo-catalogo.css">
     <link rel="stylesheet" href="./public/css/catalogo-modal.css">
     <link rel="stylesheet" href="./public/css/zapi-bot.css">
@@ -44,16 +40,14 @@
     <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 
     <header>
-        <!-- Mismo header que index.html: buscador arriba y, en el
-             telefono, el nav pasa a panel lateral con hamburguesa. -->
+        
 
         <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
             aria-label="Abrir menu de navegacion">
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
-            <!-- Globo del carrito en la hamburguesa (solo mobile):
-                 refleja lo que se agrego aunque el menu este cerrado. -->
+            
             <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
         </button>
 
@@ -81,18 +75,14 @@
             <ul>
                 <li><a class="nav-link" href="index.html">Inicio</a></li>
                 <li><a class="nav-link active" href="catalogo.html" aria-current="page">Catálogo</a></li>
-                <!-- Cuenta. Sin sesion se ve "Ingresar"; con sesion,
-                     auth-ui.js rellena el nombre y el nombre abre un
-                     menu con el carrito y Salir. El carrito conserva
-                     el id y el data-cart-count que usa productos.js. -->
+                
                 <li class="nav-cuenta">
                     <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
                     <div class="nav-usuario">
                         <button type="button" class="nav-usuario-boton" id="navUsuarioBoton"
                             aria-expanded="false" aria-haspopup="true" aria-controls="navUsuarioMenu">
                             <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
-                            <!-- El globo va en el nombre: mismo efecto
-                                 que tenia el carrito. -->
+                            
                             <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
                         </button>
                         <div class="nav-usuario-menu" id="navUsuarioMenu" hidden>
@@ -132,23 +122,21 @@
                 </span>
             </div>
 
-            <!-- Los botones de categoría los dibuja catalogo.js a
-                 partir de los productos reales, para que nunca
-                 quede una categoría sin productos. -->
+            
             <div class="catalog-filters" id="catalogFilters" role="group"
                 aria-label="Filtrar productos por categoría">
-                <!-- JavaScript genera los filtros -->
+                
             </div>
 
             <div id="productGrid" class="catalog-grid">
-                <!-- JavaScript genera los productos -->
+                
             </div>
 
         </section>
 
     </main>
 
-    <!-- Ventana flotante de detalle de producto -->
+    
     <div class="modal-producto" id="modalProducto" hidden>
 
         <div class="modal-fondo" data-cerrar-modal></div>
@@ -205,10 +193,7 @@
                     Agregar al carrito
                 </button>
 
-                <!-- Lo llena modal.js con la pagina estatica del producto
-                     (productos/<slug>.html). Sin JavaScript queda solo el
-                     texto "Ver la ficha completa" y el [hidden], que no
-                     engana a nadie. -->
+                
                 <a class="modal-ficha" id="modalFicha" hidden>Ver la ficha completa</a>
             </div>
         </div>
@@ -223,8 +208,7 @@
     <footer>
         <p>ZAPI · Vivero Agroecológico · Precios sujetos a disponibilidad</p>
 
-        <!-- El sitio ya vive entero en index.html; esta página y
-             carrito.html quedan como accesos directos. -->
+        
         <nav aria-label="Páginas del sitio">
             <a href="index.html">Inicio</a>
             <a href="catalogo.html">Catálogo</a>
@@ -237,8 +221,7 @@
 <script src="./public/js/modal.js" defer></script>
 <script src="./public/js/catalogo.js" defer></script>
     <script src="./public/js/zapi-bot.js" defer></script>
-    <!-- El buscador necesita a catalogo.js, que expone
-         window.aplicarBusqueda. menu.js es independiente. -->
+    
     <script src="./public/js/buscador.js" defer></script>
     <script src="./public/js/menu.js" defer></script>
 
