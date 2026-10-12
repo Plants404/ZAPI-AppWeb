@@ -21,6 +21,7 @@ if (modalProducto) {
     const modalTitulo = document.getElementById("modalTitulo");
     const modalDescripcion = document.getElementById("modalDescripcion");
     const modalPrecio = document.getElementById("modalPrecio");
+    const modalStock = document.getElementById("modalStock");
     const modalInfo = document.getElementById("modalInfo");
     const modalFicha = document.getElementById("modalFicha");
 
@@ -120,6 +121,14 @@ if (modalProducto) {
         modalPrecio.textContent = formatearPrecio(
             precios[producto.id] || producto.precioBase
         );
+
+        /* El contador de stock se pide por data-stock (lo pinta
+           productos.js). Asi el numero sale del mismo lugar que el
+           de las tarjetas y no hay dos criterios. */
+        if (modalStock) {
+            modalStock.dataset.stock = producto.id;
+            pintarStockDe(modalStock);
+        }
 
         modalInfo.innerHTML = producto.infoDeVenta.map(item => `
             <li>

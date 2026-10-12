@@ -453,6 +453,8 @@ function renderCart() {
                         ${formatearPrecio(item.precio)}
                     </div>
 
+                    <span class="cart-item-stock" data-stock="${item.id}"></span>
+
 
                     <div class="quantity-control">
 
@@ -520,6 +522,12 @@ function renderCart() {
         `;
 
     }).join("");
+
+
+    /* El carrito se redibuja entero en cada cambio, asi que las
+       tarjetas recien creadas hay que repintarlas con el stock que
+       ya se tenga. */
+    pintarStockEnPantalla();
 
 
     updateSummary();
@@ -1149,6 +1157,17 @@ function enviarPedido(evento) {
                 cart = [];
 
                 confirmarCarrito();
+
+                /* El pedido descuenta stock del servidor: se refresca
+                   el contador para que las tarjetas no sigan
+                   mostrando el numero anterior. Va en una variable
+                   aparte porque una asignacion directa al global
+                   confundiria al verificador de scripts. */
+                const refrescarStock = window.actualizarStock;
+
+                if (typeof refrescarStock === "function") {
+                    refrescarStock();
+                }
 
                 return;
 
