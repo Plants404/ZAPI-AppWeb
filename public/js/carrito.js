@@ -858,11 +858,18 @@ if (clearCartButton) {
    formulario (validacion, API y, si sale bien, este mensaje).
    ========================================================== */
 
-function abrirWhatsappPedido() {
+function abrirWhatsappPedido(datos) {
 
     /* Sin productos no hay nada que mandar */
 
     if (cart.length === 0) return;
+
+
+    /* Datos de contacto que dejo el visitante en el checkout. Los
+       obligatorios (nombre y telefono) ya pasaron la validacion;
+       los opcionales van solo si tienen algo. */
+
+    const contacto = datos || {};
 
 
     /* Calcular subtotal */
@@ -917,8 +924,17 @@ function abrirWhatsappPedido() {
     /* ==================================================
        MENSAJE
        El texto tal cual lo va a leer el cliente en WhatsApp:
-       pedido, totales y la pregunta por la entrega.
+       detalle, totales, sus datos de contacto y la pregunta por
+       la entrega.
        ================================================== */
+
+    const contactoText = [
+        `Nombre: ${contacto.nombre || ""}`,
+        `Teléfono: ${contacto.telefono || ""}`,
+        contacto.email ? `Correo: ${contacto.email}` : "",
+        contacto.zona ? `Zona: ${contacto.zona}` : "",
+        contacto.notas ? `Notas: ${contacto.notas}` : ""
+    ].filter(Boolean).join("\n");
 
     const message = `Hola ZAPI 🌱
 
@@ -932,6 +948,12 @@ Subtotal: ${formatearPrecio(subtotal)}
 Envío: ${formatearPrecio(shipping)}
 
 TOTAL: ${formatearPrecio(total)}
+
+━━━━━━━━━━━━━━━━━━
+
+Datos de contacto
+
+${contactoText}
 
 ¿Podrían confirmarme la disponibilidad y coordinar la entrega?
 
@@ -1117,6 +1139,12 @@ function enviarPedido(evento) {
         boton.textContent = "Enviando pedido...";
     }
 
+    /* Los opcionales se leen una sola vez: van al pedido de la API
+       y tambien al mensaje de WhatsApp. */
+    const email = limpiarValor(document.getElementById("pedEmail").value) || null;
+    const zona = limpiarValor(document.getElementById("pedZona").value) || null;
+    const notas = limpiarValor(document.getElementById("pedNotas").value) || null;
+
     const items = cart.map(item => ({
         id: Number(item.id),
         cantidad: Number(item.cantidad)
@@ -1128,9 +1156,9 @@ function enviarPedido(evento) {
         body: JSON.stringify({
             nombre,
             telefono,
-            email: limpiarValor(document.getElementById("pedEmail").value) || null,
-            zona: limpiarValor(document.getElementById("pedZona").value) || null,
-            notas: limpiarValor(document.getElementById("pedNotas").value) || null,
+            email,
+            zona,
+            notas,
             items
         })
     })
@@ -1150,9 +1178,9 @@ function enviarPedido(evento) {
                 );
 
                 /* Con el pedido ya creado se abre WhatsApp con el
-                   detalle. Va antes de vaciar el carrito: el mensaje
-                   se arma leyendo "cart". */
-                abrirWhatsappPedido();
+                   detalle y los datos de contacto. Va antes de vaciar
+                   el carrito: el mensaje se arma leyendo "cart". */
+                abrirWhatsappPedido({ nombre, telefono, email, zona, notas });
 
                 cart = [];
 
