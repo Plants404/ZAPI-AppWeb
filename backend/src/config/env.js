@@ -127,6 +127,12 @@ function construir() {
            alguien lo use para llenar la base de eventos. */
         limiteChat: leerEntero('ZAPI_LIMITE_CHAT', 15),
 
+        /* Limite de los endpoints de cuenta (login y registro), por
+           IP y ventana. Va aparte y mas bajo que el de escritura:
+           es la unica puerta donde alguien podria probar claves en
+           serie, y conviene frenarlo antes. */
+        limiteAutenticacion: leerEntero('ZAPI_LIMITE_AUTH', 10),
+
         /* Umbral (0-1) de parecido para reutilizar una FAQ ya
            guardada en vez de armar una respuesta nueva. */
         faqUmbral: leerDecimal('ZAPI_FAQ_UMBRAL', 0.55),

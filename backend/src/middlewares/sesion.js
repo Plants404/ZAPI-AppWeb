@@ -115,4 +115,4 @@ function sesion(req, res, next) {
     next();
 }
 
-module.exports = { sesion, firmar, verificar, NOMBRE };
+module.exports = { sesion, firmar, verificar, parsearCookies, NOMBRE };

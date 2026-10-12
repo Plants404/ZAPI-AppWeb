@@ -65,9 +65,13 @@ const limiteEscritura = crearLimite(10 * 60 * 1000, config.limiteEscritura);
    normal y quiere su propia ventana corta. */
 const limiteChat = crearLimite(60 * 1000, config.limiteChat);
 
+/* Login y registro: ventana de 10 minutos y un tope bajo. Es la
+   unica ruta donde alguien podria probar contraseñas en serie. */
+const limiteAuth = crearLimite(10 * 60 * 1000, config.limiteAutenticacion);
+
 /* Solo para las pruebas: deja el mapa limpio entre casos. */
 function reiniciar() {
     registros.clear();
 }
 
-module.exports = { limiteLectura, limiteEscritura, limiteChat, crearLimite, reiniciar };
+module.exports = { limiteLectura, limiteEscritura, limiteChat, limiteAuth, crearLimite, reiniciar };

@@ -17,6 +17,11 @@ const LARGO = {
     consulta: 2000,
     sitioWeb: 100,
 
+    /* Cuentas. La clave se acota por arriba para que nadie mande
+       un texto enorme a scrypt; el correo y el nombre se recortan
+       igual que los del formulario de contacto. */
+    clave: 200,
+
     /* Pedidos. La zona y las notas son opcionales, pero el largo
        maximo igual se pisa para que nadie llene la base. */
     zona: 120,
@@ -36,6 +41,10 @@ const MINIMOS = {
     telefonoDigitos: 6,
     consulta: 10,
     mensajeChat: 1,
+
+    /* Cuentas: la clave nunca baja de 8 caracteres. El formato del
+       correo se valida aparte, con CORREO. */
+    clave: 8,
 };
 
 /* Lo bastante estricto para agarrar el "@" que falta y el ".com"
@@ -51,7 +60,14 @@ const LIMITE_CUERPO = '16kb';
 const LIMITE_CANTIDAD = 99;
 const VIDA_SESION_MS = 30 * 24 * 60 * 60 * 1000;
 
+/* Sesion de usuario (la cuenta, distinta del carrito anonimo).
+   Se guarda en Mongo y el indice TTL la borra sola cuando pasa el
+   tiempo sin usarse. El TTL de Mongo se mide en segundos, por eso
+   la constante va en segundos y el maxAge de la cookie se arma
+   multiplicando por 1000. */
+const VIDA_SESION_USUARIO_S = 7 * 24 * 60 * 60;
+
 module.exports = {
     LARGO, MINIMOS, CORREO, LIMITE_CUERPO,
-    LIMITE_CANTIDAD, VIDA_SESION_MS,
+    LIMITE_CANTIDAD, VIDA_SESION_MS, VIDA_SESION_USUARIO_S,
 };

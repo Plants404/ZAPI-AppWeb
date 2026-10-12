@@ -1,0 +1,409 @@
+/* ============================================================
+   LOGIN · ZAPI
+   ------------------------------------------------------------
+   Pantalla de ingreso con el personaje animado (solo la cabeza).
+   Portado desde la implementación de referencia, con dos cambios:
+   - los colores usan los tokens de styles.css (paleta forest/
+     moss/sage/leaf/cream/sand/earth, radius y sombras del sitio);
+   - las rutas de las imágenes son /personaje/... (absolutas).
+
+   Va en archivo aparte para respetar la CSP (style-src 'self'):
+   nada de CSS inline. Incluso --m (la máscara del iris) la fija
+   login.js con style.setProperty, no el HTML.
+   ============================================================ */
+
+/* ============================================================
+   1. TOKENS (espejo de styles.css)
+   Se repiten acá porque la página puede servirse suelta y no
+   importa styles.css; los valores son los mismos del sitio.
+   El texto del login usa Montserrat (lo pide el diseño); el
+   resto del sitio usa Inter en --sans.
+   ============================================================ */
+:root{
+    --forest: #1f3a2e;
+    --moss:   #3d6b4f;
+    --sage:   #8fae91;
+    --leaf:   #4a7c59;
+    --cream:  #f7f4ec;
+    --sand:   #ece5d3;
+    --earth:  #6b5a44;
+    --ink:    #22261f;
+    --muted:  #6a6f65;
+    --white:  #ffffff;
+
+    --muted-texto: #5b6058;
+    --borde-input: #6f8f75;
+
+    --radius:    14px;
+    --shadow-sm: 0 2px 10px rgba(31, 58, 46, .06);
+    --shadow-md: 0 12px 30px rgba(31, 58, 46, .10);
+
+    --serif: 'Bebas Neue', Georgia, serif;
+    --sans:  'Montserrat', system-ui, sans-serif;
+}
+
+/* ============================================================
+   2. BASE Y LAYOUT
+   ============================================================ */
+*{ box-sizing: border-box; }
+
+html,body{ min-height: 100%; }
+
+body{
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--sans);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* Respiro con safe-areas del notch en iOS (viewport-fit=cover) */
+    padding:
+        max(20px, env(safe-area-inset-top))
+        max(20px, env(safe-area-inset-right))
+        max(20px, env(safe-area-inset-bottom))
+        max(20px, env(safe-area-inset-left));
+
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+}
+
+.wrap{
+    width: min(100%, 380px);
+    text-align: center;
+}
+
+/* ============================================================
+   3. PERSONAJE
+   El contenedor mantiene la proporción 815 / 760 y cada capa
+   se superpone a pantalla completa. Las manos son lo único que
+   se posiciona en %.
+   ============================================================ */
+.head{
+    position: relative;
+    width: clamp(210px, 62vw, 290px);
+    aspect-ratio: 815 / 760;
+    margin: 0 auto 14px;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Inclinación de la cabeza siguiendo el cursor (--r lo setea el JS) */
+.tilt{
+    position: absolute;
+    inset: 0;
+    transform: rotate(var(--r, 0deg));
+    transition: transform .25s ease-out;
+}
+
+/* Respiración continua */
+.bob{
+    position: absolute;
+    inset: 0;
+    animation: bob 3.4s ease-in-out infinite alternate;
+}
+
+.ly{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Capas que aparecen y desaparecen según el estado */
+.l-eo,.l-eh,.l-ec,.l-tr,.l-mo,.l-mc,.l-mk,.l-gl,.l-st,.l-es,.l-mp,.l-sg{
+    opacity: 0;
+    transition: opacity .12s;
+}
+
+/* El iris se recorta contra el borde del blanco del ojo */
+.l-irw{
+    -webkit-mask-image: var(--m);
+    mask-image: var(--m);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+}
+.l-ir{
+    transform: translate(var(--ix, 0px), var(--iy, 0px));
+    transition: transform .15s ease-out, opacity .12s;
+}
+
+/* --- Estado: qué capas se ven --- */
+[data-state=idle] .l-eo,
+[data-state=look] .l-eo,
+[data-state=hide] .l-eo{ opacity: 1; }
+
+[data-state=happy] .l-eh,
+[data-state=happy] .l-mo{ opacity: 1; }
+
+[data-state=error] .l-ec,
+[data-state=error] .l-tr,
+[data-state=error] .l-mc{ opacity: 1; }
+
+[data-state=ok] .l-gl,
+[data-state=ok] .l-st,
+[data-state=ok] .l-mk{ opacity: 1; }
+
+[data-state=confuse] .l-es,
+[data-state=confuse] .l-mp,
+[data-state=confuse] .l-sg{ opacity: 1; }
+
+/* Estas bocas "de fondo" se apagan cuando hay otra expresión */
+[data-state=happy] .l-ms,
+[data-state=error] .l-ms,
+[data-state=ok] .l-ms,
+[data-state=confuse] .l-ms{ opacity: 0; }
+
+/* Signos de pregunta: se mecen */
+.l-sg{
+    transform-origin: 50% 30%;
+    animation: wob 1s ease-in-out infinite alternate;
+}
+
+/* Parpadeo: 140 ms entre los ojos felices y los abiertos */
+.head.blink[data-state=idle] .l-eo,
+.head.blink[data-state=look] .l-eo{ opacity: 0; transition: none; }
+.head.blink[data-state=idle] .l-eh,
+.head.blink[data-state=look] .l-eh{ opacity: 1; transition: none; }
+
+/* Brote: se mece desde su base (44,9 % / 27 % del contenedor) */
+.l-br{
+    transform-origin: 44.908% 26.974%;
+    animation: sway 3s ease-in-out infinite alternate;
+}
+
+.l-tr{ animation: tear 1.2s ease-in infinite; }
+.l-st{ animation: tw 1s ease-in-out infinite alternate; }
+
+/* Manos: entran desde abajo al enfocar la contraseña */
+.hand{
+    position: absolute;
+    width: 36.81%;
+    height: auto;
+    top: 108%;
+    transition: top .55s cubic-bezier(.34, 1.3, .64, 1);
+}
+.hl{ left: 17.055%; }
+.hr{ left: 45.89%; }
+
+[data-state=hide] .hand{ top: 55.526%; }
+/* Con "VER" baja solo la mano derecha para asomarse */
+[data-state=hide][data-peek] .hr{ top: 108%; }
+
+/* Sacudida del error (la aplica el JS a #shake) */
+.shake{ animation: shake .5s; }
+
+/* Saltitos del ingreso correcto */
+[data-state=ok] .bob{ animation: hop .5s ease-in-out 3; }
+
+/* ============================================================
+   4. TARJETA Y FORMULARIO
+   ============================================================ */
+.card{
+    background: var(--white);
+    border-radius: 26px;
+    padding: 26px 24px 24px;
+    box-shadow: var(--shadow-md);
+    text-align: left;
+}
+
+h1{
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 36px;
+    letter-spacing: .05em;
+    margin: 0 0 2px;
+    text-align: center;
+    color: var(--forest);
+}
+
+.msg{
+    margin: 0 0 18px;
+    text-align: center;
+    color: var(--muted-texto);
+    font-size: 14px;
+    min-height: 20px;
+}
+
+label{
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 6px;
+}
+
+.f{
+    margin-bottom: 14px;
+    position: relative;
+}
+
+input{
+    width: 100%;
+    font: inherit;
+    color: var(--ink);
+    background: var(--cream);
+    border: 2px solid var(--sand);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color .2s;
+}
+input:focus{
+    border-color: var(--leaf);
+}
+input:focus-visible{
+    outline: 2px solid var(--leaf);
+    outline-offset: 2px;
+}
+
+.eye{
+    position: absolute;
+    right: 8px;
+    top: 30px;
+    background: none;
+    border: 0;
+    color: var(--muted-texto);
+    font: 600 12px var(--sans);
+    cursor: pointer;
+    padding: 8px;
+}
+.eye:focus-visible{
+    outline: 2px solid var(--leaf);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+button.go{
+    width: 100%;
+    border: 0;
+    border-radius: 999px;
+    background: var(--forest);
+    color: var(--cream);
+    font: 600 16px var(--sans);
+    padding: 14px;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+button.go:hover,
+button.go:focus-visible{
+    background: var(--moss);
+    transform: translateY(-2px);
+}
+button.go:focus-visible{
+    outline: 2px solid var(--leaf);
+    outline-offset: 3px;
+}
+
+.swap{
+    margin: 14px 0 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted-texto);
+}
+
+/* Botón que se ve como enlace: cambia entre ingresar y crear cuenta.
+   Es un <button> para que funcione con teclado y lectores. */
+button.link{
+    border: 0;
+    background: none;
+    padding: 2px 4px;
+    font: inherit;
+    font-weight: 600;
+    color: var(--leaf);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+button.link:hover{
+    color: var(--moss);
+}
+button.link:focus-visible{
+    outline: 2px solid var(--leaf);
+    outline-offset: 2px;
+    border-radius: 6px;
+}
+
+.tag{
+    margin: 16px 0 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* Botón secundario para volver, anclado arriba a la izquierda.
+   Queda visible aunque la tarjeta crezca (position fixed) y
+   respeta las safe-areas del notch. Estilo de botón con borde
+   del sitio (transparente -> forest al pasar el cursor). */
+.volver{
+    position: fixed;
+    top: max(16px, env(safe-area-inset-top));
+    left: max(16px, env(safe-area-inset-left));
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .7rem 1.5rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--forest);
+    background: transparent;
+    color: var(--forest);
+    font: 600 14px var(--sans);
+    text-decoration: none;
+    transition: background .2s, color .2s, transform .2s;
+}
+.volver:hover,
+.volver:focus-visible{
+    background: var(--forest);
+    color: var(--cream);
+    transform: translateY(-2px);
+}
+.volver:focus-visible{
+    outline: 2px solid var(--leaf);
+    outline-offset: 3px;
+}
+
+/* ============================================================
+   5. ANIMACIONES
+   ============================================================ */
+@keyframes bob{
+    from{ transform: translateY(0) rotate(-.7deg); }
+    to  { transform: translateY(-1.6%) rotate(.7deg); }
+}
+@keyframes wob{
+    from{ transform: rotate(-3deg) scale(.97); }
+    to  { transform: rotate(3deg) scale(1.05); }
+}
+@keyframes sway{
+    from{ transform: rotate(-4deg); }
+    to  { transform: rotate(4deg); }
+}
+@keyframes tear{
+    0%  { transform: translateY(-2%); }
+    100%{ transform: translateY(6%); }
+}
+@keyframes tw{
+    from{ transform: scale(.92); }
+    to  { transform: scale(1.06); }
+}
+@keyframes shake{
+    20%,60%{ transform: translateX(-8px); }
+    40%,80%{ transform: translateX(8px); }
+}
+@keyframes hop{
+    50%{ transform: translateY(-5%); }
+}
+
+/* Con reduced-motion no corre ninguna animación ni transición:
+   el personaje queda quieto y el iris sin seguir el cursor. */
+@media (prefers-reduced-motion: reduce){
+    *{
+        animation: none !important;
+        transition: none !important;
+    }
+}

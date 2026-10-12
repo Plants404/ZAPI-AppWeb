@@ -69,7 +69,7 @@ async function problemasDe(lineas) {
     }));
 }
 
-/* datos: { sesion, nombre, telefono, email, zona, notas,
+/* datos: { sesion, usuario, nombre, telefono, email, zona, notas,
    lineas: [{ producto_id, nombre, precio, cantidad }] }
    Las lineas ya vienen con el precio del catalogo ARMADO por el
    controlador (del servicio de carrito o del cuerpo, pero siempre
@@ -111,6 +111,7 @@ async function nuevoPedido(datos) {
         await Pedido.create({
             id,
             sesion: datos.sesion,
+            usuario: datos.usuario || null,
             nombre: datos.nombre,
             telefono: datos.telefono,
             email: datos.email || null,

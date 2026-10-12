@@ -99,6 +99,16 @@
           </button>
         </li>
 
+        <!-- Cuenta. Sin sesion se ve "Ingresar"; con sesion,
+             auth-ui.js rellena el nombre y aparece "Salir". -->
+        <li class="nav-cuenta">
+          <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
+          <span class="nav-usuario">
+            <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
+            <button type="button" class="nav-salir" id="navSalir">Salir</button>
+          </span>
+        </li>
+
         </ul>
     </nav>
   </header>
@@ -585,15 +595,17 @@
     <nav aria-label="Páginas del sitio">
       <a href="./index.html">Inicio</a>
       <a href="./catalogo.html">Catálogo</a>
-      <a href="./carrito.html">Carrito</a>
+      <a class="footer-carrito" href="./carrito.html">Carrito</a>
     </nav>
   </footer>
 
-  <!-- El orden importa: productos.js define PRODUCTOS, precios y el
-       carrito compartido; modal.js engancha la ventana de detalle a
-       esos datos; despues los dos scripts que dibujan, que se
-       registran como suscriptores del carrito; y navigation.js
-       enruta las secciones en el DOMContentLoaded. -->
+  <!-- El orden importa: auth-ui.js deja window.zapiAuth (por si
+       productos.js necesita exigir cuenta); despues productos.js
+       define PRODUCTOS, precios y el carrito compartido; modal.js
+       engancha la ventana de detalle a esos datos; luego los dos
+       scripts que dibujan, que se registran como suscriptores del
+       carrito; y navigation.js enruta las secciones. -->
+  <script src="./public/js/auth-ui.js" defer></script>
   <script src="./public/js/productos.js" defer></script>
   <script src="./public/js/modal.js" defer></script>
 <script src="./public/js/catalogo.js" defer></script>

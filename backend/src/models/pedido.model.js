@@ -4,8 +4,10 @@
    catalogo, el pedido conserva lo que se cobro.
 
    "id" es el codigo corto legible (Z-AAAA-MM-DD-XXXXXX) que se le
-   muestra al cliente. "sesion" es la sesion que cerro el pedido,
-   para que el administrador pueda volver a ella si hace falta. */
+   muestra al cliente. "sesion" es la sesion anonima del carrito
+   que cerro el pedido y "usuario" la cuenta que lo confirmo: con
+   la cuenta se sabe a quien pertenece el pedido, la sesion queda
+   como respaldo. */
 
 const mongoose = require('mongoose');
 
@@ -21,6 +23,7 @@ const linea = new Schema({
 const esquemaPedido = new Schema({
     id: { type: String, required: true, unique: true },
     sesion: { type: String, required: true },
+    usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', default: null },
     nombre: { type: String, required: true },
     telefono: { type: String, required: true },
     email: { type: String, default: null },
@@ -33,6 +36,7 @@ const esquemaPedido = new Schema({
 }, { versionKey: false });
 
 esquemaPedido.index({ sesion: 1 });
+esquemaPedido.index({ usuario: 1 });
 esquemaPedido.index({ estado: 1 });
 
 module.exports = { Pedido: mongoose.model('Pedido', esquemaPedido) };

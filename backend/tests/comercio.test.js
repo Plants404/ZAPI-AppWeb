@@ -14,6 +14,7 @@
 process.env.NODE_ENV = 'test';
 process.env.ZAPI_LIMITE_ESCRITURA = '10000';
 process.env.ZAPI_LIMITE_LECTURA = '10000';
+process.env.ZAPI_LIMITE_AUTH = '10000';
 process.env.ZAPI_SESSION_SECRET = 'secreto-de-prueba-de-32-bytes-para-tests';
 process.env.ZAPI_ADMIN_TOKEN = 'token-de-admin-de-prueba';
 
@@ -27,6 +28,8 @@ const { sembrarCatalogo } = require('../src/services/catalogo.service');
 const { Stock } = require('../src/models/stock.model');
 const { Carrito } = require('../src/models/carrito.model');
 const { Pedido } = require('../src/models/pedido.model');
+const { Usuario } = require('../src/models/usuario.model');
+const { Sesion } = require('../src/models/sesion.model');
 
 let app = null;
 let contenedor = null;
@@ -62,8 +65,25 @@ beforeEach(async () => {
         Stock.deleteMany({}),
         Carrito.deleteMany({}),
         Pedido.deleteMany({}),
+        Usuario.deleteMany({}),
+        Sesion.deleteMany({}),
     ]);
 });
+
+/* Cerrar un pedido exige cuenta. Registra al agente y lo devuelve
+   ya con la cookie de sesion puesta, para que el resto del flujo
+   (carrito anonimo + pedido) corra igual que en el navegador. */
+async function registrarCuenta(agente, email = 'cliente@example.com') {
+    const respuesta = await agente.post('/api/auth/registro').send({
+        nombre: 'Cliente Prueba',
+        email,
+        clave: 'secreto123',
+    });
+
+    assert.equal(respuesta.status, 201, 'no se pudo registrar la cuenta de prueba');
+
+    return agente;
+}
 
 async function cargarStock(productoId, unidades) {
     const app2 = app;
@@ -214,6 +234,7 @@ test('POST /api/pedidos descuenta stock, cobra del catalogo y vacia el carrito',
     const precioDos = catalogo.find(p => p.id === 2).precio;
 
     const cliente = request.agent(app);
+    await registrarCuenta(cliente);
 
     await cliente.post('/api/carrito').send({ id: 1, cantidad: 2 });
     await cliente.post('/api/carrito').send({ id: 2, cantidad: 3 });
@@ -253,6 +274,7 @@ test('sin stock suficiente responde 409 y no toca el stock', async (t) => {
     await cargarStock(1, 1);
 
     const cliente = request.agent(app);
+    await registrarCuenta(cliente);
 
     await cliente.post('/api/carrito').send({ id: 1, cantidad: 5 });
 
@@ -286,10 +308,13 @@ test('POST /api/pedidos acepta items del cuerpo y cobra el precio del catalogo',
     const catalogo = (await request(app).get('/api/productos')).body.productos;
     const precioDos = catalogo.find(p => p.id === 2).precio;
 
+    const cliente = request.agent(app);
+    await registrarCuenta(cliente);
+
     /* El front manda el carrito de localStorage en el cuerpo. El
        precio manipulado de la peticion se ignora: se cobra el del
        catalogo. */
-    const pedido = await request(app).post('/api/pedidos').send({
+    const pedido = await cliente.post('/api/pedidos').send({
         nombre: 'Sofia Lopez',
         telefono: '091987654',
         items: [{ id: 2, cantidad: 2 }],
@@ -315,7 +340,10 @@ test('POST /api/pedidos rechaza items mal formados o inexistentes', async (t) =>
 
     await cargarStock(1, 10);
 
-    const malFormado = await request(app).post('/api/pedidos').send({
+    const cliente = request.agent(app);
+    await registrarCuenta(cliente);
+
+    const malFormado = await cliente.post('/api/pedidos').send({
         nombre: 'Ana Perez',
         telefono: '+598 99 123 456',
         items: [{ id: 1 }],
@@ -323,7 +351,7 @@ test('POST /api/pedidos rechaza items mal formados o inexistentes', async (t) =>
 
     assert.equal(malFormado.status, 400);
 
-    const inexistente = await request(app).post('/api/pedidos').send({
+    const inexistente = await cliente.post('/api/pedidos').send({
         nombre: 'Ana Perez',
         telefono: '+598 99 123 456',
         items: [{ id: 9999, cantidad: 1 }],
@@ -339,6 +367,7 @@ test('un pedido sin nombre ni telefono no se acepta', async (t) => {
     await cargarStock(1, 10);
 
     const cliente = request.agent(app);
+    await registrarCuenta(cliente);
 
     await cliente.post('/api/carrito').send({ id: 1 });
 
@@ -357,6 +386,7 @@ test('un pedido con el carrito vacio responde 400', async (t) => {
     if (motivoSkip) return t.skip(motivoSkip);
 
     const cliente = request.agent(app);
+    await registrarCuenta(cliente);
 
     const pedido = await cliente.post('/api/pedidos').send({
         nombre: 'Ana Perez',

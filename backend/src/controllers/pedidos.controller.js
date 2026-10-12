@@ -91,6 +91,9 @@ async function crear(req, res, next) {
 
         const pedido = await nuevoPedido({
             sesion: req.sesion,
+            /* La ruta pasa por exigirSesion, asi que req.usuario
+               siempre esta: el pedido queda a nombre de la cuenta. */
+            usuario: req.usuario ? req.usuario._id : null,
             nombre,
             telefono,
             email: limpiarTexto(req.body && req.body.email, LARGO.correo) || null,
