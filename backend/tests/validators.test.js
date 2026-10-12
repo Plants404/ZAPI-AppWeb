@@ -14,6 +14,7 @@ function consultaValida(extra = {}) {
     return {
         nombre: 'María Gómez',
         correo: 'maria@example.com',
+        asunto: 'Presupuesto para el patio',
         telefono: '+598 9 123 4567',
         consulta: 'Quiero un presupuesto para una huerta en el patio.',
         ...extra,
@@ -41,6 +42,13 @@ test('rechaza correo sin arroba', () => {
     assert.equal(resultado.campo, 'correo');
 });
 
+test('rechaza asunto corto con el campo asunto', () => {
+    const resultado = validarContacto(consultaValida({ asunto: 'a' }));
+
+    assert.equal(resultado.campo, 'asunto');
+    assert.ok(resultado.error);
+});
+
 test('rechaza telefono con menos de 6 digitos', () => {
     const resultado = validarContacto(consultaValida({ telefono: '+598 91' }));
 
@@ -51,6 +59,13 @@ test('acepta telefono con guiones y espacios', () => {
     const resultado = validarContacto(consultaValida({ telefono: '098 268-560' }));
 
     assert.equal(resultado.error, undefined);
+});
+
+test('el telefono es opcional: vacio no corta el envio', () => {
+    const resultado = validarContacto(consultaValida({ telefono: '' }));
+
+    assert.equal(resultado.error, undefined);
+    assert.equal(resultado.datos.telefono, '');
 });
 
 test('rechaza consulta corta', () => {

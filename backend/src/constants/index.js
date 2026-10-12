@@ -13,6 +13,7 @@
 const LARGO = {
     nombre: 120,
     correo: 160,
+    asunto: 160,
     telefono: 40,
     consulta: 2000,
     sitioWeb: 100,
@@ -44,6 +45,7 @@ const LARGO = {
    guiones y espacios. */
 const MINIMOS = {
     nombre: 2,
+    asunto: 3,
     telefonoDigitos: 6,
     consulta: 10,
     mensajeChat: 1,

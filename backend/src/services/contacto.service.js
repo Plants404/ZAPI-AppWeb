@@ -15,6 +15,7 @@ async function guardarConsulta(datos) {
     const consulta = await Mensaje.create({
         nombre: datos.nombre,
         correo: datos.correo,
+        asunto: datos.asunto,
         telefono: datos.telefono,
         consulta: datos.consulta,
     });
