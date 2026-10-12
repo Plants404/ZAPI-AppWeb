@@ -14,6 +14,7 @@
    POST   /api/carrito        agregar un producto
    PATCH  /api/carrito/:id    cambiar la cantidad
    DELETE /api/carrito/:id    sacar un producto
+   GET    /api/pedidos        historial de la cuenta (exige cuenta)
    POST   /api/pedidos        cerrar el pedido (exige cuenta)
    POST   /api/auth/registro  crear la cuenta
    POST   /api/auth/login     ingresar
