@@ -34,6 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const reiniciar = document.getElementById("contactoReiniciar");
     const contador = document.getElementById("contactoContador");
     const consulta = document.getElementById("contactoConsulta");
+    const avisoFlotante = document.getElementById("avisoFlotante");
+    const avisoTitulo = document.getElementById("avisoFlotanteTitulo");
+    const avisoMensaje = document.getElementById("avisoFlotanteMensaje");
+    const avisoCerrar = document.getElementById("avisoFlotanteCerrar");
 
     /* Cada campo con su regla y su mensaje. El texto del error va
        tambien en el mensaje del servidor, asi que se comparte la
@@ -109,7 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
        {{reply_to}}. El campo se guarda como "consulta" en el backend
        pero al template va como "mensaje", que es lo que muestra. */
     async function avisarPorCorreo(datos) {
-        if (!emailjs || !EMAILJS.serviceId || !EMAILJS.templateId) return;
+        /* Si el SDK no esta (CDN bloqueado o caido) o falta config, se
+           tira para que el que llama lo avise en pantalla. */
+        if (!emailjs || !EMAILJS.serviceId || !EMAILJS.templateId) {
+            throw new Error("EmailJS no disponible");
+        }
 
         await emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, {
             nombre: datos.nombre,
@@ -211,6 +219,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* ------------------------------------------------------------
+       Aviso flotante
+       ------------------------------------------------------------
+       Ventana que aparece abajo a la derecha para avisar que la
+       consulta quedo guardada pero el correo no salio. Se esconde
+       sola a los segundos o con la cruz, sin bloquear la pagina. */
+    let avisoReloj = null;
+
+    function ocultarAviso() {
+        if (avisoReloj) {
+            clearTimeout(avisoReloj);
+            avisoReloj = null;
+        }
+
+        if (avisoFlotante) avisoFlotante.hidden = true;
+    }
+
+    function mostrarAviso(titulo, mensaje) {
+        if (!avisoFlotante) return;
+
+        if (avisoTitulo) avisoTitulo.textContent = titulo;
+        if (avisoMensaje) avisoMensaje.textContent = mensaje;
+
+        /* El texto se escribe antes de mostrarlo: asi el role="alert"
+           lo anuncia en el momento en que aparece. */
+        avisoFlotante.hidden = false;
+
+        if (avisoReloj) clearTimeout(avisoReloj);
+        avisoReloj = setTimeout(ocultarAviso, 9000);
+    }
+
+    if (avisoCerrar) avisoCerrar.addEventListener("click", ocultarAviso);
+
+    /* ------------------------------------------------------------
        Envio
        ------------------------------------------------------------ */
 
@@ -292,8 +333,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 try {
                     await avisarPorCorreo(datos);
                 } catch {
-                    /* EmailJS caido o mal configurado: la consulta
-                       quedo guardada en el backend. */
+                    /* EmailJS caido o mal configurado: la consulta ya
+                       quedo guardada, pero se avisa en pantalla para
+                       que no parezca que el correo salio bien. */
+                    mostrarAviso(
+                        "El aviso por correo no salió",
+                        "Tu mensaje quedó guardado igual y lo vamos a leer."
+                    );
                 }
             }
 
