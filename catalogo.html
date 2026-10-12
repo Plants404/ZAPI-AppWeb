@@ -85,6 +85,15 @@
                             data-cart-count aria-hidden="true">0</span>
                     </a>
                 </li>
+                <!-- Cuenta. Sin sesion se ve "Ingresar"; con sesion,
+                     auth-ui.js rellena el nombre y aparece "Salir". -->
+                <li class="nav-cuenta">
+                    <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
+                    <span class="nav-usuario">
+                        <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
+                        <button type="button" class="nav-salir" id="navSalir">Salir</button>
+                    </span>
+                </li>
             </ul>
         </nav>
     </header>
@@ -206,10 +215,11 @@
         <nav aria-label="Páginas del sitio">
             <a href="index.html">Inicio</a>
             <a href="catalogo.html">Catálogo</a>
-            <a href="carrito.html">Carrito</a>
+            <a class="footer-carrito" href="carrito.html">Carrito</a>
         </nav>
     </footer>
 
+<script src="./public/js/auth-ui.js" defer></script>
 <script src="./public/js/productos.js" defer></script>
 <script src="./public/js/modal.js" defer></script>
 <script src="./public/js/catalogo.js" defer></script>

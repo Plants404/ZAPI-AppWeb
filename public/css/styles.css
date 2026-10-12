@@ -607,6 +607,120 @@ header.menu-abierto::before {
   border-radius: 4px;
 }
 
+/* --- Cuenta y carrito segun la sesion ---
+   El carrito pide cuenta: sin sesion no se muestra ni la entrada
+   del menu ni el acceso flotante ni la seccion. auth-ui.js marca
+   <html data-auth="si|no"> al resolver /api/auth/yo; mientras no
+   haya marca, todo lo del carrito queda oculto (sin parpadeo). */
+.nav-cuenta {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding: .8rem 0;
+}
+
+.nav-usuario {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .5rem;
+}
+
+.nav-usuario-nombre {
+  font-weight: 600;
+  color: var(--forest);
+}
+
+.nav-salir {
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--muted-texto);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.nav-salir:hover {
+  color: var(--forest);
+}
+
+.nav-salir:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+html[data-auth="si"] .nav-ingresar {
+  display: none;
+}
+
+html:not([data-auth="si"]) .nav-usuario {
+  display: none;
+}
+
+html:not([data-auth="si"]) .nav-link-carrito,
+html:not([data-auth="si"]) .cart-link-float,
+html:not([data-auth="si"]) #carrito,
+html:not([data-auth="si"]) .footer-carrito {
+  display: none !important;
+}
+
+/* Página del carrito suelta: el contenido pide cuenta y el aviso
+   aparece solo para quien no la tiene. */
+html:not([data-auth="si"]) main.cart-page {
+  display: none;
+}
+
+html:not([data-auth="no"]) #cartLogin {
+  display: none;
+}
+
+#cartLogin {
+  max-width: 480px;
+  margin: 9rem auto 3rem;
+  padding: 2rem 1.6rem;
+  text-align: center;
+  background: var(--cream);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+#cartLogin .material-symbols-outlined {
+  font-size: 2.4rem;
+  color: var(--leaf);
+}
+
+#cartLogin h2 {
+  margin: .6rem 0 .5rem;
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  color: var(--forest);
+}
+
+#cartLogin p {
+  margin: 0 0 1.4rem;
+  color: var(--muted-texto);
+  line-height: 1.5;
+}
+
+.cart-login-go {
+  display: inline-block;
+  padding: .8rem 1.4rem;
+  border-radius: 999px;
+  background: var(--leaf);
+  color: var(--cream);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cart-login-go:hover {
+  background: var(--moss);
+}
+
 /* Con el menu abierto el body no debe seguir bajando por
    detras del panel. */
 body.no-scroll {
@@ -1684,6 +1798,12 @@ footer nav a:focus-visible {
     font-size: .88rem;
     padding: .4rem 0;
     text-align: center;
+  }
+
+  /* En la barra horizontal la cuenta no lleva el relleno del panel:
+     queda alineada en la misma linea que el resto. */
+  .nav-cuenta {
+    padding: 0;
   }
 
   .nav-bar li a::after,
