@@ -31,6 +31,12 @@ const LARGO = {
        guardarse en la FAQ y el detalle del evento tambien. */
     mensajeChat: 600,
     eventoDetalle: 200,
+
+    /* Testimonios. El autor y el lugar los escribe la persona; el
+       largo coincide con el maxlength del formulario flotante que
+       se abre despues de mandar el pedido por WhatsApp. */
+    testimonioLugar: 120,
+    testimonioTexto: 600,
 };
 
 /* Pisos minimos. La consulta pide 10 caracteres y el telefono se
@@ -45,6 +51,10 @@ const MINIMOS = {
     /* Cuentas: la clave nunca baja de 8 caracteres. El formato del
        correo se valida aparte, con CORREO. */
     clave: 8,
+
+    /* Un testimonio muy corto no dice nada; se piden 10 caracteres,
+       igual que la consulta del formulario de contacto. */
+    testimonioTexto: 10,
 };
 
 /* Lo bastante estricto para agarrar el "@" que falta y el ".com"
@@ -60,6 +70,11 @@ const LIMITE_CUERPO = '16kb';
 const LIMITE_CANTIDAD = 99;
 const VIDA_SESION_MS = 30 * 24 * 60 * 60 * 1000;
 
+/* Cuantos pedidos devuelve el historial de la cuenta. La pagina
+   muestra los ultimos; con un tope la respuesta no crece sin
+   limite aunque alguien acumule cientos de pedidos. */
+const LIMITE_PEDIDOS = 50;
+
 /* Sesion de usuario (la cuenta, distinta del carrito anonimo).
    Se guarda en Mongo y el indice TTL la borra sola cuando pasa el
    tiempo sin usarse. El TTL de Mongo se mide en segundos, por eso
@@ -69,5 +84,5 @@ const VIDA_SESION_USUARIO_S = 7 * 24 * 60 * 60;
 
 module.exports = {
     LARGO, MINIMOS, CORREO, LIMITE_CUERPO,
-    LIMITE_CANTIDAD, VIDA_SESION_MS, VIDA_SESION_USUARIO_S,
+    LIMITE_CANTIDAD, LIMITE_PEDIDOS, VIDA_SESION_MS, VIDA_SESION_USUARIO_S,
 };

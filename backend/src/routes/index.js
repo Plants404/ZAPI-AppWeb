@@ -14,13 +14,17 @@
    POST   /api/carrito        agregar un producto
    PATCH  /api/carrito/:id    cambiar la cantidad
    DELETE /api/carrito/:id    sacar un producto
+   GET    /api/pedidos        historial de la cuenta (exige cuenta)
    POST   /api/pedidos        cerrar el pedido (exige cuenta)
    POST   /api/auth/registro  crear la cuenta
    POST   /api/auth/login     ingresar
    POST   /api/auth/logout    cerrar la sesion
    GET    /api/auth/yo        la cuenta de la sesion, o null
    GET    /api/salud          estado del servidor y de Mongo
-   GET    /api/testimonios    opiniones publicadas
+   GET    /api/testimonios        opiniones publicadas
+   POST   /api/testimonios        guardar una opinion (exige cuenta)
+   GET    /api/testimonios/todos  todas, con id y estado (token)
+   PATCH  /api/testimonios/:id    publicar o despublicar (token)
    POST   /api/contacto       consulta del formulario
    GET    /api/asistente/config     config del asistente (IA activa)
    POST   /api/asistente/chat       mensaje al asistente con IA

@@ -21,6 +21,8 @@ const database = require('../src/config/database');
 const { crearApp } = require('../src/app');
 const { Usuario } = require('../src/models/usuario.model');
 const { Sesion } = require('../src/models/sesion.model');
+const { Pedido } = require('../src/models/pedido.model');
+const { Testimonio } = require('../src/models/testimonio.model');
 
 let app = null;
 let contenedor = null;
@@ -58,6 +60,8 @@ beforeEach(async () => {
     await Promise.all([
         Usuario.deleteMany({}),
         Sesion.deleteMany({}),
+        Pedido.deleteMany({}),
+        Testimonio.deleteMany({}),
     ]);
 });
 
@@ -164,4 +168,138 @@ test('POST /api/pedidos exige una cuenta', async (t) => {
 
     assert.equal(respuesta.status, 401);
     assert.equal(respuesta.body.codigo, 'sin-sesion');
+});
+
+test('GET /api/pedidos exige una cuenta', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const respuesta = await request(app).get('/api/pedidos');
+
+    assert.equal(respuesta.status, 401);
+    assert.equal(respuesta.body.codigo, 'sin-sesion');
+});
+
+test('GET /api/pedidos devuelve solo los pedidos de la cuenta', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const agente = request.agent(app);
+
+    const registro = await agente.post('/api/auth/registro').send(CUENTA);
+    const usuarioId = registro.body.usuario.id;
+
+    const otra = await request(app).post('/api/auth/registro').send({
+        nombre: 'Bruno',
+        email: 'bruno@example.com',
+        clave: 'secreto123',
+    });
+
+    const base = { sesion: 's1', nombre: 'Ana', telefono: '099123456' };
+
+    await Pedido.create([
+        {
+            ...base, id: 'Z-20260101-AAAAAA', usuario: usuarioId, total: 300,
+            creado: new Date('2026-01-01T10:00:00Z'),
+            items: [{ producto_id: 1, nombre: 'Monstera', precio: 150, cantidad: 2 }],
+        },
+        {
+            ...base, id: 'Z-20260102-BBBBBB', usuario: usuarioId, total: 120,
+            creado: new Date('2026-01-02T10:00:00Z'),
+            items: [{ producto_id: 2, nombre: 'Helecho', precio: 120, cantidad: 1 }],
+        },
+        {
+            ...base, id: 'Z-20260103-CCCCCC', usuario: otra.body.usuario.id, total: 999,
+            creado: new Date('2026-01-03T10:00:00Z'),
+            items: [{ producto_id: 3, nombre: 'Ajeno', precio: 999, cantidad: 1 }],
+        },
+    ]);
+
+    const respuesta = await agente.get('/api/pedidos');
+
+    assert.equal(respuesta.status, 200);
+    assert.equal(respuesta.body.pedidos.length, 2);
+    /* Del mas nuevo al mas viejo, y sin el pedido de la otra cuenta. */
+    assert.equal(respuesta.body.pedidos[0].id, 'Z-20260102-BBBBBB');
+    assert.equal(respuesta.body.pedidos[1].id, 'Z-20260101-AAAAAA');
+    assert.equal(respuesta.body.pedidos[0].items[0].nombre, 'Helecho');
+    assert.equal(respuesta.body.pedidos[1].total, 300);
+    /* No se filtran datos internos del documento. */
+    assert.equal(respuesta.body.pedidos[0].usuario, undefined);
+    assert.equal(respuesta.body.pedidos[0]._id, undefined);
+});
+
+test('POST /api/testimonios guarda la opinión de la cuenta', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const agente = request.agent(app);
+
+    await agente.post('/api/auth/registro').send(CUENTA);
+
+    const respuesta = await agente
+        .post('/api/testimonios')
+        .send({
+            autor: 'Ana Pérez',
+            lugar: 'Montevideo',
+            texto: 'Muy buena atención y las plantas llegaron sanas.',
+            estrellas: 5,
+        });
+
+    assert.equal(respuesta.status, 201);
+    assert.equal(respuesta.body.ok, true);
+    assert.equal(respuesta.body.testimonio.autor, 'Ana Pérez');
+    assert.equal(respuesta.body.testimonio.estrellas, 5);
+
+    /* Nace publicada y queda asociada a la cuenta. */
+    const guardado = await Testimonio.findOne({ autor: 'Ana Pérez' }).lean();
+
+    assert.ok(guardado);
+    assert.equal(guardado.publicado, true);
+    assert.ok(guardado.usuario);
+
+    const listado = await request(app).get('/api/testimonios');
+
+    assert.equal(listado.body.testimonios.length, 1);
+    assert.equal(listado.body.testimonios[0].texto, respuesta.body.testimonio.texto);
+});
+
+test('POST /api/testimonios exige una cuenta', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const respuesta = await request(app)
+        .post('/api/testimonios')
+        .send({ autor: 'Ana', texto: 'texto suficiente', estrellas: 4 });
+
+    assert.equal(respuesta.status, 401);
+    assert.equal(respuesta.body.codigo, 'sin-sesion');
+    assert.equal(await Testimonio.countDocuments({}), 0);
+});
+
+test('POST /api/testimonios valida autor, texto y estrellas', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const agente = request.agent(app);
+
+    await agente.post('/api/auth/registro').send(CUENTA);
+
+    const malaEstrella = await agente
+        .post('/api/testimonios')
+        .send({ autor: 'Ana', texto: 'texto suficiente', estrellas: 9 });
+
+    assert.equal(malaEstrella.status, 400);
+    assert.equal(malaEstrella.body.campo, 'estrellas');
+
+    const textoCorto = await agente
+        .post('/api/testimonios')
+        .send({ autor: 'Ana', texto: 'corto', estrellas: 4 });
+
+    assert.equal(textoCorto.status, 400);
+    assert.equal(textoCorto.body.campo, 'texto');
+
+    const sinAutor = await agente
+        .post('/api/testimonios')
+        .send({ autor: '', texto: 'texto suficiente', estrellas: 4 });
+
+    assert.equal(sinAutor.status, 400);
+    assert.equal(sinAutor.body.campo, 'autor');
+
+    assert.equal(await Testimonio.countDocuments({}), 0);
 });
