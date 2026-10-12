@@ -327,6 +327,25 @@ function formatearPrecio(value) {
 
    function agregarProductoAlCarrito(id) {
 
+       const auth = window.zapiAuth;
+
+       /* Comprar exige cuenta. Si auth-ui.js todavia esta resolviendo
+          /api/auth/yo, se espera y recien ahi se decide: sumar (si hay
+          sesion) o mandar al login. Sin auth-ui.js cargado, el carrito
+          funciona como siempre. */
+       if (auth && !auth.autenticado) {
+
+           auth.listo.then(function () {
+
+               if (auth.autenticado) agregarProductoAlCarrito(id);
+               else auth.exigirCuenta();
+
+           });
+
+           return;
+
+       }
+
        const producto = PRODUCTOS.find(p => p.id == id);
 
        if (!producto) return;
