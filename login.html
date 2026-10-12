@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Ingresar · ZAPI</title>
+
+<!-- ==========================================================
+     TIPOGRAFÍAS (Bebas Neue para títulos, Montserrat para texto)
+     Son las que ya usa el sitio; acá se cargan una sola vez.
+     ========================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600&display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet" href="./public/css/login.css">
+</head>
+<body>
+
+<a class="volver" href="/">Volver al inicio</a>
+
+<div class="wrap">
+
+    <!-- El "shake" del error se aplica acá para sacudir solo al personaje -->
+    <div id="shake">
+
+        <!--
+            Personaje. Cada capa es un <img> a pantalla completa sobre
+            un contenedor con la proporción 815 / 760. El <div class="tilt">
+            inclina la cabeza con el cursor y <div class="bob"> la hace
+            respirar. Las dos manos son los únicos elementos en %.
+        -->
+        <div class="head" id="hd" data-state="happy" role="img"
+             aria-label="Personaje con un brote en la cabeza">
+            <div class="tilt" id="tilt"><div class="bob">
+
+                <!-- de abajo hacia arriba -->
+                <img class="ly l-h"  src="/personaje/cabeza-v2.png"     alt="" draggable="false">
+                <img class="ly l-eo l-bl" src="/personaje/ojos-blanco.png" alt="" draggable="false">
+                <div class="ly l-eo l-irw" id="irw">
+                    <img class="ly l-ir" src="/personaje/iris.png" alt="" draggable="false">
+                </div>
+                <img class="ly l-eo l-pp" src="/personaje/ojos-parpados.png" alt="" draggable="false">
+                <img class="ly l-eh" src="/personaje/ojos-felices.png"  alt="" draggable="false">
+                <img class="ly l-ec" src="/personaje/ojos-llorando.png" alt="" draggable="false">
+                <img class="ly l-tr" src="/personaje/lagrimas.png"      alt="" draggable="false">
+                <img class="ly l-ms" src="/personaje/boca-sonrisa.png"  alt="" draggable="false">
+                <img class="ly l-mo" src="/personaje/boca-risa.png"     alt="" draggable="false">
+                <img class="ly l-mc" src="/personaje/boca-llanto.png"   alt="" draggable="false">
+                <img class="ly l-mk" src="/personaje/boca-picara.png"   alt="" draggable="false">
+                <img class="ly l-es" src="/personaje/ojos-sorpresa.png" alt="" draggable="false">
+                <img class="ly l-mp" src="/personaje/boca-o.png"        alt="" draggable="false">
+                <img class="ly l-pe" src="/personaje/pelo.png"          alt="" draggable="false">
+                <img class="ly l-gl" src="/personaje/lentes.png"        alt="" draggable="false">
+                <img class="ly l-br" src="/personaje/brote.png"         alt="" draggable="false">
+                <img class="ly l-st" src="/personaje/estrellas.png"     alt="" draggable="false">
+                <img class="ly l-sg" src="/personaje/signos.png"        alt="" draggable="false">
+
+                <!-- Encima de todo: las dos manos que tapan los ojos -->
+                <img class="hand hl" src="/personaje/mano-tapar.png" alt="" draggable="false">
+                <img class="hand hr" src="/personaje/mano-tapar.png" alt="" draggable="false">
+
+            </div></div>
+        </div>
+
+    </div>
+
+    <form class="card" id="f" novalidate>
+        <h1 id="titulo">Bienvenido</h1>
+        <p class="msg" id="msg" aria-live="polite">¡Hola! Ingresá para seguir creciendo</p>
+
+        <!-- El nombre solo se pide al crear la cuenta; login lo esconde. -->
+        <div class="f" id="fn" hidden>
+            <label for="n">Nombre</label>
+            <input id="n" type="text" autocomplete="name" placeholder="Tu nombre">
+        </div>
+
+        <div class="f">
+            <label for="u">Correo</label>
+            <input id="u" type="email" autocomplete="email" placeholder="tu@correo.com">
+        </div>
+
+        <div class="f">
+            <label for="p">Contraseña</label>
+            <input id="p" type="password" autocomplete="current-password" placeholder="••••••••">
+            <button type="button" class="eye" id="t" aria-label="Mostrar contraseña">VER</button>
+        </div>
+
+        <button class="go" id="go" type="submit">Ingresar</button>
+
+        <p class="swap">
+            <span id="swapTexto">¿No tenés cuenta?</span>
+            <button type="button" class="link" id="swap">Crear una</button>
+        </p>
+
+        <p class="tag">Pequeños brotes, grandes sueños</p>
+    </form>
+
+</div>
+
+<script src="./public/js/login.js"></script>
+</body>
+</html>

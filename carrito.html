@@ -66,9 +66,28 @@
         <nav class="cart-nav" aria-label="Páginas del sitio">
             <a href="index.html">Inicio</a>
             <a href="catalogo.html">Catálogo</a>
+            <!-- Cuenta. auth-ui.js rellena el nombre y muestra "Salir"
+                 cuando hay sesión. -->
+            <span class="nav-cuenta">
+                <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
+                <span class="nav-usuario">
+                    <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
+                    <button type="button" class="nav-salir" id="navSalir">Salir</button>
+                </span>
+            </span>
         </nav>
 
     </header>
+
+
+    <!-- Aviso para quien no inició sesión. Se muestra solo con
+         data-auth="no"; el carrito de abajo se muestra con "si". -->
+    <section class="cart-login" id="cartLogin">
+        <span class="material-symbols-outlined">lock</span>
+        <h2>Necesitás una cuenta</h2>
+        <p>Ingresá para ver y cerrar tu pedido. Tu carrito queda guardado en este dispositivo.</p>
+        <a class="cart-login-go" href="login.html?volver=/carrito.html">Ingresar o crear cuenta</a>
+    </section>
 
 
     <!-- CONTENIDO -->
@@ -338,6 +357,7 @@
     </footer>
 
 
+    <script src="./public/js/auth-ui.js" defer></script>
     <script src="./public/js/productos.js" defer></script>
     <script src="./public/js/modal.js" defer></script>
     <script src="./public/js/carrito.js" defer></script>
