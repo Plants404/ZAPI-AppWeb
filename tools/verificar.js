@@ -17,7 +17,8 @@ const CSS = ['styles.css', 'catalogo.css', 'catalogo-modal.css',
     'login.css',
     '404.css'];
 const JS = ['auth-ui.js', 'productos.js', 'modal.js', 'catalogo.js',
-    'carrito.js', 'zapi-bot.js', 'navigation.js', 'buscador.js',
+    'carrito.js', 'testimonio-form.js', 'zapi-bot.js',
+    'navigation.js', 'buscador.js',
     'menu.js', 'testimonios.js', 'contacto.js', 'login.js', '404.js'];
 
 const rutaCss = nombre => path.join(raiz, 'public', 'css', nombre);

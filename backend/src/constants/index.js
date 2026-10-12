@@ -31,6 +31,12 @@ const LARGO = {
        guardarse en la FAQ y el detalle del evento tambien. */
     mensajeChat: 600,
     eventoDetalle: 200,
+
+    /* Testimonios. El autor y el lugar los escribe la persona; el
+       largo coincide con el maxlength del formulario flotante que
+       se abre despues de mandar el pedido por WhatsApp. */
+    testimonioLugar: 120,
+    testimonioTexto: 600,
 };
 
 /* Pisos minimos. La consulta pide 10 caracteres y el telefono se
@@ -45,6 +51,10 @@ const MINIMOS = {
     /* Cuentas: la clave nunca baja de 8 caracteres. El formato del
        correo se valida aparte, con CORREO. */
     clave: 8,
+
+    /* Un testimonio muy corto no dice nada; se piden 10 caracteres,
+       igual que la consulta del formulario de contacto. */
+    testimonioTexto: 10,
 };
 
 /* Lo bastante estricto para agarrar el "@" que falta y el ".com"

@@ -21,6 +21,7 @@
    GET    /api/auth/yo        la cuenta de la sesion, o null
    GET    /api/salud          estado del servidor y de Mongo
    GET    /api/testimonios        opiniones publicadas
+   POST   /api/testimonios        guardar una opinion (exige cuenta)
    GET    /api/testimonios/todos  todas, con id y estado (token)
    PATCH  /api/testimonios/:id    publicar o despublicar (token)
    POST   /api/contacto       consulta del formulario
