@@ -20,7 +20,12 @@
    ya usaba el carrusel, asi que cambiar de fuente no obliga a
    redibujar nada:
 
-     { autor, lugar, texto, estrellas, fecha }
+     { autor, lugar, texto, estrellas, fecha, producto_id }
+
+   producto_id es opcional: cuando viene, el carrusel dibuja una
+   etiqueta "Sobre: <nombre>" que abre la ficha de ese producto. El
+   nombre no viaja en la opinion: se busca en el catalogo ya cargado
+   (PRODUCTOS), asi que si el producto no existe no se dibuja nada.
 
    Cuantas se ven a la vez
    -----------------------
@@ -190,6 +195,21 @@ const OPINIONES_DESLIZAR = 40;
         return '<span class="opinion-fecha">' + escaparHTML(texto) + '</span>';
     }
 
+    /* Si la opinion apunta a un producto, la etiqueta que abre su
+       ficha. Arranca oculta y sin texto: el nombre se busca recien
+       cuando el catalogo termino de bajar (ver engancharlo mas
+       abajo), y si el id no existe la etiqueta se saca entera. Sin
+       producto_id no se dibuja nada. */
+    function productoBoton(opinion) {
+        if (!opinion.producto_id) return "";
+
+        return '<button class="opinion-producto" type="button" data-producto="' +
+            escaparHTML(opinion.producto_id) + '" hidden>' +
+            '<span class="material-symbols-outlined" aria-hidden="true">eco</span>' +
+            '<span data-producto-nombre></span>' +
+            '</button>';
+    }
+
     /* ------------------------------------------------------------
        Cuantas se ven a la vez
        ------------------------------------------------------------ */
@@ -298,6 +318,8 @@ const OPINIONES_DESLIZAR = 40;
                         </span>
                     </div>
                 </div>
+
+                ${productoBoton(opinion)}
             </article>
         `).join("");
 
@@ -335,6 +357,40 @@ const OPINIONES_DESLIZAR = 40;
         contador = contenedor.querySelector("[data-contador]");
         anuncio = contenedor.querySelector("[data-anuncio]");
         slides = Array.from(contenedor.querySelectorAll(".opinion-slide"));
+
+        /* Las etiquetas de producto: el nombre y el click recien
+           cuando el catalogo este. Si el id no esta en el catalogo,
+           la etiqueta se saca. abrirModalProducto es de modal.js y
+           solo existe en las paginas que lo cargan (la home lo
+           carga); si no esta, la etiqueta queda como texto sin
+           accion. */
+        contenedor.querySelectorAll("[data-producto]").forEach((boton) => {
+            const id = Number(boton.dataset.producto);
+
+            alCargarElCatalogo(() => {
+                const producto = PRODUCTOS.find(p => p.id === id);
+                const nombre = boton.querySelector("[data-producto-nombre]");
+
+                if (!producto || !nombre) {
+                    boton.remove();
+                    return;
+                }
+
+                nombre.textContent = "Sobre: " + producto.nombre;
+                boton.setAttribute("aria-label", "Ver " + producto.nombre);
+                boton.hidden = false;
+
+                boton.addEventListener("click", () => {
+                    /* Se usa "!==" y no "===" a proposito: el
+                       verificador busca "window.algo =" para saber
+                       quien DEFINE un global, y un "===" despues del
+                       nombre se lee como una definicion. */
+                    if (typeof window.abrirModalProducto !== "function") return;
+
+                    window.abrirModalProducto(id, boton);
+                });
+            });
+        });
 
         if (puntos) {
             puntos.addEventListener("click", (evento) => {

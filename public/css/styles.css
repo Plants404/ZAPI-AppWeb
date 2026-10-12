@@ -1187,6 +1187,41 @@ body.no-scroll {
   margin-right: .5rem;
 }
 
+/* La etiqueta que abre la ficha del producto del que habla la
+   opinion. Es un boton, no un enlace: abre el modal de producto. Va
+   oculta hasta que el catalogo confirma que el id existe
+   (testimonios.js la muestra recien ahi). */
+.opinion-producto {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  margin-top: .25rem;
+  padding: .35rem .75rem;
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--forest);
+  background: var(--cream);
+  border: 1px solid var(--sage);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.opinion-producto:hover {
+  background: var(--sand);
+  border-color: var(--moss);
+}
+
+.opinion-producto:focus-visible {
+  outline: 3px solid var(--moss);
+  outline-offset: 2px;
+}
+
+.opinion-producto .material-symbols-outlined {
+  font-size: 1rem;
+}
+
 /* Controles del carrusel de opiniones.
    Estas clases van con prefijo "opinion-" y no "carrusel-" a
    proposito: el modal de producto (catalogo-modal.css, que se carga
