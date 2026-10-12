@@ -4,8 +4,8 @@
    ------------------------------------------------------------
    Las opiniones que muestra el carrusel de la home. La forma
    calca la que ya usa public/js/testimonios.js (autor, lugar,
-   texto, estrellas, fecha), para que conectar el endpoint no
-   obligue a redibujar nada.
+   texto, estrellas, fecha, producto_id), para que conectar el
+   endpoint no obligue a redibujar nada.
 
    Todavia hay una fuente a mano: datos/testimonios.js -> JSON ->
    siembra (ver testimonios.service.js). La coleccion sigue abierta
@@ -24,6 +24,13 @@ const esquema = new mongoose.Schema(
         texto: { type: String, required: true, trim: true, maxlength: 1200 },
         estrellas: { type: Number, required: true, min: 0, max: 5 },
         fecha: { type: Date, required: true },
+
+        /* Opcional: el id del producto del catalogo al que se
+           refiere la opinion (el mismo numero de datos/catalogo.js).
+           El carrusel lo usa para mostrar la etiqueta "Sobre:
+           <nombre>" que abre la ficha. Sin producto queda en null y
+           no se dibuja etiqueta. */
+        producto_id: { type: Number, default: null, min: 1 },
 
         /* Se listan solo las publicadas: asi una opinion cargada
            para revisar no sale en la home antes de aprobarla. */

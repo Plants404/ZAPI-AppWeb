@@ -1,10 +1,11 @@
 {
-  "generado": "2026-10-11T20:36:19.522Z",
+  "generado": "2026-10-12T11:35:57.964Z",
   "version": 1,
   "testimonios": [
     {
       "autor": "María Gómez",
       "lugar": "Montevideo",
+      "producto_id": 1,
       "texto": "Compré dos aromáticas para la cocina y llegaron sanas y con la guía de cuidados. A las dos semanas ya las estaba usando para las comidas.",
       "estrellas": 5,
       "fecha": "2026-08-14"
@@ -12,6 +13,7 @@
     {
       "autor": "Diego Fernández",
       "lugar": "Ciudad de la Costa",
+      "producto_id": 7,
       "texto": "Nos hicieron el diseño de la huerta del colegio. El equipo entendió lo que necesitan los chicos y nos dejaron claro cómo seguir con el mantenimiento.",
       "estrellas": 5,
       "fecha": "2026-07-02"
@@ -33,6 +35,7 @@
     {
       "autor": "Familia Bentancor",
       "lugar": "Canelones",
+      "producto_id": 7,
       "texto": "Pedimos la huerta familiar completa y nos explican cada paso. Después de un mes ya estábamos comiendo de lo que sembramos.",
       "estrellas": 5,
       "fecha": "2026-05-11"

@@ -29,12 +29,22 @@
 
    La nota (estrellas) va de 0 a 5 y admite medios puntos: el
    carrusel dibuja media estrella con la nota con decimal.
+
+   El campo producto_id es opcional: cuando la opinion es sobre un
+   producto del catalogo, se pone su id (el mismo numero que usa
+   datos/catalogo.js) y el carrusel muestra la etiqueta "Sobre:
+   <nombre>" para abrir la ficha. Si la opinion es sobre un
+   servicio, o no hay un producto claro, se deja afuera y no se
+   dibuja ninguna etiqueta. El generador comprueba que el id
+   exista en el catalogo, asi que un numero mal escrito no llega
+   al JSON.
    ========================================================== */
 
 const TESTIMONIOS = [
     {
         autor: "María Gómez",
         lugar: "Montevideo",
+        producto_id: 1,
         texto: "Compré dos aromáticas para la cocina y llegaron sanas y con la guía de cuidados. A las dos semanas ya las estaba usando para las comidas.",
         estrellas: 5,
         fecha: "2026-08-14"
@@ -42,6 +52,7 @@ const TESTIMONIOS = [
     {
         autor: "Diego Fernández",
         lugar: "Ciudad de la Costa",
+        producto_id: 7,
         texto: "Nos hicieron el diseño de la huerta del colegio. El equipo entendió lo que necesitan los chicos y nos dejaron claro cómo seguir con el mantenimiento.",
         estrellas: 5,
         fecha: "2026-07-02"
@@ -63,6 +74,7 @@ const TESTIMONIOS = [
     {
         autor: "Familia Bentancor",
         lugar: "Canelones",
+        producto_id: 7,
         texto: "Pedimos la huerta familiar completa y nos explican cada paso. Después de un mes ya estábamos comiendo de lo que sembramos.",
         estrellas: 5,
         fecha: "2026-05-11"

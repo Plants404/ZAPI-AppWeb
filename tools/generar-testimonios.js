@@ -48,6 +48,12 @@ function validar(lista) {
 
     const vistos = new Set();
 
+    /* Los ids reales del catalogo. producto_id es opcional, pero si
+       esta tiene que apuntar a un producto que exista: un numero mal
+       escrito dejaria el carrusel con una etiqueta que no abre nada. */
+    const { PRODUCTOS } = require(path.join(raiz, 'datos', 'catalogo.js'));
+    const idsDelCatalogo = new Set(PRODUCTOS.map(p => p.id));
+
     for (const t of lista) {
         for (const campo of ['autor', 'texto', 'estrellas', 'fecha']) {
             if (t[campo] === undefined || t[campo] === '') {
@@ -58,6 +64,18 @@ function validar(lista) {
         if (typeof t.estrellas !== 'number' || !isFinite(t.estrellas) ||
             t.estrellas < 0 || t.estrellas > 5) {
             throw new Error('estrellas fuera de 0..5 en "' + t.autor + '": ' + t.estrellas);
+        }
+
+        /* Opcional: si viene, tiene que ser un id del catalogo. */
+        if (t.producto_id !== undefined) {
+            if (!Number.isInteger(t.producto_id) || t.producto_id < 1) {
+                throw new Error('producto_id invalido en "' + t.autor + '": ' + t.producto_id);
+            }
+
+            if (!idsDelCatalogo.has(t.producto_id)) {
+                throw new Error('producto_id ' + t.producto_id + ' en "' + t.autor +
+                    '" no existe en datos/catalogo.js');
+            }
         }
 
         /* La fecha va como YYYY-MM-DD en la fuente; aca se valida
