@@ -301,6 +301,31 @@ test('PATCH /api/testimonios/:id valida token, cuerpo e id', async (t) => {
     assert.equal(idInexistente.status, 404);
 });
 
+test('GET /api/testimonios muestra como máximo 10 opiniones', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const documentos = [];
+
+    for (let i = 0; i < 12; i++) {
+        documentos.push({
+            autor: 'Autor ' + i,
+            lugar: '',
+            texto: 'Opinión número ' + i + ' con el texto suficiente.',
+            estrellas: 5,
+            fecha: new Date(Date.now() - i * 86400000),
+            publicado: true,
+        });
+    }
+
+    await Testimonio.create(documentos);
+
+    const respuesta = await request(app).get('/api/testimonios');
+
+    assert.equal(respuesta.body.testimonios.length, 10);
+    /* Las más nuevas primero: la de i=0 es la fecha más reciente. */
+    assert.equal(respuesta.body.testimonios[0].autor, 'Autor 0');
+});
+
 test('una ruta de API inexistente responde 404 JSON', async (t) => {
     if (motivoSkip) return t.skip(motivoSkip);
 

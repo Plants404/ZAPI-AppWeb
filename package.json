@@ -12,6 +12,7 @@
     "contraste": "node tools/contraste.js",
     "generar": "node tools/generar-productos.js",
     "generar:testimonios": "node tools/generar-testimonios.js",
+    "crear:usuario": "node --env-file-if-exists=.env tools/crear-usuario.js",
     "sitemap": "node tools/generar-sitemap.js",
     "css": "node tools/extraer-modal-css.js"
   },

@@ -21,6 +21,7 @@ const database = require('../src/config/database');
 const { crearApp } = require('../src/app');
 const { Usuario } = require('../src/models/usuario.model');
 const { Sesion } = require('../src/models/sesion.model');
+const { Testimonio } = require('../src/models/testimonio.model');
 
 let app = null;
 let contenedor = null;
@@ -58,6 +59,7 @@ beforeEach(async () => {
     await Promise.all([
         Usuario.deleteMany({}),
         Sesion.deleteMany({}),
+        Testimonio.deleteMany({}),
     ]);
 });
 
@@ -164,4 +166,81 @@ test('POST /api/pedidos exige una cuenta', async (t) => {
 
     assert.equal(respuesta.status, 401);
     assert.equal(respuesta.body.codigo, 'sin-sesion');
+});
+
+test('POST /api/testimonios guarda la opinión de la cuenta', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const agente = request.agent(app);
+
+    await agente.post('/api/auth/registro').send(CUENTA);
+
+    const respuesta = await agente
+        .post('/api/testimonios')
+        .send({
+            autor: 'Ana Pérez',
+            lugar: 'Montevideo',
+            texto: 'Muy buena atención y las plantas llegaron sanas.',
+            estrellas: 5,
+        });
+
+    assert.equal(respuesta.status, 201);
+    assert.equal(respuesta.body.ok, true);
+    assert.equal(respuesta.body.testimonio.autor, 'Ana Pérez');
+    assert.equal(respuesta.body.testimonio.estrellas, 5);
+
+    /* Nace publicada y queda asociada a la cuenta. */
+    const guardado = await Testimonio.findOne({ autor: 'Ana Pérez' }).lean();
+
+    assert.ok(guardado);
+    assert.equal(guardado.publicado, true);
+    assert.ok(guardado.usuario);
+
+    const listado = await request(app).get('/api/testimonios');
+
+    assert.equal(listado.body.testimonios.length, 1);
+    assert.equal(listado.body.testimonios[0].texto, respuesta.body.testimonio.texto);
+});
+
+test('POST /api/testimonios exige una cuenta', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const respuesta = await request(app)
+        .post('/api/testimonios')
+        .send({ autor: 'Ana', texto: 'texto suficiente', estrellas: 4 });
+
+    assert.equal(respuesta.status, 401);
+    assert.equal(respuesta.body.codigo, 'sin-sesion');
+    assert.equal(await Testimonio.countDocuments({}), 0);
+});
+
+test('POST /api/testimonios valida autor, texto y estrellas', async (t) => {
+    if (motivoSkip) return t.skip(motivoSkip);
+
+    const agente = request.agent(app);
+
+    await agente.post('/api/auth/registro').send(CUENTA);
+
+    const malaEstrella = await agente
+        .post('/api/testimonios')
+        .send({ autor: 'Ana', texto: 'texto suficiente', estrellas: 9 });
+
+    assert.equal(malaEstrella.status, 400);
+    assert.equal(malaEstrella.body.campo, 'estrellas');
+
+    const textoCorto = await agente
+        .post('/api/testimonios')
+        .send({ autor: 'Ana', texto: 'corto', estrellas: 4 });
+
+    assert.equal(textoCorto.status, 400);
+    assert.equal(textoCorto.body.campo, 'texto');
+
+    const sinAutor = await agente
+        .post('/api/testimonios')
+        .send({ autor: '', texto: 'texto suficiente', estrellas: 4 });
+
+    assert.equal(sinAutor.status, 400);
+    assert.equal(sinAutor.body.campo, 'autor');
+
+    assert.equal(await Testimonio.countDocuments({}), 0);
 });

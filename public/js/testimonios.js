@@ -1,7 +1,14 @@
 /* ==========================================================
    TESTIMONIOS
    ------------------------------------------------------------
-   Dibuja el carrusel de opiniones de la seccion de inicio.
+   Dibuja las opiniones de la seccion de inicio en una grilla
+   responsiva: se muestran TODAS a la vez, en una columna en el
+   celular, dos en tablet y tres en escritorio. Cuantas entran por
+   fila lo decide el CSS (ver styles.css), no este script.
+
+   Antes esto era un carrusel que mostraba de a paginas y escondia el
+   resto detras de flechas y puntos. Se saco: con pocas opiniones no
+   valia la pena navegar para verlas.
 
    De donde salen los datos
    ------------------------
@@ -12,26 +19,20 @@
    siembra la API y sale de datos/testimonios.js con
    npm run generar:testimonios.
 
-   Con las dos fuentes caidas el carrusel muestra el estado vacio
+   Con las dos fuentes caidas la grilla muestra el estado vacio
    ("Todavia no hay opiniones publicadas") en vez de romperse: la
    home nunca queda dependiendo de que la API este arriba.
 
    La forma de cada opinion es la misma en las dos fuentes y la que
-   ya usaba el carrusel, asi que cambiar de fuente no obliga a
+   ya usaba el bloque, asi que cambiar de fuente no obliga a
    redibujar nada:
 
      { autor, lugar, texto, estrellas, fecha, producto_id }
 
-   producto_id es opcional: cuando viene, el carrusel dibuja una
-   etiqueta "Sobre: <nombre>" que abre la ficha de ese producto. El
-   nombre no viaja en la opinion: se busca en el catalogo ya cargado
+   producto_id es opcional: cuando viene, se dibuja una etiqueta
+   "Sobre: <nombre>" que abre la ficha de ese producto. El nombre no
+   viaja en la opinion: se busca en el catalogo ya cargado
    (PRODUCTOS), asi que si el producto no existe no se dibuja nada.
-
-   Cuantas se ven a la vez
-   -----------------------
-   No hay un numero fijo aca: lo decide el CSS con --por-vista (3 en
-   escritorio, 2 en tablet, 1 en celular) y el script lo lee. El
-   avance es de a paginas completas, no de a opinion.
 
    Por que un endpoint propio y no la API de Google directo
    --------------------------------------------------------
@@ -57,7 +58,7 @@ const FUENTES_OPINIONES = [
 ];
 
 /* Devuelve las opiniones de la primera fuente que responda, o una
-   lista vacia si ninguna lo hace (el carrusel muestra su estado
+   lista vacia si ninguna lo hace (la grilla muestra su estado
    vacio). Nunca tira: un fetch caido no puede dejar la home a
    medio dibujar. */
 async function cargarOpiniones() {
@@ -91,16 +92,7 @@ async function cargarOpiniones() {
     return [];
 }
 
-/* Cada cuanto avanza solo, en milisegundos. Con un solo testimonio
-   no hay carrusel que avance, asi que el tiempo no se usa. */
-const OPINIONES_INTERVALO = 7000;
-
-/* Cuanto tiene que moverse el dedo para que cuente como deslizar, en
-   pixeles. 40 es un recorrido corto y a proposito, para no cambiar de
-   opinion con un temblor de la mano. */
-const OPINIONES_DESLIZAR = 40;
-
-(async function carruselDeOpiniones() {
+(async function grillaDeOpiniones() {
 
     const contenedor = document.getElementById("testimoniosCarrusel");
 
@@ -109,28 +101,9 @@ const OPINIONES_DESLIZAR = 40;
        derecho sin tirar error (y sin pedir la API al pedo). */
     if (!contenedor) return;
 
-    const menosMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)");
-
     /* Las opiniones se piden antes de dibujar: con la lista vacia
-       pintar() muestra el estado vacio. Todo lo que sigue (los
-       escuchantes de flechas, puntos y deslizar) se engancha
-       despues, asi que la espera no deja nada a medio armar. */
+       pintar() muestra el estado vacio. */
     const opiniones = await cargarOpiniones();
-
-    let indice = 0;
-    let temporizador = null;
-    let pausado = false;
-    let arrastrando = false;
-    let movio = false;
-    let inicioX = 0;
-
-    let pista = null;
-    let btnAnterior = null;
-    let btnSiguiente = null;
-    let puntos = null;
-    let contador = null;
-    let anuncio = null;
-    let slides = [];
 
     /* ------------------------------------------------------------
        Utilidades
@@ -211,75 +184,6 @@ const OPINIONES_DESLIZAR = 40;
     }
 
     /* ------------------------------------------------------------
-       Cuantas se ven a la vez
-       ------------------------------------------------------------ */
-
-    /* El numero de opiniones por vista vive en el CSS (--por-vista)
-       y se lee de ahi en vez de repetirlo en el JS: si el ancho de la
-       tarjeta cambia en un breakpoint, el script se entera solo y no
-       pueden quedar desincronizados. */
-    function porVista() {
-        const valor = parseInt(
-            getComputedStyle(contenedor).getPropertyValue("--por-vista"),
-            10
-        );
-
-        return Number.isFinite(valor) && valor > 0 ? valor : 1;
-    }
-
-    /* El carrusel avanza de a paginas completas, no de a opinion.
-       Con 5 opiniones y 3 por vista son 2 paginas: la primera con
-       tres y la segunda con las dos que quedan. La ultima pagina
-       puede quedar con huecos, que es lo esperable: mejor un hueco
-       que repetir opiniones. */
-    function totalPaginas() {
-        return Math.max(1, Math.ceil(opiniones.length / porVista()));
-    }
-
-    /* Rango de opiniones de una pagina, para el contador y para
-       saber cuales quedan fuera de la vista. */
-    function rangoDe(pagina) {
-        const porPagina = porVista();
-        const desde = pagina * porPagina;
-
-        return {
-            desde: desde,
-            hasta: Math.min(opiniones.length, desde + porPagina)
-        };
-    }
-
-    /* Los controles solo se muestran si hay algo para ir. Con dos
-       opiniones en pantalla ancha entran las dos y no hay nada que
-       mover, pero al achicar la ventana pasa a haber dos paginas y
-       los controles tienen que aparecer: por eso la clase se recalcula
-       en cada reajuste y no se decide una sola vez. */
-    function actualizarControles() {
-        contenedor.classList.toggle("sin-paginacion", totalPaginas() <= 1);
-    }
-
-    /* Un punto por pagina, no por opinion: con cinco opiniones y tres
-       por vista los puntos son dos. Un punto por opinion dejaria
-       puntos que nunca se pueden activar. */
-    function pintarPuntos() {
-        if (!puntos) return;
-
-        const total = opiniones.length;
-        const paginas = totalPaginas();
-
-        puntos.innerHTML = Array.from({ length: paginas }, (_, i) => {
-            const rango = rangoDe(i);
-            const etiqueta = rango.hasta - rango.desde === 1
-                ? "Ver la opinión " + (rango.desde + 1)
-                : "Ver las opiniones " + (rango.desde + 1) + " a " + rango.hasta;
-
-            return '<button class="opinion-punto" type="button" data-ir="' + i +
-                '" aria-label="' + escaparHTML(etiqueta + " de " + total) + '"></button>';
-        }).join("");
-
-        actualizarControles();
-    }
-
-    /* ------------------------------------------------------------
        Markup
        ------------------------------------------------------------ */
 
@@ -291,14 +195,14 @@ const OPINIONES_DESLIZAR = 40;
             return;
         }
 
-        /* Con una sola opinion no hay a donde ir: se sacan los
-           controles y el avance automatico. Lo decide
-           actualizarControles(), que mira cuantas paginas hay y no
-           cuantas opiniones. */
         const total = opiniones.length;
 
-        const slidesHtml = opiniones.map((opinion, i) => `
-            <article class="opinion-slide" role="group" aria-roledescription="diapositiva"
+        /* La grilla es el propio contenedor: cada opinion es una
+           tarjeta y el CSS decide cuantas entran por fila. El
+           role="listitem" del article va con el role="list" que el
+           contenedor trae del HTML. */
+        contenedor.innerHTML = opiniones.map((opinion, i) => `
+            <article class="opinion-slide" role="listitem"
                 aria-label="Opinión ${i + 1} de ${total}">
                 ${pintarEstrellas(opinion.estrellas)}
 
@@ -322,41 +226,6 @@ const OPINIONES_DESLIZAR = 40;
                 ${productoBoton(opinion)}
             </article>
         `).join("");
-
-        /* Los controles se dibujan siempre y se ocultan por CSS con
-           .sin-paginacion: si se dejaran fuera del markup, al
-           achicar la ventana para aparecer de nuevo habria que
-           rehacer el HTML entero. */
-        const controlesHtml = `
-            <div class="opinion-controles">
-                <button class="opinion-flecha" type="button" data-anterior aria-label="Opiniones anteriores">
-                    <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
-                </button>
-
-                <div class="opinion-puntos" data-puntos role="group" aria-label="Ir a un grupo de opiniones"></div>
-
-                <button class="opinion-flecha" type="button" data-siguiente aria-label="Opiniones siguientes">
-                    <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                </button>
-            </div>
-
-            <p class="opinion-contador" data-contador></p>
-        `;
-
-        contenedor.innerHTML =
-            '<div class="opinion-carrusel" data-carrusel>' +
-            '<div class="opinion-pista" data-pista>' + slidesHtml + '</div>' +
-            controlesHtml +
-            '<p class="visually-hidden" data-anuncio role="status" aria-live="polite"></p>' +
-            '</div>';
-
-        pista = contenedor.querySelector("[data-pista]");
-        btnAnterior = contenedor.querySelector("[data-anterior]");
-        btnSiguiente = contenedor.querySelector("[data-siguiente]");
-        puntos = contenedor.querySelector("[data-puntos]");
-        contador = contenedor.querySelector("[data-contador]");
-        anuncio = contenedor.querySelector("[data-anuncio]");
-        slides = Array.from(contenedor.querySelectorAll(".opinion-slide"));
 
         /* Las etiquetas de producto: el nombre y el click recien
            cuando el catalogo este. Si el id no esta en el catalogo,
@@ -391,282 +260,7 @@ const OPINIONES_DESLIZAR = 40;
                 });
             });
         });
-
-        if (puntos) {
-            puntos.addEventListener("click", (evento) => {
-                const punto = evento.target.closest("[data-ir]");
-
-                if (!punto) return;
-
-                irA(Number(punto.dataset.ir));
-            });
-        }
-
-        pintarPuntos();
-        mostrar(0);
-        programar();
     }
 
-    /* ------------------------------------------------------------
-       Movimiento
-       ------------------------------------------------------------ */
-
-    /* Va a la pagina pedida. El aviso al lector de pantalla se
-       escribe solo cuando el cambio lo pidió la persona: si se
-       anunciara en cada avance automatico, cada siete segundos se
-       cortaria lo que esta leyendo. */
-    function mostrar(nuevo, anunciar = false) {
-        const paginas = totalPaginas();
-
-        indice = (nuevo + paginas) % paginas;
-
-        const rango = rangoDe(indice);
-
-        if (pista) {
-            /* El CSS multiplica --indice por el ancho de una pagina
-               (100% + el hueco), asi que aca solo se pasa el numero
-               de pagina. El ancho de la tarjeta no se calcula en el
-               JS justamente para que no haya dos lugares que
-               puedan desincronizarse. */
-            pista.style.setProperty("--indice", indice);
-        }
-
-        slides.forEach((slide, i) => {
-            const visible = i >= rango.desde && i < rango.hasta;
-
-            slide.classList.toggle("activa", visible);
-
-            /* Las que no se ven quedan fuera del arbol accesible. No
-               hay nada enfocable adentro, asi que con esto el lector
-               de pantalla lee las de la pagina que se esta mirando en
-               vez de todas. */
-            if (visible) {
-                slide.removeAttribute("aria-hidden");
-            } else {
-                slide.setAttribute("aria-hidden", "true");
-            }
-        });
-
-        if (puntos) {
-            puntos.querySelectorAll("[data-ir]").forEach((punto, i) => {
-                const activo = i === indice;
-
-                punto.classList.toggle("activa", activo);
-
-                if (activo) {
-                    punto.setAttribute("aria-current", "true");
-                } else {
-                    punto.removeAttribute("aria-current");
-                }
-            });
-        }
-
-        if (contador) {
-            /* Con una sola opinion por pagina alcanza con "2 de 5";
-               con varias se ve el tramo: "1-3 de 5". */
-            contador.textContent = rango.hasta - rango.desde === 1
-                ? (rango.desde + 1) + " de " + opiniones.length
-                : (rango.desde + 1) + "-" + rango.hasta + " de " + opiniones.length;
-        }
-
-        if (anunciar && anuncio) {
-            const texto = rango.hasta - rango.desde === 1
-                ? "Opinión " + (rango.desde + 1) + " de " + opiniones.length
-                : "Opiniones " + (rango.desde + 1) + " a " + rango.hasta +
-                  " de " + opiniones.length;
-
-            anuncio.textContent = texto + ": " +
-                opiniones.slice(rango.desde, rango.hasta)
-                    .map(opinion => opinion.autor).join(", ");
-        }
-    }
-
-    /* Ir a un punto concreto o mover el carrusel con los botones
-       reinicia el avance automatico: si no, el temporizador antiguo
-       podria hacer saltar la pagina a mitad de la lectura. */
-    function irA(nuevo) {
-        if (nuevo === indice) return;
-
-        mostrar(nuevo, true);
-        programar();
-    }
-
-    function anterior() {
-        mostrar(indice - 1, true);
-        programar();
-    }
-
-    function siguiente() {
-        mostrar(indice + 1, true);
-        programar();
-    }
-
-    /* Cuando el ancho de la ventana cruza un breakpoint cambia
-       cuantas opiniones entran por pagina, y con eso la cantidad de
-       paginas: hay que rehacer los puntos, recalcular el indice y
-       volver a esconder los controles si quedo una sola pagina. */
-    function reajustar() {
-        pintarPuntos();
-        mostrar(Math.min(indice, totalPaginas() - 1));
-        programar();
-    }
-
-    ["(min-width: 640px)", "(min-width: 1024px)"].forEach((consulta) => {
-        const corte = window.matchMedia(consulta);
-
-        if (corte.addEventListener) {
-            corte.addEventListener("change", reajustar);
-        } else if (corte.addListener) {
-            corte.addListener(reajustar);
-        }
-    });
-
-    /* ------------------------------------------------------------
-       Arranque
-       ------------------------------------------------------------ */
-
-    /* Pintar va aca y no al final del script a proposito: las
-       flechas, los puntos y la pista se buscaran recien despues, y
-       si se pintara al final estos escuchantes se engancharian a
-       null (los controles todavia no existirian) y las flechas y el
-       deslizar se quedarian sin funcionar. Solo los puntos
-       funcionarian, porque su escuchante se registra dentro de
-       pintar. */
     pintar();
-
-    /* ------------------------------------------------------------
-       Avance automatico
-       ------------------------------------------------------------ */
-
-    /* Con una sola pagina no hay nada que ir girando, y con
-       reduced-motion el avance automatico esta descartado: es
-       movimiento que la persona pidio expresamente no ver. */
-    function puedeGirar() {
-        return totalPaginas() > 1 && !menosMovimiento.matches && !document.hidden;
-    }
-
-    function programar() {
-        if (temporizador) {
-            clearInterval(temporizador);
-            temporizador = null;
-        }
-
-        if (pausado || !puedeGirar()) return;
-
-        /* El avance automatico salta de pagina, no de opinion: con tres a
-       la vez, cambiar de a una se veria raro. */
-        temporizador = setInterval(() => mostrar(indice + 1), OPINIONES_INTERVALO);
-    }
-
-    /* Mientras el puntero esta encima o el foco esta adentro, el
-       carrusel se queda quieto: nadie quiere que le cambie la
-       opinion que esta leyendo. Al salir, vuelve a arrancar. */
-    contenedor.addEventListener("mouseenter", () => {
-        pausado = true;
-        programar();
-    });
-
-    contenedor.addEventListener("mouseleave", () => {
-        pausado = false;
-        programar();
-    });
-
-    contenedor.addEventListener("focusin", () => {
-        pausado = true;
-        programar();
-    });
-
-    contenedor.addEventListener("focusout", (evento) => {
-        /* Moving the focus from one control to another inside the
-           carousel fires focusout and focusin. Without this check
-           the carousel would resume for the microsecond in
-           between. relatedTarget is where the focus is going. */
-        if (evento.relatedTarget && contenedor.contains(evento.relatedTarget)) return;
-
-        pausado = false;
-        programar();
-    });
-
-    /* Si la preferencia de movimiento cambia con la pagina abierta,
-       el carrusel lo tiene que notar: mirar la basta al cargar
-       deja el intervalo corriendo. */
-    if (menosMovimiento.addEventListener) {
-        menosMovimiento.addEventListener("change", programar);
-    } else if (menosMovimiento.addListener) {
-        menosMovimiento.addListener(programar);
-    }
-
-    /* Cambiar de pestaña con el cursor encima del carrusel detiene el
-       avance: si no, el temporizador sigue gastando cambios en una
-       pestaña que nadie esta mirando. */
-    document.addEventListener("visibilitychange", programar);
-
-    /* ------------------------------------------------------------
-       Botones y teclado
-       ------------------------------------------------------------ */
-
-    if (btnAnterior) {
-        btnAnterior.addEventListener("click", anterior);
-    }
-
-    if (btnSiguiente) {
-        btnSiguiente.addEventListener("click", siguiente);
-    }
-
-    /* Las flechas cambian de pagina, pero solo con el foco dentro
-       del carrusel: con el foco en el buscador del header, las
-       flechas tienen que seguir sirviendo para otra cosa. */
-    contenedor.addEventListener("keydown", (evento) => {
-        if (evento.key === "ArrowLeft") {
-            evento.preventDefault();
-            anterior();
-        } else if (evento.key === "ArrowRight") {
-            evento.preventDefault();
-            siguiente();
-        }
-    });
-
-    /* ------------------------------------------------------------
-       Gesto de deslizar
-       ------------------------------------------------------------ */
-
-    /* Los escuchantes van en la pista y no en el carrusel entero,
-       para que el click de los botones y de los puntos no cuente
-       como arrastre. Los pointer events cubren el dedo y el mouse
-       con el mismo codigo. */
-    if (pista) {
-        pista.addEventListener("pointerdown", (evento) => {
-            arrastrando = true;
-            movio = false;
-            inicioX = evento.clientX;
-
-            pista.classList.add("deslizando");
-        });
-
-        pista.addEventListener("pointermove", (evento) => {
-            if (!arrastrando) return;
-
-            if (Math.abs(evento.clientX - inicioX) > OPINIONES_DESLIZAR) {
-                movio = true;
-            }
-        });
-
-        const soltar = (evento) => {
-            if (!arrastrando) return;
-
-            arrastrando = false;
-            pista.classList.remove("deslizando");
-
-            if (!movio) return;
-
-            if (evento.clientX < inicioX) {
-                siguiente();
-            } else {
-                anterior();
-            }
-        };
-
-        pista.addEventListener("pointerup", soltar);
-        pista.addEventListener("pointercancel", soltar);
-    }
 })();

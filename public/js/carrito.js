@@ -976,6 +976,14 @@ Gracias.`;
                 "noopener,noreferrer"
             );
 
+
+            /* Después de abrir WhatsApp se ofrece dejar una
+               opinión. Solo abre si el script está y hay sesión;
+               sin eso no pasa nada. */
+            if (typeof window.abrirTestimonio !== "function") return;
+
+            window.abrirTestimonio();
+
         }
     );
 

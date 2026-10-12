@@ -963,15 +963,18 @@ body.no-scroll {
 
 /* TESTIMONIOS
    Los dibuja public/js/testimonios.js: el contenedor .testimonios-
-   carrusel llega vacio del HTML y se arma aca. */
+   grilla llega vacio del HTML y se arma aca. */
 
 .testimonios-cabecera {
   max-width: 720px;
   margin: 0 auto 3rem;
 }
 
-.testimonios-carrusel {
-  max-width: 780px;
+.testimonios-grilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 1080px;
   margin: 0 auto;
 }
 
@@ -981,78 +984,34 @@ body.no-scroll {
   margin: 0;
 }
 
-/* CARRUSEL DE TESTIMONIOS
-   La pista es una fila de tarjetas y se mueve con translateX.
-   Cada pagina avanza lo que ocupa una tarjeta mas su hueco, o sea
-   100% + el hueco, y eso da el calculo del transform de abajo.
-
-   --por-vista es la unica fuente de verdad de cuantas opiniones se
-   ven a la vez. testimonials.js la lee del CSS con getComputedStyle
-   en vez de tener su propio numero: si el breakpoint cambia el ancho
-   de la tarjeta, el JS se entera solo y no pueden desincronizarse.
-
-   Las variables van en el contenedor de afuera (#testimoniosCarrusel)
-   y no en la pista: el JS las lee desde ahi, y una variable declarada
-   mas adentro no se lee desde el elemento padre. Todo lo que esta
-   adentro las hereda. */
-.testimonios-carrusel {
-  --por-vista: 1;
-  --hueco: 1.25rem;
-  --indice: 0;
-}
-
-.opinion-carrusel {
-  position: relative;
-}
-
-/* Cuantas se ven a la vez segun el ancho de la ventana. Los mismos
-   dos cortes los mira testimonials.js con matchMedia para rehacer
-   los puntos cuando se cruza uno. */
+/* GRILLA DE TESTIMONIOS
+   Antes habia un carrusel que mostraba de a paginas (3 en
+   escritorio, 2 en tablet, 1 en celular) y escondia el resto detras
+   de flechas y puntos. Ahora se muestran todas juntas: cuantas
+   columnas entran lo decide el CSS de abajo, de modo que el JS no
+   necesita saber nada de anchos ni de paginas. */
 @media (min-width: 640px) {
-  .testimonios-carrusel {
-    --por-vista: 2;
+  .testimonios-grilla {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
-  .testimonios-carrusel {
-    --por-vista: 3;
+  .testimonios-grilla {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-.opinion-pista {
-  display: flex;
-  gap: var(--hueco);
-  /* Sin barra de scroll: el movimiento lo hace el translateX, no el
-     scroll del navegador. */
-  overflow: hidden;
-  transform: translateX(calc(var(--indice) * (-100% - var(--hueco))));
-  transition: transform .45s cubic-bezier(.4, 0, .2, 1);
-  will-change: transform;
-}
+/* Cada tarjeta de la grilla. container-type la hace su propia medida
+   para poder escalar el texto con cqw (relativo al ancho de LA
+   TARJETA, no de la ventana): con tres tarjetas por fila un tamano
+   de fuente pensado para el ancho de la pagina deja diez caracteres
+   por renglon.
 
-/* Mientras se arrastra con el dedo no hay transicion: el pista tiene
-   que seguir el dedo al instante. Con la transicion de arriba se
-   ve que arrastra pero no responde. */
-.opinion-pista.deslizando {
-  transition: none;
-  /* Sin esto seleccionar el texto del testimonio mientras se
-     desliza deja todo el renglon resaltado. */
-  user-select: none;
-}
-
-/* El ancho se reparte entre las que entran: si no, cada tarjeta
-   mediria la pagina entera y quedaria una sola.
-
-   container-type hace que la tarjeta sea su propio contenedor de
-   medida, para poder Bukan el texto con cqw (unidades relativas al
-   ancho de la tarjeta) en vez de a la ventana: con tres tarjetas en
-   pantalla un tamano de fuente pensado para el ancho de la pagina
-   deja cada tarjeta con diez caracteres por renglon. */
+   Las tarjetas de una misma fila quedan del mismo alto (la grilla
+   estira a la mas alta) y el contenido se centra. */
 .opinion-slide {
   container-type: inline-size;
-  flex: 0 0 calc((100% - (var(--por-vista) - 1) * var(--hueco)) / var(--por-vista));
-  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1062,28 +1021,17 @@ body.no-scroll {
   background: var(--white);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
-  /* Alto parejo entre opinion corta y larga: sin esto el carrusel
-     "salta" de alto al cambiar de pagina. */
-  min-height: 300px;
+  min-height: 260px;
 }
 
-/* Con una sola opinion por pagina la tarjeta es ancha y el aire de
-   adentro se aprovecha; con varias hay que ajustarlo para que el
-   texto no quede en diez caracteres por renglon. */
+/* Con una tarjeta angosta (las del celular) el aire de adentro se
+   aprovecha; con varias por fila hay que ajustarlo para que el texto
+   no quede en diez caracteres por renglon. */
 @container (min-width: 320px) {
   .opinion-slide {
     gap: 1.25rem;
     padding: 2rem 1.75rem;
   }
-}
-
-/* Con una sola pagina no hay a donde ir, asi que los controles se
-   ocultan. testimonials.js pone la clase segun la cantidad de
-   paginas y la recalcula cuando el ancho de la ventana cruza un
-   breakpoint. */
-.sin-paginacion .opinion-controles,
-.sin-paginacion .opinion-contador {
-  display: none;
 }
 
 .estrellas {
@@ -1220,119 +1168,6 @@ body.no-scroll {
 
 .opinion-producto .material-symbols-outlined {
   font-size: 1rem;
-}
-
-/* Controles del carrusel de opiniones.
-   Estas clases van con prefijo "opinion-" y no "carrusel-" a
-   proposito: el modal de producto (catalogo-modal.css, que se carga
-   despues de este archivo) ya usa .carrusel-flecha y le pone
-   position: absolute para flotar sobre la foto. Con el mismo nombre
-   esas reglas le ganaban a las de aca y las flechas terminaban
-   superpuestas en el medio de la tarjeta.
-
-   Las flechas van a los costados, pegadas a cada borde del
-   carrusel, y los puntos al medio. Antes iban los tres juntos al
-   centro, lo que hace pensar que el bloque entero es un boton.
-   Con una sola opinion no hay carrusel y los controles ni se
-   dibujan (lo decide el JS), pero el estilo queda. */
-.opinion-controles {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.75rem;
-}
-
-.opinion-flecha {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 44px;
-  padding: 0;
-  border-radius: 50%;
-  background: var(--white);
-  color: var(--forest);
-  box-shadow: var(--shadow-sm);
-}
-
-.opinion-flecha:hover {
-  background: var(--forest);
-  color: var(--cream);
-}
-
-.opinion-flecha:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 2px;
-}
-
-/* Los puntos ocupan todo el hueco del medio (flex: 1) y se centran
-   adentro: asi quedan al centro de la pagina aunque las flechas
-   midieran distinto, en vez de depender de que sean iguales. */
-.opinion-puntos {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-}
-
-/* Los puntos son botones de 44px de alto con un punto chico
-   adentro: el area de click es la que pide el target de 44px, y lo
-   que se ve es el punto. */
-.opinion-punto {
-  position: relative;
-  width: 20px;
-  height: 44px;
-  padding: 0;
-  background: none;
-}
-
-.opinion-punto::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--sage);
-}
-
-.opinion-punto:hover::after {
-  background: var(--moss);
-}
-
-.opinion-punto.activa::after {
-  background: var(--forest);
-}
-
-.opinion-punto:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: -4px;
-  border-radius: 6px;
-}
-
-.opinion-contador {
-  margin: .5rem 0 0;
-  font-family: var(--sans);
-  font-size: .8rem;
-  letter-spacing: .1em;
-  color: var(--muted-texto);
-}
-
-/* Con reduced-motion el salto entre testimonios es instantaneo, y
-   el avance automatico directamente no corre (eso lo decide
-   testimonios.js). La transición se apaga, no se reemplaza por
-   otra: cualquier movimiento intermedio es justo lo que se pidió
-   evitar. */
-@media (prefers-reduced-motion: reduce) {
-
-  .opinion-pista {
-    transition: none;
-  }
 }
 
 /* CONTACTO
@@ -1938,5 +1773,276 @@ footer nav a:focus-visible {
   .nav-toggle {
     width: 40px;
     height: 40px;
+  }
+}
+
+/* ==========================================================
+   VENTANA FLOTANTE DE TESTIMONIO
+   ------------------------------------------------------------
+   La opinion que se pide despues de mandar el pedido por
+   WhatsApp. La arma y la muestra public/js/testimonio-form.js;
+   aca va solo la piel.
+
+   Sin visibility ni transform en el estado cerrado: el sitio
+   aplica transition: all a todo (ver arriba), y esas propiedades
+   se heredan y dejarian la caja invisible. El estado lo maneja
+   [hidden], que no se hereda.
+   ========================================================== */
+
+body.con-testimonio-abierto {
+  overflow: hidden;
+}
+
+.testimonio-modal {
+  position: fixed;
+  inset: 0;
+
+  /* Por encima del modal de producto, que vive en 10000. */
+  z-index: 10050;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+}
+
+.testimonio-modal[hidden] {
+  display: none;
+}
+
+.testimonio-fondo {
+  position: absolute;
+  inset: 0;
+  background: rgba(31, 58, 46, .58);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.testimonio-caja {
+  position: relative;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 1.6rem 1.3rem 1.4rem;
+  background: var(--white);
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: var(--shadow-lg);
+}
+
+.testimonio-cerrar-x {
+  position: absolute;
+  top: .7rem;
+  right: .7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(247, 244, 236, .94);
+  color: var(--forest);
+  font-size: 1.5rem;
+  line-height: 1;
+  box-shadow: var(--shadow-sm);
+}
+
+.testimonio-cerrar-x:hover {
+  background: var(--sand);
+}
+
+.testimonio-titulo {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  color: var(--forest);
+  text-transform: uppercase;
+  margin: 0 0 .4rem;
+  padding-right: 2.5rem;
+}
+
+.testimonio-bajada {
+  color: var(--muted-texto);
+  font-size: .92rem;
+  line-height: 1.5;
+  margin: 0 0 1.2rem;
+}
+
+.testimonio-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.testimonio-campo {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+
+.testimonio-etiqueta {
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  color: var(--forest);
+}
+
+.testimonio-estrellas {
+  display: flex;
+  gap: .2rem;
+}
+
+.testimonio-estrella {
+  padding: 0 .1rem;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--sand);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color .15s ease, transform .15s ease;
+}
+
+.testimonio-estrella:hover {
+  transform: scale(1.1);
+}
+
+.testimonio-estrella.activa {
+  color: #e0a52b;
+}
+
+.testimonio-input,
+.testimonio-texto {
+  width: 100%;
+  padding: .7rem .9rem;
+  border: 1px solid var(--borde-input);
+  border-radius: 10px;
+  background: var(--cream);
+  color: var(--ink);
+  font: inherit;
+  font-size: .95rem;
+}
+
+.testimonio-texto {
+  resize: vertical;
+  min-height: 5.5rem;
+}
+
+.testimonio-input:focus,
+.testimonio-texto:focus {
+  outline: none;
+  border-color: var(--leaf);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, .18);
+}
+
+.testimonio-input.con-error,
+.testimonio-texto.con-error {
+  border-color: #b23b3b;
+}
+
+.testimonio-contador {
+  align-self: flex-end;
+  font-size: .75rem;
+  color: var(--muted);
+}
+
+.testimonio-error {
+  margin: 0;
+  font-size: .82rem;
+  color: #b23b3b;
+}
+
+.testimonio-acciones {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: .6rem;
+  margin-top: .4rem;
+}
+
+.testimonio-btn-primario,
+.testimonio-btn-secundario {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.testimonio-btn-primario {
+  background: var(--forest);
+  color: var(--cream);
+  border: 1.5px solid var(--forest);
+}
+
+.testimonio-btn-primario:hover {
+  background: var(--moss);
+}
+
+.testimonio-btn-primario:disabled {
+  opacity: .6;
+  cursor: default;
+}
+
+.testimonio-btn-secundario {
+  background: transparent;
+  color: var(--forest);
+  border: 1.5px solid var(--forest);
+}
+
+.testimonio-btn-secundario:hover {
+  background: var(--sand);
+}
+
+.testimonio-gracias {
+  padding: 1.5rem .5rem;
+  text-align: center;
+  color: var(--leaf-texto);
+  font-weight: 600;
+}
+
+.testimonio-modal :focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+/* De 560px para arriba la ventana deja de pegarse abajo y pasa a
+   ser una caja centrada, como el modal de producto. */
+@media (min-width: 560px) {
+
+  .testimonio-modal {
+    align-items: center;
+    padding: 1.5rem;
+  }
+
+  .testimonio-caja {
+    width: min(520px, 100%);
+    border-radius: var(--radius);
+    padding: 2rem 1.8rem 1.6rem;
+  }
+
+  .testimonio-titulo {
+    font-size: 1.9rem;
+  }
+
+  .testimonio-acciones {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .testimonio-btn-primario,
+  .testimonio-btn-secundario {
+    width: auto;
+    padding: 0 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .testimonio-estrella {
+    transition: none;
+  }
+
+  .testimonio-estrella:hover {
+    transform: none;
   }
 }

@@ -21,9 +21,15 @@ const esquema = new mongoose.Schema(
     {
         autor: { type: String, required: true, trim: true, maxlength: 120 },
         lugar: { type: String, trim: true, maxlength: 120, default: '' },
-        texto: { type: String, required: true, trim: true, maxlength: 1200 },
+        texto: { type: String, required: true, trim: true, maxlength: 600 },
         estrellas: { type: Number, required: true, min: 0, max: 5 },
         fecha: { type: Date, required: true },
+
+        /* La cuenta que escribio la opinion, cuando la cargo una
+           persona logueada (POST /api/testimonios). Las sembradas
+           desde datos/testimonios.js no tienen cuenta: quedan en
+           null. */
+        usuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', default: null },
 
         /* Opcional: el id del producto del catalogo al que se
            refiere la opinion (el mismo numero de datos/catalogo.js).

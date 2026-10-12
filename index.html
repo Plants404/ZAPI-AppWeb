@@ -154,7 +154,7 @@
     <!-- Testimonios. data-parte-de="inicio" los ata al inicio: el
          router de navigation.js muestra las dos secciones juntas
          cuando la activa es "inicio", asi que se ven al abrir la
-         pagina sin pasar por el menu. El carrusel lo dibuja
+         pagina sin pasar por el menu. La grilla la dibuja
          public/js/testimonios.js. -->
     <section class="section testimonios" id="testimonios" data-parte-de="inicio">
       <div class="testimonios-cabecera">
@@ -165,12 +165,12 @@
         <p>Historias de quienes ya transformaron sus espacios con ZAPI.</p>
       </div>
 
-      <!-- El markup del carrusel lo arma testimonios.js. El
-           contenedor queda con role="region" para que el lector de
-           pantalla lo anuncie como una unidad y se pueda saltar con
-           un solo tabulador. -->
-      <div class="testimonios-carrusel" id="testimoniosCarrusel" role="region"
-        aria-roledescription="carrusel" aria-label="Testimonios de clientes"></div>
+      <!-- El markup de la grilla lo arma testimonios.js. El
+           contenedor queda con role="list" para que el lector de
+           pantalla anuncie cuantas opiniones hay; cada tarjeta que
+           dibuja el script lleva role="listitem". -->
+      <div class="testimonios-grilla" id="testimoniosCarrusel" role="list"
+        aria-label="Testimonios de clientes"></div>
     </section>
 
     <!-- catalog section -->
@@ -610,6 +610,7 @@
   <script src="./public/js/modal.js" defer></script>
 <script src="./public/js/catalogo.js" defer></script>
 <script src="./public/js/carrito.js" defer></script>
+<script src="./public/js/testimonio-form.js" defer></script>
 <!-- buscador.js y menu.js faltaban aca: el buscador del header y el
      panel de navegacion estan en el HTML de index, pero sin estos dos
      scripts no respondian. El buscador necesita a catalogo.js, que
