@@ -27,7 +27,7 @@ const { Pedido } = require('../models/pedido.model');
 const { Stock } = require('../models/stock.model');
 const { Producto } = require('../models/producto.model');
 const { cantidadSegura, idNumerico } = require('../utils/numero');
-const { LIMITE_CANTIDAD } = require('../constants');
+const { LIMITE_CANTIDAD, LIMITE_PEDIDOS } = require('../constants');
 
 function redondear(numero) {
     return Math.round(numero * 100) / 100;
@@ -180,4 +180,30 @@ async function lineasDesdeBruto(items) {
     return { tipo: 'ok', lineas };
 }
 
-module.exports = { nuevoPedido, lineasDesdeBruto };
+/* El historial de la cuenta: los pedidos ligados a ese usuario, del
+   mas nuevo al mas viejo, recortados con el tope. Solo se devuelven
+   los campos que la pagina muestra; el _id de Mongo, la sesion y el
+   usuario quedan afuera porque el navegador no los necesita. */
+async function listarDeUsuario(usuarioId, limite = LIMITE_PEDIDOS) {
+    const pedidos = await Pedido.find({ usuario: usuarioId })
+        .sort({ creado: -1 })
+        .limit(limite)
+        .lean();
+
+    return pedidos.map(pedido => ({
+        id: pedido.id,
+        creado: pedido.creado,
+        estado: pedido.estado,
+        total: pedido.total,
+        zona: pedido.zona || null,
+        notas: pedido.notas || null,
+        items: (pedido.items || []).map(item => ({
+            producto_id: item.producto_id,
+            nombre: item.nombre,
+            precio: item.precio,
+            cantidad: item.cantidad,
+        })),
+    }));
+}
+
+module.exports = { nuevoPedido, lineasDesdeBruto, listarDeUsuario };

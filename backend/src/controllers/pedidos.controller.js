@@ -18,7 +18,7 @@
 const { limpiarTexto, soloDigitos } = require('../utils/texto');
 const { LARGO, MINIMOS } = require('../constants');
 const carrito = require('../services/carrito.service');
-const { nuevoPedido, lineasDesdeBruto } = require('../services/pedidos.service');
+const { nuevoPedido, lineasDesdeBruto, listarDeUsuario } = require('../services/pedidos.service');
 
 /* De donde salen las lineas del pedido. Son DOS caminos a
    proposito:
@@ -127,4 +127,17 @@ async function crear(req, res, next) {
     }
 }
 
-module.exports = { crear };
+/* GET /api/pedidos — el historial de la cuenta con sesion. La ruta
+   pasa por exigirSesion, asi que req.usuario siempre esta: se listan
+   solo los pedidos de esa cuenta, del mas nuevo al mas viejo. */
+async function listar(req, res, next) {
+    try {
+        const pedidos = await listarDeUsuario(req.usuario._id);
+
+        res.json({ pedidos });
+    } catch (error) {
+        next(error);
+    }
+}
+
+module.exports = { crear, listar };

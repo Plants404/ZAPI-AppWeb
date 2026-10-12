@@ -70,6 +70,11 @@ const LIMITE_CUERPO = '16kb';
 const LIMITE_CANTIDAD = 99;
 const VIDA_SESION_MS = 30 * 24 * 60 * 60 * 1000;
 
+/* Cuantos pedidos devuelve el historial de la cuenta. La pagina
+   muestra los ultimos; con un tope la respuesta no crece sin
+   limite aunque alguien acumule cientos de pedidos. */
+const LIMITE_PEDIDOS = 50;
+
 /* Sesion de usuario (la cuenta, distinta del carrito anonimo).
    Se guarda en Mongo y el indice TTL la borra sola cuando pasa el
    tiempo sin usarse. El TTL de Mongo se mide en segundos, por eso
@@ -79,5 +84,5 @@ const VIDA_SESION_USUARIO_S = 7 * 24 * 60 * 60;
 
 module.exports = {
     LARGO, MINIMOS, CORREO, LIMITE_CUERPO,
-    LIMITE_CANTIDAD, VIDA_SESION_MS, VIDA_SESION_USUARIO_S,
+    LIMITE_CANTIDAD, LIMITE_PEDIDOS, VIDA_SESION_MS, VIDA_SESION_USUARIO_S,
 };
