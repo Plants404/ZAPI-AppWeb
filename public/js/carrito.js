@@ -955,13 +955,6 @@ Gracias.`;
     );
 
 
-    /* Después de abrir WhatsApp se ofrece dejar una opinión. Solo
-       abre si el script está y hay sesión; sin eso no pasa nada. */
-
-    if (typeof window.abrirTestimonio === "function") {
-        window.abrirTestimonio();
-    }
-
 }
 
 
@@ -1314,6 +1307,15 @@ function montarCheckout() {
             <textarea class="campo-input campo-area" id="pedNotas"
                 name="notas" rows="3" maxlength="500"></textarea>
 
+            <label class="checkout-check" for="pedTestimonio">
+
+                <input type="checkbox" id="pedTestimonio"
+                    name="testimonio">
+
+                <span>Quiero dejar un testimonio</span>
+
+            </label>
+
         </form>
 
         <p class="checkout-estado" id="pedEstado"
@@ -1326,6 +1328,29 @@ function montarCheckout() {
     formulario.hidden = cart.length === 0;
 
     formulario.addEventListener("submit", enviarPedido);
+
+    /* La casilla abre la ventana de opinion apenas se marca. Al
+       cerrarla -con o sin envio- se destilda sola, asi queda lista
+       para la proxima. */
+    const casillaTestimonio = raiz.querySelector("#pedTestimonio");
+
+    if (casillaTestimonio) {
+
+        casillaTestimonio.addEventListener("change", function () {
+
+            if (!casillaTestimonio.checked) return;
+
+            if (typeof window.abrirTestimonio !== "function") return;
+
+            window.abrirTestimonio(function () {
+
+                casillaTestimonio.checked = false;
+
+            });
+
+        });
+
+    }
 
 }
 
