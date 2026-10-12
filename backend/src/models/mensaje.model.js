@@ -20,7 +20,10 @@ const esquema = new mongoose.Schema(
     {
         nombre: { type: String, required: true, trim: true, maxlength: LARGO.nombre },
         correo: { type: String, required: true, trim: true, maxlength: LARGO.correo },
-        telefono: { type: String, required: true, trim: true, maxlength: LARGO.telefono },
+        asunto: { type: String, required: true, trim: true, maxlength: LARGO.asunto },
+        /* El telefono es opcional: el formulario solo lo exige si la
+           persona lo completa. */
+        telefono: { type: String, default: '', trim: true, maxlength: LARGO.telefono },
         consulta: { type: String, required: true, trim: true, maxlength: LARGO.consulta },
         estado: { type: String, enum: ESTADOS, default: 'nuevo' },
     },

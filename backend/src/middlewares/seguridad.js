@@ -5,7 +5,9 @@
    Helmet pone las cabeceras que no dependen del sitio. La CSP va
    aparte porque es la unica que hay que ajustar al proyecto: el
    HTML carga Google Fonts, asi que styles/fonts se permiten de
-   esos dos dominios y nada mas.
+   esos dos dominios y nada mas. El formulario de contacto suma el
+   SDK de EmailJS, que llega desde el CDN de jsdelivr, y el envio
+   del aviso, que sale hacia api.emailjs.com.
 
    script-src y connect-src sin comodines: un script inyectado por
    un XSS no llega a ejecutarse ni a hablar con otro servidor. Esa
@@ -23,11 +25,11 @@ const CSP = {
     useDefaults: false,
     directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", 'https://cdn.jsdelivr.net'],
         styleSrc: ["'self'", 'https://fonts.googleapis.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'"],
+        connectSrc: ["'self'", 'https://api.emailjs.com'],
         frameAncestors: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
