@@ -52,6 +52,9 @@
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <!-- Globo del carrito en la hamburguesa (solo mobile):
+                 refleja lo que se agrego aunque el menu este cerrado. -->
+            <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
         </button>
 
         <a href="catalogo.html" class="logo">
@@ -78,21 +81,29 @@
             <ul>
                 <li><a class="nav-link" href="index.html">Inicio</a></li>
                 <li><a class="nav-link active" href="catalogo.html" aria-current="page">Catálogo</a></li>
-                <li>
-                    <a class="nav-link nav-link-carrito" href="carrito.html"
-                        id="navLinkCarrito">Carrito
-                        <span class="cart-count cart-count-header" id="cartCountHeader"
-                            data-cart-count aria-hidden="true">0</span>
-                    </a>
-                </li>
                 <!-- Cuenta. Sin sesion se ve "Ingresar"; con sesion,
-                     auth-ui.js rellena el nombre y aparece "Salir". -->
+                     auth-ui.js rellena el nombre y el nombre abre un
+                     menu con el carrito y Salir. El carrito conserva
+                     el id y el data-cart-count que usa productos.js. -->
                 <li class="nav-cuenta">
                     <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
-                    <span class="nav-usuario">
-                        <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
-                        <button type="button" class="nav-salir" id="navSalir">Salir</button>
-                    </span>
+                    <div class="nav-usuario">
+                        <button type="button" class="nav-usuario-boton" id="navUsuarioBoton"
+                            aria-expanded="false" aria-haspopup="true" aria-controls="navUsuarioMenu">
+                            <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
+                            <!-- El globo va en el nombre: mismo efecto
+                                 que tenia el carrito. -->
+                            <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
+                        </button>
+                        <div class="nav-usuario-menu" id="navUsuarioMenu" hidden>
+                            <a class="nav-usuario-item nav-link-carrito" href="carrito.html" id="navLinkCarrito">
+                                Carrito
+                                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+                            </a>
+                            <a class="nav-usuario-item" href="pedidos.html">Mis pedidos</a>
+                            <button type="button" class="nav-usuario-item" id="navSalir">Salir</button>
+                        </div>
+                    </div>
                 </li>
             </ul>
         </nav>
