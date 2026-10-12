@@ -620,15 +620,118 @@ header.menu-abierto::before {
   padding: .8rem 0;
 }
 
+/* El nombre es un boton que despliega el menu de la cuenta. Con
+   flex-wrap el menu cae en su propia linea en el telefono; en
+   escritorio pasa a ser una tarjeta flotante (ver 1024px). El
+   wrap deja intacto el bloque de carrito.html, donde el nombre
+   sigue al lado de Salir. */
 .nav-usuario {
+  position: relative;
   display: inline-flex;
-  align-items: baseline;
-  gap: .5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem .5rem;
+  width: 100%;
+}
+
+.nav-usuario-boton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--forest);
+  background: none;
+  border: none;
+  padding: .8rem 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.nav-usuario-boton:hover {
+  color: var(--moss);
+}
+
+.nav-usuario-boton:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 
 .nav-usuario-nombre {
   font-weight: 600;
   color: var(--forest);
+}
+
+.nav-usuario-menu {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: .25rem 0 0;
+}
+
+/* El [hidden] del markup manda sobre el display:flex de arriba. */
+.nav-usuario-menu[hidden] {
+  display: none;
+}
+
+/* Los items van con .nav-bar adelante para ganarle a
+   ".nav-bar li a" en catalogo.html, donde el carrito es un <a>. */
+.nav-bar .nav-usuario-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: none;
+  border: none;
+  padding: .6rem;
+  border-radius: 8px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-bar .nav-usuario-item:hover {
+  background: var(--sand);
+  color: var(--forest);
+}
+
+.nav-bar .nav-usuario-item:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+/* Globo del carrito en la hamburguesa. Toma las animaciones del
+   contador (.pop/.destello) que trae productos.js; aqui solo se
+   lo posiciona en la esquina del boton. En escritorio el boton no
+   existe (display:none), asi que el globo tampoco se ve. */
+.nav-toggle .cart-count.cart-count-toggle {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 .3rem;
+  font-size: .68rem;
+  font-weight: 700;
+  background: var(--white);
+  color: var(--leaf);
+  border: 2px solid var(--white);
+  display: none;
+}
+
+.nav-toggle .cart-count.cart-count-toggle.con-productos {
+  display: inline-flex;
+  background: #c14a3c;
+  color: var(--white);
 }
 
 .nav-salir {
@@ -1674,6 +1777,33 @@ footer nav a:focus-visible {
      queda alineada en la misma linea que el resto. */
   .nav-cuenta {
     padding: 0;
+  }
+
+  /* El boton del nombre se achica al ritmo de los links y el menu
+     pasa a ser una tarjeta flotante debajo del nombre. */
+  .nav-usuario {
+    width: auto;
+  }
+
+  .nav-usuario-boton {
+    font-size: .88rem;
+    padding: .4rem 0;
+  }
+
+  .nav-usuario-menu {
+    position: absolute;
+    top: calc(100% + .4rem);
+    right: 0;
+    min-width: 13rem;
+    padding: .4rem;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    z-index: 5;
+  }
+
+  .nav-bar .nav-usuario-item {
+    font-size: .95rem;
   }
 
   .nav-bar li a::after,
