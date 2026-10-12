@@ -2,11 +2,10 @@
 /* ============================================================
    TESTIMONIO · VENTANA FLOTANTE
    ------------------------------------------------------------
-   Después de mandar el pedido por WhatsApp se ofrece dejar una
-   opinión. La ventana pide una calificación (1 a 5 estrellas),
-   el nombre (que arranca del de la cuenta), de dónde escribe y
-   el texto. Al enviar, se guarda con POST /api/testimonios y la
-   opinión aparece en la sección de testimonios de la home.
+   La ventana pide una calificación (1 a 5 estrellas), el nombre
+   (que arranca del de la cuenta), de dónde escribe y el texto.
+   Al enviar, se guarda con POST /api/testimonios y la opinión
+   aparece en la sección de testimonios de la home.
 
    Se construye una sola vez, por JS, porque las dos páginas que
    usan carrito.html y el checkout dentro de index.html comparten
@@ -15,8 +14,9 @@
    .value, nunca armando HTML.
 
    Deja window.abrirTestimonio para que carrito.js la abra al
-   tocar el botón de WhatsApp. Solo abre con sesión: la opinión
-   queda a nombre de la cuenta.
+   marcar la casilla del checkout. Acepta un aviso opcional que
+   corre al cerrarse. Solo abre con sesión: la opinión queda a
+   nombre de la cuenta.
 
    Va en archivo aparte para respetar la CSP (script-src 'self').
    ============================================================ */
@@ -29,6 +29,7 @@
     let raiz = null;
     let valor = 0;
     let ultimoFoco = null;
+    let alCerrar = null;
 
     /* --- El cascarón de la ventana, una sola vez --- */
     function construir() {
@@ -61,7 +62,7 @@
 
         const bajada = document.createElement("p");
         bajada.className = "testimonio-bajada";
-        bajada.textContent = "Tu pedido ya salió por WhatsApp. Contanos cómo te fue con ZAPI.";
+        bajada.textContent = "Contanos cómo te fue con ZAPI. Tu opinión nos ayuda a mejorar.";
 
         const form = document.createElement("form");
         form.className = "testimonio-form";
@@ -280,6 +281,14 @@
         raiz.hidden = true;
         document.body.classList.remove("con-testimonio-abierto");
 
+        /* El aviso se dispara una sola vez: si quien abrio necesita
+           enterarse del cierre (por ejemplo, destildar la casilla
+           del carrito), aca lo sabe. */
+        const aviso = alCerrar;
+        alCerrar = null;
+
+        if (typeof aviso === "function") aviso();
+
         if (ultimoFoco && typeof ultimoFoco.focus === "function") ultimoFoco.focus();
     }
 
@@ -489,7 +498,7 @@
 
     /* --- Punto de entrada público --- */
 
-    async function abrirTestimonio() {
+    async function abrirTestimonio(alCerrarse) {
 
         /* Solo con sesión: la opinión queda a nombre de la cuenta
            y el POST la exige. Se espera a que auth-ui haya
@@ -503,6 +512,8 @@
         }
 
         if (!window.zapiAuth || !window.zapiAuth.autenticado) return;
+
+        alCerrar = typeof alCerrarse === "function" ? alCerrarse : null;
 
         abrir();
     }
