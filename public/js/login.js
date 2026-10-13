@@ -201,7 +201,17 @@
             const datos = await respuesta.json().catch(function () { return {}; });
 
             if (!respuesta.ok) {
-                st('error', datos.error || 'Ups, revisá tus datos e intentá de nuevo');
+                /* Si contesta JSON es el backend: un 401 con "error" o
+                   el fallback de datos. Si NO es JSON, el pedido lo
+                   atendio un servidor estatico (vista previa), que no
+                   tiene /api/auth/login: avisar de eso y no de los
+                   datos, que estan bien. */
+                const esBackend = (respuesta.headers.get('content-type') || '')
+                    .indexOf('application/json') !== -1;
+
+                st('error', datos.error || (esBackend
+                    ? 'Ups, revisá tus datos e intentá de nuevo'
+                    : 'Esta página no la sirve el backend. Abrí el sitio con dev:memoria y usá esa dirección.'));
                 sacudir();
                 return;
             }
