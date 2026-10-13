@@ -980,43 +980,71 @@ body.no-scroll {
 
 .nosotros-banda {
   padding: clamp(3rem, 7vw, 5.5rem) 0;
-  background: var(--forest);
-  color: rgba(247, 244, 236, .7);
+  background:
+    radial-gradient(110% 80% at 8% -15%, rgba(143, 174, 145, .16), transparent 55%),
+    radial-gradient(90% 70% at 105% 115%, rgba(74, 124, 89, .20), transparent 60%),
+    var(--forest);
+  color: rgba(247, 244, 236, .8);
   box-shadow: 0 0 0 100vmax var(--forest);
   clip-path: inset(0 -100vmax);
 }
 
+.nosotros-banda-cabecera {
+  max-width: 720px;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
 .nosotros-banda-titulo {
-  color: var(--sage);
-  margin: 0;
+  margin: 0 0 .4rem;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  color: var(--cream);
 }
 
 .nosotros-banda-lead {
   margin: 0;
-  font-size: 1rem;
-  color: rgba(247, 244, 236, .7);
+  font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  font-weight: 500;
+  color: rgba(247, 244, 236, .85);
+  max-width: 48ch;
 }
 
 .nosotros-razones {
   display: grid;
   gap: 0;
-  margin-top: 2.5rem;
 }
 
 .nosotros-razon {
-  padding: 1.5rem 0;
-  border-top: 1px solid rgba(247, 244, 236, .22);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  padding: 1.6rem 0;
+  border-top: 1px solid rgba(247, 244, 236, .18);
 }
 
-.nosotros-razon h4 {
+.nosotros-razon:last-child {
+  border-bottom: 1px solid rgba(247, 244, 236, .18);
+}
+
+.nosotros-razon-numero {
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+  line-height: 1.1;
+  color: var(--sage);
+  opacity: .9;
+}
+
+.nosotros-razon-contenido h4 {
   margin: 0 0 .4rem;
+  font-size: clamp(1.35rem, 2vw, 1.6rem);
   color: var(--sage);
 }
 
-.nosotros-razon p {
-  max-width: 62ch;
+.nosotros-razon-contenido p {
+  max-width: 60ch;
   margin: 0;
-  color: rgba(247, 244, 236, .7);
+  font-size: .98rem;
+  color: rgba(247, 244, 236, .8);
 }
 
 .nosotros-equipo-cabecera {
@@ -1064,7 +1092,7 @@ body.no-scroll {
   margin: 0 0 .35rem;
   font-family: var(--sans);
   font-weight: 700;
-  color: var(--leaf-texto);
+  color: var(--forest);
 }
 
 .nosotros-persona-desc {
@@ -1094,15 +1122,23 @@ body.no-scroll {
   }
 
   .nosotros-banda-cabecera {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: baseline;
-    gap: 2rem;
+    max-width: 560px;
   }
 
   .nosotros-razones {
     grid-template-columns: 1fr 1fr;
-    column-gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  /* La columna derecha lleva el divisor vertical en su borde
+     izquierdo y el espaciado hacia afuera; la izquierda compensa
+     con el suyo para que las dos columnas queden simetricas. */
+  .nosotros-razon:nth-child(odd) {
+    padding-right: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .nosotros-razon:nth-child(even) {
+    border-left: 1px solid rgba(247, 244, 236, .18);
+    padding-left: clamp(2rem, 4vw, 3.5rem);
   }
 
   .nosotros-equipo-cabecera {
