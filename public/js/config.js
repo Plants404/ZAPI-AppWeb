@@ -1,21 +1,48 @@
 'use strict';
-/* Configuracion de la API. Por defecto el sitio llama a su mismo
-   origen (/api/...), que es como funciona cuando el backend sirve el
-   sitio. Para GitHub Pages + una API en otro dominio, se declara el
-   origen con un meta en las paginas:
+/* ==========================================================
+   DONDE VIVE LA API
+   ------------------------------------------------------------
+   El sitio se abre de dos maneras, y la API cambia de direccion
+   segun donde este:
 
-      <meta name="zapi-api" content="https://zapi-api.onrender.com">
+     * Local:    la pagina llega de tu maquina. En el caso normal la
+                 sirve el propio backend (npm start, dev:memoria), asi
+                 que la API esta en el mismo origen y no hace falta
+                 nada mas.
+     * Producci: GitHub Pages solo aloja estaticos; la API esta en el
+                 backend desplegado (Render/Railway), en la URL de
+                 abajo.
 
-   Este script se carga primero en todas las paginas y expone
-   window.urlApi(ruta), que arma la URL lista para fetch: con o sin el
-   meta, los scripts no necesitan saber donde vive la API. Sin el meta,
-   las llamadas quedan en el mismo origen y el sitio se degrada igual
-   (el catalogo y las opiniones caen a sus fallbacks estaticos). */
+   urlApi() decide sola con la direccion de la pagina:
+
+     * http://localhost:* o 127.0.0.1:*  -> mismo origen (o URL_API_LOCAL)
+     * cualquier otro host (github.io)   -> URL_API_PRODUCCION
+
+   Un meta en el HTML pisa la decision para una pagina aparte:
+
+       <meta name="zapi-api" content="https://zapi-api.onrender.com">
+   ========================================================== */
+
+/* URL del backend en produccion. Cambiar aca cuando este desplegado
+   (Render o Railway). */
+const URL_API_PRODUCCION = "https://tu-api.onrender.com";
+
+/* URL del backend local, solo si la pagina llega de otro lado que no
+   sea el propio backend (por ejemplo Live Server en el puerto 5500 o
+   5501 y el backend en 5501). Con '' se usa el mismo origen. */
+const URL_API_LOCAL = "";
 
 const API_BASE = (function () {
     const meta = document.querySelector('meta[name="zapi-api"]');
     if (meta && meta.content) return meta.content.replace(/\/+$/, "");
-    return "";
+
+    const host = window.location.hostname;
+
+    const esLocal = host === "localhost" || host === "127.0.0.1" || host === "::1";
+
+    if (esLocal) return URL_API_LOCAL.replace(/\/+$/, "");
+
+    return URL_API_PRODUCCION;
 }());
 
 window.API_BASE = API_BASE;
