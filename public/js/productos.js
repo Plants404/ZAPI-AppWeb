@@ -26,10 +26,29 @@ function alCargarElCatalogo(fn) {
     }
 }
 
-/* Ruta absoluta: las fichas viven en productos/ y una relativa se rompe. */
+/* La ruta se calcula desde la ubicacion de este script, no desde la
+   pagina. Asi catalogo.html (en la raiz) y las fichas de productos/
+   resuelven el mismo public/data/productos.json, y sigue andando si el
+   sitio cuelga de un subpath, como en GitHub Pages. Una ruta relativa a
+   la pagina no sirve: ../data apunta a /data, que no existe y ademas
+   esta bloqueado en el servidor. */
+function urlDelCatalogo() {
+
+    const script = document.currentScript;
+
+    if (script && script.src) {
+        return new URL("../data/productos.json", script.src).href;
+    }
+
+    return "public/data/productos.json";
+
+}
+
 function cargarCatalogo() {
 
-    fetch("../data/productos.json")
+    const url = urlDelCatalogo();
+
+    fetch(url)
         .then(respuesta => {
             if (!respuesta.ok) {
                 throw new Error("HTTP " + respuesta.status);
@@ -64,7 +83,7 @@ function cargarCatalogo() {
         })
         .catch(error => {
             console.error("No se pudo cargar el catalogo:", {
-                url: "../data/productos.json",
+                url: url,
                 status: error && error.status,
                 message: error && error.message
             });
