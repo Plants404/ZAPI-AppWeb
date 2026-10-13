@@ -91,7 +91,9 @@ const PARES = [
     ['texto normal', 4.5, '--error', '--white', 'mensaje de error del formulario sobre blanco'],
     ['texto normal', 4.5, '--error', '--cream', 'mensaje de error del formulario sobre crema'],
     ['UI / foco', 3, '--error', '--white', 'borde del campo con error sobre blanco'],
-    ['texto normal', 4.5, '#ffffff', '#1f3a2e', 'texto sobre footer oscuro']
+    ['texto normal', 4.5, '#ffffff', '#1f3a2e', 'texto sobre footer oscuro'],
+    ['texto grande', 3, '--sage', '--forest', 'titulos de la banda oscura de Nosotros'],
+    ['texto normal', 4.5, '#b6bcb3', '--forest', 'texto tenue de la banda oscura de Nosotros (crema al 70%)']
 ];
 
 let fallos = 0;
