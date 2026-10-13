@@ -842,63 +842,280 @@ body.no-scroll {
   transform: translateY(-3px);
 }
 
-.benefits {
-  background: var(--sand);
+.nosotros-inner {
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.benefits>h2 {
-  text-align: center;
-  margin-bottom: 3rem;
+.nosotros-inner>*+* {
+  margin-top: clamp(3rem, 7vw, 5.5rem);
 }
 
-.benefits-items {
-  max-width: 900px;
+.nosotros-titulo {
+  font-size: clamp(2.6rem, 6vw, 4.4rem);
+  margin-bottom: .5rem;
+}
+
+.nosotros-lead {
+  font-family: var(--sans);
+  font-size: clamp(1.15rem, 2vw, 1.5rem);
+  font-weight: 500;
+  color: var(--forest);
+  max-width: 32ch;
+  margin: 0;
+}
+
+.nosotros-bloque-titulo {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  color: var(--forest);
+  margin: 0;
+}
+
+.nosotros-problema-texto {
+  max-width: 62ch;
+}
+
+.nosotros-problema-texto>p {
+  font-size: 1.02rem;
+}
+
+.nosotros-dudas {
+  margin: 1.5rem 0;
+  padding-left: 1.5rem;
+  border-left: 4px solid var(--sage);
+  display: grid;
+  gap: .35rem;
+}
+
+.nosotros-dudas li {
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1.05;
+  letter-spacing: .01em;
+  color: var(--forest);
+}
+
+.nosotros-destacado {
+  font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+  font-weight: 500;
+  color: var(--forest);
+  max-width: 62ch;
+  margin-bottom: 0;
+}
+
+.nosotros-solucion-intro {
+  font-size: 1.05rem;
+  max-width: 62ch;
+  margin-top: .5rem;
+}
+
+.nosotros-solucion-grilla {
+  display: grid;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+  align-items: center;
+}
+
+.nosotros-figura {
+  width: 100%;
+  max-width: 380px;
   margin: 0 auto;
 }
 
-.benefits-items h3 {
+.nosotros-kit {
+  width: 100%;
+  aspect-ratio: 4/5;
+  object-fit: cover;
+  border: 6px solid var(--sage);
+  border-radius: 999px 999px 28px 28px;
+}
+
+.nosotros-figura-pie {
+  margin-top: .9rem;
   text-align: center;
-  font-family: var(--serif);
-  font-size: 1.6rem;
+  font-size: .9rem;
+  color: var(--muted-texto);
+}
+
+.nosotros-oferta {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(31, 58, 46, .12);
+}
+
+.nosotros-oferta:last-child {
+  border-bottom: 1px solid rgba(31, 58, 46, .12);
+}
+
+.nosotros-icono {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
   color: var(--forest);
+}
+
+.nosotros-oferta-titulo {
+  margin: 0 0 .35rem;
+  color: var(--forest);
+}
+
+.nosotros-oferta p {
+  max-width: 62ch;
+  margin: 0;
+  font-size: .98rem;
+  color: var(--muted-texto);
+}
+
+.nosotros-cierre {
+  font-family: var(--serif);
+  font-size: clamp(1.9rem, 4.5vw, 3.1rem);
+  line-height: 1.1;
+  color: var(--forest);
+  max-width: 22ch;
+  margin: 2.5rem 0 0;
+}
+
+.nosotros-banda {
+  padding: clamp(3rem, 7vw, 5.5rem) 0;
+  background: var(--forest);
+  color: rgba(247, 244, 236, .7);
+  box-shadow: 0 0 0 100vmax var(--forest);
+  clip-path: inset(0 -100vmax);
+}
+
+.nosotros-banda-titulo {
+  color: var(--sage);
+  margin: 0;
+}
+
+.nosotros-banda-lead {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(247, 244, 236, .7);
+}
+
+.nosotros-razones {
+  display: grid;
+  gap: 0;
+  margin-top: 2.5rem;
+}
+
+.nosotros-razon {
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(247, 244, 236, .22);
+}
+
+.nosotros-razon h4 {
+  margin: 0 0 .4rem;
+  color: var(--sage);
+}
+
+.nosotros-razon p {
+  max-width: 62ch;
+  margin: 0;
+  color: rgba(247, 244, 236, .7);
+}
+
+.nosotros-equipo-cabecera {
   margin-bottom: 2.5rem;
 }
 
-.benefits-items ul {
+.nosotros-equipo-lead {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--muted-texto);
+}
+
+.nosotros-personas {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
-.benefits-items li {
+.nosotros-persona {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.nosotros-avatar {
+  flex: 0 0 auto;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--cream);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--serif);
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-size: 1.9rem;
+  letter-spacing: .06em;
+}
+
+.nosotros-persona-nombre {
+  margin: 0 0 .15rem;
   color: var(--forest);
-  padding: 1.75rem;
-  background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  padding-left: 3rem;
 }
 
-.benefits-items li::before {
-  content: "❋";
-  position: absolute;
-  left: 1.25rem;
-  top: 1.6rem;
-  color: var(--leaf);
-  font-size: 1.2rem;
-}
-
-.benefits-items p {
+.nosotros-persona-rol {
+  margin: 0 0 .35rem;
   font-family: var(--sans);
+  font-weight: 700;
+  color: var(--leaf-texto);
+}
+
+.nosotros-persona-desc {
+  max-width: 62ch;
+  margin: 0;
   font-size: .95rem;
-  font-weight: 400;
-  color: var(--muted);
-  margin: -.5rem 0 1.25rem 0;
-  padding: 0 1.75rem;
+  color: var(--muted-texto);
+}
+
+@media (min-width: 821px) {
+
+  .nosotros-problema {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) 1.7fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .nosotros-solucion-grilla {
+    grid-template-columns: 1fr 1.15fr;
+    gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .nosotros-figura {
+    max-width: none;
+    margin: 0;
+  }
+
+  .nosotros-banda-cabecera {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    gap: 2rem;
+  }
+
+  .nosotros-razones {
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(2rem, 5vw, 4rem);
+  }
+
+  .nosotros-equipo-cabecera {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    gap: 2rem;
+  }
+
+  .nosotros-personas {
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(2rem, 5vw, 4rem);
+  }
 }
 
 .benefits-mapa {
