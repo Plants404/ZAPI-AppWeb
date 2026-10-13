@@ -160,19 +160,25 @@
 
 .clear-cart {
 
-    display: flex;
+    display: inline-flex;
 
     align-items: center;
 
     gap: .4rem;
 
+    padding: .5rem .9rem;
+
+    border: 1px solid rgba(31, 58, 46, .14);
+
+    border-radius: 999px;
+
     background: transparent;
 
     color: var(--muted);
 
-    font-size: .85rem;
+    font-size: .82rem;
 
-    padding: .5rem;
+    transition: color .2s ease, border-color .2s ease, background .2s ease;
 
 }
 
@@ -180,6 +186,10 @@
 .clear-cart:hover {
 
     color: #9a3d3d;
+
+    border-color: rgba(154, 61, 61, .4);
+
+    background: rgba(154, 61, 61, .06);
 
 }
 
@@ -208,7 +218,7 @@
 
     flex-wrap: wrap;
 
-    align-items: center;
+    align-items: flex-start;
 
     gap: 1.25rem;
 
@@ -251,17 +261,24 @@
 
 .cart-item-image {
 
-    flex: 0 0 100px;
+    /* Misma proporcion 2:3 que el catalogo: las fotos son retrato y
+       asi llenan el cuadro en vez de quedar chicas en una caja cuadrada. */
+    flex: 0 0 84px;
 
-    width: 100px;
+    width: 84px;
 
-    height: 100px;
+    aspect-ratio: 2 / 3;
 
-    border-radius: 10px;
+    border-radius: 12px;
 
     overflow: hidden;
 
-    background: var(--sand);
+    background: var(--white);
+
+    border: 1px solid rgba(31, 58, 46, .08);
+
+    box-shadow: var(--shadow-sm);
+
 }
 
 
@@ -271,7 +288,9 @@
 
     height: 100%;
 
-    object-fit: contain;
+    object-fit: cover;
+
+    object-position: center;
 
     transition: transform .45s ease;
 
@@ -280,7 +299,7 @@
 
 .cart-item:hover .cart-item-image img {
 
-    transform: scale(1.06);
+    transform: scale(1.05);
 
 }
 
@@ -310,11 +329,25 @@
 
 .cart-item-category {
 
-    margin-bottom: .7rem;
+    display: inline-block;
 
-    font-size: .78rem;
+    margin: 0 0 .65rem;
 
-    color: var(--muted);
+    padding: .18rem .6rem;
+
+    border-radius: 999px;
+
+    background: rgba(143, 174, 145, .22);
+
+    color: var(--moss);
+
+    font-size: .68rem;
+
+    font-weight: 600;
+
+    letter-spacing: .08em;
+
+    text-transform: uppercase;
 
 }
 
@@ -329,6 +362,17 @@
 }
 
 
+.cart-item-unit {
+
+    font-size: .74rem;
+
+    font-weight: 500;
+
+    color: var(--muted);
+
+}
+
+
 
 .cart-item-stock {
 
@@ -338,9 +382,15 @@
 
     gap: .4rem;
 
-    margin-top: .35rem;
+    margin-top: .5rem;
 
-    font-size: .8rem;
+    padding: .28rem .7rem;
+
+    border-radius: 999px;
+
+    background: rgba(74, 124, 89, .12);
+
+    font-size: .78rem;
 
     font-weight: 600;
 
@@ -366,11 +416,15 @@
 
 .cart-item-stock.pocas {
 
+    background: rgba(107, 90, 68, .14);
+
     color: var(--earth);
 
 }
 
 .cart-item-stock.agotado {
+
+    background: rgba(163, 52, 31, .12);
 
     color: var(--error);
 
@@ -378,9 +432,7 @@
 
 .cart-item-stock:empty,
 .cart-item-stock[hidden] {
-
-    display: none;
-
+    display: none !important;
 }
 
 
@@ -471,6 +523,15 @@
     font-size: 1.3rem;
 
     color: var(--forest);
+
+}
+
+
+.cart-item-total small {
+
+    font-size: .74rem;
+
+    color: var(--muted);
 
 }
 
@@ -897,19 +958,6 @@
 
 
 
-
-@property --pulso {
-
-    syntax: "<number>";
-
-    inherits: false;
-
-    initial-value: 0;
-
-}
-
-
-
 .recommendations {
 
     position: relative;
@@ -918,157 +966,20 @@
 
     margin-top: 3rem;
 
-    padding: 2.3rem 0 2.4rem;
+    padding: 2.2rem 1.5rem 2.3rem;
 
     border-radius: calc(var(--radius) + 6px);
 
-
-    background-image:
-
-        linear-gradient(
-
-            180deg,
-
-            rgba(250, 248, 241, .96),
-
-            rgba(238, 231, 214, .92)
-
-        );
-
-    background-size: 100% 100%;
-
-    background-repeat: no-repeat;
+    background: linear-gradient(180deg, rgba(250, 248, 241, .96), rgba(238, 231, 214, .92));
 
     box-shadow:
 
         0 0 0 1px rgba(74, 124, 89, .18),
 
-        0 0 0 7px rgba(143, 174, 145, .12),
-
-        0 22px 44px -30px rgba(31, 58, 46, .55);
+        0 18px 36px -30px rgba(31, 58, 46, .5);
 
 }
 
-
-@keyframes recomendacionesFondo {
-
-    0% {
-
-        background-position: 8% 26%, 92% 8%, 50% 100%, 0 0;
-
-    }
-
-    100% {
-
-        background-position: 30% 0%, 68% 54%, 56% 66%, 0 0;
-
-    }
-
-}
-
-
-@keyframes recomendacionesPulso {
-
-    0%, 100% {
-
-        --pulso: 0;
-
-        animation-timing-function: ease-out;
-
-    }
-
-    13% {
-
-        --pulso: 1;
-
-        animation-timing-function: ease-out;
-
-    }
-
-    27% {
-
-        --pulso: .12;
-
-        animation-timing-function: ease-out;
-
-    }
-
-    39% {
-
-        --pulso: .72;
-
-        animation-timing-function: linear;
-
-    }
-
-    56% {
-
-        --pulso: 0;
-
-    }
-
-}
-
-
-.recommendations::after {
-
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    z-index: -1;
-
-    border-radius: inherit;
-
-    --pulso: 0;
-
-    pointer-events: none;
-
-    background-image:
-
-        radial-gradient(
-
-            46% 58% at 16% 24%,
-
-            rgba(143, 174, 145, calc(.26 + .16 * var(--pulso))),
-
-            rgba(143, 174, 145, 0) 68%
-
-        ),
-
-        radial-gradient(
-
-            44% 54% at 84% 16%,
-
-            rgba(122, 168, 140, calc(.20 + .14 * var(--pulso))),
-
-            rgba(122, 168, 140, 0) 70%
-
-        ),
-
-        radial-gradient(
-
-            62% 66% at 58% 98%,
-
-            rgba(206, 222, 194, calc(.42 + .18 * var(--pulso))),
-
-            rgba(206, 222, 194, 0) 70%
-
-        );
-
-    background-size: 165% 165%, 175% 175%, 190% 190%;
-
-    background-repeat: no-repeat;
-
-    background-position: 8% 26%, 92% 8%, 50% 100%, 0 0;
-
-    animation:
-        recomendacionesFondo 18s ease-in-out infinite alternate,
-        recomendacionesPulso 4.4s ease-in-out infinite;
-
-}
 
 .recommendations::before {
 
@@ -1162,25 +1073,6 @@
 
     background: var(--leaf);
 
-    animation: recommendationsLatido 2s ease-out infinite;
-
-}
-
-
-@keyframes recommendationsLatido {
-
-    0% {
-        box-shadow: 0 0 0 0 rgba(74, 124, 89, .5);
-    }
-
-    70% {
-        box-shadow: 0 0 0 .55rem rgba(74, 124, 89, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(74, 124, 89, 0);
-    }
-
 }
 
 
@@ -1207,19 +1099,17 @@
 
     position: relative;
 
-    background: rgba(255, 255, 255, .8);
-
-    -webkit-backdrop-filter: blur(10px) saturate(1.15);
-
-    backdrop-filter: blur(10px) saturate(1.15);
+    background: var(--white);
 
     border-radius: var(--radius);
 
     overflow: hidden;
 
-    border: 1px solid rgba(74, 124, 89, .28);
+    border: 1px solid rgba(31, 58, 46, .08);
 
-    box-shadow: 0 10px 22px -16px rgba(31, 58, 46, .5);
+    border-top: 3px solid var(--leaf);
+
+    box-shadow: var(--shadow-sm);
 
     transition:
 
@@ -1232,27 +1122,6 @@
     animation: recommendationIn .5s cubic-bezier(.2, .8, .3, 1) both;
 
     animation-delay: calc(var(--i, 0) * 110ms);
-
-}
-
-
-.recommendation-card::before {
-
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-
-    left: 0;
-
-    right: 0;
-
-    height: 4px;
-
-    z-index: 2;
-
-    background: linear-gradient(90deg, var(--leaf), var(--sage) 60%, var(--sand));
 
 }
 
@@ -1280,15 +1149,9 @@
 
 .recommendation-card:hover {
 
-    transform: translateY(-4px);
+    transform: translateY(-6px);
 
-    border-color: rgba(74, 124, 89, .6);
-
-    box-shadow:
-
-        0 18px 30px -18px rgba(31, 58, 46, .6),
-
-        0 0 0 4px rgba(143, 174, 145, .25);
+    box-shadow: var(--shadow-md);
 
 }
 
@@ -1297,11 +1160,9 @@
 
     outline: none;
 
-    border-color: var(--leaf);
-
     box-shadow:
 
-        0 18px 30px -18px rgba(31, 58, 46, .6),
+        var(--shadow-md),
 
         0 0 0 3px rgba(74, 124, 89, .45);
 
@@ -1310,11 +1171,11 @@
 
 .recommendation-image {
 
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 2 / 3;
 
     overflow: hidden;
 
-    background: var(--sand);
+    background: var(--white);
 
 }
 
@@ -1325,7 +1186,7 @@
 
     height: 100%;
 
-    object-fit: contain;
+    object-fit: cover;
 
     transition: transform .4s ease;
 
@@ -1526,10 +1387,6 @@
 @media (prefers-reduced-motion: reduce) {
 
 
-    .recommendations::after,
-
-    .recommendations .cart-eyebrow::before,
-
     .recommendation-card {
 
         animation: none;
@@ -1615,12 +1472,23 @@
 
 .empty-cart > .material-symbols-outlined {
 
-    margin-bottom: 1rem;
+    display: grid;
 
-    font-size: 54px;
+    place-items: center;
 
+    width: 76px;
+
+    height: 76px;
+
+    margin-bottom: 1.25rem;
+
+    border-radius: 50%;
+
+    font-size: 38px;
 
     color: var(--moss);
+
+    background: rgba(143, 174, 145, .18);
 
 }
 
@@ -1732,8 +1600,6 @@
         flex: 0 0 100px;
 
         width: 100px;
-
-        height: 100px;
 
     }
 

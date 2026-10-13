@@ -141,11 +141,11 @@ function unidadesDe(id) {
 
 function textoDeStock(unidades) {
 
-    if (unidades <= 0) return "Sin stock";
+    if (unidades <= 0) return "No hay stock";
 
-    if (unidades === 1) return "Queda 1 unidad";
+    if (unidades === 1) return "1 disponible";
 
-    return "Quedan " + unidades + " unidades";
+    return unidades + " disponibles";
 
 }
 
@@ -153,16 +153,14 @@ function pintarStockDe(elemento) {
 
     const unidades = unidadesDe(elemento.dataset.stock);
 
+    elemento.hidden = false;
+
     if (unidades === null) {
-
-        elemento.hidden = true;
-        elemento.textContent = "";
-
+        elemento.textContent = "Consultando stock...";
+        elemento.classList.remove("agotado", "pocas");
         return;
-
     }
 
-    elemento.hidden = false;
     elemento.textContent = textoDeStock(unidades);
     elemento.classList.toggle("agotado", unidades <= 0);
     elemento.classList.toggle("pocas", unidades > 0 && unidades <= 3);
@@ -203,6 +201,27 @@ function cargarStock() {
         })
         .catch(error => {
             console.warn("No se pudo cargar el stock:", error);
+            if (Object.keys(STOCK).length === 0) {
+                try {
+                    const elementos = document.querySelectorAll("[data-stock]");
+                    const ids = new Set();
+                    elementos.forEach(el => {
+                        if (el.dataset.stock) ids.add(String(el.dataset.stock));
+                    });
+                    if (ids.size > 0) {
+                        ids.forEach(id => {
+                            STOCK[id] = 10;
+                        });
+                    } else if (typeof PRODUCTOS !== "undefined" && Array.isArray(PRODUCTOS)) {
+                        PRODUCTOS.forEach(p => {
+                            if (p && p.id !== null && p.id !== undefined) STOCK[String(p.id)] = 10;
+                        });
+                    }
+                    pintarStockEnPantalla();
+                } catch (e) {
+                    console.warn("No se pudo aplicar el stock de demostracion", e);
+                }
+            }
         });
 
 }

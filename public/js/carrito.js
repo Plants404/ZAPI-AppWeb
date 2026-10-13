@@ -300,7 +300,7 @@ function renderCart() {
                     </div>
 
                     <div class="cart-item-price">
-                        ${formatearPrecio(item.precio)}
+                        ${formatearPrecio(item.precio)}<span class="cart-item-unit"> c/u</span>
                     </div>
 
                     <span class="cart-item-stock" data-stock="${item.id}"></span>
@@ -350,6 +350,10 @@ function renderCart() {
                     <strong>
                         ${formatearPrecio(itemTotal)}
                     </strong>
+
+                    <small>
+                        ${item.cantidad} × ${formatearPrecio(item.precio)}
+                    </small>
 
 
                     <button
