@@ -28,7 +28,11 @@ async function abrirSesion(res, usuario) {
 
     res.cookie(NOMBRE_SESION, token, {
         httpOnly: true,
-        sameSite: 'lax',
+        /* El frontend puede vivir en otro origen (GitHub Pages) y
+           llamar a esta API con fetch + credentials: para que la
+           cookie viaje cross-site hacen falta SameSite=None y Secure,
+           que solo aplican en produccion (Secure viene de esProduccion). */
+        sameSite: config.esProduccion ? 'none' : 'lax',
         secure: config.esProduccion,
         path: '/',
         maxAge: VIDA_SESION_USUARIO_S * 1000,

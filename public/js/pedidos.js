@@ -95,7 +95,7 @@
 
     async function cargar() {
         try {
-            const respuesta = await fetch('/api/pedidos', {
+            const respuesta = await fetch(window.urlApi('/api/pedidos'), {
                 credentials: 'include',
                 headers: { Accept: 'application/json' },
             });

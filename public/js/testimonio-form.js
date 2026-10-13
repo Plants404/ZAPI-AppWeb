@@ -412,7 +412,7 @@
 
         try {
 
-            const respuesta = await fetch("/api/testimonios", {
+            const respuesta = await fetch(window.urlApi("/api/testimonios"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

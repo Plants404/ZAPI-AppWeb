@@ -118,7 +118,10 @@ function sesion(req, res, next) {
 
         res.cookie(NOMBRE, firmar(id), {
             httpOnly: true,
-            sameSite: 'lax',
+            /* Misma logica que la cookie del login: en produccion el
+               sitio puede estar en otro origen (GitHub Pages) y la
+               sesion del carrito viaja cross-site con fetch. */
+            sameSite: config.esProduccion ? 'none' : 'lax',
             secure: config.esProduccion,
             path: '/',
             maxAge: VIDA_SESION_MS,

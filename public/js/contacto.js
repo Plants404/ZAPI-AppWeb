@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
         datos.sitio_web = (document.getElementById("contactoSitio") || {}).value || "";
 
         try {
-            const respuesta = await fetch("/api/contacto", {
+            const respuesta = await fetch(window.urlApi("/api/contacto"), {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(datos)

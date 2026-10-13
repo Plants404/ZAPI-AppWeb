@@ -60,14 +60,14 @@
     function exigirCuenta() {
         if (usuario) return true;
 
-        window.location.href = '/login.html?volver=' + volver;
+        window.location.href = window.urlDelSitio('login.html') + '?volver=' + volver;
 
         return false;
     }
 
     async function salir() {
         try {
-            await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+            await fetch(window.urlApi('/api/auth/logout'), { method: 'POST', credentials: 'include' });
         } catch (error) {
         }
 
@@ -76,10 +76,10 @@
         } catch (error) {
         }
 
-        window.location.href = '/';
+        window.location.href = window.urlDelSitio('index.html');
     }
 
-    const listo = fetch('/api/auth/yo', { credentials: 'include' })
+    const listo = fetch(window.urlApi('/api/auth/yo'), { credentials: 'include' })
         .then(function (res) { return res.json(); })
         .then(function (datos) {
             usuario = datos && datos.usuario ? datos.usuario : null;
