@@ -666,7 +666,7 @@ function abrirWhatsappPedido(datos) {
         contacto.notas ? `Notas: ${contacto.notas}` : ""
     ].filter(Boolean).join("\n");
 
-    const message = `Hola ZAPI 🌱
+    const message = `Hola ZAPI
 
 Quiero realizar el siguiente pedido:
 
@@ -694,11 +694,12 @@ Gracias.`;
         encodeURIComponent(message);
 
 
-    window.open(
-        `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`,
-        "_blank",
-        "noopener,noreferrer"
-    );
+    const urlWhatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+    const nuevaVentana = window.open(urlWhatsapp, "_blank", "noopener,noreferrer");
+
+    if (!nuevaVentana || nuevaVentana.closed || typeof nuevaVentana.closed === "undefined") {
+        window.location.href = urlWhatsapp;
+    }
 
 
 }
