@@ -29,9 +29,11 @@ function alCargarElCatalogo(fn) {
 /* Ruta absoluta: las fichas viven en productos/ y una relativa se rompe. */
 function cargarCatalogo() {
 
-    fetch("/public/data/productos.json")
+    fetch("../data/productos.json")
         .then(respuesta => {
-            if (!respuesta.ok) throw new Error("el servidor devolvio " + respuesta.status);
+            if (!respuesta.ok) {
+                throw new Error("HTTP " + respuesta.status);
+            }
             return respuesta.json();
         })
         .then(documento => {
@@ -61,7 +63,11 @@ function cargarCatalogo() {
 
         })
         .catch(error => {
-            console.error("No se pudo cargar el catalogo:", error);
+            console.error("No se pudo cargar el catalogo:", {
+                url: "../data/productos.json",
+                status: error && error.status,
+                message: error && error.message
+            });
             avisarCatalogoNoCargado();
         });
 
