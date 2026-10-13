@@ -71,6 +71,8 @@
         } catch (error) {
         }
 
+        window.cerrarSesionLocal();
+
         try {
             window.localStorage.removeItem('zapiCart');
         } catch (error) {
@@ -85,7 +87,9 @@
             usuario = datos && datos.usuario ? datos.usuario : null;
         })
         .catch(function () {
-            usuario = null;
+            /* Sin backend alcanzable: la sesion estatica que dejo el
+               login local (localStorage) hace las veces de cuenta. */
+            usuario = window.leerSesionLocal();
         })
         .then(function () {
             pintar();

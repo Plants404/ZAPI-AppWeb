@@ -170,6 +170,31 @@
         return window.urlDelSitio('/');
     }
 
+    /* Modo estatico: cuando no hay API alcanzable (GitHub Pages, una
+       vista previa estatica), el login valida el usuario fijo de
+       config.js y guarda la sesion en el navegador. De todos modos se
+       intenta primero la API real; esto es el plan B, no el A. */
+    function entrarLocal(correo, clave) {
+        if (modo !== 'login') return false;
+
+        const fijo = window.USUARIO_FIJO;
+
+        if (!fijo ||
+            correo.toLowerCase() !== String(fijo.email).toLowerCase() ||
+            clave !== fijo.clave) {
+            return false;
+        }
+
+        window.guardarSesionLocal(fijo);
+
+        st('ok', '¡Listo! Entrando…');
+        window.setTimeout(function () {
+            window.location.href = destino();
+        }, 1500);
+
+        return true;
+    }
+
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
@@ -208,14 +233,20 @@
                 /* Si contesta JSON es el backend: un 401 con "error" o
                    el fallback de datos. Si NO es JSON, el pedido lo
                    atendio un servidor estatico (vista previa), que no
-                   tiene /api/auth/login: avisar de eso y no de los
-                   datos, que estan bien. */
+                   tiene /api/auth/login: se prueba el modo estatico y
+                   solo si tampoco coincide se avisa. */
                 const esBackend = (respuesta.headers.get('content-type') || '')
                     .indexOf('application/json') !== -1;
 
-                st('error', datos.error || (esBackend
-                    ? 'Ups, revisá tus datos e intentá de nuevo'
-                    : 'Esta página no la sirve el backend. Revisá la configuración de la API y volvé a intentar.'));
+                if (esBackend) {
+                    st('error', datos.error || 'Ups, revisá tus datos e intentá de nuevo');
+                    sacudir();
+                    return;
+                }
+
+                if (entrarLocal(correo, p.value)) return;
+
+                st('error', 'Esta página no la sirve el backend. Revisá la configuración de la API y volvé a intentar.');
                 sacudir();
                 return;
             }
@@ -225,8 +256,12 @@
                 window.location.href = destino();
             }, 1500);
         } catch (error) {
-            st('error', 'No pudimos conectarnos. Probá de nuevo en un momento');
-            sacudir();
+            /* Red caida o API por configurar: el plan B valida el
+               usuario fijo para que la demo estatica pueda entrar. */
+            if (!entrarLocal(correo, p.value)) {
+                st('error', 'No pudimos conectarnos. Revisá tus datos e intentá de nuevo');
+                sacudir();
+            }
         } finally {
             go.disabled = false;
         }
