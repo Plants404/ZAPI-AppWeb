@@ -221,7 +221,7 @@ cargarStock();
 
        return carrito.map(item => {
 
-           const producto = PRODUCTOS.find(p => p.id == item.id);
+           const producto = PRODUCTOS.find(p => p.id === Number(item.id));
 
            if (!producto) return null;
 
@@ -288,6 +288,8 @@ cargarStock();
 
    function agregarProductoAlCarrito(id) {
 
+       const idProducto = Number(id);
+
        const auth = window.zapiAuth;
 
        if (auth && !auth.autenticado) {
@@ -303,13 +305,13 @@ cargarStock();
 
        }
 
-       const producto = PRODUCTOS.find(p => p.id == id);
+       const producto = PRODUCTOS.find(p => p.id === idProducto);
 
        if (!producto) return;
 
        const carrito = obtenerCarrito();
 
-       const existente = carrito.find(item => item.id == producto.id);
+       const existente = carrito.find(item => item.id === producto.id);
 
        if (existente) {
 

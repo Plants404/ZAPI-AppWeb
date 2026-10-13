@@ -91,7 +91,9 @@ if (modalProducto) {
 
     function abrirModalProducto(id, tarjeta) {
 
-        const producto = PRODUCTOS.find(p => p.id == id);
+        const idProducto = Number(id);
+
+        const producto = PRODUCTOS.find(p => p.id === idProducto);
 
         if (!producto) return;
 

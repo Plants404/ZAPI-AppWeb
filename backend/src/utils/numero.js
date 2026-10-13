@@ -30,4 +30,11 @@ function idNumerico(valor) {
     return Number.isInteger(numero) && numero > 0 ? numero : null;
 }
 
-module.exports = { cantidadSegura, idNumerico };
+/* Redondeo a dos decimales para los subtotales y totales del carrito
+   y del pedido. Se hace una sola vez aca para que las dos cuentas no
+   puedan divergir. */
+function redondear(numero) {
+    return Math.round(numero * 100) / 100;
+}
+
+module.exports = { cantidadSegura, idNumerico, redondear };

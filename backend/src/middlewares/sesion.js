@@ -56,7 +56,13 @@ function verificar(valor) {
 
     const esperada = crypto.createHmac('sha256', obtenerSecreto()).update(payload).digest('base64url');
 
-    if (!crypto.timingSafeEqual(Buffer.from(firma), Buffer.from(esperada))) return null;
+    /* timingSafeEqual exige buffers del mismo largo y tira con una
+       firma de otro tamaño, asi que se comparan los hashes: miden
+       siempre lo mismo. Una cookie manipulada da null, no un 500. */
+    const recibida = crypto.createHash('sha256').update(firma).digest();
+    const correcta = crypto.createHash('sha256').update(esperada).digest();
+
+    if (!crypto.timingSafeEqual(recibida, correcta)) return null;
 
     try {
         const datos = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
@@ -84,7 +90,16 @@ function parsearCookies(req) {
 
         if (!nombre) continue;
 
-        cookies[nombre] = decodeURIComponent(parte.slice(igual + 1).trim());
+        /* decodeURIComponent tira con un valor como "%": si no se
+           puede decodificar se usa el texto crudo, que igual no
+           valida y termina en una sesion nueva. */
+        const crudo = parte.slice(igual + 1).trim();
+
+        try {
+            cookies[nombre] = decodeURIComponent(crudo);
+        } catch {
+            cookies[nombre] = crudo;
+        }
     }
 
     return cookies;

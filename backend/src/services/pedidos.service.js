@@ -26,12 +26,8 @@ const crypto = require('crypto');
 const { Pedido } = require('../models/pedido.model');
 const { Stock } = require('../models/stock.model');
 const { Producto } = require('../models/producto.model');
-const { cantidadSegura, idNumerico } = require('../utils/numero');
+const { cantidadSegura, idNumerico, redondear } = require('../utils/numero');
 const { LIMITE_CANTIDAD, LIMITE_PEDIDOS } = require('../constants');
-
-function redondear(numero) {
-    return Math.round(numero * 100) / 100;
-}
 
 /* Z-20261011-AB12CD: fecha legible y tres bytes aleatorios. Los
    sufijos no se reutilizan ni se predecen, que es lo que pide la
@@ -91,7 +87,7 @@ async function nuevoPedido(datos) {
         const resultado = await Stock.findOneAndUpdate(
             { producto_id: linea.producto_id, unidades: { $gte: linea.cantidad } },
             { $inc: { unidades: -linea.cantidad }, $set: { actualizado: new Date() } },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         if (!resultado) {

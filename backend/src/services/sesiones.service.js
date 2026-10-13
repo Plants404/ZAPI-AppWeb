@@ -15,6 +15,7 @@
 const crypto = require('crypto');
 
 const { Sesion } = require('../models/sesion.model');
+const { INTERVALO_TOCAR_SESION_MS } = require('../constants');
 
 /* 32 bytes en base64url: 43 caracteres, sin comillas ni signos que
    haya que codificar para la cookie. */
@@ -30,9 +31,10 @@ async function abrir(usuarioId) {
     return token;
 }
 
-/* Devuelve el usuario de la sesion, o null si el token no existe.
-   Del usuario solo se traen email y nombre: el hash y el salt no
-   tienen por que salir de la base en cada peticion. */
+/* Devuelve la sesion ({ usuario, ultimo }), o null si el token no
+   existe. Del usuario solo se traen email y nombre: el hash y el
+   salt no tienen por que salir de la base en cada peticion. El
+   ultimo uso se devuelve para poder throttlear tocar(). */
 async function usuarioDe(token) {
     if (!token || typeof token !== 'string') return null;
 
@@ -41,11 +43,23 @@ async function usuarioDe(token) {
         .populate('usuario', 'email nombre')
         .lean();
 
-    return sesion && sesion.usuario ? sesion.usuario : null;
+    if (!sesion || !sesion.usuario) return null;
+
+    return { usuario: sesion.usuario, ultimo: sesion.ultimo };
 }
 
-/* Corre el reloj del TTL: cada lectura valida cuenta como uso. */
-function tocar(token) {
+/* Corre el reloj del TTL: cada lectura valida cuenta como uso. Como
+   escribir en cada peticion es caro para una sesion activa, solo se
+   actualiza si el ultimo uso fue hace mas de una hora: el TTL de 7
+   dias sigue corriendo porque la escritura ocurre mucho antes de que
+   venza, y se ahorra una escritura por peticion. */
+function tocar(token, ultimo) {
+    if (!token || typeof token !== 'string') return Promise.resolve();
+
+    const visto = ultimo ? new Date(ultimo).getTime() : 0;
+
+    if (Date.now() - visto < INTERVALO_TOCAR_SESION_MS) return Promise.resolve();
+
     return Sesion.updateOne({ _id: token }, { $set: { ultimo: new Date() } });
 }
 

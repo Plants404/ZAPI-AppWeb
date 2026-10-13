@@ -57,8 +57,9 @@ const REGLAS_SITIO = {
     'no-self-compare': 'error',
     'no-unsafe-negation': 'error',
     'no-constant-condition': ['error', { checkLoops: false }],
-    /* Aviso, no error: hay 6 == por revisar y no vale la pena romper
-       el build por eso todavia. */
+    /* Guarda contra comparaciones sueltas: los ids del carrito se
+       normalizan a Number en los bordes, asi que no queda ninguna;
+       esto avisa si aparece una nueva. */
     'eqeqeq': 'warn',
     /* Todo lo que escriben estas herramientas es para que lo lea una
        persona por consola. En el sitio tampoco hay console, asi que la
