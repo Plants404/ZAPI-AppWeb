@@ -70,3 +70,61 @@ function urlDelSitio(ruta) {
 }
 
 window.urlDelSitio = urlDelSitio;
+
+/* ==========================================================
+   ACCESO SIN BACKEND (MODO ESTATICO)
+   ------------------------------------------------------------
+   GitHub Pages no ejecuta servidores: cuando la API no responde,
+   el login valida contra este usuario fijo y guarda la sesion en
+   el navegador (localStorage). La clave queda visible en el codigo:
+   es solo para publicar una demo estatica. Con el backend al
+   alcance, el login pasa por /api/auth/login y esta ruta no se usa.
+   ========================================================== */
+
+const USUARIO_FIJO = {
+    email: "admi@zapi.com",
+    clave: "admi2026",
+    nombre: "Administrador"
+};
+
+window.USUARIO_FIJO = USUARIO_FIJO;
+
+const SESION_LOCAL_CLAVE = "zapiSesionLocal";
+
+function guardarSesionLocal(usuario) {
+    try {
+        window.localStorage.setItem(SESION_LOCAL_CLAVE, JSON.stringify({
+            v: 1,
+            nombre: usuario.nombre,
+            email: usuario.email
+        }));
+    } catch (error) {
+    }
+}
+
+function leerSesionLocal() {
+    try {
+        const crudo = window.localStorage.getItem(SESION_LOCAL_CLAVE);
+
+        if (!crudo) return null;
+
+        const datos = JSON.parse(crudo);
+
+        return datos && datos.v === 1 && typeof datos.nombre === "string"
+            ? { nombre: datos.nombre, email: datos.email || "" }
+            : null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function cerrarSesionLocal() {
+    try {
+        window.localStorage.removeItem(SESION_LOCAL_CLAVE);
+    } catch (error) {
+    }
+}
+
+window.guardarSesionLocal = guardarSesionLocal;
+window.leerSesionLocal = leerSesionLocal;
+window.cerrarSesionLocal = cerrarSesionLocal;
