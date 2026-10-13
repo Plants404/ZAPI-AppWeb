@@ -163,9 +163,11 @@
     function destino() {
         const volver = new URLSearchParams(window.location.search).get('volver');
 
-        if (volver && volver.charAt(0) === '/' && volver.charAt(1) !== '/') return volver;
+        if (volver && volver.charAt(0) === '/' && volver.charAt(1) !== '/') {
+            return window.urlDelSitio(volver);
+        }
 
-        return '/';
+        return window.urlDelSitio('/');
     }
 
     form.addEventListener('submit', async function (e) {
@@ -183,7 +185,9 @@
             return;
         }
 
-        const ruta = modo === 'login' ? '/api/auth/login' : '/api/auth/registro';
+        const ruta = modo === 'login'
+            ? window.urlApi('/api/auth/login')
+            : window.urlApi('/api/auth/registro');
         const cuerpo = modo === 'login'
             ? { email: correo, clave: p.value }
             : { nombre: n.value.trim(), email: correo, clave: p.value };
@@ -201,7 +205,17 @@
             const datos = await respuesta.json().catch(function () { return {}; });
 
             if (!respuesta.ok) {
-                st('error', datos.error || 'Ups, revisá tus datos e intentá de nuevo');
+                /* Si contesta JSON es el backend: un 401 con "error" o
+                   el fallback de datos. Si NO es JSON, el pedido lo
+                   atendio un servidor estatico (vista previa), que no
+                   tiene /api/auth/login: avisar de eso y no de los
+                   datos, que estan bien. */
+                const esBackend = (respuesta.headers.get('content-type') || '')
+                    .indexOf('application/json') !== -1;
+
+                st('error', datos.error || (esBackend
+                    ? 'Ups, revisá tus datos e intentá de nuevo'
+                    : 'Esta página no la sirve el backend. Revisá la configuración de la API y volvé a intentar.'));
                 sacudir();
                 return;
             }

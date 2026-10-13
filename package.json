@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env backend/src/server.js",
     "dev": "node --env-file-if-exists=.env --watch backend/src/server.js",
+    "dev:memoria": "node tools/dev-memoria.js",
     "test": "node --test \"backend/tests/*.test.js\"",
     "verificar": "node tools/verificar.js",
     "lint": "eslint .",

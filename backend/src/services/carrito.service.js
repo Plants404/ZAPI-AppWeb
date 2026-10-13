@@ -15,11 +15,8 @@
 const { Carrito } = require('../models/carrito.model');
 const { Producto } = require('../models/producto.model');
 const { Stock } = require('../models/stock.model');
+const { redondear } = require('../utils/numero');
 const { LIMITE_CANTIDAD } = require('../constants');
-
-function redondear(numero) {
-    return Math.round(numero * 100) / 100;
-}
 
 /* Suma la cantidad a la linea que ya existe, o crea la linea si
    no existe. Las dos cosas se resuelven con writes sobre un solo

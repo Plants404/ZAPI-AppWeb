@@ -35,7 +35,7 @@
 
     boton.addEventListener('click', function () {
 
-        agregarProductoAlCarrito(boton.dataset.id);
+        agregarProductoAlCarrito(Number(boton.dataset.id));
 
         if (!aviso) return;
 

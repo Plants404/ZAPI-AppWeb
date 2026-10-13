@@ -29,7 +29,10 @@ const CSP = {
         styleSrc: ["'self'", 'https://fonts.googleapis.com'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com'],
         imgSrc: ["'self'", 'data:'],
-        connectSrc: ["'self'", 'https://api.emailjs.com'],
+        /* connect-src cubre el frontend que sirve este Express y
+           puede llamar a la API desde otro origen (CLIENT_URL,
+           tambien CORS y cookies cross-site). */
+        connectSrc: ["'self'", 'https://api.emailjs.com', ...config.origenes],
         /* El mapa de la seccion Nosotros se embebe desde Google Maps. */
         frameSrc: ["'self'", 'https://www.google.com'],
         frameAncestors: ["'none'"],

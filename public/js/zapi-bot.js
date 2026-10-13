@@ -1,6 +1,6 @@
 const ZAPI_NOMBRE = "Brotecito";
 
-const ZAPI_API = "/api/asistente";
+const ZAPI_API = window.urlApi("/api/asistente");
 const ZAPI_HISTORIAL_MAX = 12;
 const ZAPI_ESPERA_MS = 25000;
 
