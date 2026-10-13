@@ -163,9 +163,11 @@
     function destino() {
         const volver = new URLSearchParams(window.location.search).get('volver');
 
-        if (volver && volver.charAt(0) === '/' && volver.charAt(1) !== '/') return volver;
+        if (volver && volver.charAt(0) === '/' && volver.charAt(1) !== '/') {
+            return window.urlDelSitio(volver);
+        }
 
-        return '/';
+        return window.urlDelSitio('/');
     }
 
     form.addEventListener('submit', async function (e) {
@@ -183,7 +185,9 @@
             return;
         }
 
-        const ruta = modo === 'login' ? '/api/auth/login' : '/api/auth/registro';
+        const ruta = modo === 'login'
+            ? window.urlApi('/api/auth/login')
+            : window.urlApi('/api/auth/registro');
         const cuerpo = modo === 'login'
             ? { email: correo, clave: p.value }
             : { nombre: n.value.trim(), email: correo, clave: p.value };
@@ -211,7 +215,7 @@
 
                 st('error', datos.error || (esBackend
                     ? 'Ups, revisá tus datos e intentá de nuevo'
-                    : 'Esta página no la sirve el backend. Abrí el sitio con dev:memoria y usá esa dirección.'));
+                    : 'Esta página no la sirve el backend. Revisá la configuración de la API y volvé a intentar.'));
                 sacudir();
                 return;
             }

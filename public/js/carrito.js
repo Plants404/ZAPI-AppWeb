@@ -827,9 +827,10 @@ function enviarPedido(evento) {
         cantidad: Number(item.cantidad)
     }));
 
-    fetch("/api/pedidos", {
+    fetch(window.urlApi("/api/pedidos"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
             nombre,
             telefono,

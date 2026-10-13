@@ -352,6 +352,7 @@ ${paraJsonLd(migas)}
         </nav>
     </footer>
 
+    <script src="../public/js/config.js" defer></script>
     <script src="../public/js/productos.js" defer></script>
     <script src="../public/js/productos-pagina.js" defer></script>
 </body>
