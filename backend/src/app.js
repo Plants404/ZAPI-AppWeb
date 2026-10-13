@@ -67,7 +67,19 @@ function crearApp() {
     app.use(log.peticiones);
 
     app.use((req, res, next) => {
-        const limpio = decodeURIComponent(req.path).replace(/\/+$/, '').toLowerCase();
+        /* decodeURIComponent tira URIError con una secuencia %
+           incompleta (/%). La ruta se compara en minusculas y sin
+           la barra final; si no se puede decodificar se usa cruda,
+           que igual no coincide con ninguna ruta bloqueada. */
+        let ruta = req.path;
+
+        try {
+            ruta = decodeURIComponent(ruta);
+        } catch {
+            /* secuencia % invalida: se sigue con la ruta cruda */
+        }
+
+        const limpio = ruta.replace(/\/+$/, '').toLowerCase();
 
         for (const bloqueada of RUTAS_BLOQUEADAS) {
             if (limpio === bloqueada || limpio.startsWith(bloqueada + '/')) {

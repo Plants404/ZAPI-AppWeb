@@ -36,15 +36,15 @@ async function resolver(req) {
 
     if (!token) return null;
 
-    const usuario = await sesiones.usuarioDe(token);
+    const sesion = await sesiones.usuarioDe(token);
 
-    if (usuario) {
+    if (sesion) {
         req.sesionUsuario = token;
-        req.usuario = usuario;
-        await sesiones.tocar(token);
+        req.usuario = sesion.usuario;
+        await sesiones.tocar(token, sesion.ultimo);
     }
 
-    return usuario || null;
+    return sesion ? sesion.usuario : null;
 }
 
 async function opcional(req, res, next) {
