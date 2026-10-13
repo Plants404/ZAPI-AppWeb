@@ -16,36 +16,81 @@
    urlApi() decide sola con la direccion de la pagina:
 
      * http://localhost:* o 127.0.0.1:*  -> mismo origen (o URL_API_LOCAL)
-     * cualquier otro host (github.io)   -> URL_API_PRODUCCION
+     * cualquier otro host (tu hosting)  -> URL_API_PRODUCCION
 
    Un meta en el HTML pisa la decision para una pagina aparte:
 
        <meta name="zapi-api" content="https://zapi-api.onrender.com">
    ========================================================== */
 
-/* URL del backend en produccion. Cambiar aca cuando este desplegado
-   (Render o Railway). */
-const URL_API_PRODUCCION = "https://tu-api.onrender.com";
+/* ------------------------------------------------------------
+   CONFIGURACION DE LA API (un solo lugar)
+   ------------------------------------------------------------
+   La URL del backend sale, en este orden de prioridad:
+
+     1. window.__ZAPI_API__  -> inyeccion en runtime. Sirve para
+        un archivo public/js/env.js cargado antes que este (util
+        cuando el hosting inyecta variables), o para pruebas.
+     2. <meta name="zapi-api" content="https://...">  -> override
+        por pagina.
+     3. Deteccion por entorno:
+          - local (localhost/127.0.0.1/::1): URL_API_LOCAL
+            ('' = mismo origen, lo normal con npm start).
+          - cualquier otro host: URL_API_PRODUCCION
+            (pegar aca la URL del backend desplegado).
+
+   Si en produccion URL_API_PRODUCCION queda vacia, el sitio NO
+   rompe: hayApiConfigurada() devuelve false y las partes que
+   dependen del backend (login, pedidos) usan su modo sin backend
+   (login fijo / WhatsApp). Asi la web funciona en cualquier
+   hosting estatico aunque todavia no este la API.
+   ------------------------------------------------------------ */
+
+/* URL del backend en produccion (Render/Railway). Ejemplo:
+   "https://zapi-api.onrender.com". Vacio = sin backend. */
+const URL_API_PRODUCCION = "";
 
 /* URL del backend local, solo si la pagina llega de otro lado que no
    sea el propio backend (por ejemplo Live Server en el puerto 5500 o
    5501 y el backend en 5501). Con '' se usa el mismo origen. */
 const URL_API_LOCAL = "";
 
-const API_BASE = (function () {
-    const meta = document.querySelector('meta[name="zapi-api"]');
-    if (meta && meta.content) return meta.content.replace(/\/+$/, "");
+function normalizarBase(url) {
+    return String(url || "").trim().replace(/\/+$/, "");
+}
 
+function esHostLocal() {
     const host = window.location.hostname;
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+}
 
-    const esLocal = host === "localhost" || host === "127.0.0.1" || host === "::1";
+const API_BASE = (function () {
+    const inyectada = window.__ZAPI_API__;
+    if (typeof inyectada === "string" && inyectada.trim()) {
+        return normalizarBase(inyectada);
+    }
 
-    if (esLocal) return URL_API_LOCAL.replace(/\/+$/, "");
+    const meta = document.querySelector('meta[name="zapi-api"]');
+    if (meta && meta.content && meta.content.trim()) {
+        return normalizarBase(meta.content);
+    }
 
-    return URL_API_PRODUCCION;
+    if (esHostLocal()) return normalizarBase(URL_API_LOCAL);
+
+    return normalizarBase(URL_API_PRODUCCION);
 }());
 
 window.API_BASE = API_BASE;
+
+/* ¿Hay un backend configurado al que apuntar? En local siempre se
+   asume el mismo origen. En produccion, verdadero solo si se definio
+   una URL (meta, __ZAPI_API__ o URL_API_PRODUCCION). */
+function hayApiConfigurada() {
+    if (esHostLocal()) return true;
+    return API_BASE !== "";
+}
+
+window.hayApiConfigurada = hayApiConfigurada;
 
 function urlApi(ruta) {
     return API_BASE + (ruta.charAt(0) === "/" ? ruta : "/" + ruta);

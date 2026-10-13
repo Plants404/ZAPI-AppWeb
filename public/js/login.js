@@ -217,6 +217,16 @@
             ? { email: correo, clave: p.value }
             : { nombre: n.value.trim(), email: correo, clave: p.value };
 
+        /* Sin backend configurado (hosting estatico): no se intenta la
+           red, se entra directo por el modo estatico. */
+        const fnHayApi = window.hayApiConfigurada;
+        if (typeof fnHayApi === 'function' && !fnHayApi()) {
+            if (entrarLocal(correo, p.value)) return;
+            st('error', 'Esta página no la sirve el backend. Revisá la configuración de la API y volvé a intentar.');
+            sacudir();
+            return;
+        }
+
         go.disabled = true;
 
         try {

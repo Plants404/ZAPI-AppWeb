@@ -827,6 +827,32 @@ function enviarPedido(evento) {
     const zona = limpiarValor(document.getElementById("pedZona").value) || null;
     const notas = limpiarValor(document.getElementById("pedNotas").value) || null;
 
+    /* Sin backend configurado (hosting estatico, backend aun no
+       desplegado): se arma el pedido y se abre WhatsApp, sin fetch.
+       Con backend definido se usa el flujo normal de la API. */
+    const fnHayApi = window.hayApiConfigurada;
+    const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
+
+    if (!hayBackend) {
+
+        abrirWhatsappPedido({ nombre, telefono, email, zona, notas });
+
+        cart = [];
+        confirmarCarrito();
+
+        mostrarEstado(
+            "Pedido preparado: completá el envío en WhatsApp.",
+            false
+        );
+
+        if (boton) {
+            boton.disabled = false;
+            boton.innerHTML = contenidoBoton;
+        }
+
+        return;
+    }
+
     const items = cart.map(item => ({
         id: Number(item.id),
         cantidad: Number(item.cantidad)
