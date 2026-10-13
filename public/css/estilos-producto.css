@@ -1,15 +1,4 @@
-/* ==========================================================
-   PAGINA DE PRODUCTO
-   ------------------------------------------------------------
-   La escribe tools/generar-productos.js. El HTML se genera
-   con los datos de datos/catalogo.js, asi que esta hoja solo aporta
-   la parte visual: la grilla de dos columnas, la galeria con
-   miniaturas y los botones de accion.
 
-   Se apoya en styles.css (tokens de color, tipografia,
-   .visually-hidden, .material-symbols-outlined) y no repite
-   ninguna variable.
-   ========================================================== */
 
 .pagina-producto {
 
@@ -19,16 +8,7 @@
 
 }
 
-/* ---------------------------------------
-   ENLACE PARA SALTAR AL CONTENIDO
-   Vive en styles.css, en las utilidades,
-   porque tambien lo usan index, catalogo
-   y carrito.
-   --------------------------------------- */
 
-/* ---------------------------------------
-   HEADER
-   --------------------------------------- */
 
 .header-producto {
 
@@ -160,9 +140,6 @@
 
 }
 
-/* ---------------------------------------
-   MIGAS
-   --------------------------------------- */
 
 main {
 
@@ -208,10 +185,6 @@ main {
 
 }
 
-/* ---------------------------------------
-   PRODUCTO: una columna en movil, dos desde
-   900px. La galeria pegada a los datos.
-   --------------------------------------- */
 
 .producto {
 
@@ -311,9 +284,6 @@ main {
 
 }
 
-/* ---------------------------------------
-   DATOS
-   --------------------------------------- */
 
 .producto-categoria {
 
@@ -353,10 +323,6 @@ main {
 
 }
 
-/* Contador de stock de la ficha. Mientras no llegue el dato queda
-   escondido, para no dejar un hueco ni mostrar un numero viejo. Va
-   debajo del precio y comparte el color con el resto del sitio:
-   verde con stock, mostaza con pocas, rojo agotado. */
 .producto-stock {
 
     display: inline-flex;
@@ -546,9 +512,6 @@ main {
 
 }
 
-/* ---------------------------------------
-   RELACIONADOS
-   --------------------------------------- */
 
 .producto-relacionados {
 
@@ -628,9 +591,6 @@ main {
 
 }
 
-/* ---------------------------------------
-   PIE
-   --------------------------------------- */
 
 .footer-producto {
 
@@ -660,9 +620,6 @@ main {
 
 }
 
-/* ---------------------------------------
-   FOCO
-   --------------------------------------- */
 
 .pagina-producto a:focus-visible,
 .pagina-producto button:focus-visible,
@@ -676,11 +633,6 @@ main {
 
 }
 
-/* ---------------------------------------
-   MOVIMIENTO REDUCIDO
-   Lo unico que se anima en esta pagina es el
-   salto del enlace "saltar al contenido".
-   --------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
 

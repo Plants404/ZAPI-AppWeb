@@ -6,11 +6,7 @@
 <meta name="robots" content="noindex">
 <title>404 · ZAPI | Esta planta aún no brotó</title>
 
-<!-- ==========================================================
-     TIPOGRAFÍAS (único recurso externo permitido)
-     Las mismas del sitio: Bebas Neue para titulares y números,
-     Inter para texto y botón. Con fallback local en 404.css.
-     ========================================================== -->
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link
@@ -23,17 +19,16 @@
 <body>
 <main class="escena">
 
-    <!-- Marca -->
+    
     <p class="marca">ZAPI</p>
 
-    <!-- El error 404. El h1 lleva el nombre accesible; los dígitos
-         y el SVG son decorativos (aria-hidden). -->
+    
     <h1 class="year go" id="planta404" aria-label="Error 404">
         <span class="digit" aria-hidden="true">4</span>
 
-        <!-- El "0" es un tazón del que crece una planta -->
+        
         <svg class="tazon-svg" viewBox="0 0 200 260" aria-hidden="true" focusable="false">
-            <!-- Tazón con tierra -->
+            
             <g class="tazon">
                 <path class="tazon-cuerpo"
                       d="M44 176 L156 176 L140 246 c-2 8 -9 12 -17 12 H77 c-8 0 -15 -4 -17 -12 Z"/>
@@ -42,13 +37,12 @@
                 <ellipse class="tierra-luz"  cx="86"  cy="174" rx="16" ry="4"/>
             </g>
 
-            <!-- Planta: tallo, hojas y brote; se mece desde la base -->
+            
             <g class="planta">
                 <path class="tallo" pathLength="1"
                       d="M100 178 C 93 146, 107 112, 100 82 C 95 58, 104 50, 100 42"/>
 
-                <!-- Hojas: dos tonos (salvia/oliva), alternando lado,
-                     cada una más chica hacia la punta -->
+                
                 <g transform="translate(100,146) rotate(-34)">
                     <g class="hoja hoja--salvia l1">
                         <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
@@ -86,7 +80,7 @@
                     </g>
                 </g>
 
-                <!-- Brote en la punta -->
+                
                 <g transform="translate(100,42)">
                     <g class="brote">
                         <path class="brote-cuerpo" d="M0 0 C -10 -12, -8 -28, 0 -34 C 8 -28, 10 -12, 0 0 Z"/>
@@ -99,7 +93,7 @@
         <span class="digit" aria-hidden="true">4</span>
     </h1>
 
-    <!-- Mensaje y salida -->
+    
     <h2 class="titulo">Esta planta aún no brotó</h2>
     <p class="texto">
         La página que buscás no existe o cambió de lugar.

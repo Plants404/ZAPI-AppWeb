@@ -1,23 +1,8 @@
 /* Archivo generado. No editar a mano.
    Fuente: catalogo.css   Generar: node tools/extraer-modal-css.js */
 
-﻿/* ==========================================================
-INDICE DE ESTA HOJA
-------------------------------------------------------------
-catalogo.html necesita el catalogo entero (grilla, filtros,
-boton flotante) y la ventana de producto.
-carrito.html solo usa la ventana de producto, asi que en esa
-pagina se carga catalogo-modal.css, que son los ultimos
-~40 KB: la grilla del catalogo nunca se dibuja ahi.
-
-Los bloques van marcados con [CAT] o [MODAL] para poder
-partir la hoja sin romper el orden de las cascadas.
-========================================================== */
 
 
-/* ==========================================================
-CATÁLOGO   [CAT]
-========================================================== */
 
 .catalog {
 background: var(--sand);
@@ -41,8 +26,6 @@ margin-bottom: 2rem;
 border: 1px solid rgba(61, 107, 79, .25);
 background: var(--white);
 color: var(--ink);
-/* min-height en vez de padding fijo: el filtro queda en
-44px de alto sin que el texto se descentre. */
 min-height: 44px;
 padding: .45rem 1.1rem;
 border-radius: 999px;
@@ -54,9 +37,6 @@ transition: all .2s ease;
 white-space: nowrap;
 }
 
-/* El hover y el foco por teclado se separan: antes el foco
-no mostraba nada (un verde al 8% es casi invisible), y
-con teclado no se distinguia el filtro elegido. */
 .catalog-filter:hover {
 background: rgba(74, 124, 89, .10);
 border-color: var(--leaf-texto);
@@ -82,10 +62,6 @@ color: var(--moss);
 font-weight: 500;
 }
 
-/* Atajo que aparece en el estado vacio, para no obligar a
-al visitante a encontrar el boton de limpiar del header.
-Se muestra en bloque para que la linea del mensaje y la
-del boton no queden pegadas. */
 .catalog-empty-clear {
 display: block;
 margin: 1rem auto 0;
@@ -144,26 +120,6 @@ font-weight: 500;
 font-size: 1.1rem;
 }
 
-/* ==========================================================
-GRILLA SIMETRICA
-==========================================================
-Grid y no flex-wrap, por el alto. Con flex cada tarjeta
-se mide por su contenido y arranca arriba: la mas corta
-deja un escalon al pie y la fila queda despareja. Ese
-escalon era justo lo que el masonry venia a tapar,
-placing cada tarjeta en la columna mas corta, y el
-resultado era peor: columnas terminadas en alturas
-distintas y sin ninguna fila que las alineara.
-
-Con display:grid el alto por defecto es "stretch": todas
-las tarjetas de una misma fila se estiran a la mas alta y
-el pie queda parejo. Las columnas tambien quedan del
-mismo ancho sin cuentas de flex-basis, porque 1fr
-reparte solo.
-
-Y no hace falta ningun JS para acomodar: las tarjetas van
-en el flujo, el navegador las coloca y no hay nada que
-recalcular cuando carga una foto o cambia el ancho. */
 .catalog-grid {
 display: grid;
 grid-template-columns: 1fr;
@@ -180,9 +136,6 @@ transition: transform .3s ease, box-shadow .3s ease;
 display: flex;
 flex-direction: column;
 
-/* Mobile first: una sola columna en el telefono.
-El min-width:0 evita que un titulo largo estire la
-columna de la grilla. */
 min-width: 0;
 }
 
@@ -191,12 +144,6 @@ transform: translateY(-6px);
 box-shadow: var(--shadow-md);
 }
 
-/* Cuantas columnas entran segun el ancho, de ahi para arriba.
-Los cortes son los mismos que usaba el JS del masonry, asi
-que la grilla no cambia de forma al pasar por el ancho que
-antes lo cambiaba a tierra. 1fr reparte el ancho sobrante
-en partes iguales, asi que las columnas quedan del mismo
-ancho y la fila llena exacto el contenedor. */
 @media (min-width: 572px) {
 .catalog-grid {
 grid-template-columns: repeat(2, 1fr);
@@ -215,25 +162,10 @@ grid-template-columns: repeat(4, 1fr);
 }
 }
 
-/* Ya no hay masonry ni posicion absoluta. Ver el bloque
-GRILLA SIMETRICA de arriba: las tarjetas van en el
-flujo y las coloca el grid del navegador. Cuando
-estaba el masonry, cada tarjeta iba con left/top a la
-columna mas corta y las columnas quedaban desparejas.
-Ese era el problema que se queria tapar con el escalon
-del flex, pero el escalon se ve menos que una columna
-corta. Con stretch no hay ninguno de los dos. */
 
 .product-visual {
 position: relative;
 
-/* 2:3, que es la proporción de las fotos de producto
-(798 x 1200). Con el 4:3 de antes la imagen se
-recortaba por arriba y por abajo y se perdía la
-planta entera. El fondo va porque el kit de huerta
-es cuadrado: con "contain" completa y las bandas
-laterales caen sobre blanco, que es el mismo fondo
-de la foto. */
 aspect-ratio: 2 / 3;
 
 overflow: hidden;
@@ -332,9 +264,6 @@ margin-bottom: .25rem;
 text-transform: uppercase;
 }
 
-/* El nombre es el boton que abre el detalle. Hereda la
-tipografia del h3 para que la tarjeta se vea igual que
-antes, y el foco se ve como el de los otros botones. */
 .product-link {
 font: inherit;
 letter-spacing: inherit;
@@ -384,9 +313,6 @@ font-size: .75rem;
 color: var(--muted);
 }
 
-/* Contador de stock de la tarjeta. Va arriba del precio,
-dentro del pie. Se esconde solo mientras no haya dato
-(stock sin cargar), para no dejar un hueco. */
 .product-stock {
 display: inline-flex;
 align-items: center;
@@ -419,17 +345,9 @@ color: var(--error);
 display: none;
 }
 
-/* El boton agregar vive en dos paginas: las tarjetas del
-catalogo y el modal, que tambien esta en el carrito. Por
-eso la base va en un bloque compartido, no dentro de la
-seccion [CAT]: si se quedara alla, el boton del modal
-aparecia sin fondo ni forma en carrito.html. */
 
 
 
-/* ==========================================================
-BOTÓN VER CARRITO · FLOTANTE (abajo izquierda)
-========================================================== */
 
 .cart-link-text {
 
@@ -437,10 +355,6 @@ text-shadow: 0 1px 3px rgba(0, 0, 0, .25);
 
 }
 
-/* Mobile first: en el telefono el boton va pegado a las
-esquinas, solo con el ícono, para no tapar el
-contenido. De 600px para arriba aparece la etiqueta y
-se separa de los bordes. */
 
 .cart-link-float {
 
@@ -452,9 +366,6 @@ bottom: 1rem;
 
 z-index: 60;
 
-/* Igual que el chat: con el menu lateral abierto el
-boton flotante del carrito baja por debajo del
-velo, para que no se pueda clickear a traves de el. */
 :root.menu-abierto & {
 z-index: 0;
 }
@@ -485,8 +396,6 @@ transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
 
 }
 
-/* En el telefono solo el ícono: la pastilla con texto
-ocupa media pantalla y tapa las tarjetas de abajo. */
 
 .cart-link-float .cart-link-text {
 
@@ -520,7 +429,6 @@ font-size: 21px;
 
 }
 
-/* Rebote del ícono al agregar un producto */
 
 .cart-link-float.animado .material-symbols-outlined {
 
@@ -553,21 +461,12 @@ padding: 0 .35rem;
 transition: transform .3s ease, background .5s ease, color .35s ease;
 }
 
-/* Con productos en el carrito el contador queda rojo.
-Al vaciarse se lo quita y el color vuelve solo. */
 
 .cart-count.con-productos {
 background: #c14a3c;
 color: var(--white);
 }
 
-/* Globo del header. Va en la esquina del enlace y solo
-aparece con productos: lo decide la misma clase
-.con-productos, no hace falta JavaScript extra.
-Estas reglas repiten background, color y font-weight
-porque .nav-bar li a tiene especificidad (0,1,2) y le
-ganaría a .cart-count (0,1,0), dejando el globo
-transparente y con el color del enlace. */
 
 .cart-count.cart-count-header {
 position: absolute;
@@ -596,8 +495,6 @@ animation: countPop .45s ease;
 
 }
 
-/* Destello al agregar: rojo vivo que se va suavizando
-hasta el tono con el que se queda. */
 
 .cart-count.destello {
 
@@ -644,4 +541,5 @@ display: inline;
 }
 
 }
+
 

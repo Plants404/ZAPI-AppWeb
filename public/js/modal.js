@@ -1,11 +1,3 @@
-/* ==========================================================
-   VENTANA FLOTANTE DE PRODUCTO
-   Compartida por el catalogo y el carrito: aqui queda todo el
-   mecanismo (carrusel, foco, scroll, teclado) y cada pagina
-   aporta su propia accion de agregar escuchando el evento
-   "modal:agregar".
-   ========================================================== */
-
 const modalProducto = document.getElementById("modalProducto");
 
 if (modalProducto) {
@@ -35,10 +27,7 @@ if (modalProducto) {
     let tarjetaQueAbrio = null;
     let scrollBloqueado = false;
 
-    /* El mismo criterio de slug que usa tools/generar-productos.js.
-       Si se cambia en un lado hay que cambiarlo en el otro: de eso
-       depende que el enlace del modal caiga en una pagina que
-       existe. */
+    /* Mismo criterio de slug que tools/generar-productos.js: deben coincidir. */
     function slugDe(texto) {
         return String(texto)
             .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -48,8 +37,6 @@ if (modalProducto) {
     }
 
 
-    /* Un producto puede tener una sola foto: en ese caso
-       no hay carrusel y se muestra la imagen sola. */
     function fotosDe(producto) {
 
         if (Array.isArray(producto.imagenes) && producto.imagenes.length) {
@@ -88,9 +75,6 @@ if (modalProducto) {
 
         });
 
-        /* Precargar solo las fotos vecinas, para no bajar
-           las 9 de golpe en los productos con muchas fotos. */
-
         if (total > 1) {
 
             [indiceActual - 1, indiceActual + 1].forEach(vecina => {
@@ -122,9 +106,6 @@ if (modalProducto) {
             precios[producto.id] || producto.precioBase
         );
 
-        /* El contador de stock se pide por data-stock (lo pinta
-           productos.js). Asi el numero sale del mismo lugar que el
-           de las tarjetas y no hay dos criterios. */
         if (modalStock) {
             modalStock.dataset.stock = producto.id;
             pintarStockDe(modalStock);
@@ -137,22 +118,11 @@ if (modalProducto) {
             </li>
         `).join("");
 
-        /* Dejar el botón en su estado normal aunque siga
-           en "Agregado" de una visita anterior. */
-
         modalAgregar.dataset.id = producto.id;
         modalAgregar.classList.remove("added");
         modalAgregar.innerHTML =
             `<span class="material-symbols-outlined">add_shopping_cart</span> Agregar al carrito`;
 
-        /* Enlace a la pagina estatica del producto (productos/<slug>.html),
-           que es la que pueden leer los buscadores. El slug sale del
-           mismo criterio que usa tools/generar-productos.js: sin
-           acentos, en minusculas y con guiones.
-
-           Ojo con la carpeta: desde index.html es productos/<slug>.html
-           y desde catalogo.html tambien, asi que el href relativo
-           funciona igual en las dos. */
         if (modalFicha) {
             modalFicha.textContent = "Ver la ficha completa";
             modalFicha.href = "productos/" + slugDe(producto.nombre) + ".html";
@@ -180,27 +150,18 @@ if (modalProducto) {
 
         modalProducto.hidden = false;
 
-        /* Si se reabre dentro de los 250 ms del cierre en curso, el
-           setTimeout ve "abierto" y no limpia "cerrando"; sin esto la
-           modal quedaria con pointer-events: none, muerta al click. */
-
+        /* Reabrir dentro de los 250 ms del cierre: limpiar "cerrando" o la modal queda muerta al click. */
         modalProducto.classList.remove("cerrando");
 
         bloquearScroll(true);
 
-        /* Forzar reflow en vez de esperar un requestAnimationFrame:
-           el rAF no llegaba a correr siempre y la clase "abierto" no se
-           aplicaba, dejando la modal abierta pero invisible. El reflow
-           es síncrono y además permite que el fade sí se dispare. */
+        /* El reflow es síncrono y evita que el rAF se saltee el fade. */
 
         void modalProducto.offsetWidth;
 
         modalProducto.classList.add("abierto");
 
         modalCaja.scrollTop = 0;
-
-        /* El foco va aqui: mientras la modal esta oculta el elemento
-           todavía no puede recibirlo. */
 
         modalCaja.focus();
 
@@ -229,7 +190,6 @@ if (modalProducto) {
 
         }, 250);
 
-        /* Devolver el foco a la tarjeta desde la que se abrió */
         if (tarjetaQueAbrio) {
 
             tarjetaQueAbrio.focus();
@@ -238,8 +198,6 @@ if (modalProducto) {
         }
 
     }
-
-    /* El fondo se puede correr, pero el scroll de la pagina no */
 
     function bloquearScroll(bloquear) {
 
@@ -261,8 +219,6 @@ if (modalProducto) {
 
     }
 
-    /* Mantener el foco dentro del modal mientras este abierto */
-
     function atraparFoco(evento) {
 
         if (evento.key !== "Tab") return;
@@ -276,13 +232,7 @@ if (modalProducto) {
         const primero = focuses[0];
         const ultimo = focuses[focuses.length - 1];
 
-        /* El foco al abrir queda en el contenedor del dialogo, que
-           no es ninguno de los dos extremos. Con Shift+Tab desde
-           ahi el trap no interceptaba nada y el foco se iba al
-           contenido de atras del velo. Ahora se compara contra
-           el borde en la direccion del tab, no contra la
-           identidad del elemento. */
-
+        /* Con Shift+Tab el foco puede estar en el contenedor, no en un extremo: se compara contra el borde. */
         if (evento.shiftKey) {
 
             const enBorde = document.activeElement === primero ||
@@ -305,18 +255,11 @@ if (modalProducto) {
 
     }
 
-    /* El foco actual sigue dentro de la ventana? Si ya salio
-       (por un click en el fondo o porque el navegador lo perdio),
-       la proxima pulsacion de Tab tiene que devolverlo adentro. */
-
     function focoDentroDeModal() {
 
         return modalCaja.contains(document.activeElement);
 
     }
-
-    /* El boton de la ventana flotante no agrega nada por si solo:
-       avisa y que cada pagina lo resolved con su carrito. */
 
     function agregarDesdeModal() {
 
@@ -344,8 +287,6 @@ if (modalProducto) {
     }
 
 
-    /* ---------- Controles del carrusel ---------- */
-
     btnPrev.addEventListener("click", () => mostrarFoto(indiceActual - 1));
     btnNext.addEventListener("click", () => mostrarFoto(indiceActual + 1));
 
@@ -361,8 +302,6 @@ if (modalProducto) {
 
     modalAgregar.addEventListener("click", agregarDesdeModal);
 
-
-    /* ---------- Teclado con la ventana abierta ---------- */
 
     document.addEventListener("keydown", function (event) {
 
