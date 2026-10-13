@@ -427,8 +427,10 @@ function updateSummary() {
 
 function changeQuantity(id, amount) {
 
+    const idProducto = Number(id);
+
     const item =
-        cart.find(product => product.id == id);
+        cart.find(product => product.id === idProducto);
 
 
     if (!item) return;
@@ -444,9 +446,11 @@ function changeQuantity(id, amount) {
 
 function removeProduct(id) {
 
+    const idProducto = Number(id);
+
     const itemElement =
         document.querySelector(
-            `.cart-item[data-id="${id}"]`
+            `.cart-item[data-id="${idProducto}"]`
         );
 
 
@@ -463,7 +467,7 @@ function removeProduct(id) {
     setTimeout(() => {
 
         cart = cart.filter(
-            product => product.id != id
+            product => product.id !== idProducto
         );
 
         confirmarCarrito();

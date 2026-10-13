@@ -84,7 +84,14 @@ const LIMITE_PEDIDOS = 50;
    multiplicando por 1000. */
 const VIDA_SESION_USUARIO_S = 7 * 24 * 60 * 60;
 
+/* Cada cuanto se refresca el "ultimo uso" de una sesion de cuenta.
+   Escribir en cada peticion es caro para una sesion activa, asi que
+   se actualiza a lo sumo una vez por hora: el TTL de 7 dias sigue
+   corriendo y se ahorran escrituras. */
+const INTERVALO_TOCAR_SESION_MS = 60 * 60 * 1000;
+
 module.exports = {
     LARGO, MINIMOS, CORREO, LIMITE_CUERPO,
     LIMITE_CANTIDAD, LIMITE_PEDIDOS, VIDA_SESION_MS, VIDA_SESION_USUARIO_S,
+    INTERVALO_TOCAR_SESION_MS,
 };
