@@ -10,9 +10,8 @@
 
    Nada de esto es secreto ni sale del entorno: son textos
    comerciales. Lo unico que hay que cuidar es no inventar datos:
-   si un campo no esta confirmado (instagram, correo) se deja
-   vacio y el front no lo dibuja, en vez de rellenarlo con algo
-   inventado.
+   si un campo no esta confirmado se deja vacio y el front no lo
+   dibuja, en vez de rellenarlo con algo inventado.
    ========================================================== */
 
 const WHATSAPP = '098268560';
@@ -32,16 +31,15 @@ const NEGOCIO = {
         'Fuera de horario respondemos lo antes posible.',
 
     /* Contacto. WhatsApp es el canal real del negocio (aparece en
-       todos los HTML). Instagram y correo NO estan publicados en
-       el sitio: quedan vacios a proposito. Completar cuando el
-       negocio confirme la cuenta y el correo oficiales. */
+       todos los HTML). Instagram y correo son los oficiales que
+       confirmo el negocio. */
     contacto: {
         whatsapp: WHATSAPP,
         whatsappUrl:
             `https://wa.me/${WHATSAPP}?text=` +
             encodeURIComponent('Hola ZAPI, necesito ayuda con una consulta'),
-        instagram: '', // TODO: definir cuenta oficial de Instagram
-        correo: '',    // TODO: definir correo oficial de contacto
+        instagram: 'zapi.uy',
+        correo: 'zapi.vivero@gmail.com',
     },
 
     envios: {
