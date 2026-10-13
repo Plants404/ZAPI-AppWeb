@@ -16,7 +16,7 @@ const CSS = ['styles.css', 'catalogo.css', 'catalogo-modal.css',
     'catalogo-catalogo.css', 'stylecarrito.css', 'pedidos.css', 'zapi-bot.css',
     'login.css',
     '404.css'];
-const JS = ['auth-ui.js', 'productos.js', 'modal.js', 'catalogo.js',
+const JS = ['config.js', 'auth-ui.js', 'productos.js', 'modal.js', 'catalogo.js',
     'carrito.js', 'pedidos.js', 'testimonio-form.js', 'zapi-bot.js',
     'navigation.js', 'buscador.js',
     'menu.js', 'testimonios.js', 'contacto.js', 'login.js', '404.js'];

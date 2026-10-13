@@ -177,7 +177,7 @@ function pintarStockEnPantalla() {
 
 function cargarStock() {
 
-    return fetch("/api/stock")
+    return fetch(window.urlApi("/api/stock"))
         .then(respuesta => {
             if (!respuesta.ok) throw new Error("el servidor devolvio " + respuesta.status);
             return respuesta.json();
