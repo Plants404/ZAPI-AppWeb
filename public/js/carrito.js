@@ -300,7 +300,7 @@ function renderCart() {
                     </div>
 
                     <div class="cart-item-price">
-                        ${formatearPrecio(item.precio)}
+                        ${formatearPrecio(item.precio)}<span class="cart-item-unit"> c/u</span>
                     </div>
 
                     <span class="cart-item-stock" data-stock="${item.id}"></span>
@@ -350,6 +350,10 @@ function renderCart() {
                     <strong>
                         ${formatearPrecio(itemTotal)}
                     </strong>
+
+                    <small>
+                        ${item.cantidad} × ${formatearPrecio(item.precio)}
+                    </small>
 
 
                     <button
@@ -662,7 +666,7 @@ function abrirWhatsappPedido(datos) {
         contacto.notas ? `Notas: ${contacto.notas}` : ""
     ].filter(Boolean).join("\n");
 
-    const message = `Hola ZAPI 🌱
+    const message = `Hola ZAPI
 
 Quiero realizar el siguiente pedido:
 
@@ -690,11 +694,12 @@ Gracias.`;
         encodeURIComponent(message);
 
 
-    window.open(
-        `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`,
-        "_blank",
-        "noopener,noreferrer"
-    );
+    const urlWhatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+    const nuevaVentana = window.open(urlWhatsapp, "_blank", "noopener,noreferrer");
+
+    if (!nuevaVentana || nuevaVentana.closed || typeof nuevaVentana.closed === "undefined") {
+        window.location.href = urlWhatsapp;
+    }
 
 
 }
@@ -821,6 +826,32 @@ function enviarPedido(evento) {
     const email = limpiarValor(document.getElementById("pedEmail").value) || null;
     const zona = limpiarValor(document.getElementById("pedZona").value) || null;
     const notas = limpiarValor(document.getElementById("pedNotas").value) || null;
+
+    /* Sin backend configurado (hosting estatico, backend aun no
+       desplegado): se arma el pedido y se abre WhatsApp, sin fetch.
+       Con backend definido se usa el flujo normal de la API. */
+    const fnHayApi = window.hayApiConfigurada;
+    const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
+
+    if (!hayBackend) {
+
+        abrirWhatsappPedido({ nombre, telefono, email, zona, notas });
+
+        cart = [];
+        confirmarCarrito();
+
+        mostrarEstado(
+            "Pedido preparado: completá el envío en WhatsApp.",
+            false
+        );
+
+        if (boton) {
+            boton.disabled = false;
+            boton.innerHTML = contenidoBoton;
+        }
+
+        return;
+    }
 
     const items = cart.map(item => ({
         id: Number(item.id),
