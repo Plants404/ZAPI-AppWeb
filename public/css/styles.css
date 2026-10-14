@@ -541,13 +541,14 @@ header.menu-abierto::before {
   width: 100%;
 }
 
-/* CTA inferior destacado del drawer movil ("Ver carrito"). */
+/* CTA "Ver carrito" del drawer movil. Vive agrupado dentro del bloque de
+   cuenta, nunca suelto al pie del menu. */
 .nav-cta {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: .6rem;
-  margin-top: 1.75rem;
+  margin-top: .6rem;
   min-height: 48px;
   padding: .9rem 1.25rem;
   font-family: var(--sans);
@@ -906,6 +907,12 @@ html:not([data-auth="si"]) .footer-carrito {
 }
 
 html:not([data-auth="si"]) main.cart-page {
+  display: none;
+}
+
+/* Con sesion el bloque de cuenta ya ofrece "Carrito"; el CTA "Ver carrito"
+   queda como acompanante de "Ingresar" solo cuando no hay sesion. */
+html[data-auth="si"] .nav-cta {
   display: none;
 }
 
