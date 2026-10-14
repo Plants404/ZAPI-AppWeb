@@ -47,8 +47,6 @@
       <span class="nav-toggle-barra" aria-hidden="true"></span>
       <span class="nav-toggle-barra" aria-hidden="true"></span>
       <span class="nav-toggle-barra" aria-hidden="true"></span>
-      
-      <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
     </button>
 
     
@@ -71,6 +69,11 @@
         <span class="material-symbols-outlined" aria-hidden="true">close</span>
       </button>
     </form>
+
+    <a class="header-cart" href="#carrito" data-section="carrito" aria-label="Ver carrito">
+      <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+      <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+    </a>
 
     
     <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
@@ -104,6 +107,12 @@
         </li>
 
         </ul>
+
+      <a class="nav-cta" href="#carrito" data-section="carrito">
+        <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+        Ver carrito
+        <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+      </a>
     </nav>
   </header>
 
@@ -506,7 +515,7 @@
       <div class="nosotros-inner">
 
         <!-- 1. Propuesta de valor -->
-        <header class="nosotros-hero">
+        <div class="nosotros-hero">
           <div class="nosotros-hero-grid">
             <div class="nosotros-hero-principal">
               <span class="nosotros-eyebrow">Nosotros</span>
@@ -517,7 +526,7 @@
 
             <p class="nosotros-manifiesto">No vendemos plantas: vendemos el primer rincón verde propio.</p>
           </div>
-        </header>
+        </div>
 
         <!-- 2. El problema vs la solucion -->
         <div class="nosotros-duelo">
@@ -890,6 +899,12 @@
       </div>
     </div>
   </div>
+
+  <a class="cart-link-float" href="#carrito" data-section="carrito" id="cartLinkFloat">
+    <span class="material-symbols-outlined">shopping_bag</span>
+    <span class="cart-link-text">Ver carrito</span>
+    <span id="cartCountFloat" class="cart-count" data-cart-count>0</span>
+  </a>
 
   <footer>
     <p>ZAPI © 2026. Todos los derechos reservados.</p>

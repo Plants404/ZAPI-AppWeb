@@ -37,37 +37,46 @@
 
     <header class="cart-header">
 
-        <a href="index.html" class="logo">
-            <span class="material-symbols-outlined">
-                arrow_back
-            </span>
+        <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
+            aria-label="Abrir menu de navegacion">
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+        </button>
 
+        <a href="index.html" class="logo">
             <h4>ZAPI</h4>
         </a>
 
-        <div class="cart-title">
-            <span class="material-symbols-outlined">
-                shopping_bag
-            </span>
+        <a class="header-cart" href="carrito.html" aria-label="Ver carrito">
+            <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+            <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+        </a>
 
-            <h1>Tu carrito</h1>
-        </div>
-
-        <nav class="cart-nav" aria-label="Páginas del sitio">
-            <a href="index.html">Inicio</a>
-            <a href="catalogo.html">Catálogo</a>
-            <a href="pedidos.html">Mis pedidos</a>
+        <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
+            <ul>
+                <li><a class="nav-link" href="index.html">Inicio</a></li>
+                <li><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+                <li><a class="nav-link" href="pedidos.html">Mis pedidos</a></li>
             
-            <span class="nav-cuenta">
-                <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
-                <span class="nav-usuario">
-                    <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
-                    <button type="button" class="nav-salir" id="navSalir">Salir</button>
-                </span>
-            </span>
-        </nav>
+                <li class="nav-cuenta">
+                    <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
+                    <span class="nav-usuario">
+                        <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
+                        <button type="button" class="nav-salir" id="navSalir">Salir</button>
+                    </span>
+                </li>
+            </ul>
 
+            <a class="nav-cta" href="carrito.html">
+                <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+                Ver carrito
+                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+            </a>
+        </nav>
     </header>
+
+    <div class="nav-backdrop" id="navBackdrop" hidden></div>
 
 
     
@@ -83,9 +92,15 @@
 
     <main class="cart-page" id="contenido" tabindex="-1">
 
-        
-
         <section class="cart-content">
+
+            <div class="cart-title">
+                <span class="material-symbols-outlined">
+                    shopping_bag
+                </span>
+
+                <h1>Tu carrito</h1>
+            </div>
 
             <div class="cart-heading">
 
@@ -362,6 +377,7 @@
     <script src="./public/js/config.js" defer></script>
     <script src="./public/js/auth-ui.js" defer></script>
     <script src="./public/js/productos.js" defer></script>
+    <script src="./public/js/menu.js" defer></script>
     <script src="./public/js/modal.js" defer></script>
     <script src="./public/js/carrito.js" defer></script>
     <script src="./public/js/testimonio-form.js" defer></script>
