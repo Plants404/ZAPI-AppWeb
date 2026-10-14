@@ -87,11 +87,19 @@ function renderFiltros() {
 
     if (!contenedor) return;
 
+    /* Los chips se construyen una sola vez: si ya existen, solo se
+       actualiza su estado. Asi el foco del teclado no se pierde al
+       alternar categorias (antes se recreaban en cada clic). */
+    if (contenedor.querySelector(".catalog-filter")) {
+
+        actualizarEstadoFiltros();
+        return;
+
+    }
+
     const categorias = categoriasDelCatalogo();
 
     const botones = [{ valor: "", texto: "Todas" }, ...categorias.map(categoria => ({ valor: categoria, texto: categoria }))];
-
-    contenedor.querySelectorAll(".catalog-filter").forEach(boton => boton.remove());
 
     contenedor.insertAdjacentHTML("beforeend", botones.map(({ valor, texto }) => `
 
@@ -103,7 +111,45 @@ function renderFiltros() {
 
     `).join(""));
 
+    actualizarEstadoFiltros();
+
+}
+
+
+function actualizarEstadoFiltros() {
+
+    const contenedor = document.getElementById("catalogFilters");
+
+    if (!contenedor) return;
+
+    contenedor.querySelectorAll(".catalog-filter").forEach(boton => {
+
+        const activo = boton.dataset.categoria === categoriaActual;
+
+        boton.classList.toggle("activo", activo);
+        boton.setAttribute("aria-pressed", String(activo));
+
+    });
+
     posicionarIndicador();
+
+}
+
+
+/* Centra el chip activo dentro del riel deslizable sin marear a quien
+   pidio menos movimiento. */
+function centrarFiltro(boton) {
+
+    if (!boton || typeof boton.scrollIntoView !== "function") return;
+
+    const sinMovimiento = window.matchMedia
+        && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    boton.scrollIntoView({
+        behavior: sinMovimiento ? "auto" : "smooth",
+        inline: "center",
+        block: "nearest",
+    });
 
 }
 
@@ -116,8 +162,9 @@ document.addEventListener("click", function (event) {
 
     categoriaActual = boton.dataset.categoria;
 
-    renderFiltros();
+    actualizarEstadoFiltros();
     renderCatalog();
+    centrarFiltro(boton);
 
 });
 
@@ -199,7 +246,9 @@ function renderCatalog() {
 
     if (productosFiltrados.length === 0) {
 
-        const mensaje = `No encontramos productos para "${busquedaActual}".`;
+        const mensaje = busquedaActual
+            ? `No encontramos productos para "${busquedaActual}".`
+            : "No hay productos en esta categoría por ahora.";
 
         grid.innerHTML = `
 
@@ -264,7 +313,11 @@ document.addEventListener("click", function (event) {
     button.innerHTML =
         `<span class="material-symbols-outlined">check</span> ¡Agregado!`;
 
-    setTimeout(() => {
+    /* Si se vuelve a tocar antes de que termine el mensaje, se reinicia
+       el temporizador en vez de acumular varios. */
+    clearTimeout(button._resetTimer);
+
+    button._resetTimer = setTimeout(() => {
         button.classList.remove("added");
         button.innerHTML =
             `<span class="material-symbols-outlined">add_shopping_cart</span> Agregar al carrito`;
@@ -319,6 +372,38 @@ function actualizarBuscadorHeader() {
 }
 
 
+/* Mide el header y la barra de filtros reales y los publica en las
+   variables CSS. Asi la barra se pega exactamente al borde inferior del
+   header en cualquier ancho, sin dejar hueco ni quedar tapada. */
+function sincronizarAlturasSticky() {
+
+    const root = document.documentElement;
+
+    const header = document.querySelector("header");
+
+    if (header) {
+
+        root.style.setProperty(
+            "--header-h",
+            Math.round(header.getBoundingClientRect().height) + "px"
+        );
+
+    }
+
+    const filterbar = document.querySelector(".catalog-filterbar");
+
+    if (filterbar) {
+
+        root.style.setProperty(
+            "--filterbar-h",
+            Math.round(filterbar.getBoundingClientRect().height) + "px"
+        );
+
+    }
+
+}
+
+
 alCargarElCatalogo(function () {
 
     renderFiltros();
@@ -326,15 +411,48 @@ alCargarElCatalogo(function () {
     refrescarContadores(false);
 
     const contenedor = document.getElementById("catalogFilters");
+    const header = document.querySelector("header");
+    const filterbar = document.querySelector(".catalog-filterbar");
 
-    if (contenedor && typeof ResizeObserver === "function") {
-        new ResizeObserver(posicionarIndicador).observe(contenedor);
+    /* Una sola medicion por cuadro: agrupa resize, cambios de tamano de
+       header/riel y fuentes listas en un mismo requestAnimationFrame. */
+    let pendiente = false;
+
+    function programarMedicion() {
+
+        if (pendiente) return;
+
+        pendiente = true;
+
+        requestAnimationFrame(() => {
+
+            pendiente = false;
+
+            sincronizarAlturasSticky();
+            posicionarIndicador();
+
+        });
+
+    }
+
+    if (typeof ResizeObserver === "function") {
+
+        const observador = new ResizeObserver(programarMedicion);
+
+        if (contenedor) observador.observe(contenedor);
+        if (header) observador.observe(header);
+        if (filterbar) observador.observe(filterbar);
+
     }
 
     if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(posicionarIndicador);
+        document.fonts.ready.then(programarMedicion);
     }
 
-    window.addEventListener("resize", posicionarIndicador);
+    window.addEventListener("resize", programarMedicion);
+    window.addEventListener("orientationchange", programarMedicion);
+
+    /* Primera medicion sincronica para evitar el salto inicial. */
+    sincronizarAlturasSticky();
 
 });
