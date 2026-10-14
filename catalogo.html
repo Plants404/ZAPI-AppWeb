@@ -107,25 +107,45 @@
 
         <section class="catalog" id="catalogo">
 
-            <div class="catalog-header">
-                <span class="catalog-eyebrow">Catálogo ZAPI</span>
-                <h1>Catálogo vivo</h1>
-                <p>
-                    Explorá nuestra selección de plantas e insumos
-                    seleccionados para transformar cualquier espacio
-                    en un ambiente más natural y saludable.
-                </p>
+            <header class="catalog-header">
+                <div class="catalog-intro">
+                    <span class="catalog-eyebrow">
+                        <span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>
+                        Catálogo ZAPI
+                    </span>
+                    <h1 class="catalog-title">Catálogo <span class="catalog-title-acento">vivo</span></h1>
+                    <p class="catalog-lead">
+                        Elegí hoy tus plantas y tené tu rincón verde funcionando sin complicaciones.
+                        Nosotros preparamos todo; vos solo lo disfrutás.
+                    </p>
+                </div>
 
-                <span class="price-note">
-                    <span class="material-symbols-outlined">verified</span>
-                    Precios fijos · sujetos a disponibilidad
-                </span>
-            </div>
+                <aside class="catalog-trust" aria-label="Beneficios de compra">
+                    <p class="catalog-trust-title">Compra sin sorpresas</p>
+                    <ul>
+                        <li>
+                            <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+                            Precios fijos, garantizados
+                        </li>
+                        <li>
+                            <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+                            Stock disponible y actualizado
+                        </li>
+                        <li>
+                            <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+                            Envío seguro en Montevideo
+                        </li>
+                    </ul>
+                </aside>
+            </header>
 
             
-            <div class="catalog-filters" id="catalogFilters" role="group"
-                aria-label="Filtrar productos por categoría">
-                
+            <div class="catalog-filterbar">
+                <span class="catalog-filterbar-label" id="catalogFiltersLabel">Explorá por categoría</span>
+                <div class="catalog-filters" id="catalogFilters" role="group"
+                    aria-labelledby="catalogFiltersLabel">
+                    <span class="catalog-filter-indicator" id="catalogFilterIndicator" aria-hidden="true"></span>
+                </div>
             </div>
 
             <div id="productGrid" class="catalog-grid">

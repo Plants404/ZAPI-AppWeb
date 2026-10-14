@@ -1553,6 +1553,7 @@ body.no-scroll {
   gap: 2.5rem;
   max-width: 1040px;
   margin: 0 auto;
+  align-items: start;
 }
 
 .contacto-eyebrow {
@@ -1563,13 +1564,15 @@ body.no-scroll {
   text-transform: uppercase;
   letter-spacing: .25em;
   color: var(--leaf-texto);
-  border: 1px solid var(--leaf-texto);
+  background: rgba(74, 124, 89, .10);
+  border: 1px solid rgba(74, 124, 89, .35);
   padding: .4rem 1rem;
   border-radius: 999px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .contacto-info h2 {
+  line-height: 1.15;
   margin-bottom: 1rem;
 }
 
@@ -1581,30 +1584,47 @@ body.no-scroll {
 .contacto-nota {
   display: flex;
   align-items: center;
-  gap: .5rem;
-  margin-top: 1.75rem;
+  gap: .6rem;
+  margin: 2rem 0 0;
+  padding: .85rem 1rem;
+  background: rgba(74, 124, 89, .08);
+  border: 1px solid rgba(74, 124, 89, .15);
+  border-radius: 12px;
   font-size: .85rem;
   color: var(--muted-texto);
 }
 
 .contacto-nota .material-symbols-outlined {
-  font-size: 1.1rem;
-  color: var(--moss);
+  font-size: 1.2rem;
+  color: var(--leaf);
+  flex-shrink: 0;
 }
 
 .contacto-acciones {
   display: flex;
   flex-wrap: wrap;
-  margin-top: 1.5rem;
+  gap: .75rem;
+  margin-top: 1.75rem;
+}
+
+/* En fila, con aire entre botones: que no parezcan botones de prueba. */
+.contacto-acciones button {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+}
+
+.contacto-acciones button .material-symbols-outlined {
+  font-size: 1.15rem;
 }
 
 .contacto-panel {
-  padding: 2.25rem 1.75rem;
+  padding: 2.5rem;
   background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
   border: 1px solid rgba(31, 58, 46, .06);
-  border-top: 4px solid var(--leaf);
 }
 
 .contacto-panel-titulo {
@@ -1825,17 +1845,36 @@ body.no-scroll {
   color: var(--leaf-texto);
 }
 
+@keyframes formularioAparicion {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .formulario-ok {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: .35rem;
+  gap: .5rem;
   padding: 1.5rem .5rem;
+  animation: formularioAparicion .45s ease both;
 }
 
 .formulario-ok-icono {
-  font-size: 3rem;
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: rgba(74, 124, 89, .12);
+  font-size: 2.4rem;
   color: var(--leaf);
 }
 
@@ -2031,12 +2070,8 @@ footer nav a:focus-visible {
 
   .contacto {
     grid-template-columns: .85fr 1.15fr;
-    gap: 3.5rem;
-    align-items: start;
-  }
-
-  .contacto-panel {
-    padding: 2.5rem 2.25rem;
+    gap: 4rem;
+    align-items: center;
   }
 
   .formulario-pie {
@@ -2461,6 +2496,10 @@ body.con-testimonio-abierto {
   }
 
   .aviso-flotante {
+    animation: none;
+  }
+
+  .formulario-ok {
     animation: none;
   }
 }

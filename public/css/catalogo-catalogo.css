@@ -8,38 +8,220 @@
 background: var(--sand);
 }
 
+/* Cabecera editorial: en mobile apila; en pantallas grandes el
+lema respira a la izquierda y el bloque de confianza lo
+acompana a la derecha, alineado abajo (lectura en Z). */
 .catalog-header {
-text-align: center;
-max-width: 780px;
-margin: 0 auto 2rem;
+display: grid;
+gap: 2rem;
+max-width: var(--container);
+margin: 0 auto 2.5rem;
+text-align: left;
 }
 
-.catalog-filters {
-display: flex;
-flex-wrap: wrap;
-justify-content: center;
+.catalog-intro {
+min-width: 0;
+}
+
+/* Sello de garantia: pastilla con icono para sentirse formal,
+no una etiqueta suelta. */
+.catalog-eyebrow {
+display: inline-flex;
+align-items: center;
 gap: .5rem;
+font-size: .72rem;
+font-weight: 600;
+text-transform: uppercase;
+letter-spacing: .22em;
+color: var(--leaf-texto);
+background: rgba(74, 124, 89, .10);
+border: 1px solid rgba(74, 124, 89, .35);
+padding: .4rem .95rem;
+border-radius: 999px;
+margin-bottom: 1.35rem;
+}
+
+.catalog-eyebrow .material-symbols-outlined {
+font-size: 1.05rem;
+}
+
+.catalog-title {
+font-size: clamp(2.6rem, 6.5vw, 4.6rem);
+line-height: 1.1;
+letter-spacing: .01em;
+color: var(--forest);
+margin: 0 0 .35rem;
+}
+
+/* "Vivo" late: un resplandor verde suave y lento da la idea de
+algo que respira. Se apaga con prefers-reduced-motion. */
+.catalog-title-acento {
+color: var(--leaf);
+animation: catalogoLatido 4.5s ease-in-out infinite;
+}
+
+.catalog-lead {
+font-size: clamp(1.02rem, 1.6vw, 1.2rem);
+line-height: 1.5;
+color: var(--moss);
+max-width: 54ch;
+margin: 0;
+}
+
+/* Aviso pasivo -> bloque de autoridad y alivio de friccion. */
+.catalog-trust {
+align-self: end;
+min-width: 0;
+background: var(--white);
+border-radius: var(--radius);
+border-left: 3px solid var(--leaf);
+box-shadow: var(--shadow-sm);
+padding: 1.3rem 1.4rem;
+transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.catalog-trust:hover {
+transform: translateY(-4px);
+box-shadow: var(--shadow-md);
+}
+
+.catalog-trust-title {
+font-size: .72rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: .18em;
+color: var(--moss);
+margin: 0 0 .85rem;
+}
+
+.catalog-trust ul {
+list-style: none;
+margin: 0;
+padding: 0;
+display: grid;
+gap: .65rem;
+}
+
+.catalog-trust li {
+display: flex;
+align-items: center;
+gap: .6rem;
+font-size: .92rem;
+font-weight: 500;
+color: var(--ink);
+margin: 0;
+}
+
+.catalog-trust .material-symbols-outlined {
+font-size: 1.15rem;
+color: var(--leaf);
+flex-shrink: 0;
+transition: transform .25s ease, color .25s ease;
+}
+
+.catalog-trust li:hover .material-symbols-outlined {
+transform: scale(1.1);
+color: var(--moss);
+}
+
+/* Entrada escalonada: sello, luego titulo y bajada, luego la
+tarjeta deslizandose desde la derecha, y por ultimo los
+filtros. "backwards" oculta cada bloque durante su retraso y,
+al terminar, libera el transform para que el hover de la
+tarjeta siga funcionando. */
+.catalog-eyebrow,
+.catalog-title,
+.catalog-lead,
+.catalog-trust,
+.catalog-filterbar {
+animation-duration: .6s;
+animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+animation-fill-mode: backwards;
+}
+
+.catalog-eyebrow { animation-name: catalogoEntrada; animation-delay: 0s; }
+.catalog-title { animation-name: catalogoEntrada; animation-delay: .15s; }
+.catalog-lead { animation-name: catalogoEntrada; animation-delay: .15s; }
+.catalog-trust { animation-name: catalogoEntradaDerecha; animation-delay: .3s; }
+.catalog-filterbar { animation-name: catalogoEntrada; animation-delay: .45s; }
+
+.catalog-filterbar {
+position: relative;
 margin-bottom: 2rem;
 }
 
-.catalog-filter {
-border: 1px solid rgba(61, 107, 79, .25);
+.catalog-filterbar-label {
+display: block;
+font-size: .72rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: .18em;
+color: var(--muted-texto);
+margin-bottom: .75rem;
+}
+
+/* Riel de filtros: una sola fila; si no entra, se desliza en
+horizontal (patron movil habitual de chips). */
+.catalog-filters {
+position: relative;
+display: flex;
+flex-wrap: nowrap;
+gap: .4rem;
+padding: .35rem;
 background: var(--white);
+border: 1px solid rgba(61, 107, 79, .18);
+border-radius: 999px;
+box-shadow: var(--shadow-sm);
+overflow-x: auto;
+scrollbar-width: none;
+}
+
+.catalog-filters::-webkit-scrollbar {
+display: none;
+}
+
+/* Pastilla que se desliza detras del filtro activo. La ubica
+catalogo.js segun el boton seleccionado. */
+.catalog-filter-indicator {
+position: absolute;
+top: 0;
+left: 0;
+z-index: 0;
+border-radius: 999px;
+background: var(--forest);
+box-shadow: 0 6px 16px -10px rgba(31, 58, 46, .7);
+pointer-events: none;
+opacity: 0;
+transition: transform .35s cubic-bezier(.22, 1, .36, 1),
+width .35s cubic-bezier(.22, 1, .36, 1),
+height .2s ease, opacity .25s ease;
+}
+
+/* Chips: transparentes sobre el riel blanco; el relleno lo pone
+la pastilla deslizante. */
+.catalog-filter {
+position: relative;
+z-index: 1;
+flex: 0 0 auto;
+border: 0;
+background: transparent;
 color: var(--ink);
-min-height: 44px;
-padding: .45rem 1.1rem;
+min-height: 40px;
+padding: .5rem 1.15rem;
 border-radius: 999px;
 font-size: .95rem;
 font-weight: 500;
-cursor: pointer;
-box-shadow: var(--shadow-sm);
-transition: all .2s ease;
 white-space: nowrap;
+transition: all .25s ease;
 }
 
-.catalog-filter:hover {
-background: rgba(74, 124, 89, .10);
-border-color: var(--leaf-texto);
+.catalog-filter:not(.activo):hover {
+background: rgba(74, 124, 89, .12);
+color: var(--leaf-texto);
+}
+
+.catalog-filter:active {
+transform: scale(.96);
 }
 
 .catalog-filter:focus-visible {
@@ -47,11 +229,62 @@ outline: 2px solid var(--leaf-texto);
 outline-offset: 2px;
 }
 
+/* Si la pastilla esta colocada, el chip activo se vuelve
+transparente y el relleno lo pone la pastilla. Si no (JS
+recien cargando), el chip se pinta solo: nunca queda
+texto blanco sobre blanco. */
 .catalog-filter.activo {
-background: var(--leaf);
-border-color: var(--leaf);
-color: #fff;
-box-shadow: 0 6px 20px -12px rgba(74, 124, 89, .6);
+background: var(--forest);
+color: var(--white);
+}
+
+.catalog-filters.con-indicador .catalog-filter.activo {
+background: transparent;
+}
+
+@keyframes catalogoEntrada {
+from { opacity: 0; transform: translateY(14px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes catalogoEntradaDerecha {
+from { opacity: 0; transform: translateX(26px); }
+to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes catalogoLatido {
+0%, 100% { color: var(--leaf); text-shadow: 0 0 0 rgba(74, 124, 89, 0); }
+50% { color: var(--moss); text-shadow: 0 0 16px rgba(74, 124, 89, .38); }
+}
+
+@media (min-width: 880px) {
+.catalog-header {
+grid-template-columns: minmax(0, 1.7fr) minmax(280px, .9fr);
+gap: clamp(2rem, 5vw, 4.5rem);
+align-items: end;
+}
+}
+
+@media (prefers-reduced-motion: reduce) {
+.catalog-eyebrow,
+.catalog-title,
+.catalog-lead,
+.catalog-trust,
+.catalog-filterbar,
+.catalog-title-acento {
+animation: none;
+}
+
+.catalog-trust,
+.catalog-filter-indicator,
+.catalog-filter,
+.catalog-trust .material-symbols-outlined {
+transition: none;
+}
+
+.catalog-trust:hover {
+transform: none;
+}
 }
 
 .catalog-empty {
@@ -87,38 +320,7 @@ outline: 2px solid var(--leaf);
 outline-offset: 3px;
 }
 
-.catalog-eyebrow {
-display: inline-block;
-font-size: .78rem;
-text-transform: uppercase;
-letter-spacing: .25em;
-color: var(--leaf-texto);
-border: 1px solid var(--leaf-texto);
-padding: .35rem .9rem;
-border-radius: 999px;
-margin-bottom: 1rem;
-}
 
-.catalog-header p {
-font-size: 1.05rem;
-}
-
-.price-note {
-display: inline-flex;
-align-items: center;
-gap: .5rem;
-margin-top: .5rem;
-padding: .5rem 1rem;
-background: rgba(74, 124, 89, .12);
-color: var(--moss);
-border-radius: 999px;
-font-size: .85rem;
-font-weight: 500;
-}
-
-.price-note .material-symbols-outlined {
-font-size: 1.1rem;
-}
 
 .catalog-grid {
 display: grid;

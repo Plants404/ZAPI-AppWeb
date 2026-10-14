@@ -40,6 +40,47 @@ function categoriasDelCatalogo() {
 }
 
 
+let indicadorListo = false;
+
+
+/* Mueve la pastilla del filtro activo a la posicion del boton
+   seleccionado. La primera vez no anima (evita que entre deslizandose
+   desde la esquina) y despues usa la transicion del CSS. */
+function posicionarIndicador() {
+
+    const contenedor = document.getElementById("catalogFilters");
+    const indicador = document.getElementById("catalogFilterIndicator");
+
+    if (!contenedor || !indicador) return;
+
+    const activo = contenedor.querySelector(".catalog-filter.activo");
+
+    if (!activo || activo.offsetWidth === 0) {
+        contenedor.classList.remove("con-indicador");
+        indicador.style.opacity = "0";
+        return;
+    }
+
+    const sinTransicion = !indicadorListo;
+
+    if (sinTransicion) indicador.style.transition = "none";
+
+    indicador.style.width = activo.offsetWidth + "px";
+    indicador.style.height = activo.offsetHeight + "px";
+    indicador.style.transform =
+        "translate(" + activo.offsetLeft + "px, " + activo.offsetTop + "px)";
+    indicador.style.opacity = "1";
+    contenedor.classList.add("con-indicador");
+
+    if (sinTransicion) {
+        void indicador.offsetWidth;
+        indicador.style.transition = "";
+        indicadorListo = true;
+    }
+
+}
+
+
 function renderFiltros() {
 
     const contenedor = document.getElementById("catalogFilters");
@@ -50,7 +91,9 @@ function renderFiltros() {
 
     const botones = [{ valor: "", texto: "Todas" }, ...categorias.map(categoria => ({ valor: categoria, texto: categoria }))];
 
-    contenedor.innerHTML = botones.map(({ valor, texto }) => `
+    contenedor.querySelectorAll(".catalog-filter").forEach(boton => boton.remove());
+
+    contenedor.insertAdjacentHTML("beforeend", botones.map(({ valor, texto }) => `
 
             <button class="catalog-filter${valor === categoriaActual ? " activo" : ""}"
                 type="button" data-categoria="${escaparHTML(valor)}"
@@ -58,7 +101,9 @@ function renderFiltros() {
                 ${escaparHTML(texto)}
             </button>
 
-    `).join("");
+    `).join(""));
+
+    posicionarIndicador();
 
 }
 
@@ -279,5 +324,17 @@ alCargarElCatalogo(function () {
     renderFiltros();
     renderCatalog();
     refrescarContadores(false);
+
+    const contenedor = document.getElementById("catalogFilters");
+
+    if (contenedor && typeof ResizeObserver === "function") {
+        new ResizeObserver(posicionarIndicador).observe(contenedor);
+    }
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(posicionarIndicador);
+    }
+
+    window.addEventListener("resize", posicionarIndicador);
 
 });
