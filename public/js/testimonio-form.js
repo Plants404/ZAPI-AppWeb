@@ -404,6 +404,13 @@
             return;
         }
 
+        /* Sin backend no hay donde guardar la opinion en el servidor. */
+        const fnHayApi = window.hayApiConfigurada;
+        if (typeof fnHayApi === "function" && !fnHayApi()) {
+            marcarError("general", "Las opiniones necesitan el backend. Probá más tarde.");
+            return;
+        }
+
         const boton = raiz.querySelector(".testimonio-btn-primario");
         const textoBoton = boton.textContent;
 

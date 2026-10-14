@@ -47,6 +47,11 @@
         `;
     }
 
+    function hayBackend() {
+        const fn = window.hayApiConfigurada;
+        return typeof fn !== 'function' || fn();
+    }
+
     function pedidoHTML(pedido) {
         const items = Array.isArray(pedido.items) ? pedido.items : [];
 
@@ -94,6 +99,13 @@
     }
 
     async function cargar() {
+        /* Sin backend no hay historial del servidor: se muestra el
+           estado vacio en vez de golpear /api/pedidos. */
+        if (!hayBackend()) {
+            mostrarVacio();
+            return;
+        }
+
         try {
             const respuesta = await fetch(window.urlApi('/api/pedidos'), {
                 credentials: 'include',
