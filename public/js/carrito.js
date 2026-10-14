@@ -340,6 +340,43 @@ function descontarStockDelPedido(items) {
     if (typeof descontar === "function") descontar(items);
 }
 
+function generarCodigoPedido() {
+    const fecha = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const azar = Math.random().toString(16).slice(2, 6).padEnd(4, "0").toUpperCase();
+
+    return `Z-${fecha}-${azar}`;
+}
+
+/* Guarda el pedido en el navegador para que "Mis pedidos" lo muestre.
+   Solo sin backend: con backend el pedido lo guarda el servidor y esa
+   pagina lee del servidor, no de aca. */
+function registrarPedidoLocal(datos) {
+    const guardar = window.guardarPedidoLocal;
+    if (typeof guardar !== "function") return;
+
+    const fnHayApi = window.hayApiConfigurada;
+    if (typeof fnHayApi === "function" && fnHayApi()) return;
+
+    if (cart.length === 0) return;
+
+    const { total } = calcularTotales(cart);
+
+    guardar({
+        id: generarCodigoPedido(),
+        creado: new Date().toISOString(),
+        estado: "pendiente",
+        total,
+        zona: datos.zona || null,
+        notas: datos.notas || null,
+        items: cart.map(({ id, nombre, precio, cantidad }) => ({
+            producto_id: Number(id),
+            nombre,
+            precio: Number(precio),
+            cantidad: Number(cantidad),
+        })),
+    });
+}
+
 /* Fallback de emergencia: si la API no responde, se rearma el pedido
    desde el carrito (estado global o almacenamiento) y se va a
    WhatsApp sin mostrar carteles de error. */
@@ -349,6 +386,8 @@ function respaldoAWhatsApp(datos) {
     descontarStockDelPedido(
         cart.map(({ id, cantidad }) => ({ id: Number(id), cantidad: Number(cantidad) }))
     );
+
+    registrarPedidoLocal(datos);
 
     return redirigirAWhatsApp(datos, "Fallback a WhatsApp activado con URL:");
 }
@@ -483,6 +522,7 @@ async function enviarPedido(evento) {
     if (!hayBackend) {
         abrirWhatsappPedido(datos);
         descontarStockDelPedido(items);
+        registrarPedidoLocal(datos);
         cart = [];
         confirmarCarrito();
         mostrarEstado("Pedido preparado: completá el envío en WhatsApp.", false);
