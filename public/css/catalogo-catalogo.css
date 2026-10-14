@@ -199,6 +199,16 @@ justify-content: center;
 white-space: nowrap;
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+.catalog-filterbar {
+max-width: 90% !important;
+margin: 0 auto 1.2rem auto !important;
+top: 95px !important;
+border-radius: 10px !important;
+padding: 14px !important;
+}
+}
+
 @media (max-width: 767px) {
 .catalog-filterbar {
 position: -webkit-sticky !important;
