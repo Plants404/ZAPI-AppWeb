@@ -203,7 +203,7 @@ white-space: nowrap;
 .catalog-filterbar {
 position: -webkit-sticky !important;
 position: sticky !important;
-top: 75px !important;
+top: 130px !important;
 z-index: 80 !important;
 width: 100vw !important;
 max-width: 100vw !important;
