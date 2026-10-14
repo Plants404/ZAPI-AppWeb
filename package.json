@@ -1,19 +1,15 @@
 {
   "name": "zapi-appweb",
   "private": true,
-  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, catalogo en datos/, backend en backend/ y herramientas en tools/.",
+  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, catalogo en datos/ y herramientas en tools/. Sin backend: es un sitio estatico.",
   "scripts": {
-    "start": "node --env-file-if-exists=.env backend/src/server.js",
-    "dev": "node --env-file-if-exists=.env --watch backend/src/server.js",
-    "dev:memoria": "node tools/dev-memoria.js",
-    "test": "node --test \"backend/tests/*.test.js\"",
+    "start": "node tools/servir.js",
     "verificar": "node tools/verificar.js",
     "lint": "eslint .",
     "check": "npm run lint && npm run verificar",
     "contraste": "node tools/contraste.js",
     "generar": "node tools/generar-productos.js",
     "generar:testimonios": "node tools/generar-testimonios.js",
-    "crear:usuario": "node --env-file-if-exists=.env tools/crear-usuario.js",
     "sitemap": "node tools/generar-sitemap.js",
     "css": "node tools/extraer-modal-css.js"
   },
@@ -22,13 +18,6 @@
   },
   "devDependencies": {
     "eslint": "^10.12.0",
-    "globals": "^17.13.0",
-    "mongodb-memory-server": "^11.3.0",
-    "supertest": "^7.3.1"
-  },
-  "dependencies": {
-    "express": "^5.3.0",
-    "helmet": "^8.3.0",
-    "mongoose": "^9.11.1"
+    "globals": "^17.13.0"
   }
 }
