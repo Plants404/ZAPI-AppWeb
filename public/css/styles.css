@@ -139,7 +139,7 @@ section>* {
 }
 
 .services-view {
-  padding: 0;
+  padding: clamp(4.5rem, 9vw, 7.5rem) 1.25rem;
 }
 @media (prefers-reduced-motion: reduce) {
 
@@ -818,28 +818,140 @@ body.no-scroll {
   margin-bottom: 2rem;
 }
 
-.service-items ul {
+.service-items {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1rem;
-  max-width: 960px;
-  margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
 }
 
-.service-items li {
-  padding: 1.5rem 1.25rem;
+.service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: 1.9rem 1.6rem 2rem;
   background: var(--white);
-  border-radius: var(--radius);
-  color: var(--forest);
-  font-weight: 500;
   border: 1px solid rgba(31, 58, 46, .08);
-  transition: all .25s ease;
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
 }
 
-.service-items li:hover {
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(74, 124, 89, .35);
+}
+
+.service-card-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(143, 174, 145, .18);
+  color: var(--forest);
+  margin-bottom: 1.25rem;
+}
+
+.service-card-icono .material-symbols-outlined {
+  font-size: 26px;
+}
+
+.service-card-titulo {
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--forest);
+  margin: 0 0 .5rem;
+}
+
+.service-card-texto {
+  margin: 0 0 1.25rem;
+  font-size: .96rem;
+  line-height: 1.6;
+  color: var(--muted-texto);
+}
+
+/* Enlace secundario "Consultar": se pega al pie de la tarjeta. */
+.service-card-cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--sans);
+  font-size: .92rem;
+  font-weight: 600;
+  color: var(--leaf-texto);
+  cursor: pointer;
+  transition: color .2s ease, gap .2s ease;
+}
+
+.service-card-cta:hover {
+  color: var(--forest);
+  gap: .55rem;
+}
+
+.service-card-cta .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* Octava tarjeta: CTA destacada para completar la grilla 4x2. */
+.service-card--cta {
   background: var(--forest);
-  color: var(--cream);
-  transform: translateY(-3px);
+  border-color: var(--forest);
+}
+
+.service-card--cta .service-card-icono {
+  background: rgba(255, 255, 255, .12);
+  color: var(--sage);
+}
+
+.service-card--cta .service-card-titulo {
+  color: #ffffff;
+}
+
+.service-card--cta .service-card-texto {
+  color: #b6bcb3;
+}
+
+.service-card--cta .service-card-cta {
+  padding: .6rem 1.15rem;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--forest);
+}
+
+.service-card--cta .service-card-cta:hover {
+  background: var(--white);
+  color: var(--forest);
+}
+
+@media (max-width: 1040px) {
+  .service-items {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .service-items {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-card {
+    transition: none;
+  }
+
+  .service-card:hover {
+    transform: none;
+  }
 }
 
 /* Padding vertical generoso para que la seccion respire, y crema
