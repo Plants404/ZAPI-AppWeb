@@ -908,8 +908,8 @@ body.no-scroll {
 }
 
 .service-card--cta .service-card-icono {
-  background: rgba(255, 255, 255, .12);
-  color: var(--sage);
+  background: rgba(255, 255, 255, .15);
+  color: #ffffff;
 }
 
 .service-card--cta .service-card-titulo {
