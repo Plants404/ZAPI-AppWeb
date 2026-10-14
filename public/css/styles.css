@@ -583,6 +583,14 @@ header.menu-abierto::before {
   border-radius: 999px;
 }
 
+/* El CTA solo aplica al drawer de celular: en tablet y escritorio el
+   carrito vive en la barra superior / menu, asi que se oculta. */
+@media (min-width: 768px) {
+  .nav-cta {
+    display: none;
+  }
+}
+
 .nav-bar li .nav-link:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 4px;
@@ -2533,10 +2541,6 @@ footer nav a:focus-visible {
     box-shadow: none;
     visibility: visible;
     transform: none;
-  }
-
-  .nav-cta {
-    display: none;
   }
 
   .nav-bar ul {
