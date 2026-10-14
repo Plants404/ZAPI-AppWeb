@@ -1,676 +1,298 @@
-// WhatsApp: 598 + número sin el 0 inicial (098 268 560 -> 59898268560)
+/* ==========================================================
+   CARRITO Y PEDIDO
+   ----------------------------------------------------------
+   Estado del carrito, render de la pagina, recomendaciones y
+   envio. Cuando hay backend el pedido sale por la API; si no
+   hay, o si la API falla, se cae a WhatsApp sin bloquear al
+   cliente. Los scripts comparten el ambito global (scripts
+   clasicos), por eso el carrito es un `let` de nivel superior.
+   ========================================================== */
+
+// WhatsApp: 598 + numero sin el 0 inicial (098 268 560 -> 59898268560)
 const WHATSAPP_NUMBER = "59898268560";
-
-
 const SHIPPING_COST = 0;
-
 
 let cart = [];
 
-function leer() {
-
-    cart = obtenerCarrito();
-    renderCart();
-
-}
-
-
-function saveCart() {
-
-    guardarCarrito(cart);
-
-}
-
+/* --- Estado y persistencia --------------------------------- */
 
 function confirmarCarrito() {
-
-    saveCart();
-
+    guardarCarrito(cart);
     renderCart();
-
     actualizarContador(false);
-
 }
 
+/* Relee el carrito guardado. Se usa al cargar el catalogo y en
+   cada cambio, porque index.html tiene dos copias del carrito. */
+function sincronizarCarrito() {
+    cart = obtenerCarrito();
+    renderCart();
+}
 
-      const AFINIDAD = {
+function calcularTotales(items = cart) {
+    const subtotal = items.reduce((total, item) => total + item.precio * item.cantidad, 0);
+    const shipping = items.length > 0 ? SHIPPING_COST : 0;
 
-          "Hortalizas": ["Aromáticas", "Combo", "Kits"],
-          "Aromáticas": ["Hortalizas", "Combo", "Kits"],
-          "Plantas de interior": ["Plantas de interior", "Combo", "Kits"],
-          "Combo": ["Plantas de interior", "Hortalizas", "Aromáticas", "Kits"],
-          "Kits": ["Hortalizas", "Aromáticas", "Plantas de interior", "Combo"]
+    return { subtotal, shipping, total: subtotal + shipping };
+}
 
-      };
+function updateSummary() {
+    const { subtotal, shipping, total } = calcularTotales();
 
+    document.getElementById("subtotal").textContent = formatearPrecio(subtotal);
+    document.getElementById("shipping").textContent = formatearPrecio(shipping);
+    document.getElementById("total").textContent = formatearPrecio(total);
+}
+
+/* --- Recomendaciones --------------------------------------- */
+
+const AFINIDAD = {
+    Hortalizas: ["Aromáticas", "Combo", "Kits"],
+    Aromáticas: ["Hortalizas", "Combo", "Kits"],
+    "Plantas de interior": ["Plantas de interior", "Combo", "Kits"],
+    Combo: ["Plantas de interior", "Hortalizas", "Aromáticas", "Kits"],
+    Kits: ["Hortalizas", "Aromáticas", "Plantas de interior", "Combo"],
+};
 
 function obtenerRecomendaciones() {
+    const idsEnCarrito = new Set(cart.map(({ id }) => id));
 
-    const enCarrito = cart.map(item => item.id);
-
-    /* El carrito guardado solo trae {id, precio, cantidad}: la categoría hay que buscarla en el catálogo. */
-    const categoriasEnCarrito = cart
-
-        .map(item => {
-
-            const producto = PRODUCTOS.find(
-                p => p.id === item.id
-            );
-
-            return producto ? producto.categoria : null;
-
-        })
-
+    /* El carrito guardado solo trae {id, precio, cantidad}: la
+       categoria hay que buscarla en el catalogo. */
+    const categorias = cart
+        .map(({ id }) => PRODUCTOS.find(producto => producto.id === id)?.categoria)
         .filter(Boolean);
 
-    const candidatos = PRODUCTOS.filter(
-        producto => !enCarrito.includes(producto.id)
+    const puntajeDe = producto => categorias.reduce(
+        (total, categoria) =>
+            total + ((AFINIDAD[categoria] || []).includes(producto.categoria) ? 2 : 0),
+        0
     );
 
-    const conAfinidad = candidatos
+    const candidatos = PRODUCTOS.filter(({ id }) => !idsEnCarrito.has(id));
 
-        .map(producto => {
-
-            const afinidad = categoriasEnCarrito.reduce(
-                (total, categoria) => {
-
-                    const compatibles =
-                        AFINIDAD[categoria] || [];
-
-                    return total +
-                        (compatibles.includes(producto.categoria) ? 2 : 0);
-
-                },
-                0
-            );
-
-            return {
-                producto,
-                puntaje: afinidad
-            };
-
-        })
-
-        .filter(item => item.puntaje > 0)
-
+    const porAfinidad = candidatos
+        .map(producto => ({ producto, puntaje: puntajeDe(producto) }))
+        .filter(({ puntaje }) => puntaje > 0)
         .sort((a, b) => b.puntaje - a.puntaje)
-
-        .map(item => item.producto);
-
-    if (conAfinidad.length > 0) {
-
-        return conAfinidad.slice(0, 3);
-
-    }
-
-    return candidatos
-
-        .slice()
-
-        .sort((a, b) => a.precioBase - b.precioBase)
-
+        .map(({ producto }) => producto)
         .slice(0, 3);
 
+    if (porAfinidad.length > 0) return porAfinidad;
+
+    return [...candidatos].sort((a, b) => a.precioBase - b.precioBase).slice(0, 3);
 }
 
-
 function renderRecommendations() {
-
     const seccion = document.getElementById("recommendations");
-
     const lista = document.getElementById("recommendationsList");
 
     if (!seccion || !lista) return;
 
-
     const recomendaciones = obtenerRecomendaciones();
 
-
     if (recomendaciones.length === 0) {
-
         seccion.hidden = true;
         lista.innerHTML = "";
-
         lista.dataset.ids = "";
         return;
-
     }
-
 
     seccion.hidden = false;
 
-
-    /* Reescribir la lista en cada cambio de cantidad recrearía las tarjetas y perdería el foco. */
-    const ids = recomendaciones.map(p => p.id).join(",");
-
+    /* Reescribir la lista en cada cambio de cantidad recrearia las
+       tarjetas y perderia el foco. */
+    const ids = recomendaciones.map(({ id }) => id).join(",");
     if (lista.dataset.ids === ids) return;
-
     lista.dataset.ids = ids;
 
-
     lista.innerHTML = recomendaciones.map((producto, indice) => {
-
         const precio = precios[producto.id] || producto.precioBase;
 
         return `
-
-            <article
-                class="recommendation-card"
-                style="--i: ${indice}"
-                data-id="${producto.id}"
-            >
-
+            <article class="recommendation-card" style="--i: ${indice}" data-id="${producto.id}">
                 <div class="recommendation-image">
-
-                    <img
-                        src="${escaparHTML(producto.imagen)}"
-                        alt="${escaparHTML(producto.nombre)}"
-                        loading="lazy"
-                    >
-
+                    <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
                 </div>
-
                 <div class="recommendation-info">
-
-                    <div class="recommendation-category">
-                        ${escaparHTML(producto.categoria)}
-                    </div>
-
+                    <div class="recommendation-category">${escaparHTML(producto.categoria)}</div>
                     <h3>
-                        <button class="recommendation-link" type="button"
-                            data-id="${producto.id}" aria-haspopup="dialog">
+                        <button class="recommendation-link" type="button" data-id="${producto.id}" aria-haspopup="dialog">
                             ${escaparHTML(producto.nombre)}
                         </button>
                     </h3>
-
-                    <p>
-                        ${escaparHTML(producto.descripcion)}
-                    </p>
-
+                    <p>${escaparHTML(producto.descripcion)}</p>
                     <div class="recommendation-footer">
-
-                        <strong>
-                            ${formatearPrecio(precio)}
-                        </strong>
-
-                        <button
-                            class="recommendation-add"
-                            type="button"
-                            data-id="${producto.id}"
-                            aria-label="Agregar ${escaparHTML(producto.nombre)} al carrito"
-                        >
-
-                            <span class="material-symbols-outlined">
-                                add_shopping_cart
-                            </span>
-
+                        <strong>${formatearPrecio(precio)}</strong>
+                        <button class="recommendation-add" type="button" data-id="${producto.id}"
+                            aria-label="Agregar ${escaparHTML(producto.nombre)} al carrito">
+                            <span class="material-symbols-outlined">add_shopping_cart</span>
                             Agregar
-
                         </button>
-
                     </div>
-
                 </div>
-
             </article>
-
         `;
-
     }).join("");
-
 }
 
+/* --- Render del carrito ------------------------------------ */
 
 function renderCart() {
-
-    const container =
-        document.getElementById("cartItems");
-
-    const emptyCart =
-        document.getElementById("emptyCart");
+    const container = document.getElementById("cartItems");
+    const emptyCart = document.getElementById("emptyCart");
 
     if (!container || !emptyCart) return;
 
+    const formulario = document.querySelector("#checkoutRoot form");
+    if (formulario) formulario.hidden = cart.length === 0;
 
-    const raizCheckout =
-        document.getElementById("checkoutRoot");
-
-    const formularioCheckout =
-        raizCheckout && raizCheckout.querySelector("form");
-
-    if (formularioCheckout) {
-
-        formularioCheckout.hidden =
-            cart.length === 0;
-
+    if (cart.length === 0) {
+        container.innerHTML = "";
+        emptyCart.classList.remove("hidden");
+        updateSummary();
+        renderRecommendations();
+        return;
     }
-
-
-        if (cart.length === 0) {
-
-            container.innerHTML = "";
-
-            emptyCart.classList.remove("hidden");
-
-            updateSummary();
-
-            renderRecommendations();
-
-            return;
-
-        }
-
 
     emptyCart.classList.add("hidden");
 
-
-    container.innerHTML = cart.map(item => {
-
-        const itemTotal =
-            item.precio * item.cantidad;
-
-
-        return `
-
-            <article
-                class="cart-item"
-                data-id="${item.id}"
-            >
-
-                <div class="cart-item-image">
-
-                    <img
-                        src="${escaparHTML(item.imagen)}"
-                        alt="${escaparHTML(item.nombre)}"
-                        loading="lazy"
-                        decoding="async"
-                    >
-
-                </div>
-
-
-                <div class="cart-item-info">
-
-                    <h3>
-                        ${escaparHTML(item.nombre)}
-                    </h3>
-
-                    <div class="cart-item-category">
-                        ${escaparHTML(item.categoria) || "Producto ZAPI"}
-                    </div>
-
-                    <div class="cart-item-price">
-                        ${formatearPrecio(item.precio)}<span class="cart-item-unit"> c/u</span>
-                    </div>
-
-                    <span class="cart-item-stock" data-stock="${item.id}"></span>
-
-
-                    <div class="quantity-control">
-
-                        <button
-                            class="quantity-minus"
-                            data-id="${item.id}"
-                            aria-label="Disminuir cantidad"
-                            type="button"
-                        >
-
-                            <span class="material-symbols-outlined">
-                                remove
-                            </span>
-
-                        </button>
-
-
-                        <span>
-                            ${item.cantidad}
-                        </span>
-
-
-                        <button
-                            class="quantity-plus"
-                            data-id="${item.id}"
-                            aria-label="Aumentar cantidad"
-                            type="button"
-                        >
-
-                            <span class="material-symbols-outlined">
-                                add
-                            </span>
-
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="cart-item-total">
-
-                    <strong>
-                        ${formatearPrecio(itemTotal)}
-                    </strong>
-
-                    <small>
-                        ${item.cantidad} × ${formatearPrecio(item.precio)}
-                    </small>
-
-
-                    <button
-                        class="remove-item"
-                        data-id="${item.id}"
-                        aria-label="Eliminar ${escaparHTML(item.nombre)} del carrito"
-                        type="button"
-                    >
-
-                        <span class="material-symbols-outlined">
-                            delete
-                        </span>
-
+    container.innerHTML = cart.map(item => `
+        <article class="cart-item" data-id="${item.id}">
+            <div class="cart-item-image">
+                <img src="${escaparHTML(item.imagen)}" alt="${escaparHTML(item.nombre)}" loading="lazy" decoding="async">
+            </div>
+            <div class="cart-item-info">
+                <h3>${escaparHTML(item.nombre)}</h3>
+                <div class="cart-item-category">${escaparHTML(item.categoria) || "Producto ZAPI"}</div>
+                <div class="cart-item-price">${formatearPrecio(item.precio)}<span class="cart-item-unit"> c/u</span></div>
+                <span class="cart-item-stock" data-stock="${item.id}"></span>
+                <div class="quantity-control">
+                    <button class="quantity-minus" data-id="${item.id}" aria-label="Disminuir cantidad" type="button">
+                        <span class="material-symbols-outlined">remove</span>
                     </button>
-
+                    <span>${item.cantidad}</span>
+                    <button class="quantity-plus" data-id="${item.id}" aria-label="Aumentar cantidad" type="button">
+                        <span class="material-symbols-outlined">add</span>
+                    </button>
                 </div>
-
-            </article>
-
-        `;
-
-    }).join("");
-
+            </div>
+            <div class="cart-item-total">
+                <strong>${formatearPrecio(item.precio * item.cantidad)}</strong>
+                <small>${item.cantidad} × ${formatearPrecio(item.precio)}</small>
+                <button class="remove-item" data-id="${item.id}"
+                    aria-label="Eliminar ${escaparHTML(item.nombre)} del carrito" type="button">
+                    <span class="material-symbols-outlined">delete</span>
+                </button>
+            </div>
+        </article>
+    `).join("");
 
     pintarStockEnPantalla();
-
-
     updateSummary();
-
     renderRecommendations();
-
 }
 
-
-function updateSummary() {
-
-    const subtotal =
-        cart.reduce(
-
-            (total, item) => {
-
-                return total +
-                    (item.precio * item.cantidad);
-
-            },
-
-            0
-
-        );
-
-
-    const shipping =
-        cart.length > 0
-            ? SHIPPING_COST
-            : 0;
-
-
-    const total =
-        subtotal + shipping;
-
-
-    document.getElementById("subtotal")
-        .textContent = formatearPrecio(subtotal);
-
-
-    document.getElementById("shipping")
-        .textContent = formatearPrecio(shipping);
-
-
-    document.getElementById("total")
-        .textContent = formatearPrecio(total);
-
-}
-
+/* --- Acciones sobre el carrito ----------------------------- */
 
 function changeQuantity(id, amount) {
-
-    const idProducto = Number(id);
-
-    const item =
-        cart.find(product => product.id === idProducto);
-
-
+    const item = cart.find(({ id: idItem }) => idItem === Number(id));
     if (!item) return;
 
-
-    /* Bajar la cantidad nunca borra el producto: el 1 es el piso; para sacarlo está la papelera. */
+    /* Bajar la cantidad nunca borra el producto: el 1 es el piso;
+       para sacarlo esta la papelera. */
     item.cantidad = Math.max(1, item.cantidad + amount);
-
     confirmarCarrito();
-
 }
-
 
 function removeProduct(id) {
-
     const idProducto = Number(id);
-
-    const itemElement =
-        document.querySelector(
-            `.cart-item[data-id="${idProducto}"]`
-        );
-
+    const itemElement = document.querySelector(`.cart-item[data-id="${idProducto}"]`);
 
     if (itemElement) {
-
         itemElement.style.opacity = "0";
-
-        itemElement.style.transform =
-            "translateX(30px) scale(.96)";
-
+        itemElement.style.transform = "translateX(30px) scale(.96)";
     }
-
 
     setTimeout(() => {
-
-        cart = cart.filter(
-            product => product.id !== idProducto
-        );
-
+        cart = cart.filter(({ id: idItem }) => idItem !== idProducto);
         confirmarCarrito();
-
     }, 220);
-
 }
 
+/* Delegacion de clicks de todo el documento: cubre las tarjetas del
+   carrito y las recomendaciones sin enganchar cada boton. */
+document.addEventListener("click", event => {
+    const { target } = event;
 
-function sumarAlCarrito(id) {
-
-    agregarProductoAlCarrito(id);
-
-}
-
-
-/* La tarjeta no es un botón: el nombre lo es (antes tenía tabindex sin rol y se anunciaba mal). */
-document.addEventListener(
-    "click",
-    function(event) {
-
-        const tarjeta =
-            event.target.closest(".recommendation-card");
-
-
-        if (tarjeta &&
-            !event.target.closest(".recommendation-add")) {
-
-            window.abrirModalProducto(
-                Number(tarjeta.dataset.id),
-                tarjeta
-            );
-
-            return;
-
-        }
-
+    /* La tarjeta no es un boton: el nombre lo es. */
+    const tarjeta = target.closest(".recommendation-card");
+    if (tarjeta && !target.closest(".recommendation-add")) {
+        window.abrirModalProducto(Number(tarjeta.dataset.id), tarjeta);
+        return;
     }
-);
 
-
-document.addEventListener(
-    "click",
-    function(event) {
-
-
-        const addRecommendation =
-            event.target.closest(".recommendation-add");
-
-
-        if (addRecommendation) {
-
-            sumarAlCarrito(
-                Number(addRecommendation.dataset.id)
-            );
-
-            return;
-
-        }
-
-
-        const plus =
-            event.target.closest(".quantity-plus");
-
-
-        if (plus) {
-
-            changeQuantity(
-                plus.dataset.id,
-                1
-            );
-
-            return;
-
-        }
-
-
-        const minus =
-            event.target.closest(".quantity-minus");
-
-
-        if (minus) {
-
-            changeQuantity(
-                minus.dataset.id,
-                -1
-            );
-
-            return;
-
-        }
-
-
-        const remove =
-            event.target.closest(".remove-item");
-
-
-        if (remove) {
-
-            removeProduct(
-                remove.dataset.id
-            );
-
-        }
-
+    const agregar = target.closest(".recommendation-add");
+    if (agregar) {
+        agregarProductoAlCarrito(Number(agregar.dataset.id));
+        return;
     }
-);
 
+    const sumar = target.closest(".quantity-plus");
+    if (sumar) {
+        changeQuantity(sumar.dataset.id, 1);
+        return;
+    }
 
-const clearCartButton =
-    document.getElementById("clearCart");
+    const restar = target.closest(".quantity-minus");
+    if (restar) {
+        changeQuantity(restar.dataset.id, -1);
+        return;
+    }
 
+    const quitar = target.closest(".remove-item");
+    if (quitar) removeProduct(quitar.dataset.id);
+});
 
+const clearCartButton = document.getElementById("clearCart");
 if (clearCartButton) {
+    clearCartButton.addEventListener("click", () => {
+        if (cart.length === 0) return;
+        if (!confirm("¿Querés vaciar el carrito?")) return;
 
-    clearCartButton.addEventListener(
-        "click",
-        function() {
-
-            if (cart.length === 0) return;
-
-
-            const confirmClear =
-                confirm(
-                    "¿Querés vaciar el carrito?"
-                );
-
-
-            if (!confirmClear) return;
-
-
-            cart = [];
-
-            confirmarCarrito();
-
-        }
-    );
-
+        cart = [];
+        confirmarCarrito();
+    });
 }
 
+/* --- Enlace de WhatsApp ------------------------------------ */
 
-function abrirWhatsappPedido(datos) {
+/* Arma el mensaje del pedido y devuelve el enlace wa.me. Fuente de
+   los items: el estado global `cart` y, si quedo vacio, el carrito
+   guardado en el navegador. Devuelve "" si no hay nada para pedir. */
+function construirUrlWhatsapp(datos = {}) {
+    const items = cart.length > 0 ? cart : obtenerCarrito();
+    if (items.length === 0) return "";
 
-    if (cart.length === 0) return;
+    const { subtotal, shipping, total } = calcularTotales(items);
 
+    const productosTexto = items
+        .map(({ nombre, cantidad, precio }) => `• ${nombre} x${cantidad} — ${formatearPrecio(precio * cantidad)}`)
+        .join("\n");
 
-    const contacto = datos || {};
-
-
-    const subtotal =
-        cart.reduce(
-            (total, item) => {
-
-                return total +
-                    (item.precio * item.cantidad);
-
-            },
-
-            0
-        );
-
-
-    const shipping =
-        SHIPPING_COST;
-
-
-    const total =
-        subtotal + shipping;
-
-
-    const productsText =
-        cart.map(item => {
-
-            const itemTotal =
-                item.precio *
-                item.cantidad;
-
-
-            return (
-                `• ${item.nombre} x${item.cantidad} — ` +
-                `${formatearPrecio(itemTotal)}`
-            );
-
-        }).join("\n");
-
-
-    const contactoText = [
-        `Nombre: ${contacto.nombre || ""}`,
-        `Teléfono: ${contacto.telefono || ""}`,
-        contacto.email ? `Correo: ${contacto.email}` : "",
-        contacto.zona ? `Zona: ${contacto.zona}` : "",
-        contacto.notas ? `Notas: ${contacto.notas}` : ""
+    const contactoTexto = [
+        `Nombre: ${datos.nombre || ""}`,
+        `Teléfono: ${datos.telefono || ""}`,
+        datos.email ? `Correo: ${datos.email}` : "",
+        datos.zona ? `Zona: ${datos.zona}` : "",
+        datos.notas ? `Notas: ${datos.notas}` : "",
     ].filter(Boolean).join("\n");
 
-    const message = `Hola ZAPI
+    const mensaje = `Hola ZAPI
 
 Quiero realizar el siguiente pedido:
 
-${productsText}
+${productosTexto}
 
 ━━━━━━━━━━━━━━━━━━
 
@@ -683,111 +305,116 @@ TOTAL: ${formatearPrecio(total)}
 
 Datos de contacto
 
-${contactoText}
+${contactoTexto}
 
 ¿Podrían confirmarme la disponibilidad y coordinar la entrega?
 
 Gracias.`;
 
-
-    const encodedMessage =
-        encodeURIComponent(message);
-
-
-    const urlWhatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
-    const nuevaVentana = window.open(urlWhatsapp, "_blank", "noopener,noreferrer");
-
-    if (!nuevaVentana || nuevaVentana.closed || typeof nuevaVentana.closed === "undefined") {
-        window.location.href = urlWhatsapp;
-    }
-
-
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
 }
 
+/* Redireccion directa: window.open() puede devolver una ventana no
+   nula aunque el navegador haya bloqueado el popup, y en ese caso el
+   chat nunca se abria. Con location.href siempre carga. */
+function redirigirAWhatsApp(datos, etiqueta) {
+    const urlWhatsApp = construirUrlWhatsapp(datos);
 
-const whatsappButton =
-    document.getElementById("whatsappButton");
+    console.log(etiqueta, urlWhatsApp);
 
+    if (urlWhatsApp) window.location.href = urlWhatsApp;
 
-if (whatsappButton) {
-
-    whatsappButton.addEventListener("click", enviarPedido);
-
+    return urlWhatsApp;
 }
 
+function abrirWhatsappPedido(datos) {
+    return redirigirAWhatsApp(datos, "Redirigiendo a WhatsApp:");
+}
+
+/* Fallback de emergencia: si la API no responde, se rearma el pedido
+   desde el carrito (estado global o almacenamiento) y se va a
+   WhatsApp sin mostrar carteles de error. */
+function respaldoAWhatsApp(datos) {
+    if (cart.length === 0) cart = obtenerCarrito();
+
+    return redirigirAWhatsApp(datos, "Fallback a WhatsApp activado con URL:");
+}
+
+/* --- Formulario de checkout -------------------------------- */
 
 const CAMPOS_PEDIDO = {
-
-    nombre:  { input: "pedNombre",  error: "pedErrorNombre" },
-    telefono: { input: "pedTelefono", error: "pedErrorTelefono" }
-
+    nombre: { input: "pedNombre", error: "pedErrorNombre" },
+    telefono: { input: "pedTelefono", error: "pedErrorTelefono" },
 };
 
-
-/* Misma limpieza que el servidor (utils/texto.js): un salto de línea en el nombre rompería el JSON. */
+/* Misma limpieza que el servidor (utils/texto.js): un salto de linea
+   en el nombre romperia el JSON. */
 function limpiarValor(valor) {
-
-    return String(valor || "")
-        .replace(/[\u0000-\u001F\u007F]/g, "")
-        .trim();
-
+    return String(valor || "").replace(/[\u0000-\u001F\u007F]/g, "").trim();
 }
 
-
 function marcarCampo(nombreCampo, mensaje) {
-
     const campo = CAMPOS_PEDIDO[nombreCampo];
-
     if (!campo) return false;
 
     const input = document.getElementById(campo.input);
     const error = document.getElementById(campo.error);
 
     if (input) input.classList.add("campo-con-error");
-
     if (error) error.textContent = mensaje;
-
     if (input) input.focus();
 
     return true;
-
 }
-
 
 function limpiarErrores() {
-
     const formulario = document.getElementById("checkoutForm");
-
     if (!formulario) return;
 
-    for (const input of formulario.querySelectorAll(".campo-input")) {
-        input.classList.remove("campo-con-error");
-    }
+    formulario.querySelectorAll(".campo-input")
+        .forEach(input => input.classList.remove("campo-con-error"));
 
-    for (const error of formulario.querySelectorAll(".campo-error")) {
-        error.textContent = "";
-    }
-
+    formulario.querySelectorAll(".campo-error")
+        .forEach(error => { error.textContent = ""; });
 }
 
-
 function mostrarEstado(mensaje, esError) {
-
     const estado = document.getElementById("pedEstado");
-
     if (!estado) return;
 
     estado.textContent = mensaje;
-
     estado.hidden = false;
-
     estado.classList.toggle("checkout-estado-error", Boolean(esError));
-
 }
 
+/* Ajusta el carrito a lo que el backend dice que hay y avisa. */
+function aplicarFaltantesDeStock(cuerpo) {
+    const avisos = (cuerpo.shortages || []).map(({ id, nombre, disponibles }) => {
+        const item = cart.find(({ id: idItem }) => idItem === Number(id));
+        if (!item) return "";
 
-function enviarPedido(evento) {
+        if (disponibles === null || disponibles <= 0) {
+            cart = cart.filter(({ id: idItem }) => idItem !== Number(id));
+            return `Sacamos “${nombre}” porque no quedan unidades.`;
+        }
 
+        if (disponibles < item.cantidad) {
+            item.cantidad = disponibles;
+            return `Bajamos “${nombre}” a ${disponibles}.`;
+        }
+
+        return "";
+    }).filter(Boolean).join(" ");
+
+    confirmarCarrito();
+    mostrarEstado(
+        (cuerpo.error || "No hay stock suficiente") + " " + avisos +
+        " Revisá las cantidades e intentá de nuevo.",
+        true
+    );
+}
+
+async function enviarPedido(evento) {
     evento.preventDefault();
 
     if (cart.length === 0) {
@@ -797,13 +424,9 @@ function enviarPedido(evento) {
 
     limpiarErrores();
 
-    const nombre = limpiarValor(
-        document.getElementById("pedNombre").value
-    );
-
-    const telefono = limpiarValor(
-        document.getElementById("pedTelefono").value
-    );
+    const leerCampo = id => limpiarValor(document.getElementById(id).value);
+    const nombre = leerCampo("pedNombre");
+    const telefono = leerCampo("pedTelefono");
 
     if (nombre.length < 2) {
         marcarCampo("nombre", "Escribí tu nombre");
@@ -815,6 +438,14 @@ function enviarPedido(evento) {
         return;
     }
 
+    const datos = {
+        nombre,
+        telefono,
+        email: leerCampo("pedEmail") || null,
+        zona: leerCampo("pedZona") || null,
+        notas: leerCampo("pedNotas") || null,
+    };
+
     const boton = document.getElementById("whatsappButton");
     const contenidoBoton = boton ? boton.innerHTML : "";
 
@@ -823,258 +454,129 @@ function enviarPedido(evento) {
         boton.textContent = "Enviando pedido...";
     }
 
-    const email = limpiarValor(document.getElementById("pedEmail").value) || null;
-    const zona = limpiarValor(document.getElementById("pedZona").value) || null;
-    const notas = limpiarValor(document.getElementById("pedNotas").value) || null;
+    const restaurarBoton = () => {
+        if (!boton) return;
+        boton.disabled = false;
+        boton.innerHTML = contenidoBoton;
+    };
 
-    /* Sin backend configurado (hosting estatico, backend aun no
-       desplegado): se arma el pedido y se abre WhatsApp, sin fetch.
-       Con backend definido se usa el flujo normal de la API. */
+    /* Sin backend configurado (hosting estatico): se arma el pedido y
+       se abre WhatsApp, sin intentar la API. */
     const fnHayApi = window.hayApiConfigurada;
     const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
 
     if (!hayBackend) {
-
-        abrirWhatsappPedido({ nombre, telefono, email, zona, notas });
-
+        abrirWhatsappPedido(datos);
         cart = [];
         confirmarCarrito();
-
-        mostrarEstado(
-            "Pedido preparado: completá el envío en WhatsApp.",
-            false
-        );
-
-        if (boton) {
-            boton.disabled = false;
-            boton.innerHTML = contenidoBoton;
-        }
-
+        mostrarEstado("Pedido preparado: completá el envío en WhatsApp.", false);
+        restaurarBoton();
         return;
     }
 
-    const items = cart.map(item => ({
-        id: Number(item.id),
-        cantidad: Number(item.cantidad)
-    }));
+    const items = cart.map(({ id, cantidad }) => ({ id: Number(id), cantidad: Number(cantidad) }));
 
-    fetch(window.urlApi("/api/pedidos"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-            nombre,
-            telefono,
-            email,
-            zona,
-            notas,
-            items
-        })
-    })
-        .then(respuesta => respuesta.json()
-            .then(cuerpo => ({ estado: respuesta.status, cuerpo })))
-        .then(resultado => {
-
-            const { estado, cuerpo } = resultado;
-
-            if (estado === 201) {
-
-                mostrarEstado(
-                    `Pedido ${cuerpo.id} confirmado por ` +
-                    `${formatearPrecio(cuerpo.total)}. ` +
-                    "Te contactamos para coordinar la entrega.",
-                    false
-                );
-
-                abrirWhatsappPedido({ nombre, telefono, email, zona, notas });
-
-                cart = [];
-
-                confirmarCarrito();
-
-                /* Variable aparte: asignar directo al global confundiría al verificador de scripts. */
-                const refrescarStock = window.actualizarStock;
-
-                if (typeof refrescarStock === "function") {
-                    refrescarStock();
-                }
-
-                return;
-
-            }
-
-            if (estado === 409) {
-
-                const avisos = cuerpo.shortages
-                    .map(shortage => {
-
-                        const item = cart.find(
-                            producto => Number(producto.id) === shortage.id
-                        );
-
-                        if (!item) return "";
-
-                        if (shortage.disponibles === null || shortage.disponibles <= 0) {
-
-                            cart = cart.filter(
-                                producto => Number(producto.id) !== shortage.id
-                            );
-
-                            return (
-                                `Sacamos “${shortage.nombre}” porque no quedan unidades.`
-                            );
-
-                        }
-
-                        if (shortage.disponibles < item.cantidad) {
-
-                            item.cantidad = shortage.disponibles;
-
-                            return (
-                                `Bajamos “${shortage.nombre}” a ${shortage.disponibles}.`
-                            );
-
-                        }
-
-                        return "";
-
-                    })
-                    .filter(Boolean)
-                    .join(" ");
-
-                confirmarCarrito();
-
-                mostrarEstado(
-                    (cuerpo.error || "No hay stock suficiente") + " " + avisos +
-                    " Revisá las cantidades e intentá de nuevo.",
-                    true
-                );
-
-                return;
-
-            }
-
-            if (estado === 400 && cuerpo.campo) {
-
-                marcarCampo(cuerpo.campo, cuerpo.error || "Revisá este campo");
-
-                mostrarEstado(cuerpo.error || "Revisá los datos del pedido.", true);
-
-                return;
-
-            }
-
-            mostrarEstado(
-                cuerpo && cuerpo.error
-                    ? cuerpo.error
-                    : "No se pudo confirmar el pedido. Intentá de nuevo o coordiná por WhatsApp.",
-                true
-            );
-
-        })
-        .catch(() => {
-
-            mostrarEstado(
-                "No se pudo enviar el pedido. " +
-                "Revisá tu conexión o coordiná por WhatsApp.",
-                true
-            );
-
-        })
-        .finally(() => {
-
-            if (!boton) return;
-
-            boton.disabled = false;
-
-            boton.innerHTML = contenidoBoton;
-
+    try {
+        const respuesta = await fetch(window.urlApi("/api/pedidos"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ ...datos, items }),
         });
 
+        const estado = respuesta.status;
+        const cuerpo = await respuesta.json().catch(() => ({}));
+
+        if (estado === 201) {
+            mostrarEstado(
+                `Pedido ${cuerpo.id} confirmado por ${formatearPrecio(cuerpo.total)}. ` +
+                "Te contactamos para coordinar la entrega.",
+                false
+            );
+
+            abrirWhatsappPedido(datos);
+            cart = [];
+            confirmarCarrito();
+
+            /* Variable aparte: asignar directo al global confundiria al verificador de scripts. */
+            const refrescarStock = window.actualizarStock;
+            if (typeof refrescarStock === "function") refrescarStock();
+            return;
+        }
+
+        if (estado === 409) {
+            aplicarFaltantesDeStock(cuerpo);
+            return;
+        }
+
+        if (estado === 400 && cuerpo.campo) {
+            marcarCampo(cuerpo.campo, cuerpo.error || "Revisá este campo");
+            mostrarEstado(cuerpo.error || "Revisá los datos del pedido.", true);
+            return;
+        }
+
+        /* Cualquier otra respuesta no deja al cliente atrapado: mismo
+           fallback de emergencia que el catch. */
+        respaldoAWhatsApp(datos);
+    } catch (error) {
+        /* El backend no respondio (caido, CORS, red): se toma el
+           carrito y se va a WhatsApp, sin cartel de error. */
+        console.error("No se pudo enviar el pedido por la API:", error);
+        respaldoAWhatsApp(datos);
+    } finally {
+        restaurarBoton();
+    }
 }
 
+const whatsappButton = document.getElementById("whatsappButton");
+if (whatsappButton) whatsappButton.addEventListener("click", enviarPedido);
 
 function montarCheckout() {
-
     const raiz = document.getElementById("checkoutRoot");
-
     if (!raiz) return;
 
     raiz.innerHTML = `
-
         <form id="checkoutForm" class="checkout-form" novalidate>
-
             <h3>Datos de contacto</h3>
 
             <label class="campo-label" for="pedNombre">
                 Nombre <span aria-hidden="true">*</span>
             </label>
-
-            <input class="campo-input" id="pedNombre" name="nombre"
-                type="text" maxlength="120" autocomplete="name"
-                aria-describedby="pedErrorNombre">
-
+            <input class="campo-input" id="pedNombre" name="nombre" type="text"
+                maxlength="120" autocomplete="name" aria-describedby="pedErrorNombre">
             <span class="campo-error" id="pedErrorNombre"></span>
 
             <label class="campo-label" for="pedTelefono">
                 Teléfono <span aria-hidden="true">*</span>
             </label>
-
-            <input class="campo-input" id="pedTelefono" name="telefono"
-                type="tel" inputmode="tel" maxlength="40"
-                autocomplete="tel" aria-describedby="pedErrorTelefono">
-
+            <input class="campo-input" id="pedTelefono" name="telefono" type="tel"
+                inputmode="tel" maxlength="40" autocomplete="tel" aria-describedby="pedErrorTelefono">
             <span class="campo-error" id="pedErrorTelefono"></span>
 
-            <label class="campo-label" for="pedEmail">
-                Correo electrónico (opcional)
-            </label>
+            <label class="campo-label" for="pedEmail">Correo electrónico (opcional)</label>
+            <input class="campo-input" id="pedEmail" name="email" type="email"
+                inputmode="email" maxlength="160" autocomplete="email">
 
-            <input class="campo-input" id="pedEmail" name="email"
-                type="email" inputmode="email" maxlength="160"
-                autocomplete="email">
+            <label class="campo-label" for="pedZona">Zona (opcional)</label>
+            <input class="campo-input" id="pedZona" name="zona" type="text"
+                maxlength="120" autocomplete="address-level2">
 
-            <label class="campo-label" for="pedZona">
-                Zona (opcional)
-            </label>
-
-            <input class="campo-input" id="pedZona" name="zona"
-                type="text" maxlength="120" autocomplete="address-level2">
-
-            <label class="campo-label" for="pedNotas">
-                Notas (opcional)
-            </label>
-
-            <textarea class="campo-input campo-area" id="pedNotas"
-                name="notas" rows="3" maxlength="500"></textarea>
-
+            <label class="campo-label" for="pedNotas">Notas (opcional)</label>
+            <textarea class="campo-input campo-area" id="pedNotas" name="notas"
+                rows="3" maxlength="500"></textarea>
         </form>
 
-        <p class="checkout-estado" id="pedEstado"
-            role="status" aria-live="polite" hidden></p>
-
+        <p class="checkout-estado" id="pedEstado" role="status" aria-live="polite" hidden></p>
     `;
 
     const formulario = raiz.querySelector("form");
-
     formulario.hidden = cart.length === 0;
-
     formulario.addEventListener("submit", enviarPedido);
-
 }
 
+/* --- Arranque ---------------------------------------------- */
 
 document.addEventListener("DOMContentLoaded", montarCheckout);
 
-
-/* Relee "zapiCart" en cada cambio: con las dos páginas en index.html, sin esto el carrito mostraba el pedido de antes de la suma. */
-suscribirAlCarrito(function () {
-
-    cart = obtenerCarrito();
-
-    renderCart();
-
-});
-
-
-alCargarElCatalogo(leer);
+suscribirAlCarrito(sincronizarCarrito);
+alCargarElCatalogo(sincronizarCarrito);
