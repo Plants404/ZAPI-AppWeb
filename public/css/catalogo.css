@@ -284,6 +284,34 @@
             }
         }
 
+        /* Correctivo movil: la cabecera editorial y la tarjeta de garantia
+           se apilan en flujo vertical, a ancho completo y sin
+           posicionamientos que puedan encimarse sobre el titulo, la bajada
+           o la grilla de productos. */
+        @media (max-width: 767px) {
+            .catalog-header {
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+                position: static !important;
+            }
+
+            .catalog-intro,
+            .catalog-trust {
+                width: 100%;
+                min-width: 0;
+                position: static !important;
+            }
+
+            .catalog-trust {
+                align-self: stretch;
+            }
+
+            .catalog {
+                padding-bottom: 100px;
+            }
+        }
+
         .catalog-empty {
             width: 100%;
             text-align: center;
@@ -321,7 +349,7 @@
 
         .catalog-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 1.5rem;
         }
 
@@ -342,25 +370,6 @@
             transform: translateY(-6px);
             box-shadow: var(--shadow-md);
         }
-
-        @media (min-width: 572px) {
-            .catalog-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (min-width: 846px) {
-            .catalog-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 1120px) {
-            .catalog-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
 
         .product-visual {
             position: relative;
