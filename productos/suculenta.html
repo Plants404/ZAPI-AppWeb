@@ -101,6 +101,13 @@
     <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 
     <header class="header-producto">
+        <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
+            aria-label="Abrir menu de navegacion">
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+        </button>
+
         <a class="logo" href="../index.html" aria-label="ZAPI, ir al inicio">
             <img src="../public/img/logo.svg" alt="" width="40" height="40">
             <span>ZAPI</span>
@@ -119,8 +126,28 @@
         <a class="carrito-enlace" href="../carrito.html">
             <span class="material-symbols-outlined" aria-hidden="true">shopping_cart</span>
             <span>Carrito</span>
+            <span class="cart-count" data-cart-count aria-hidden="true">0</span>
         </a>
+
+        <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
+            <ul>
+                <li><a class="nav-link" href="../index.html">Inicio</a></li>
+                <li><a class="nav-link" href="../catalogo.html">Catálogo</a></li>
+                <li><a class="nav-link" href="../index.html#servicios">Servicios</a></li>
+                <li><a class="nav-link" href="../index.html#nosotros">Nosotros</a></li>
+                <li><a class="nav-link" href="../index.html#contacto">Contacto</a></li>
+                <li><a class="nav-link" href="../carrito.html">Carrito</a></li>
+            </ul>
+
+            <a class="nav-cta" href="../carrito.html">
+                <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+                Ver carrito
+                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+            </a>
+        </nav>
     </header>
+
+    <div class="nav-backdrop" id="navBackdrop" hidden></div>
 
     <main id="contenido">
         <nav class="migas" aria-label="Ruta de navegacion">
@@ -288,6 +315,12 @@
         </section>
     </main>
 
+    <a class="cart-link-float" href="../carrito.html" id="cartLinkFloat">
+        <span class="material-symbols-outlined">shopping_bag</span>
+        <span class="cart-link-text">Ver carrito</span>
+        <span id="cartCountFloat" class="cart-count" data-cart-count>0</span>
+    </a>
+
     <footer class="footer-producto">
         <p>ZAPI</p>
         <nav aria-label="Enlaces del pie">
@@ -298,7 +331,9 @@
     </footer>
 
     <script src="../public/js/config.js" defer></script>
+    <script src="../public/js/auth-ui.js" defer></script>
     <script src="../public/js/productos.js" defer></script>
+    <script src="../public/js/menu.js" defer></script>
     <script src="../public/js/productos-pagina.js" defer></script>
 </body>
 </html>

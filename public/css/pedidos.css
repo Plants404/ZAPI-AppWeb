@@ -9,6 +9,12 @@ html:not([data-auth="si"]) main.pedidos-page {
     padding: 2.5rem 0 4rem;
 }
 
+@media (max-width: 767px) {
+    .pedidos-page {
+        padding-bottom: 100px;
+    }
+}
+
 .pedidos-heading {
     margin-bottom: 2rem;
 }

@@ -38,6 +38,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -47,6 +48,7 @@ body {
   background: var(--cream);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
 
 img {
@@ -141,6 +143,7 @@ section>* {
 .services-view {
   padding: clamp(4.5rem, 9vw, 7.5rem) 1.25rem;
 }
+
 @media (prefers-reduced-motion: reduce) {
 
   .section {
@@ -245,11 +248,12 @@ header img {
   align-items: center;
   gap: .5rem;
   margin-right: auto;
+  order: 2;
 }
 
 
 .nav-toggle {
-  order: 2;
+  order: 1;
   position: relative;
   z-index: 70;
   display: flex;
@@ -292,6 +296,62 @@ header img {
   outline-offset: 3px;
 }
 
+/* Acceso directo al carrito para la barra movil: hamburguesa a la
+   izquierda, logo al centro-izquierda y carrito a la derecha con su
+   contador siempre visible. En escritorio el badge vive en la cuenta. */
+.header-cart {
+  order: 3;
+  position: relative;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  color: var(--forest);
+  text-decoration: none;
+  border: 1px solid rgba(31, 58, 46, .12);
+  border-radius: 10px;
+}
+
+.header-cart:hover,
+.header-cart:focus-visible {
+  background: var(--sand);
+}
+
+.header-cart:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.header-cart .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.header-cart .cart-count {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 .3rem;
+  font-size: .68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  background: var(--sand);
+  color: var(--forest);
+  border: 2px solid var(--cream);
+}
+
+.header-cart .cart-count.con-productos {
+  background: #c14a3c;
+  color: var(--white);
+}
+
 header.menu-abierto {
   z-index: 220;
 }
@@ -302,7 +362,7 @@ header.menu-abierto::before {
 
 
 .header-search {
-  order: 3;
+  order: 4;
   position: relative;
   display: flex;
   align-items: center;
@@ -477,6 +537,52 @@ header.menu-abierto::before {
   width: 100%;
 }
 
+/* CTA inferior destacado del drawer movil ("Ver carrito"). */
+.nav-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: 1.75rem;
+  min-height: 48px;
+  padding: .9rem 1.25rem;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--forest);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background .25s ease;
+}
+
+.nav-cta:hover {
+  background: var(--moss);
+}
+
+.nav-cta:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.nav-cta .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.nav-cta .cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 .35rem;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--forest);
+  background: var(--sand);
+  border-radius: 999px;
+}
+
 .nav-bar li .nav-link:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 4px;
@@ -633,6 +739,20 @@ html:not([data-auth="si"]) .footer-carrito {
 
 html:not([data-auth="si"]) main.cart-page {
   display: none;
+}
+
+/* En movil el carrito vive solo en la barra superior: ocultamos por
+   completo el boton flotante inferior (y su contador) para que no se
+   duplique ni estorbe el contenido. */
+@media (max-width: 767px) {
+
+  .cart-link-float,
+  .floating-cart-btn,
+  #cartLinkFloat,
+  #floating-cart,
+  #cartCountFloat {
+    display: none !important;
+  }
 }
 
 html:not([data-auth="no"]) #cartLogin {
@@ -989,7 +1109,7 @@ body.no-scroll {
 
 .service-items {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.25rem;
 }
 
@@ -1099,18 +1219,6 @@ body.no-scroll {
 .service-card--cta .service-card-cta:hover {
   background: var(--white);
   color: var(--forest);
-}
-
-@media (max-width: 1040px) {
-  .service-items {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 560px) {
-  .service-items {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1571,7 +1679,7 @@ body.no-scroll {
   border: 0;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 768px) {
   .nosotros-razones {
     grid-template-columns: 1fr 1fr;
   }
@@ -1683,7 +1791,7 @@ body.no-scroll {
   margin-top: 1rem;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .testimonios-grilla {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1837,7 +1945,7 @@ body.no-scroll {
 }
 
 .call-to-actions-view {
-  padding-bottom: 5rem;
+  padding-bottom: 100px;
 }
 
 .contacto {
@@ -2397,6 +2505,10 @@ footer nav a:focus-visible {
     display: none;
   }
 
+  .header-cart {
+    display: none;
+  }
+
   .logo {
     order: 0;
     margin-right: 0;
@@ -2421,6 +2533,10 @@ footer nav a:focus-visible {
     box-shadow: none;
     visibility: visible;
     transform: none;
+  }
+
+  .nav-cta {
+    display: none;
   }
 
   .nav-bar ul {
@@ -2796,5 +2912,112 @@ body.con-testimonio-abierto {
 
   .formulario-ok {
     animation: none;
+  }
+}
+
+/* ==========================================================================
+   Correctivo movil (<768px) - Servicios
+   La cabecera editorial se apila en flujo vertical: el bloque de intro y la
+   tarjeta informativa de la derecha quedan uno debajo del otro, a ancho
+   completo y sin posicionamientos que se encimen. Se agrega aire al pie
+   (safe area) para que los accesos flotantes no tapen el cierre de la vista.
+   ========================================================================== */
+@media (max-width: 767px) {
+
+  .service-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: static !important;
+  }
+
+  .service-intro,
+  .service-trust {
+    width: 100%;
+    min-width: 0;
+    position: static !important;
+  }
+
+  .service-trust {
+    align-self: stretch;
+  }
+
+  .catalog,
+  .services-view,
+  .nosotros {
+    padding-bottom: 100px;
+  }
+}
+
+/* ==========================================================================
+   Correctivo movil (<768px) - Nosotros (grillas internas restantes)
+   Pilares, razones, equipo y ubicacion pasan a una sola columna. La cabecera,
+   el duelo y los contenedores generales los cubre el "FIX DEFINITIVO" de
+   mas abajo.
+   ========================================================================== */
+@media (max-width: 767px) {
+
+  .nosotros-pilares,
+  .nosotros-razones,
+  .nosotros-personas,
+  .nosotros-ubicacion {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem;
+    position: static !important;
+  }
+
+  .nosotros-pilar,
+  .nosotros-razon,
+  .nosotros-persona,
+  .nosotros-ubicacion-info,
+  .nosotros-mapa {
+    position: static !important;
+    width: 100% !important;
+    transform: none !important;
+    box-sizing: border-box;
+  }
+}
+
+/* --- FIX DEFINITIVO PARA SECCION NOSOTROS EN MOVIL --- */
+@media (max-width: 767px) {
+
+  /* Contenedores generales */
+  #nosotros,
+  .nosotros-inner,
+  .nosotros-hero,
+  .nosotros-hero-grid,
+  .nosotros-duelo,
+  .nosotros-pilares-bloque,
+  .nosotros-equipo {
+    display: flex !important;
+    flex-direction: column !important;
+    position: static !important;
+    height: auto !important;
+  }
+
+  /* Tarjetas internas: fluyen una debajo de la otra sin superponerse */
+  .nosotros-hero-grid > *,
+  .nosotros-duelo > * {
+    position: static !important;
+    width: 100% !important;
+    margin-bottom: 1.5rem !important;
+    box-sizing: border-box;
+  }
+
+  /* Los pseudoelementos decorativos no desbordan ni encimen el texto */
+  .nosotros-hero::before,
+  .nosotros-hero::after,
+  .nosotros-inner::before,
+  .nosotros-inner::after {
+    position: absolute !important;
+    z-index: 0 !important;
+  }
+
+  /* El contenido textual queda por encima de cualquier fondo */
+  .nosotros-hero-grid,
+  .nosotros-duelo {
+    z-index: 1 !important;
+    position: relative !important;
   }
 }
