@@ -608,7 +608,6 @@ header.menu-abierto::before {
   flex-wrap: wrap;
   padding: .8rem 0;
 }
-
 .nav-usuario {
   position: relative;
   display: inline-flex;
@@ -688,6 +687,153 @@ header.menu-abierto::before {
 .nav-bar .nav-usuario-item:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Drawer de navegacion en mobile y tablet (<1024px). Agrupa el bloque de
+   usuario/administrador en una tarjeta destacada y garantiza areas
+   tactiles de al menos 44x44 px en todo el menu lateral.
+   ========================================================================== */
+@media (max-width: 1023px) {
+
+  /* Jerarquia: los enlaces principales quedan arriba y el bloque de
+     usuario se separa como una tarjeta con fondo sutil. */
+  .nav-bar ul {
+    gap: .35rem;
+  }
+
+  .nav-cuenta {
+    display: block;
+    margin-top: .9rem;
+    padding: .65rem;
+    background: rgba(236, 229, 211, .55);
+    border: 1px solid rgba(61, 107, 79, .18);
+    border-radius: 14px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .nav-usuario {
+    gap: .5rem;
+  }
+
+  .nav-usuario-boton {
+    width: 100%;
+    min-height: 48px;
+    padding: .7rem .85rem;
+    border-radius: 10px;
+    background: var(--white);
+    border: 1px solid rgba(61, 107, 79, .18);
+  }
+
+  .nav-usuario-boton:hover {
+    background: var(--sand);
+  }
+
+  .nav-usuario-nombre {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .nav-usuario-menu {
+    gap: .35rem;
+    padding: .5rem 0 0;
+  }
+
+  /* Carrito / Mis pedidos / Salir: filas tactiles completas con icono */
+  .nav-bar .nav-usuario-item {
+    justify-content: flex-start;
+    min-height: 48px;
+    padding: .7rem .85rem;
+    border-radius: 10px;
+    background: var(--white);
+    border: 1px solid rgba(61, 107, 79, .14);
+  }
+
+  .nav-bar .nav-usuario-item::before {
+    content: "";
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.3rem;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    color: var(--leaf);
+    flex: 0 0 auto;
+  }
+
+  .nav-bar .nav-link-carrito::before {
+    content: "shopping_bag";
+  }
+
+  .nav-bar .nav-usuario-item[href*="pedidos"]::before {
+    content: "receipt_long";
+  }
+
+  .nav-bar #navSalir::before {
+    content: "logout";
+  }
+
+  .nav-bar .nav-usuario-item .cart-count {
+    margin-left: auto;
+  }
+
+  /* Sobre la fila blanca el contador necesita su propio fondo; con
+     productos hereda el rojo de .con-productos. */
+  .nav-bar .nav-usuario-item .cart-count:not(.con-productos) {
+    background: var(--sand);
+    color: var(--forest);
+  }
+
+  /* Ingresar: boton tactil principal del bloque de usuario */
+  .nav-bar .nav-ingresar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: .7rem .85rem;
+    border-radius: 10px;
+    background: var(--forest);
+    color: var(--white);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .nav-bar .nav-ingresar:hover {
+    background: var(--moss);
+    color: var(--white);
+  }
+
+  .nav-bar .nav-ingresar::after {
+    display: none;
+  }
+
+  /* Salir (paginas de carrito/pedidos): fila tactil */
+  .nav-bar .nav-salir {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: .7rem .85rem;
+    border-radius: 10px;
+    background: var(--white);
+    border: 1px solid rgba(61, 107, 79, .14);
+    text-decoration: none;
+  }
+
+  /* CTA "Ver carrito" del drawer */
+  .nav-cta {
+    min-height: 48px;
+  }
 }
 
 .nav-toggle .cart-count.cart-count-toggle {
