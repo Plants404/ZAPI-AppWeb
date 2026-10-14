@@ -83,6 +83,11 @@ html:not([data-auth="si"]) main.pedidos-page {
     letter-spacing: .03em;
 }
 
+.pedido-estado-cancelado {
+    background: rgba(163, 52, 31, .12);
+    color: var(--error);
+}
+
 .pedido-lineas {
     display: grid;
     gap: .5rem;
@@ -126,4 +131,28 @@ html:not([data-auth="si"]) main.pedidos-page {
 .pedido-pie strong {
     font-size: 1.15rem;
     font-variant-numeric: tabular-nums;
+}
+
+.pedido-acciones {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.pedido-cancelar {
+    padding: .55rem 1.1rem;
+    border: 1px solid var(--error);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--error);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+
+.pedido-cancelar:hover,
+.pedido-cancelar:focus-visible {
+    background: var(--error);
+    color: var(--white);
 }

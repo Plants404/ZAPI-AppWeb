@@ -52,6 +52,26 @@
         return typeof fn !== 'function' || fn();
     }
 
+    function claseEstado(estado) {
+        return estado === 'cancelado'
+            ? 'pedido-estado pedido-estado-cancelado'
+            : 'pedido-estado';
+    }
+
+    /* Solo los pedidos locales se pueden cancelar: con backend el
+       servidor no ofrece todavia esa accion. */
+    function botonCancelar(pedido) {
+        if (hayBackend() || pedido.estado === 'cancelado') return '';
+
+        return `
+                <div class="pedido-acciones">
+                    <button type="button" class="pedido-cancelar" data-cancelar="${escaparHTML(pedido.id)}">
+                        Cancelar pedido
+                    </button>
+                </div>
+        `;
+    }
+
     function pedidoHTML(pedido) {
         const items = Array.isArray(pedido.items) ? pedido.items : [];
 
@@ -62,13 +82,14 @@
                         <span class="pedido-codigo">${escaparHTML(pedido.id)}</span>
                         <span class="pedido-fecha">${escaparHTML(formatearFecha(pedido.creado))}</span>
                     </div>
-                    <span class="pedido-estado">${escaparHTML(pedido.estado)}</span>
+                    <span class="${claseEstado(pedido.estado)}">${escaparHTML(pedido.estado)}</span>
                 </header>
                 <ul class="pedido-lineas">${items.map(lineaHTML).join('')}</ul>
                 <footer class="pedido-pie">
                     <span>Total</span>
                     <strong>${formatearPrecio(pedido.total)}</strong>
                 </footer>
+                ${botonCancelar(pedido)}
             </article>
         `;
     }
@@ -99,10 +120,13 @@
     }
 
     async function cargar() {
-        /* Sin backend no hay historial del servidor: se muestra el
-           estado vacio en vez de golpear /api/pedidos. */
+        /* Sin backend el historial es local: los pedidos que se
+           guardaron en el navegador al enviarlos. */
         if (!hayBackend()) {
-            mostrarVacio();
+            const listar = window.listarPedidosLocales;
+            const locales = typeof listar === 'function' ? listar() : [];
+
+            pintar(locales);
             return;
         }
 
@@ -126,6 +150,35 @@
             mostrarAviso();
         }
     }
+
+    function cancelarPedido(id) {
+        const cancelarLocal = window.cancelarPedidoLocal;
+
+        if (typeof cancelarLocal !== 'function') return;
+        if (!window.confirm('¿Cancelar el pedido ' + id + '?')) return;
+
+        const cancelado = cancelarLocal(id);
+
+        if (!cancelado) return;
+
+        const devolverStock = window.devolverStockPedido;
+
+        if (typeof devolverStock === 'function') {
+            devolverStock((cancelado.items || []).map(function (item) {
+                return { id: item.producto_id, cantidad: item.cantidad };
+            }));
+        }
+
+        cargar();
+    }
+
+    lista.addEventListener('click', function (evento) {
+        const boton = evento.target.closest('[data-cancelar]');
+
+        if (!boton) return;
+
+        cancelarPedido(boton.getAttribute('data-cancelar'));
+    });
 
     const auth = window.zapiAuth;
 
