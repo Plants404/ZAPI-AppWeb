@@ -66,6 +66,7 @@
         return `
                 <div class="pedido-acciones">
                     <button type="button" class="pedido-cancelar" data-cancelar="${escaparHTML(pedido.id)}">
+                        <span class="material-symbols-outlined" aria-hidden="true">undo</span>
                         Cancelar pedido
                     </button>
                 </div>

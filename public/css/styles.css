@@ -2299,7 +2299,10 @@ body.no-scroll {
   }
 }
 
-footer {
+/* Solo el pie de pagina del sitio. El selector excluye a los <footer>
+   con clase (p. ej. .pedido-pie, que es una fila de una tarjeta) para
+   que no hereden el fondo oscuro y el texto quede ilegible. */
+footer:not([class]) {
   background: var(--ink);
   color: rgba(247, 244, 236, .7);
   text-align: center;
