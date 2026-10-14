@@ -331,11 +331,24 @@ function abrirWhatsappPedido(datos) {
     return redirigirAWhatsApp(datos, "Redirigiendo a WhatsApp:");
 }
 
+/* Baja el stock mostrado por las cantidades que se acaban de pedir.
+   Con backend, el servidor ya las descontó y el refresco siguiente
+   confirma el valor real; sin backend, el descuento queda guardado en
+   el navegador. */
+function descontarStockDelPedido(items) {
+    const descontar = window.descontarStockPedido;
+    if (typeof descontar === "function") descontar(items);
+}
+
 /* Fallback de emergencia: si la API no responde, se rearma el pedido
    desde el carrito (estado global o almacenamiento) y se va a
    WhatsApp sin mostrar carteles de error. */
 function respaldoAWhatsApp(datos) {
     if (cart.length === 0) cart = obtenerCarrito();
+
+    descontarStockDelPedido(
+        cart.map(({ id, cantidad }) => ({ id: Number(id), cantidad: Number(cantidad) }))
+    );
 
     return redirigirAWhatsApp(datos, "Fallback a WhatsApp activado con URL:");
 }
@@ -460,6 +473,8 @@ async function enviarPedido(evento) {
         boton.innerHTML = contenidoBoton;
     };
 
+    const items = cart.map(({ id, cantidad }) => ({ id: Number(id), cantidad: Number(cantidad) }));
+
     /* Sin backend configurado (hosting estatico): se arma el pedido y
        se abre WhatsApp, sin intentar la API. */
     const fnHayApi = window.hayApiConfigurada;
@@ -467,14 +482,13 @@ async function enviarPedido(evento) {
 
     if (!hayBackend) {
         abrirWhatsappPedido(datos);
+        descontarStockDelPedido(items);
         cart = [];
         confirmarCarrito();
         mostrarEstado("Pedido preparado: completá el envío en WhatsApp.", false);
         restaurarBoton();
         return;
     }
-
-    const items = cart.map(({ id, cantidad }) => ({ id: Number(id), cantidad: Number(cantidad) }));
 
     try {
         const respuesta = await fetch(window.urlApi("/api/pedidos"), {
@@ -494,6 +508,7 @@ async function enviarPedido(evento) {
                 false
             );
 
+            descontarStockDelPedido(items);
             abrirWhatsappPedido(datos);
             cart = [];
             confirmarCarrito();

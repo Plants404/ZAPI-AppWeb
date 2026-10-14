@@ -639,6 +639,9 @@ function zapiEsperar(ms) {
 }
 
 function zapiTrack(tipo, datos = {}) {
+    const fnHayApi = window.hayApiConfigurada;
+    if (typeof fnHayApi === "function" && !fnHayApi()) return;
+
     try {
         fetch(`${ZAPI_API}/tracking`, {
             method: "POST",
@@ -660,6 +663,14 @@ function zapiSlugProducto() {
 }
 
 async function zapiCargarConfig() {
+    /* Sin backend el bot no tiene configuracion: queda apagado (sus
+       respuestas locales de FAQ siguen andando). */
+    const fnHayApi = window.hayApiConfigurada;
+    if (typeof fnHayApi === "function" && !fnHayApi()) {
+        zapiAsistenteActivo = false;
+        return;
+    }
+
     try {
         const respuesta = await fetch(`${ZAPI_API}/config`);
 
@@ -683,6 +694,9 @@ async function zapiCargarConfig() {
 }
 
 async function zapiConsultar(texto) {
+    const fnHayApi = window.hayApiConfigurada;
+    if (typeof fnHayApi === "function" && !fnHayApi()) return null;
+
     const control = new AbortController();
     const reloj = setTimeout(() => control.abort(), ZAPI_ESPERA_MS);
 

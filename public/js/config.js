@@ -16,9 +16,10 @@
    urlApi() decide sola con la direccion de la pagina:
 
      * local (localhost, *.localhost, 127.*, ::1, 0.0.0.0):
-         - si la sirve el backend (mismo puerto) -> mismo origen
-         - si la sirve otro server local (Live Server, Live Preview
-           de VS Code en 3000/5500, etc.)       -> PUERTO_BACKEND_LOCAL
+         - si la sirve el propio backend (PUERTO_BACKEND_LOCAL)
+                                       -> mismo origen, con backend
+         - si la sirve otro server local (Show Preview, Live Server
+           en 3000/5500, etc.)         -> SIN backend (modo estatico)
      * cualquier otro host (tu hosting)          -> URL_API_PRODUCCION
 
    Un meta en el HTML pisa la decision para una pagina aparte:
@@ -37,11 +38,11 @@
      2. <meta name="zapi-api" content="https://...">  -> override
         por pagina.
      3. Deteccion por entorno:
-          - local (localhost, *.localhost, 127.*, ::1, 0.0.0.0): la API
-            apunta al backend local. Si la pagina la sirve el mismo
-            backend (mismo puerto) es el mismo origen; si la sirve
-            otro server local (Live Server, Live Preview de VS Code)
-            se usa el host de la pagina + PUERTO_BACKEND_LOCAL.
+          - local (localhost, *.localhost, 127.*, ::1, 0.0.0.0): hay
+            backend solo si la pagina la sirve el propio backend
+            (PUERTO_BACKEND_LOCAL); entonces la API es el mismo
+            origen. Si la sirve otro server local (Show Preview, Live
+            Server), el sitio queda SIN backend.
           - cualquier otro host: URL_API_PRODUCCION
             (pegar aca la URL del backend desplegado).
 
@@ -56,15 +57,17 @@
    "https://zapi-api.onrender.com". Vacio = sin backend. */
 const URL_API_PRODUCCION = "";
 
-/* URL del backend local, solo si la pagina llega de otro lado que no
-   sea el propio backend (por ejemplo Live Server en el puerto 5500 o
-   Live Preview de VS Code en el 3000) y queres fijar la direccion a
-   mano. Con '' se calcula sola (ver baseLocal()). */
+/* URL del backend local, para previsualizar en un server estatico
+   (Show Preview, Live Server en 3000/5500) y pegarle a un backend
+   levantado en otro puerto. Vacio (recomendado) = modo sin backend
+   cuando la pagina no la sirve el backend. Ejemplo:
+   "http://localhost:5501". */
 const URL_API_LOCAL = "";
 
-/* Puerto donde corre el backend en tu maquina (npm start). Cuando la
-   pagina la sirve otro server local (Live Preview/Live Server en
-   3000, 5500, ...), la API apunta al mismo host en este puerto. */
+/* Puerto del backend en tu maquina (npm start, dev:memoria). Si la
+   pagina la sirve ESE backend, la API es el mismo origen. Si la sirve
+   otro server (Show Preview, Live Server), no hay backend salvo que
+   definas URL_API_LOCAL. */
 const PUERTO_BACKEND_LOCAL = "5501";
 
 function normalizarBase(url) {
@@ -84,22 +87,12 @@ function esHostLocal() {
     return false;
 }
 
-/* Base de la API cuando la pagina es local:
-   - URL_API_LOCAL tiene prioridad si la definiste.
-   - si la sirve el mismo backend (mismo puerto) -> mismo origen ('').
-   - si la sirve otro server local -> mismo host, PUERTO_BACKEND_LOCAL.
-   Se usa el host de la pagina (no siempre 127.0.0.1) para no cambiar
-   de sitio entre la pagina y la cookie de sesion. */
-function baseLocal() {
-    const configurada = normalizarBase(URL_API_LOCAL);
-    if (configurada) return configurada;
-
-    if (window.location.port === PUERTO_BACKEND_LOCAL) return "";
-
-    const protocolo = window.location.protocol === "https:" ? "https:" : "http:";
-    const host = window.location.hostname || "127.0.0.1";
-
-    return protocolo + "//" + host + ":" + PUERTO_BACKEND_LOCAL;
+/* ¿La pagina la sirve el propio backend? Local y en su puerto. En ese
+   caso la API vive en el mismo origen y no hace falta configurar nada.
+   Si la sirve OTRO server local (Show Preview, Live Server), da false:
+   el sitio entra en modo sin backend. */
+function backendMismoOrigen() {
+    return esHostLocal() && window.location.port === PUERTO_BACKEND_LOCAL;
 }
 
 const API_BASE = (function () {
@@ -113,19 +106,29 @@ const API_BASE = (function () {
         return normalizarBase(meta.content);
     }
 
-    if (esHostLocal()) return baseLocal();
+    /* URL_API_LOCAL fija a mano el backend local: sirve para
+       previsualizar (Show Preview, Live Server) contra un backend que
+       corre en otro puerto. Pisa a la deteccion. */
+    const localFija = normalizarBase(URL_API_LOCAL);
+    if (localFija) return localFija;
+
+    /* Local sin URL fija: la API es el mismo origen solo si la sirve
+       el backend; si la sirve un server estatico, no hay API (''). */
+    if (esHostLocal()) return "";
 
     return normalizarBase(URL_API_PRODUCCION);
 }());
 
 window.API_BASE = API_BASE;
 
-/* ¿Hay un backend configurado al que apuntar? En local siempre se
-   asume el mismo origen. En produccion, verdadero solo si se definio
-   una URL (meta, __ZAPI_API__ o URL_API_PRODUCCION). */
+/* ¿Hay un backend al que apuntar? Verdadero si se definio una URL
+   (__ZAPI_API__, meta, URL_API_LOCAL o URL_API_PRODUCCION) o si la
+   pagina la sirve el backend en el mismo origen. Falso cuando se
+   previsualiza en un server estatico: ahi el sitio usa su modo sin
+   backend (login fijo, pedidos por WhatsApp, stock de demostracion). */
 function hayApiConfigurada() {
-    if (esHostLocal()) return true;
-    return API_BASE !== "";
+    if (API_BASE !== "") return true;
+    return backendMismoOrigen();
 }
 
 window.hayApiConfigurada = hayApiConfigurada;

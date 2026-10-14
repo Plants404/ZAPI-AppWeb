@@ -221,37 +221,46 @@ document.addEventListener("DOMContentLoaded", () => {
         /* El campo trampa (honeypot) viaja con el resto: si viene relleno, el servidor responde ok sin guardar nada. */
         datos.sitio_web = (document.getElementById("contactoSitio") || {}).value || "";
 
+        /* Sin backend (Show Preview, hosting estatico) la consulta sale
+           solo por correo (EmailJS); no se golpea /api/contacto. */
+        const fnHayApi = window.hayApiConfigurada;
+        const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
+
         try {
-            const respuesta = await fetch(window.urlApi("/api/contacto"), {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(datos)
-            });
+            if (hayBackend) {
+                const respuesta = await fetch(window.urlApi("/api/contacto"), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(datos)
+                });
 
-            const cuerpo = await respuesta.json().catch(() => ({}));
+                const cuerpo = await respuesta.json().catch(() => ({}));
 
-            if (!respuesta.ok) {
-                const fallido = CAMPOS.find(campo => campo.id.replace("contacto", "").toLowerCase() === cuerpo.campo);
+                if (!respuesta.ok) {
+                    const fallido = CAMPOS.find(campo => campo.id.replace("contacto", "").toLowerCase() === cuerpo.campo);
 
-                if (fallido) {
-                    marcarError(fallido, cuerpo.error || fallido.corto);
-                    document.getElementById(fallido.id)?.focus();
+                    if (fallido) {
+                        marcarError(fallido, cuerpo.error || fallido.corto);
+                        document.getElementById(fallido.id)?.focus();
+                    }
+
+                    avisar(cuerpo.error || "No pudimos enviar la consulta. Probá de nuevo en un momento.", "error");
+
+                    return;
                 }
 
-                avisar(cuerpo.error || "No pudimos enviar la consulta. Probá de nuevo en un momento.", "error");
-
-                return;
-            }
-
-            if (!datos.sitio_web) {
-                try {
-                    await avisarPorCorreo(datos);
-                } catch {
-                    mostrarAviso(
-                        "El aviso por correo no salió",
-                        "Tu mensaje quedó guardado igual y lo vamos a leer."
-                    );
+                if (!datos.sitio_web) {
+                    try {
+                        await avisarPorCorreo(datos);
+                    } catch {
+                        mostrarAviso(
+                            "El aviso por correo no salió",
+                            "Tu mensaje quedó guardado igual y lo vamos a leer."
+                        );
+                    }
                 }
+            } else if (!datos.sitio_web) {
+                await avisarPorCorreo(datos);
             }
 
             formulario.hidden = true;

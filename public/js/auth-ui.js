@@ -65,10 +65,17 @@
         return false;
     }
 
+    function hayBackend() {
+        const fn = window.hayApiConfigurada;
+        return typeof fn !== 'function' || fn();
+    }
+
     async function salir() {
-        try {
-            await fetch(window.urlApi('/api/auth/logout'), { method: 'POST', credentials: 'include' });
-        } catch (error) {
+        if (hayBackend()) {
+            try {
+                await fetch(window.urlApi('/api/auth/logout'), { method: 'POST', credentials: 'include' });
+            } catch (error) {
+            }
         }
 
         window.cerrarSesionLocal();
@@ -81,20 +88,25 @@
         window.location.href = window.urlDelSitio('index.html');
     }
 
-    const listo = fetch(window.urlApi('/api/auth/yo'), { credentials: 'include' })
-        .then(function (res) { return res.json(); })
-        .then(function (datos) {
-            usuario = datos && datos.usuario ? datos.usuario : null;
-        })
-        .catch(function () {
-            /* Sin backend alcanzable: la sesion estatica que dejo el
-               login local (localStorage) hace las veces de cuenta. */
+    /* Sin backend no se golpea /api/auth/yo: la sesion estatica que dejo
+       el login local (localStorage) hace las veces de cuenta. */
+    const sesion = hayBackend()
+        ? fetch(window.urlApi('/api/auth/yo'), { credentials: 'include' })
+            .then(function (res) { return res.json(); })
+            .then(function (datos) {
+                usuario = datos && datos.usuario ? datos.usuario : null;
+            })
+            .catch(function () {
+                usuario = window.leerSesionLocal();
+            })
+        : Promise.resolve().then(function () {
             usuario = window.leerSesionLocal();
-        })
-        .then(function () {
-            pintar();
-            prepararMenuDeCuenta();
         });
+
+    const listo = sesion.then(function () {
+        pintar();
+        prepararMenuDeCuenta();
+    });
 
     window.zapiAuth = {
         listo: listo,
