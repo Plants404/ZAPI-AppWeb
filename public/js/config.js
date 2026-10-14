@@ -15,8 +15,11 @@
 
    urlApi() decide sola con la direccion de la pagina:
 
-     * http://localhost:* o 127.0.0.1:*  -> mismo origen (o URL_API_LOCAL)
-     * cualquier otro host (tu hosting)  -> URL_API_PRODUCCION
+     * local (localhost, *.localhost, 127.*, ::1, 0.0.0.0):
+         - si la sirve el backend (mismo puerto) -> mismo origen
+         - si la sirve otro server local (Live Server, Live Preview
+           de VS Code en 3000/5500, etc.)       -> PUERTO_BACKEND_LOCAL
+     * cualquier otro host (tu hosting)          -> URL_API_PRODUCCION
 
    Un meta en el HTML pisa la decision para una pagina aparte:
 
@@ -34,8 +37,11 @@
      2. <meta name="zapi-api" content="https://...">  -> override
         por pagina.
      3. Deteccion por entorno:
-          - local (localhost/127.0.0.1/::1): URL_API_LOCAL
-            ('' = mismo origen, lo normal con npm start).
+          - local (localhost, *.localhost, 127.*, ::1, 0.0.0.0): la API
+            apunta al backend local. Si la pagina la sirve el mismo
+            backend (mismo puerto) es el mismo origen; si la sirve
+            otro server local (Live Server, Live Preview de VS Code)
+            se usa el host de la pagina + PUERTO_BACKEND_LOCAL.
           - cualquier otro host: URL_API_PRODUCCION
             (pegar aca la URL del backend desplegado).
 
@@ -52,16 +58,48 @@ const URL_API_PRODUCCION = "";
 
 /* URL del backend local, solo si la pagina llega de otro lado que no
    sea el propio backend (por ejemplo Live Server en el puerto 5500 o
-   5501 y el backend en 5501). Con '' se usa el mismo origen. */
+   Live Preview de VS Code en el 3000) y queres fijar la direccion a
+   mano. Con '' se calcula sola (ver baseLocal()). */
 const URL_API_LOCAL = "";
+
+/* Puerto donde corre el backend en tu maquina (npm start). Cuando la
+   pagina la sirve otro server local (Live Preview/Live Server en
+   3000, 5500, ...), la API apunta al mismo host en este puerto. */
+const PUERTO_BACKEND_LOCAL = "5501";
 
 function normalizarBase(url) {
     return String(url || "").trim().replace(/\/+$/, "");
 }
 
+/* ¿La pagina se esta abriendo desde la maquina de desarrollo? Cubre
+   localhost y sus subdominios, todo el rango 127.0.0.0/8, ::1 y
+   0.0.0.0, sin mirar el puerto (Live Preview usa puertos variables). */
 function esHostLocal() {
     const host = window.location.hostname;
-    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+    if (!host) return true; // file:// o preview embebido sin host
+    if (host === "localhost" || host.endsWith(".localhost")) return true;
+    if (host === "::1" || host === "[::1]") return true;
+    if (host === "0.0.0.0") return true;
+    if (host.indexOf("127.") === 0) return true;
+    return false;
+}
+
+/* Base de la API cuando la pagina es local:
+   - URL_API_LOCAL tiene prioridad si la definiste.
+   - si la sirve el mismo backend (mismo puerto) -> mismo origen ('').
+   - si la sirve otro server local -> mismo host, PUERTO_BACKEND_LOCAL.
+   Se usa el host de la pagina (no siempre 127.0.0.1) para no cambiar
+   de sitio entre la pagina y la cookie de sesion. */
+function baseLocal() {
+    const configurada = normalizarBase(URL_API_LOCAL);
+    if (configurada) return configurada;
+
+    if (window.location.port === PUERTO_BACKEND_LOCAL) return "";
+
+    const protocolo = window.location.protocol === "https:" ? "https:" : "http:";
+    const host = window.location.hostname || "127.0.0.1";
+
+    return protocolo + "//" + host + ":" + PUERTO_BACKEND_LOCAL;
 }
 
 const API_BASE = (function () {
@@ -75,7 +113,7 @@ const API_BASE = (function () {
         return normalizarBase(meta.content);
     }
 
-    if (esHostLocal()) return normalizarBase(URL_API_LOCAL);
+    if (esHostLocal()) return baseLocal();
 
     return normalizarBase(URL_API_PRODUCCION);
 }());
