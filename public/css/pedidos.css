@@ -39,30 +39,35 @@ html:not([data-auth="si"]) main.pedidos-page {
 }
 
 .pedido-card {
-    padding: 1.4rem 1.5rem;
     background: var(--white);
-    border-radius: var(--radius);
+    border-radius: 16px;
     box-shadow: var(--shadow-sm);
+    overflow: hidden;
 }
 
+/* Cabecera sobre crema suave, con esquinas superiores redondeadas. */
 .pedido-cabecera {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: .6rem 1rem;
-    padding-bottom: .9rem;
-    border-bottom: 1px solid var(--sand);
+    padding: 1.1rem 1.4rem;
+    background: var(--cream);
+    border-bottom: 1px solid rgba(31, 58, 46, .08);
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
 }
 
 .pedido-cabecera > div {
     display: flex;
     flex-direction: column;
+    gap: .1rem;
 }
 
 .pedido-codigo {
     color: var(--forest);
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: .02em;
     font-variant-numeric: tabular-nums;
 }
@@ -72,15 +77,17 @@ html:not([data-auth="si"]) main.pedidos-page {
     font-size: .85rem;
 }
 
+/* Pildora de estado: ambar organico suave con texto oscuro legible. */
 .pedido-estado {
-    padding: .3rem .85rem;
+    padding: .3rem .9rem;
     border-radius: 999px;
-    background: var(--sand);
-    color: var(--forest);
+    background: rgba(201, 154, 51, .18);
+    color: #6b4e12;
     font-size: .78rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: capitalize;
     letter-spacing: .03em;
+    white-space: nowrap;
 }
 
 .pedido-estado-cancelado {
@@ -90,8 +97,10 @@ html:not([data-auth="si"]) main.pedidos-page {
 
 .pedido-lineas {
     display: grid;
-    gap: .5rem;
-    padding: 1rem 0;
+    gap: .1rem;
+    padding: 1.1rem 1.4rem;
+    margin: 0;
+    list-style: none;
 }
 
 .pedido-linea {
@@ -99,60 +108,94 @@ html:not([data-auth="si"]) main.pedidos-page {
     grid-template-columns: auto 1fr auto;
     align-items: baseline;
     gap: .35rem .8rem;
+    padding: .4rem 0;
     font-size: .95rem;
+    border-bottom: 1px solid rgba(31, 58, 46, .06);
+}
+
+.pedido-linea:last-child {
+    border-bottom: 0;
 }
 
 .pedido-linea-cantidad {
-    color: var(--muted-texto);
+    color: var(--moss);
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
 }
 
 .pedido-linea-nombre {
     color: var(--ink);
+    font-weight: 600;
 }
 
 .pedido-linea-precio {
     color: var(--forest);
     font-weight: 600;
+    text-align: right;
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
 }
 
+/* Barra de Total: fondo verde oscuro con texto claro en negrita. */
 .pedido-pie {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: .9rem;
-    border-top: 1px solid var(--sand);
-    color: var(--forest);
+    gap: 1rem;
+    padding: 1rem 1.4rem;
+    background: var(--forest);
+    color: #f9f6f0;
+    text-align: left;
+    letter-spacing: normal;
+    border-top: 0;
     font-weight: 600;
 }
 
+.pedido-pie span {
+    color: #f9f6f0;
+    font-size: .95rem;
+    letter-spacing: .02em;
+}
+
 .pedido-pie strong {
-    font-size: 1.15rem;
+    color: #ffffff;
+    font-family: var(--sans);
+    font-size: 1.2rem;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
 }
 
 .pedido-acciones {
     display: flex;
     justify-content: flex-end;
-    margin-top: 1rem;
+    padding: .9rem 1.4rem 1.2rem;
 }
 
+/* Cancelar: enlace discreto en terracota, sin borde agresivo. */
 .pedido-cancelar {
-    padding: .55rem 1.1rem;
-    border: 1px solid var(--error);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--error);
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: 0;
+    border: 0;
+    background: none;
     font: inherit;
+    font-size: .9rem;
     font-weight: 600;
+    color: #9c4a2f;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(156, 74, 47, .35);
     cursor: pointer;
-    transition: background .2s ease, color .2s ease, border-color .2s ease;
+    transition: color .2s ease, text-decoration-color .2s ease;
+}
+
+.pedido-cancelar .material-symbols-outlined {
+    font-size: 1.05rem;
 }
 
 .pedido-cancelar:hover,
 .pedido-cancelar:focus-visible {
-    background: var(--error);
-    color: var(--white);
+    color: #7d3a23;
+    text-decoration-color: currentColor;
 }
