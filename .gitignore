@@ -1,19 +1,15 @@
-# Base de datos: estado, no codigo. Vuelve junto con el backend nuevo;
-# va a contener pedidos, telefonos de clientes y stock.
+# Base de datos: estado, no codigo. Hoy no hay backend, pero la regla
+# queda para cuando se vuelva a armar (pedidos, telefonos, stock).
 # La barra inicial importa: sin ella, git ignoraria tambien
 # public/data/, que es el catalogo en JSON que si se versiona.
 /data/
 
-# Secretos. El backend lee la configuracion de .env (MONGODB_URI,
-# ZAPI_SESSION_SECRET, ZAPI_ADMIN_TOKEN, etc.). Nunca se versiona
-# ningun .env: se versiona .env.example con los nombres de las
-# variables y valores falsos.
+# Secretos. Cuando vuelva el backend leera .env. Nunca se versiona
+# ningun .env.
 .env
 .env.*
-!.env.example
 
-# Dependencias. eslint y globals son de desarrollo; express, mongoose
-# y helmet son del backend.
+# Dependencias de desarrollo (eslint y globals).
 node_modules/
 
 # Sistema operativo y editores

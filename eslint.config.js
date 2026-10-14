@@ -95,13 +95,12 @@ module.exports = [
         },
     },
 
-    /* Las herramientas, el catalogo, el backend y esta misma config:
+    /* Las herramientas, el catalogo y esta misma config:
        CommonJS. */
     {
         files: [
             'tools/**/*.js',
             'datos/**/*.js',
-            'backend/**/*.js',
             'eslint.config.js',
         ],
         languageOptions: {
