@@ -146,38 +146,35 @@ animation-fill-mode: backwards;
 .catalog-filterbar { animation-name: catalogoEntrada; animation-delay: .45s; }
 
 .catalog-filterbar {
-position: -webkit-sticky;
-position: sticky;
-top: 135px;
-z-index: 80;
-background-color: var(--cream);
-border-top: none;
-box-shadow: none;
-margin-bottom: 1rem;
-
 display: flex !important;
-flex-wrap: nowrap !important;
+flex-direction: row !important;
+align-items: center !important;
 overflow-x: auto !important;
 -webkit-overflow-scrolling: touch !important;
-gap: 8px !important;
-padding: 12px 16px !important;
+white-space: nowrap !important;
+gap: 10px !important;
+padding: 8px 4px 12px 4px !important;
 width: 100% !important;
 box-sizing: border-box !important;
+background-color: var(--cream) !important;
+position: -webkit-sticky !important;
+position: sticky !important;
+top: 135px !important;
+z-index: 80 !important;
 scrollbar-width: none !important;
-white-space: nowrap;
+margin-bottom: 1rem;
 }
 
 .catalog-filterbar::-webkit-scrollbar {
 display: none !important;
 }
 
-.catalog-filterbar button {
+.catalog-filterbar button,
+.catalog-filterbar .catalog-filter {
 flex: 0 0 auto !important;
-white-space: nowrap !important;
-}
-
-.catalog-filter {
-flex: 0 0 auto !important;
+display: inline-flex !important;
+align-items: center !important;
+justify-content: center !important;
 white-space: nowrap !important;
 }
 
