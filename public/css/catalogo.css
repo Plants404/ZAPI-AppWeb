@@ -143,31 +143,50 @@
         .catalog-filterbar { animation-name: catalogoEntrada; animation-delay: .45s; }
 
         .catalog-filterbar {
+            position: -webkit-sticky !important;
+            position: sticky !important;
+            top: 135px !important;
+            z-index: 80 !important;
+            background-color: var(--cream) !important;
+            padding: 10px 16px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+            box-shadow: none !important;
+            margin-bottom: 1rem;
+        }
+
+        .catalog-filterbar-label {
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            color: #555 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            text-align: left !important;
+        }
+
+        .catalog-filters {
             display: flex !important;
             flex-direction: row !important;
             align-items: center !important;
             overflow-x: auto !important;
             -webkit-overflow-scrolling: touch !important;
             white-space: nowrap !important;
-            gap: 10px !important;
-            padding: 8px 4px 12px 4px !important;
+            gap: 8px !important;
             width: 100% !important;
-            box-sizing: border-box !important;
-            background-color: var(--cream) !important;
-            position: -webkit-sticky !important;
-            position: sticky !important;
-            top: 135px !important;
-            z-index: 80 !important;
+            padding-bottom: 4px !important;
             scrollbar-width: none !important;
-            margin-bottom: 1rem;
         }
 
-        .catalog-filterbar::-webkit-scrollbar {
+        .catalog-filters::-webkit-scrollbar {
             display: none !important;
         }
 
-        .catalog-filterbar button,
-        .catalog-filterbar .catalog-filter {
+        .catalog-filter {
             flex: 0 0 auto !important;
             display: inline-flex !important;
             align-items: center !important;
