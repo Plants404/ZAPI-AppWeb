@@ -541,13 +541,14 @@ header.menu-abierto::before {
   width: 100%;
 }
 
-/* CTA inferior destacado del drawer movil ("Ver carrito"). */
+/* CTA "Ver carrito" del drawer movil. Vive agrupado dentro del bloque de
+   cuenta, nunca suelto al pie del menu. */
 .nav-cta {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: .6rem;
-  margin-top: 1.75rem;
+  margin-top: .6rem;
   min-height: 48px;
   padding: .9rem 1.25rem;
   font-family: var(--sans);
@@ -608,7 +609,6 @@ header.menu-abierto::before {
   flex-wrap: wrap;
   padding: .8rem 0;
 }
-
 .nav-usuario {
   position: relative;
   display: inline-flex;
@@ -690,6 +690,163 @@ header.menu-abierto::before {
   outline-offset: 2px;
 }
 
+/* ==========================================================================
+   Drawer de navegacion en mobile y tablet (<1024px). El bloque de
+   usuario/administrador ("Hola Administrador", Carrito, Mis pedidos y
+   Salir) va arriba, como contenedor destacado; la navegacion general
+   queda debajo. Todo con areas tactiles de al menos 44x44 px.
+   ========================================================================== */
+@media (max-width: 1023px) {
+
+  .nav-bar ul {
+    gap: .35rem;
+  }
+
+  /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
+     muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
+  .nav-cuenta {
+    display: block;
+    margin: 0 0 1rem;
+    padding: .5rem;
+    background: var(--sand);
+    border: 1px solid rgba(61, 107, 79, .16);
+    border-radius: 14px;
+  }
+
+  .nav-usuario {
+    gap: .15rem;
+  }
+
+  /* Cabecera "Hola Administrador": encabeza el bloque sin caja propia */
+  .nav-usuario-boton {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    min-height: 44px;
+    padding: .5rem .65rem .75rem;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .2);
+    background: none;
+    color: var(--forest);
+    text-align: left;
+  }
+
+  .nav-usuario-boton:hover {
+    color: var(--moss);
+  }
+
+  .nav-usuario-nombre {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  /* El contador vive en la fila de Carrito, no en la cabecera */
+  .nav-bar .nav-usuario-boton .cart-count.cart-count-header {
+    display: none;
+  }
+
+  .nav-usuario-menu {
+    gap: .15rem;
+    padding: .4rem 0 0;
+  }
+
+  /* Carrito / Mis pedidos / Salir: filas tactiles con icono, sin caja
+     anidada (el fondo lo aporta el contenedor). */
+  .nav-bar .nav-usuario-item {
+    justify-content: flex-start;
+    min-height: 48px;
+    padding: .7rem .65rem;
+    border-radius: 10px;
+    background: none;
+    border: 0;
+  }
+
+  .nav-bar .nav-usuario-item:hover {
+    background: rgba(74, 124, 89, .14);
+  }
+
+  .nav-bar .nav-usuario-item::before {
+    content: "";
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.3rem;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    color: var(--leaf);
+    flex: 0 0 auto;
+  }
+
+  .nav-bar .nav-link-carrito::before {
+    content: "shopping_bag";
+  }
+
+  .nav-bar .nav-usuario-item[href*="pedidos"]::before {
+    content: "receipt_long";
+  }
+
+  .nav-bar #navSalir::before {
+    content: "logout";
+  }
+
+  .nav-bar .nav-usuario-item .cart-count {
+    margin-left: auto;
+  }
+
+  /* Ingresar (sin sesion): boton tactil principal del bloque */
+  .nav-bar .nav-ingresar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: .7rem .85rem;
+    border-radius: 10px;
+    background: var(--forest);
+    color: var(--white);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .nav-bar .nav-ingresar:hover {
+    background: var(--moss);
+    color: var(--white);
+  }
+
+  .nav-bar .nav-ingresar::after {
+    display: none;
+  }
+
+  /* Salir en carrito/pedidos (fuera del menu de cuenta) */
+  .nav-bar .nav-salir {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: .7rem .85rem;
+    border-radius: 10px;
+    background: var(--white);
+    text-decoration: none;
+  }
+
+  /* CTA "Ver carrito" del drawer */
+  .nav-cta {
+    min-height: 48px;
+  }
+}
+
 .nav-toggle .cart-count.cart-count-toggle {
   position: absolute;
   top: -7px;
@@ -750,6 +907,12 @@ html:not([data-auth="si"]) .footer-carrito {
 }
 
 html:not([data-auth="si"]) main.cart-page {
+  display: none;
+}
+
+/* Con sesion el bloque de cuenta ya ofrece "Carrito"; el CTA "Ver carrito"
+   queda como acompanante de "Ingresar" solo cuando no hay sesion. */
+html[data-auth="si"] .nav-cta {
   display: none;
 }
 
@@ -2562,6 +2725,7 @@ footer nav a:focus-visible {
   }
 
   .nav-cuenta {
+    order: 1;
     padding: 0;
   }
 
