@@ -705,16 +705,28 @@ header.menu-abierto::before {
   /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
      muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
   .nav-cuenta {
+    position: relative;
     display: block;
-    margin: 0 0 1rem;
-    padding: .5rem;
+    margin: 0 0 1.4rem;
+    padding: .4rem .5rem;
     background: var(--sand);
     border: 1px solid rgba(61, 107, 79, .16);
     border-radius: 14px;
   }
 
+  /* Linea divisoria sutil entre el bloque de cuenta y la navegacion. */
+  .nav-cuenta::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -.8rem;
+    height: 1px;
+    background: rgba(61, 107, 79, .22);
+  }
+
   .nav-usuario {
-    gap: .15rem;
+    gap: 0;
   }
 
   /* Cabecera "Hola Administrador": encabeza el bloque sin caja propia */
@@ -724,7 +736,7 @@ header.menu-abierto::before {
     gap: .5rem;
     width: 100%;
     min-height: 44px;
-    padding: .5rem .65rem .75rem;
+    padding: .5rem .35rem .7rem;
     border: 0;
     border-radius: 0;
     border-bottom: 1px solid rgba(61, 107, 79, .2);
@@ -752,23 +764,27 @@ header.menu-abierto::before {
   }
 
   .nav-usuario-menu {
-    gap: .15rem;
-    padding: .4rem 0 0;
+    gap: 0;
+    padding: 0;
   }
 
-  /* Carrito / Mis pedidos / Salir: filas tactiles con icono, sin caja
-     anidada (el fondo lo aporta el contenedor). */
+  /* Carrito / Mis pedidos / Salir: filas tactiles con icono, separadas
+     por lineas sutiles dentro del bloque unificado. */
   .nav-bar .nav-usuario-item {
     justify-content: flex-start;
     min-height: 48px;
-    padding: .7rem .65rem;
-    border-radius: 10px;
+    padding: .75rem .35rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .14);
     background: none;
-    border: 0;
+  }
+
+  .nav-bar .nav-usuario-item:last-child {
+    border-bottom: 0;
   }
 
   .nav-bar .nav-usuario-item:hover {
-    background: rgba(74, 124, 89, .14);
+    background: rgba(74, 124, 89, .12);
   }
 
   .nav-bar .nav-usuario-item::before {
