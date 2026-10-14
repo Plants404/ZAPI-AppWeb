@@ -690,43 +690,50 @@ header.menu-abierto::before {
 }
 
 /* ==========================================================================
-   Drawer de navegacion en mobile y tablet (<1024px). Agrupa el bloque de
-   usuario/administrador en una tarjeta destacada y garantiza areas
-   tactiles de al menos 44x44 px en todo el menu lateral.
+   Drawer de navegacion en mobile y tablet (<1024px). El bloque de
+   usuario/administrador ("Hola Administrador", Carrito, Mis pedidos y
+   Salir) va arriba, como contenedor destacado; la navegacion general
+   queda debajo. Todo con areas tactiles de al menos 44x44 px.
    ========================================================================== */
 @media (max-width: 1023px) {
 
-  /* Jerarquia: los enlaces principales quedan arriba y el bloque de
-     usuario se separa como una tarjeta con fondo sutil. */
   .nav-bar ul {
     gap: .35rem;
   }
 
+  /* El bloque de cuenta se adelanta al tope del menu. */
   .nav-cuenta {
+    order: -1;
     display: block;
-    margin-top: .9rem;
-    padding: .65rem;
-    background: rgba(236, 229, 211, .55);
-    border: 1px solid rgba(61, 107, 79, .18);
+    margin: 0 0 1rem;
+    padding: .5rem;
+    background: var(--sand);
+    border: 1px solid rgba(61, 107, 79, .16);
     border-radius: 14px;
-    box-shadow: var(--shadow-sm);
   }
 
   .nav-usuario {
-    gap: .5rem;
+    gap: .15rem;
   }
 
+  /* Cabecera "Hola Administrador": encabeza el bloque sin caja propia */
   .nav-usuario-boton {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
     width: 100%;
-    min-height: 48px;
-    padding: .7rem .85rem;
-    border-radius: 10px;
-    background: var(--white);
-    border: 1px solid rgba(61, 107, 79, .18);
+    min-height: 44px;
+    padding: .5rem .65rem .75rem;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .2);
+    background: none;
+    color: var(--forest);
+    text-align: left;
   }
 
   .nav-usuario-boton:hover {
-    background: var(--sand);
+    color: var(--moss);
   }
 
   .nav-usuario-nombre {
@@ -735,21 +742,32 @@ header.menu-abierto::before {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-weight: 700;
+  }
+
+  /* El contador vive en la fila de Carrito, no en la cabecera */
+  .nav-bar .nav-usuario-boton .cart-count.cart-count-header {
+    display: none;
   }
 
   .nav-usuario-menu {
-    gap: .35rem;
-    padding: .5rem 0 0;
+    gap: .15rem;
+    padding: .4rem 0 0;
   }
 
-  /* Carrito / Mis pedidos / Salir: filas tactiles completas con icono */
+  /* Carrito / Mis pedidos / Salir: filas tactiles con icono, sin caja
+     anidada (el fondo lo aporta el contenedor). */
   .nav-bar .nav-usuario-item {
     justify-content: flex-start;
     min-height: 48px;
-    padding: .7rem .85rem;
+    padding: .7rem .65rem;
     border-radius: 10px;
-    background: var(--white);
-    border: 1px solid rgba(61, 107, 79, .14);
+    background: none;
+    border: 0;
+  }
+
+  .nav-bar .nav-usuario-item:hover {
+    background: rgba(74, 124, 89, .14);
   }
 
   .nav-bar .nav-usuario-item::before {
@@ -786,14 +804,7 @@ header.menu-abierto::before {
     margin-left: auto;
   }
 
-  /* Sobre la fila blanca el contador necesita su propio fondo; con
-     productos hereda el rojo de .con-productos. */
-  .nav-bar .nav-usuario-item .cart-count:not(.con-productos) {
-    background: var(--sand);
-    color: var(--forest);
-  }
-
-  /* Ingresar: boton tactil principal del bloque de usuario */
+  /* Ingresar (sin sesion): boton tactil principal del bloque */
   .nav-bar .nav-ingresar {
     display: flex;
     align-items: center;
@@ -816,7 +827,7 @@ header.menu-abierto::before {
     display: none;
   }
 
-  /* Salir (paginas de carrito/pedidos): fila tactil */
+  /* Salir en carrito/pedidos (fuera del menu de cuenta) */
   .nav-bar .nav-salir {
     display: flex;
     align-items: center;
@@ -826,7 +837,6 @@ header.menu-abierto::before {
     padding: .7rem .85rem;
     border-radius: 10px;
     background: var(--white);
-    border: 1px solid rgba(61, 107, 79, .14);
     text-decoration: none;
   }
 

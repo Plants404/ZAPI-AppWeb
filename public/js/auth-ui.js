@@ -21,19 +21,27 @@
 
         if (!boton || !menu) return;
 
-        let abierto = false;
+        /* En el drawer (mobile/tablet) el bloque de cuenta se muestra
+           desplegado por defecto, para que Carrito y Mis pedidos queden
+           visibles; en escritorio sigue siendo un menu desplegable. */
+        const enDrawer = window.matchMedia('(max-width: 1023px)');
+
+        let abierto = enDrawer.matches;
+
+        function pintarEstado() {
+            menu.hidden = !abierto;
+            boton.setAttribute('aria-expanded', String(abierto));
+        }
 
         function abrir() {
             abierto = true;
-            boton.setAttribute('aria-expanded', 'true');
-            menu.hidden = false;
+            pintarEstado();
         }
 
         function cerrar() {
             if (!abierto) return;
             abierto = false;
-            boton.setAttribute('aria-expanded', 'false');
-            menu.hidden = true;
+            pintarEstado();
         }
 
         /* stopPropagation: evita que el clic que abre cierre la ventanita en el acto. */
@@ -45,7 +53,7 @@
 
         document.addEventListener('click', function (evento) {
             if (!abierto) return;
-            if (!menu.contains(evento.target)) cerrar();
+            if (!menu.contains(evento.target) && evento.target !== boton) cerrar();
         });
 
         document.addEventListener('keydown', function (evento) {
@@ -55,6 +63,21 @@
         });
 
         menu.addEventListener('click', cerrar);
+
+        /* Al cruzar el punto de corte, el estado por defecto se ajusta
+           al modo: desplegado en el drawer, cerrado en escritorio. */
+        function alCambiarDeModo() {
+            abierto = enDrawer.matches;
+            pintarEstado();
+        }
+
+        if (typeof enDrawer.addEventListener === 'function') {
+            enDrawer.addEventListener('change', alCambiarDeModo);
+        } else if (typeof enDrawer.addListener === 'function') {
+            enDrawer.addListener(alCambiarDeModo);
+        }
+
+        pintarEstado();
     }
 
     function exigirCuenta() {
