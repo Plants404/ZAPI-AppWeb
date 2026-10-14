@@ -701,9 +701,9 @@ header.menu-abierto::before {
     gap: .35rem;
   }
 
-  /* El bloque de cuenta se adelanta al tope del menu. */
+  /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
+     muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
   .nav-cuenta {
-    order: -1;
     display: block;
     margin: 0 0 1rem;
     padding: .5rem;
@@ -2718,6 +2718,7 @@ footer nav a:focus-visible {
   }
 
   .nav-cuenta {
+    order: 1;
     padding: 0;
   }
 
