@@ -129,6 +129,40 @@ function formatearPrecio(value) {
 
 let STOCK = {};
 
+/* Stock de demostracion: sin backend (preview, GitHub Pages) cada
+   producto arranca con STOCK_DEMO unidades. Lo que el cliente ya pidio
+   se acumula en localStorage para que el descuento sobreviva a una
+   recarga. Con backend, la verdad es el servidor y estos contadores no
+   se aplican. */
+const CLAVE_STOCK_CONSUMIDO = "zapiStockConsumido";
+const STOCK_DEMO = 10;
+
+let stockConsumido = leerStockConsumido();
+let stockDesdeBackend = false;
+
+function leerStockConsumido() {
+    try {
+        const bruto = JSON.parse(localStorage.getItem(CLAVE_STOCK_CONSUMIDO));
+        return bruto && typeof bruto === "object" ? bruto : {};
+    } catch (error) {
+        console.warn("No se pudo leer el stock consumido:", error);
+        return {};
+    }
+}
+
+function guardarStockConsumido() {
+    try {
+        localStorage.setItem(CLAVE_STOCK_CONSUMIDO, JSON.stringify(stockConsumido));
+    } catch (error) {
+        console.warn("No se pudo guardar el stock consumido:", error);
+    }
+}
+
+function unidadesDeDemo(id) {
+    const consumido = Number(stockConsumido[String(id)]) || 0;
+    return Math.max(0, STOCK_DEMO - consumido);
+}
+
 function unidadesDe(id) {
 
     const clave = String(id);
@@ -173,7 +207,79 @@ function pintarStockEnPantalla() {
 
 }
 
+/* Descuenta del stock mostrado las cantidades que el cliente acaba de
+   pedir. Con backend el servidor ya lo hizo (y el refresco siguiente
+   trae el valor real); el descuento inmediato evita ver unidades
+   viejas hasta ese refresco. Sin backend, ademas se persiste en
+   localStorage para que el descuento sobreviva a la recarga. */
+function descontarStockPedido(items) {
+
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    for (const item of items) {
+
+        if (!item) continue;
+
+        const id = String(item.id ?? item.producto_id);
+        const cantidad = Number(item.cantidad) || 0;
+
+        if (!id || id === "undefined" || cantidad <= 0) continue;
+
+        const actual = Object.prototype.hasOwnProperty.call(STOCK, id)
+            ? STOCK[id]
+            : unidadesDeDemo(id);
+
+        STOCK[id] = Math.max(0, actual - cantidad);
+
+        if (!stockDesdeBackend) {
+            stockConsumido[id] = (Number(stockConsumido[id]) || 0) + cantidad;
+        }
+
+    }
+
+    if (!stockDesdeBackend) guardarStockConsumido();
+
+    pintarStockEnPantalla();
+
+}
+
+/* Rellena el stock con el valor de demostracion: sin backend es el
+   unico dato que hay. Se usa al arrancar y cuando falla el fetch. */
+function aplicarStockDeDemostracion() {
+    try {
+        const elementos = document.querySelectorAll("[data-stock]");
+        const ids = new Set();
+
+        elementos.forEach(el => {
+            if (el.dataset.stock) ids.add(String(el.dataset.stock));
+        });
+
+        if (ids.size > 0) {
+            ids.forEach(id => {
+                STOCK[id] = unidadesDeDemo(id);
+            });
+        } else if (typeof PRODUCTOS !== "undefined" && Array.isArray(PRODUCTOS)) {
+            PRODUCTOS.forEach(p => {
+                if (p && p.id !== null && p.id !== undefined) STOCK[String(p.id)] = unidadesDeDemo(p.id);
+            });
+        }
+
+        pintarStockEnPantalla();
+    } catch (e) {
+        console.warn("No se pudo aplicar el stock de demostracion", e);
+    }
+}
+
 function cargarStock() {
+
+    /* Sin backend (Show Preview, hosting estatico): el stock es el de
+       demostracion, no se llama a la API. */
+    const fnHayApi = window.hayApiConfigurada;
+    if (typeof fnHayApi === "function" && !fnHayApi()) {
+        stockDesdeBackend = false;
+        aplicarStockDeDemostracion();
+        return Promise.resolve();
+    }
 
     return fetch(window.urlApi("/api/stock"))
         .then(respuesta => {
@@ -185,6 +291,8 @@ function cargarStock() {
             const stock = cuerpo && cuerpo.stock;
 
             if (!stock || typeof stock !== "object") return;
+
+            stockDesdeBackend = true;
 
             STOCK = {};
 
@@ -201,27 +309,8 @@ function cargarStock() {
         })
         .catch(error => {
             console.warn("No se pudo cargar el stock:", error);
-            if (Object.keys(STOCK).length === 0) {
-                try {
-                    const elementos = document.querySelectorAll("[data-stock]");
-                    const ids = new Set();
-                    elementos.forEach(el => {
-                        if (el.dataset.stock) ids.add(String(el.dataset.stock));
-                    });
-                    if (ids.size > 0) {
-                        ids.forEach(id => {
-                            STOCK[id] = 10;
-                        });
-                    } else if (typeof PRODUCTOS !== "undefined" && Array.isArray(PRODUCTOS)) {
-                        PRODUCTOS.forEach(p => {
-                            if (p && p.id !== null && p.id !== undefined) STOCK[String(p.id)] = 10;
-                        });
-                    }
-                    pintarStockEnPantalla();
-                } catch (e) {
-                    console.warn("No se pudo aplicar el stock de demostracion", e);
-                }
-            }
+            stockDesdeBackend = false;
+            if (Object.keys(STOCK).length === 0) aplicarStockDeDemostracion();
         });
 
 }
@@ -233,6 +322,7 @@ document.addEventListener("visibilitychange", function () {
 });
 
 window.actualizarStock = cargarStock;
+window.descontarStockPedido = descontarStockPedido;
 
 cargarStock();
 

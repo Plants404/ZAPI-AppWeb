@@ -1,16 +1,23 @@
-const FUENTES_OPINIONES = [
-    window.urlApi("/api/testimonios"),
+/* La copia estatica del JSON, resuelta desde la ubicacion de este
+   script (no desde la raiz del dominio): asi tambien funciona cuando
+   el sitio cuelga de un subpath (GitHub Pages) y cuando no hay
+   backend. */
+const TESTIMONIOS_LOCAL = (function () {
+    const script = document.currentScript;
+    if (script && script.src) return new URL("../data/testimonios.json", script.src).href;
+    return "/public/data/testimonios.json";
+}());
 
-    /* La copia estatica del JSON, resuelta desde la ubicacion de este
-       script (no desde la raiz del dominio): asi la segunda fuente
-       tambien funciona cuando el sitio cuelga de un subpath (GitHub
-       Pages). */
-    (function () {
-        const script = document.currentScript;
-        if (script && script.src) return new URL("../data/testimonios.json", script.src).href;
-        return "/public/data/testimonios.json";
-    }())
-];
+/* Con backend se prueba primero la API; sin backend (Show Preview,
+   hosting estatico) se lee directo del JSON local. */
+const FUENTES_OPINIONES = (function () {
+    const fnHayApi = window.hayApiConfigurada;
+    const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
+
+    return hayBackend
+        ? [window.urlApi("/api/testimonios"), TESTIMONIOS_LOCAL]
+        : [TESTIMONIOS_LOCAL];
+}());
 
 async function cargarOpiniones() {
 
