@@ -145,104 +145,44 @@ animation-fill-mode: backwards;
 .catalog-trust { animation-name: catalogoEntradaDerecha; animation-delay: .3s; }
 .catalog-filterbar { animation-name: catalogoEntrada; animation-delay: .45s; }
 
+/* Barra de filtros: un unico bloque, identico en todos los
+anchos (patron mobile). Se pega justo debajo del header
+(alto real medido en --header-h por catalogo.js) y comparte
+el tono crema para fundirse con el, sin franja ni hueco.
+Ocupa de borde a borde, alineada con el resto de la pagina. */
 .catalog-filterbar {
 position: -webkit-sticky;
 position: sticky;
-top: 90px;
-z-index: 80;
+top: var(--header-h, 124px);
+z-index: 40;
 background-color: var(--cream);
-width: 100%;
-max-width: 1200px;
-margin: 0 auto 1.5rem auto;
-padding: 16px;
+width: 100vw;
+max-width: 100vw;
+margin-left: calc(50% - 50vw);
+margin-right: calc(50% - 50vw);
+margin-top: 0;
+margin-bottom: 1.5rem;
+padding: 10px var(--gutter, 1.25rem);
 box-sizing: border-box;
 display: flex;
 flex-direction: column;
-gap: 8px;
-border-radius: 12px;
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+gap: 6px;
 }
 
+/* Etiqueta del riel: se mantiene en el DOM para lectores de
+pantalla (aria-labelledby) pero no ocupa espacio visual, de
+modo que la barra queda reducida al riel de chips. */
 .catalog-filterbar-label {
-font-size: 0.8rem;
-font-weight: 600;
-text-transform: uppercase;
-color: #555;
-margin: 0 0 4px 0;
+position: absolute;
+width: 1px;
+height: 1px;
 padding: 0;
-width: 100%;
-text-align: left;
-}
-
-.catalog-filters {
-display: flex;
-flex-direction: row;
-align-items: center;
-overflow-x: auto;
--webkit-overflow-scrolling: touch;
+margin: -1px;
+overflow: hidden;
+clip: rect(0 0 0 0);
+clip-path: inset(50%);
 white-space: nowrap;
-gap: 8px;
-width: 100%;
-padding-bottom: 4px;
-scrollbar-width: none;
-}
-
-.catalog-filters::-webkit-scrollbar {
-display: none;
-}
-
-.catalog-filter {
-flex: 0 0 auto;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-white-space: nowrap;
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-.catalog-filterbar {
-max-width: 90% !important;
-margin: 0 auto 1.2rem auto !important;
-top: 95px !important;
-border-radius: 10px !important;
-padding: 14px !important;
-}
-}
-
-@media (max-width: 767px) {
-.catalog-filterbar {
-position: -webkit-sticky !important;
-position: sticky !important;
-top: 130px !important;
-z-index: 80 !important;
-width: 100vw !important;
-max-width: 100vw !important;
-margin-left: calc(-50vw + 50%) !important;
-margin-right: calc(-50vw + 50%) !important;
-margin-top: 0 !important;
-margin-bottom: 1.75rem !important;
-border-top: none !important;
-border-radius: 0 !important;
-padding: 8px 16px 16px 16px !important;
-box-sizing: border-box !important;
-box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03) !important;
-flex-direction: column !important;
-gap: 6px !important;
-}
-
-.catalog-filterbar::before {
-display: none !important;
-}
-}
-
-.catalog-filterbar-label {
-display: block;
-font-size: .72rem;
-font-weight: 700;
-text-transform: uppercase;
-letter-spacing: .18em;
-color: var(--muted-texto);
-margin-bottom: .75rem;
+border: 0;
 }
 
 /* Riel de filtros: una sola fila; si no entra, se desliza en
@@ -288,10 +228,14 @@ la pastilla deslizante. */
 position: relative;
 z-index: 1;
 flex: 0 0 auto;
+display: inline-flex;
+align-items: center;
+justify-content: center;
 border: 0;
 background: transparent;
 color: var(--ink);
-min-height: 40px;
+min-height: 44px;
+min-width: 44px;
 padding: .5rem 1.15rem;
 border-radius: 999px;
 font-size: .95rem;
@@ -437,7 +381,7 @@ outline-offset: 3px;
 
 .catalog-grid {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
 gap: 1.5rem;
 }
 
@@ -545,6 +489,60 @@ font-size: 1.05rem;
 color: var(--leaf);
 flex-shrink: 0;
 margin-top: 1px;
+}
+
+/* En dispositivos con puntero fino (desktop), el detalle del
+producto no expande la tarjeta: se muestra como una capa
+superpuesta con gradiente sobre la imagen, de modo que la
+altura de la grilla no cambia al pasar el mouse ni al
+enfocar con el teclado. En touch se conserva el acordeon. */
+@media (hover: hover) and (pointer: fine) {
+.product-card {
+position: relative;
+}
+
+.product-info-wrap {
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+aspect-ratio: 2 / 3;
+display: flex;
+align-items: flex-end;
+padding: 1.1rem 1.4rem;
+background: linear-gradient(to top,
+rgba(31, 58, 46, .94) 0%,
+rgba(31, 58, 46, .72) 45%,
+rgba(31, 58, 46, 0) 100%);
+opacity: 0;
+pointer-events: none;
+transition: opacity .3s ease;
+grid-template-rows: none;
+}
+
+.product-card:hover .product-info-wrap,
+.product-card:focus-within .product-info-wrap {
+grid-template-rows: none;
+opacity: 1;
+}
+
+.product-info {
+overflow: visible;
+}
+
+.product-info ul {
+border-top: 0;
+margin-top: 0;
+padding-top: 0;
+}
+
+.product-info li {
+color: var(--white);
+}
+
+.product-info li .material-symbols-outlined {
+color: var(--sage);
+}
 }
 
 .product-footer {

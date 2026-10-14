@@ -27,7 +27,7 @@
   --container: 1180px;
 
   --gutter: 1.25rem;
-  --header-h: 76px;
+  --header-h: 124px;
   --filterbar-h: 84px;
 }
 
@@ -220,7 +220,6 @@ header {
   align-items: center;
   gap: .75rem;
   padding: .75rem var(--gutter);
-  min-height: var(--header-h);
 }
 
 header::before {
