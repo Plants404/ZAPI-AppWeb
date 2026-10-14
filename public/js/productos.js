@@ -243,6 +243,37 @@ function descontarStockPedido(items) {
 
 }
 
+/* El camino inverso de descontarStockPedido: al cancelar un pedido se
+   devuelven las unidades. Sin backend tambien se descuenta lo que el
+   pedido habia sumado a "consumido", para que la recarga lo refleje. */
+function devolverStockPedido(items) {
+
+    if (!Array.isArray(items) || items.length === 0) return;
+
+    for (const item of items) {
+
+        if (!item) continue;
+
+        const id = String(item.id ?? item.producto_id);
+        const cantidad = Number(item.cantidad) || 0;
+
+        if (!id || id === "undefined" || cantidad <= 0) continue;
+
+        if (stockDesdeBackend) {
+            STOCK[id] = (Number(STOCK[id]) || 0) + cantidad;
+        } else {
+            stockConsumido[id] = Math.max(0, (Number(stockConsumido[id]) || 0) - cantidad);
+            STOCK[id] = unidadesDeDemo(id);
+        }
+
+    }
+
+    if (!stockDesdeBackend) guardarStockConsumido();
+
+    pintarStockEnPantalla();
+
+}
+
 /* Rellena el stock con el valor de demostracion: sin backend es el
    unico dato que hay. Se usa al arrancar y cuando falla el fetch. */
 function aplicarStockDeDemostracion() {
@@ -323,6 +354,7 @@ document.addEventListener("visibilitychange", function () {
 
 window.actualizarStock = cargarStock;
 window.descontarStockPedido = descontarStockPedido;
+window.devolverStockPedido = devolverStockPedido;
 
 cargarStock();
 
