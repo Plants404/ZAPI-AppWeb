@@ -214,3 +214,66 @@ function cerrarSesionLocal() {
 window.guardarSesionLocal = guardarSesionLocal;
 window.leerSesionLocal = leerSesionLocal;
 window.cerrarSesionLocal = cerrarSesionLocal;
+
+/* ==========================================================
+   PEDIDOS LOCALES (MODO ESTATICO)
+   ------------------------------------------------------------
+   Sin backend no hay base de datos: los pedidos se guardan en el
+   navegador (localStorage) para que "Mis pedidos" los muestre y se
+   puedan cancelar. Con backend manda el servidor y estas funciones
+   no se usan. Cada pedido copia la forma que devuelve la API:
+   { id, creado, estado, total, zona, notas, items[] }.
+   ========================================================== */
+
+const PEDIDOS_LOCAL_CLAVE = "zapiPedidosLocal";
+const PEDIDOS_LOCAL_MAX = 50;
+
+function leerPedidosLocales() {
+    try {
+        const crudo = JSON.parse(window.localStorage.getItem(PEDIDOS_LOCAL_CLAVE));
+        return Array.isArray(crudo) ? crudo : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function escribirPedidosLocales(pedidos) {
+    try {
+        window.localStorage.setItem(
+            PEDIDOS_LOCAL_CLAVE,
+            JSON.stringify(pedidos.slice(0, PEDIDOS_LOCAL_MAX))
+        );
+    } catch (error) {
+    }
+}
+
+/* El mas nuevo va primero, como el historial del backend. */
+function guardarPedidoLocal(pedido) {
+    const pedidos = leerPedidosLocales();
+    pedidos.unshift(pedido);
+    escribirPedidosLocales(pedidos);
+    return pedido;
+}
+
+function listarPedidosLocales() {
+    return leerPedidosLocales();
+}
+
+/* Cancela el pedido marcandolo (no se borra, queda en el historial).
+   Devuelve el pedido cancelado, o null si no existe. */
+function cancelarPedidoLocal(id) {
+    const pedidos = leerPedidosLocales();
+    const pedido = pedidos.find(p => p && p.id === id);
+
+    if (!pedido) return null;
+
+    pedido.estado = "cancelado";
+    escribirPedidosLocales(pedidos);
+
+    return pedido;
+}
+
+window.leerPedidosLocales = leerPedidosLocales;
+window.guardarPedidoLocal = guardarPedidoLocal;
+window.listarPedidosLocales = listarPedidosLocales;
+window.cancelarPedidoLocal = cancelarPedidoLocal;
