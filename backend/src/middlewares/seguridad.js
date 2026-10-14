@@ -60,14 +60,42 @@ function cabeceras() {
    lista blanca es para un frontend en otro origen (por ejemplo un
    entorno de desarrollo aparte). Vacia = solo mismo origen.
 
+   En desarrollo se acepta ademas cualquier origen local
+   (localhost, 127.*, ::1, cualquier puerto): asi funciona sin tocar
+   nada con Live Server (5500), Live Preview de VS Code (3000) u
+   otro server local. En produccion sólo vale la lista blanca.
+
    Con cookies en la sesion del carrito hace falta
    Access-Control-Allow-Credentials y el front tiene que llamar
    con credentials: 'include'. El token de stock va en
    x-zapi-token, asi que tambien se permite. */
+function esOrigenLocal(origen) {
+    let host;
+
+    try {
+        host = new URL(origen).hostname;
+    } catch (error) {
+        return false;
+    }
+
+    return host === 'localhost'
+        || host.endsWith('.localhost')
+        || host === '::1'
+        || host === '[::1]'
+        || host === '0.0.0.0'
+        || host.indexOf('127.') === 0;
+}
+
+function origenPermitido(origen) {
+    if (config.origenes.includes(origen)) return true;
+
+    return !config.esProduccion && esOrigenLocal(origen);
+}
+
 function cors(req, res, next) {
     const origen = req.headers.origin;
 
-    if (origen && config.origenes.includes(origen)) {
+    if (origen && origenPermitido(origen)) {
         res.setHeader('Access-Control-Allow-Origin', origen);
         res.setHeader('Vary', 'Origin');
         res.setHeader('Access-Control-Allow-Credentials', 'true');
