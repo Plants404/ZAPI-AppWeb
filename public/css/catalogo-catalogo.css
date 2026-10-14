@@ -148,7 +148,7 @@ animation-fill-mode: backwards;
 .catalog-filterbar {
 position: -webkit-sticky;
 position: sticky;
-top: 75px;
+top: 135px;
 z-index: 80;
 background-color: var(--cream);
 border-top: none;
