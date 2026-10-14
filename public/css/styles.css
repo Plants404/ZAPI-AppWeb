@@ -795,27 +795,196 @@ body.no-scroll {
 }
 
 .service {
-  text-align: center;
+  text-align: left;
 }
 
-.service>p {
-  max-width: 720px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 2.5rem;
+/* Cabecera editorial: misma composicion que el "Catalogo vivo".
+   En mobile se apila; en pantallas grandes el lema respira a la
+   izquierda y la tarjeta de confianza lo acompana a la derecha,
+   alineada abajo. Todo apoyado sobre una tarjeta suave. */
+.service-header {
+  display: grid;
+  gap: 2rem;
+  background: var(--sand);
+  border-radius: 24px;
+  padding: clamp(1.75rem, 4vw, 3rem);
+  margin-bottom: 3rem;
+  text-align: left;
 }
 
-.service h3 {
-  display: inline-block;
-  font-family: var(--sans);
-  font-size: .8rem;
+.service-intro {
+  min-width: 0;
+}
+
+/* Sello de garantia: pastilla con icono, no una etiqueta suelta. */
+.service-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .72rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .25em;
+  letter-spacing: .22em;
   color: var(--leaf-texto);
-  border: 1px solid var(--leaf-texto);
-  padding: .4rem 1rem;
+  background: rgba(74, 124, 89, .10);
+  border: 1px solid rgba(74, 124, 89, .35);
+  padding: .4rem .95rem;
   border-radius: 999px;
-  margin-bottom: 2rem;
+  margin-bottom: 1.35rem;
+}
+
+.service-eyebrow .material-symbols-outlined {
+  font-size: 1.05rem;
+}
+
+.service-title {
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  line-height: 1.1;
+  letter-spacing: .01em;
+  color: var(--forest);
+  margin: 0 0 .35rem;
+}
+
+.service-title-acento {
+  color: var(--leaf);
+}
+
+.service-lead {
+  font-size: clamp(1.02rem, 1.6vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--moss);
+  max-width: 54ch;
+  margin: 0;
+}
+
+/* Tarjeta flotante blanca: garantia y proceso. */
+.service-trust {
+  align-self: end;
+  min-width: 0;
+  background: var(--white);
+  border-radius: 20px;
+  border-top: 3px solid var(--leaf);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem 1.6rem;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.service-trust:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.service-trust-title {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: var(--moss);
+  margin: 0 0 1rem;
+}
+
+.service-trust ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: .85rem;
+}
+
+.service-trust li {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  font-size: .92rem;
+  line-height: 1.45;
+  color: var(--ink);
+  margin: 0;
+}
+
+.service-trust li strong {
+  color: var(--forest);
+}
+
+.service-trust .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: var(--leaf);
+  flex-shrink: 0;
+  margin-top: .1rem;
+  transition: transform .25s ease, color .25s ease;
+}
+
+.service-trust li:hover .material-symbols-outlined {
+  transform: scale(1.1);
+  color: var(--moss);
+}
+
+/* Entrada escalonada, igual que el Catalogo: sello, luego titulo y
+   bajada, luego la tarjeta desde la derecha y por ultimo la grilla. */
+.service-eyebrow,
+.service-title,
+.service-lead,
+.service-trust,
+.service-items {
+  animation-duration: .6s;
+  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+  animation-fill-mode: backwards;
+}
+
+.service-eyebrow {
+  animation-name: fadeInUp;
+  animation-delay: 0s;
+}
+
+.service-title {
+  animation-name: fadeInUp;
+  animation-delay: .15s;
+}
+
+.service-lead {
+  animation-name: fadeInUp;
+  animation-delay: .15s;
+}
+
+.service-trust {
+  animation-name: fadeInRight;
+  animation-delay: .3s;
+}
+
+.service-items {
+  animation-name: fadeInUp;
+  animation-delay: .45s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 880px) {
+  .service-header {
+    grid-template-columns: minmax(0, 1.7fr) minmax(280px, .9fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: end;
+  }
 }
 
 .service-items {
@@ -945,11 +1114,22 @@ body.no-scroll {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .service-card {
+  .service-eyebrow,
+  .service-title,
+  .service-lead,
+  .service-trust,
+  .service-items {
+    animation: none;
+  }
+
+  .service-card,
+  .service-trust,
+  .service-trust .material-symbols-outlined {
     transition: none;
   }
 
-  .service-card:hover {
+  .service-card:hover,
+  .service-trust:hover {
     transform: none;
   }
 }
