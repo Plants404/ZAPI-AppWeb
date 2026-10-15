@@ -37,10 +37,24 @@
         }).format(fecha);
     }
 
+    /* Miniatura real desde el catalogo por producto_id, con fallback
+       si el producto ya no existe. Alt vacio: es decorativa, el nombre
+       va como texto al lado. */
+    function imagenDeLinea(item) {
+        const id = Number(item.producto_id);
+        const producto = Array.isArray(PRODUCTOS)
+            ? PRODUCTOS.find(function (p) { return p && Number(p.id) === id; })
+            : null;
+        const fuente = (producto && producto.imagen) || IMAGEN_FALLBACK;
+
+        return `<img class="pedido-linea-foto" src="${escaparHTML(fuente)}" alt="" loading="lazy">`;
+    }
+
     function lineaHTML(item) {
         return `
             <li class="pedido-linea">
                 <span class="pedido-linea-cantidad">${item.cantidad}×</span>
+                ${imagenDeLinea(item)}
                 <span class="pedido-linea-nombre">${escaparHTML(item.nombre)}</span>
                 <span class="pedido-linea-precio">${formatearPrecio(item.precio * item.cantidad)}</span>
             </li>
@@ -107,8 +121,14 @@
         if (aviso) aviso.hidden = false;
     }
 
+    let ultimosPedidos = null;
+    let repintadoConCatalogo = false;
+
     function pintar(pedidos) {
         if (aviso) aviso.hidden = true;
+
+        ultimosPedidos = pedidos;
+        repintadoConCatalogo = Array.isArray(PRODUCTOS) && PRODUCTOS.length > 0;
 
         if (!Array.isArray(pedidos) || pedidos.length === 0) {
             mostrarVacio();
@@ -118,6 +138,24 @@
         lista.hidden = false;
         vacio.classList.add('hidden');
         lista.innerHTML = pedidos.map(pedidoHTML).join('');
+    }
+
+    /* El catalogo llega por fetch y suele tardar mas que la sesion: si
+       se pinto con el catalogo vacio (miniaturas fallback), se repinta
+       una sola vez al llegar para mostrar las fotos reales. */
+    if (typeof alCargarElCatalogo === 'function') {
+        alCargarElCatalogo(function () {
+            if (!repintadoConCatalogo && ultimosPedidos) {
+                repintadoConCatalogo = true;
+                pintar(ultimosPedidos);
+            }
+            /* El conteo inicial corre con el catalogo vacio (da 0):
+               se recalcula al llegar para que los badges muestren el
+               total real en vez de quedar congelados. */
+            if (typeof actualizarContador === 'function') {
+                actualizarContador(false);
+            }
+        });
     }
 
     async function cargar() {
