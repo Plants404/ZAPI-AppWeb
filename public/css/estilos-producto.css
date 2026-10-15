@@ -853,12 +853,6 @@ main {
 
 @media (prefers-reduced-motion: reduce) {
 
-    .saltar-contenido {
-
-        transition: none;
-
-    }
-
     .producto-acciones .agregar,
     .producto-acciones .whatsapp {
 
