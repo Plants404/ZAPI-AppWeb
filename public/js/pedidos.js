@@ -92,13 +92,13 @@
 
         return `
             <article class="pedido-card">
-                <header class="pedido-cabecera">
+                <div class="pedido-cabecera">
                     <div>
                         <span class="pedido-codigo">${escaparHTML(pedido.id)}</span>
                         <span class="pedido-fecha">${escaparHTML(formatearFecha(pedido.creado))}</span>
                     </div>
                     <span class="${claseEstado(pedido.estado)}">${escaparHTML(pedido.estado)}</span>
-                </header>
+                </div>
                 <ul class="pedido-lineas">${items.map(lineaHTML).join('')}</ul>
                 <footer class="pedido-pie">
                     <span>Total</span>
