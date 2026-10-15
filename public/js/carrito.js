@@ -634,4 +634,12 @@ function montarCheckout() {
 document.addEventListener("DOMContentLoaded", montarCheckout);
 
 suscribirAlCarrito(sincronizarCarrito);
-alCargarElCatalogo(sincronizarCarrito);
+alCargarElCatalogo(function () {
+    sincronizarCarrito();
+    /* El conteo inicial corre con el catalogo vacio (da 0):
+       se recalcula al llegar para que los badges muestren el
+       total real en vez de quedar congelados. */
+    if (typeof actualizarContador === "function") {
+        actualizarContador(false);
+    }
+});
