@@ -1212,6 +1212,50 @@ body.no-scroll {
   margin-bottom: 2rem;
 }
 
+/* Estructura de Inicio: la seccion apila en columna y el bloque hero
+   separa copia e imagen en su propia grilla (una columna en movil,
+   dos en pantallas medianas y grandes). Todo bajo #inicio para no
+   tocar otras vistas; ademas neutraliza el viejo pin grid-row de
+   .hero img, que solapaba texto e imagen al crecer los hijos. */
+#inicio {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#inicio .hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: center;
+  width: 100%;
+}
+
+#inicio .hero-grid img {
+  grid-row: auto;
+  grid-column: auto;
+  width: 100%;
+}
+
+#inicio .hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
+
+#inicio .hero-ctas button {
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  #inicio .hero-grid {
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4rem;
+  }
+}
+
 /* Carrusel de destacados en Inicio: todo va estrictamente bajo #inicio
    para aislarlo del catalogo y, a la vez, blindar sus botones y titulos
    frente a las reglas .hero button / .hero h3 (la seccion #inicio es
