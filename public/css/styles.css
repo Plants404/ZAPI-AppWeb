@@ -1157,6 +1157,146 @@ body.no-scroll {
   margin-bottom: 2rem;
 }
 
+/* Jerarquia del bloque de texto del hero: todos los bloques comparten
+   el mismo eje izquierdo, sin sangrias ni margenes desiguales. */
+.hero-lead,
+.hero-description,
+.hero-features {
+  text-align: left;
+  margin-left: 0;
+  max-width: 55ch;
+}
+
+.hero-lead {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.hero-lead strong {
+  color: var(--forest);
+}
+
+.hero-features {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 1.5rem;
+}
+
+.hero-features li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: .5rem;
+  font-size: .95rem;
+  line-height: 1.5;
+  color: var(--muted-texto);
+}
+
+.hero-features li strong {
+  color: var(--forest);
+}
+
+.hero-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--leaf-texto);
+  font-weight: 700;
+}
+
+.hero-description {
+  font-size: .95rem;
+  line-height: 1.7;
+  color: var(--muted-texto);
+  margin-bottom: 2rem;
+}
+
+/* Carrusel de destacados en Inicio: reutiliza las .product-card del
+   catalogo tal cual, asi el diseno vertical es identico. Vive dentro
+   de #inicio, asi que se oculta solo cuando la seccion se oculta. */
+.home-products-carousel {
+  margin: 3rem 0 0;
+  width: 100%;
+}
+
+.carousel-header h2 {
+  margin: 0 0 1rem;
+}
+
+.carousel-viewport {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 1rem .5rem;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track .product-card {
+  flex: 0 0 min(280px, 100%);
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .carousel-track .product-card {
+    flex-basis: calc(25% - 1.125rem);
+  }
+}
+
+.carousel-nav-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--white);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color .2s ease;
+}
+
+.carousel-nav-btn:hover {
+  background: var(--moss);
+}
+
+.carousel-nav-btn:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.carousel-nav-btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-track {
+    scroll-behavior: auto;
+  }
+}
+
 .hero img {
   border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
@@ -2825,10 +2965,13 @@ footer nav a:focus-visible {
     margin-right: 0;
   }
 
+  /* Buscador amplio y centrado: ocupa el espacio libre entre el logo
+     y la navegacion, sin pasar de 480px para no saturar. */
   .header-search {
     order: 0;
     width: auto;
-    flex: 0 1 240px;
+    flex: 1 1 auto;
+    max-width: 480px;
 
     margin-inline: auto;
   }
@@ -2910,39 +3053,17 @@ footer nav a:focus-visible {
 
 @media (min-width: 1280px) {
 
-  /* Sticky intacto en escritorio amplio: sticky tambien crea el bloque
-     de contencion del buscador absoluto, asi que el header no se
-     despega ni desaparece al hacer scroll. */
+  /* Sticky intacto en escritorio amplio, asi el header no se despega
+     ni desaparece al hacer scroll. El buscador ya no va absoluto y
+     acotado: como item flex con max-width se centra solo y nunca se
+     solapa con la navegacion. */
   header {
     position: sticky;
-  }
-
-  .header-search {
-
-    position: absolute;
-
-    left: 50%;
-
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    width: 180px;
-
-    margin-inline: 0;
-
   }
 
   .nav-bar {
     position: static;
     margin-left: auto;
-  }
-}
-
-@media (min-width: 1366px) {
-
-  .header-search {
-    width: 240px;
   }
 }
 
