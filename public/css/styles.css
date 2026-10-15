@@ -709,15 +709,6 @@ header.menu-abierto::before {
     padding-top: 2rem;
   }
 
-  /* Con el menu abierto solo queda visible el toggle (X): se ocultan
-     logo, buscador y carrito del header para que no se monten sobre
-     la tarjeta de "Hola Administrador" ahora que sube al tope. */
-  header.menu-abierto .logo,
-  header.menu-abierto .header-search,
-  header.menu-abierto .header-cart {
-    display: none;
-  }
-
   .nav-bar ul {
     gap: 0;
   }
@@ -950,6 +941,45 @@ header.menu-abierto::before {
   /* CTA "Ver carrito" del drawer */
   .nav-cta {
     min-height: 48px;
+  }
+}
+
+/* Header completo y persistente en tablet y desktop: flex pegajoso al
+   tope, sin espacios vacios. El buscador, la navegacion y los accesos
+   de cuenta/carrito no se ocultan ni colapsan en estos anchos. */
+@media (min-width: 768px) {
+
+  header {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+}
+
+/* En tablet el header se mantiene completo aun con el drawer abierto,
+   asi que el drawer baja y libera su altura (cabecera de dos filas).
+   En movil estricto, en cambio, solo queda la X y el drawer va al ras. */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  .nav-bar {
+    padding-top: 8.5rem;
+  }
+
+  .nav-cuenta {
+    margin: 0 0 1.4rem;
+  }
+}
+
+/* Solo en movil estricto queda visible unicamente el toggle (X) con el
+   menu abierto: se ocultan logo, buscador y carrito del header para que
+   no se monten sobre la tarjeta superior del drawer compacto. */
+@media (max-width: 767px) {
+
+  header.menu-abierto .logo,
+  header.menu-abierto .header-search,
+  header.menu-abierto .header-cart {
+    display: none;
   }
 }
 
@@ -2880,8 +2910,11 @@ footer nav a:focus-visible {
 
 @media (min-width: 1280px) {
 
+  /* Sticky intacto en escritorio amplio: sticky tambien crea el bloque
+     de contencion del buscador absoluto, asi que el header no se
+     despega ni desaparece al hacer scroll. */
   header {
-    position: relative;
+    position: sticky;
   }
 
   .header-search {
