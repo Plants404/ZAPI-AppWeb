@@ -333,6 +333,21 @@
 }
 
 
+/* En tablet y escritorio el carrito vive en el header: el boton
+   flotante "Ver carrito" solo queda visible en movil estricto. */
+@media (min-width: 768px) {
+
+    .cart-link-float,
+
+    #cartLinkFloat {
+
+        display: none;
+
+    }
+
+}
+
+
 main {
 
     max-width: 68rem;
