@@ -229,6 +229,10 @@ function tarjetaProducto(producto) {
 
 }
 
+/* Se expone el constructor de tarjetas para reutilizar las originales
+   fuera del catalogo (carrusel de Inicio) con diseno identico. */
+window.tarjetaProducto = tarjetaProducto;
+
 function renderCatalog() {
 
     const grid = document.getElementById("productGrid");

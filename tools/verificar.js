@@ -281,7 +281,8 @@ const MARCADO_QUE_NECESITA_SCRIPT = [
     { marca: 'id="navBackdrop"', script: 'menu.js' },
     { marca: 'id="headerSearch"', script: 'buscador.js' },
     { marca: 'id="testimoniosCarrusel"', script: 'testimonios.js' },
-    { marca: 'id="contactoForm"', script: 'contacto.js' }
+    { marca: 'id="contactoForm"', script: 'contacto.js' },
+    { marca: 'id="homeProductTrack"', script: 'home-carousel.js' }
 ];
 
 /* Quien define cada window.algo y quien lo usa, para poder cruzar
