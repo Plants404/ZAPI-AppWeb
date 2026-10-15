@@ -356,6 +356,35 @@ header img {
   color: var(--white);
 }
 
+/* El contador del boton de cuenta solo existe si hay productos. Vive
+   aqui (carga en todas las paginas) y no en el CSS del catalogo: sin
+   esta regla, las paginas sin ese CSS mostraban el "0" junto al saludo
+   cuando el carrito estaba vacio. */
+.cart-count.cart-count-header {
+  display: none;
+}
+
+/* Insignia circular roja con texto blanco junto al saludo. Mismos
+   valores que el CSS del catalogo (que carga despues y gana los
+   empates alla): el diseno queda identico en todas las paginas. */
+.cart-count.cart-count-header.con-productos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -.15rem;
+  right: -.8rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 .3rem;
+  font-size: .68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 2px solid var(--white);
+  background: #c14a3c;
+  color: var(--white);
+}
+
 header.menu-abierto {
   z-index: 220;
 }
@@ -3088,6 +3117,19 @@ footer nav a:focus-visible {
   .logo {
     order: 0;
     margin-right: 0;
+  }
+
+  /* Las paginas de carrito/pedidos usan .cart-header sin buscador: sin
+     esto la nav (order 0) pintaba a la izquierda y el logo a la
+     derecha. Se restaura logo a la izquierda y nav a la derecha. El
+     header calificado vence a .cart-header .logo de stylecarrito.css,
+     que carga despues y con igual especificidad. */
+  header.cart-header .logo {
+    order: 0;
+  }
+
+  header.cart-header .nav-bar {
+    margin-left: auto;
   }
 
   /* Buscador amplio y centrado: ocupa el espacio libre entre el logo
