@@ -379,10 +379,25 @@ outline-offset: 3px;
 
 
 
+/* Con auto-fill las pistas vacias se conservan: al filtrar y
+quedar pocas tarjetas (p. ej. Kits con una sola), estas
+mantienen su columna en vez de estirarse a todo el ancho,
+que es lo que haria auto-fit al colapsarlas. */
 .catalog-grid {
 display: grid;
-grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
 gap: 1.5rem;
+}
+
+/* Segunda red en anchos de varias columnas: la tarjeta no pasa
+de 320px y se alinea a la izquierda si sobra espacio. En
+movil se deja a ancho completo a proposito. */
+@media (min-width: 601px) {
+.catalog-grid .product-card {
+width: 100%;
+max-width: 320px;
+justify-self: start;
+}
 }
 
 .product-card {
@@ -491,12 +506,13 @@ flex-shrink: 0;
 margin-top: 1px;
 }
 
-/* En dispositivos con puntero fino (desktop), el detalle del
+/* Donde hay hover (mouse, trackpad o stylus), el detalle del
 producto no expande la tarjeta: se muestra como una capa
 superpuesta con gradiente sobre la imagen, de modo que la
-altura de la grilla no cambia al pasar el mouse ni al
-enfocar con el teclado. En touch se conserva el acordeon. */
-@media (hover: hover) and (pointer: fine) {
+altura de la grilla no cambia al pasar el puntero ni al
+enfocar con el teclado. Sin hover (touch puro) se conserva
+el acordeon, que si expande la tarjeta. */
+@media (hover: hover) {
 .product-card {
 position: relative;
 }

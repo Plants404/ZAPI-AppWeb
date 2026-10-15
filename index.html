@@ -125,25 +125,40 @@
     <section class="section hero" id="inicio">
       <h1>Transformamos en espacios con naturaleza. </h1>
 
-      <h3>ZAPI es una plataforma especializada en soluciones agroecológicas que conecta a las personas con la naturaleza
-        mediante plantas de calidad, asesoramiento profesional y herramientas inteligentes para facilitar su cuidado.
-      </h3>
-      
+      <p class="hero-lead">
+        En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a través de soluciones agroecológicas integrales.
+      </p>
+
+      <ul class="hero-features">
+        <li><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</li>
+        <li><strong>Asesoramiento profesional:</strong> Guía técnica paso a paso.</li>
+        <li><strong>Cuidado inteligente:</strong> Herramientas diseñadas para facilitar su mantenimiento.</li>
+      </ul>
+
+      <p class="hero-description">
+        Ayudamos a hogares, empresas e instituciones a crear y mantener espacios verdes saludables con un acompañamiento continuo antes, durante y después de tu compra.
+      </p>
+
       <img src="././public/img/plants-hero.opt.jpg"
         alt="Plantas de interior verdes y sanas en un ambiente luminoso, que evocan calma e inspiracion para el cuidado de las plantas"
         width="1200" height="800"
         fetchpriority="high"
         decoding="async">
 
-      <h2>Nuestra misión es ayudar a hogares, empresas e instituciones a crear y mantener espacios verdes saludables.
-        Combinamos productos cuidadosamente seleccionados con conocimiento técnico y una experiencia digital diseñada
-        para
-        acompañar al usuario antes, durante y después de cada compra.
-      </h2>
 
-      
       <button type="button" data-section="catalogo">Explorar Catálogo</button>
       <button type="button" data-section="servicios">Conocer nuestros servicios</button>
+
+      <div class="home-products-carousel" role="region" aria-label="Productos destacados">
+        <div class="carousel-header">
+          <h2>Productos Destacados</h2>
+        </div>
+        <div class="carousel-viewport">
+          <button type="button" class="carousel-nav-btn prev" aria-label="Ver productos anteriores">‹</button>
+          <div class="carousel-track" id="homeProductTrack"></div>
+          <button type="button" class="carousel-nav-btn next" aria-label="Ver productos siguientes">›</button>
+        </div>
+      </div>
     </section>
 
     
@@ -923,6 +938,7 @@
   <script src="./public/js/productos.js" defer></script>
   <script src="./public/js/modal.js" defer></script>
 <script src="./public/js/catalogo.js" defer></script>
+<script src="./public/js/home-carousel.js" defer></script>
 <script src="./public/js/carrito.js" defer></script>
 <script src="./public/js/testimonio-form.js" defer></script>
 
