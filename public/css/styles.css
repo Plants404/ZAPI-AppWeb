@@ -1212,26 +1212,30 @@ body.no-scroll {
   margin-bottom: 2rem;
 }
 
-/* Carrusel de destacados en Inicio: reutiliza las .product-card del
-   catalogo tal cual, asi el diseno vertical es identico. Vive dentro
-   de #inicio, asi que se oculta solo cuando la seccion se oculta. */
-.home-products-carousel {
-  margin: 3rem 0 0;
+/* Carrusel de destacados en Inicio: todo va estrictamente bajo #inicio
+   para aislarlo del catalogo y, a la vez, blindar sus botones y titulos
+   frente a las reglas .hero button / .hero h3 (la seccion #inicio es
+   .hero). Las tarjetas usan las .product-card originales sin tocar sus
+   estilos globales: la etiqueta de categoria (.product-badge) y los
+   textos ya vienen correctos del catalogo. */
+#inicio .home-products-carousel {
+  display: block;
+  margin: 2.5rem 0 0;
   width: 100%;
 }
 
-.carousel-header h2 {
+#inicio .carousel-header h2 {
   margin: 0 0 1rem;
 }
 
-.carousel-viewport {
+#inicio .carousel-viewport {
   display: flex;
   align-items: center;
   gap: .75rem;
   position: relative;
 }
 
-.carousel-track {
+#inicio .carousel-track {
   display: flex;
   gap: 1.5rem;
   flex: 1;
@@ -1243,22 +1247,94 @@ body.no-scroll {
   padding: 1rem .5rem;
 }
 
-.carousel-track::-webkit-scrollbar {
+#inicio .carousel-track::-webkit-scrollbar {
   display: none;
 }
 
-.carousel-track .product-card {
+#inicio .carousel-track .product-card {
   flex: 0 0 min(280px, 100%);
+  max-width: 280px;
   scroll-snap-align: start;
 }
 
 @media (min-width: 768px) {
-  .carousel-track .product-card {
+  #inicio .carousel-track .product-card {
     flex-basis: calc(25% - 1.125rem);
+    max-width: none;
   }
 }
 
-.carousel-nav-btn {
+/* Restaura los valores originales del catalogo dentro del carrusel,
+   que .hero button / .hero h3 pisan (nombres y CTA quedaban como
+   pastillas outline). Solo rige aqui; el catalogo no se toca. */
+#inicio .home-products-carousel .product-name {
+  font-family: var(--serif);
+  font-size: 1.75rem;
+  letter-spacing: .02em;
+  color: var(--forest);
+  margin: 0 0 .25rem;
+  text-transform: uppercase;
+}
+
+#inicio .home-products-carousel .product-link {
+  display: inline-block;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  text-transform: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+#inicio .home-products-carousel .product-link:hover {
+  color: var(--moss);
+  background: none;
+  transform: none;
+  box-shadow: none;
+}
+
+#inicio .home-products-carousel .add-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  margin: 0;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--forest);
+  color: var(--cream);
+  font-size: .92rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+#inicio .home-products-carousel .add-cart:hover {
+  background: var(--moss);
+  color: var(--cream);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+#inicio .home-products-carousel .add-cart.added,
+#inicio .home-products-carousel .add-cart.added:hover {
+  background: var(--leaf);
+  color: var(--cream);
+  transform: none;
+  box-shadow: none;
+}
+
+#inicio .carousel-nav-btn {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -1266,33 +1342,38 @@ body.no-scroll {
   width: 44px;
   height: 44px;
   padding: 0;
+  margin: 0;
   border: none;
   border-radius: 50%;
   background: var(--forest);
   color: var(--white);
   font-size: 1.5rem;
   line-height: 1;
+  box-shadow: none;
   cursor: pointer;
   z-index: 10;
   transition: background-color .2s ease;
 }
 
-.carousel-nav-btn:hover {
+#inicio .carousel-nav-btn:hover {
   background: var(--moss);
+  color: var(--white);
+  transform: none;
+  box-shadow: none;
 }
 
-.carousel-nav-btn:focus-visible {
+#inicio .carousel-nav-btn:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 3px;
 }
 
-.carousel-nav-btn:disabled {
+#inicio .carousel-nav-btn:disabled {
   opacity: .35;
   cursor: default;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .carousel-track {
+  #inicio .carousel-track {
     scroll-behavior: auto;
   }
 }
