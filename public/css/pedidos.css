@@ -177,12 +177,15 @@ html:not([data-auth="si"]) main.pedidos-page {
     padding: .9rem 1.4rem 1.2rem;
 }
 
-/* Cancelar: enlace discreto en terracota, sin borde agresivo. */
+/* Cancelar: enlace discreto en terracota, sin borde agresivo. El
+   padding vertical mas min-height garantiza el area tactil de 44px
+   sin romper la estetica de enlace. */
 .pedido-cancelar {
     display: inline-flex;
     align-items: center;
     gap: .35rem;
-    padding: 0;
+    min-height: 44px;
+    padding: .5rem .25rem;
     border: 0;
     background: none;
     font: inherit;
@@ -200,8 +203,15 @@ html:not([data-auth="si"]) main.pedidos-page {
     font-size: 1.05rem;
 }
 
-.pedido-cancelar:hover,
+.pedido-cancelar:hover {
+    color: #7d3a23;
+    text-decoration-color: currentColor;
+}
+
 .pedido-cancelar:focus-visible {
     color: #7d3a23;
     text-decoration-color: currentColor;
+    outline: 2px solid var(--leaf);
+    outline-offset: 3px;
+    border-radius: 4px;
 }
