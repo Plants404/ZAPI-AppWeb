@@ -356,6 +356,35 @@ header img {
   color: var(--white);
 }
 
+/* El contador del boton de cuenta solo existe si hay productos. Vive
+   aqui (carga en todas las paginas) y no en el CSS del catalogo: sin
+   esta regla, las paginas sin ese CSS mostraban el "0" junto al saludo
+   cuando el carrito estaba vacio. */
+.cart-count.cart-count-header {
+  display: none;
+}
+
+/* Insignia circular roja con texto blanco junto al saludo. Mismos
+   valores que el CSS del catalogo (que carga despues y gana los
+   empates alla): el diseno queda identico en todas las paginas. */
+.cart-count.cart-count-header.con-productos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -.15rem;
+  right: -.8rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 .3rem;
+  font-size: .68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 2px solid var(--white);
+  background: #c14a3c;
+  color: var(--white);
+}
+
 header.menu-abierto {
   z-index: 220;
 }
@@ -1212,26 +1241,74 @@ body.no-scroll {
   margin-bottom: 2rem;
 }
 
-/* Carrusel de destacados en Inicio: reutiliza las .product-card del
-   catalogo tal cual, asi el diseno vertical es identico. Vive dentro
-   de #inicio, asi que se oculta solo cuando la seccion se oculta. */
-.home-products-carousel {
-  margin: 3rem 0 0;
+/* Estructura de Inicio: la seccion apila en columna y el bloque hero
+   separa copia e imagen en su propia grilla (una columna en movil,
+   dos en pantallas medianas y grandes). Todo bajo #inicio para no
+   tocar otras vistas; ademas neutraliza el viejo pin grid-row de
+   .hero img, que solapaba texto e imagen al crecer los hijos. */
+#inicio {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#inicio .hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: center;
   width: 100%;
 }
 
-.carousel-header h2 {
+#inicio .hero-grid img {
+  grid-row: auto;
+  grid-column: auto;
+  width: 100%;
+}
+
+#inicio .hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
+
+#inicio .hero-ctas button {
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  #inicio .hero-grid {
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4rem;
+  }
+}
+
+/* Carrusel de destacados en Inicio: todo va estrictamente bajo #inicio
+   para aislarlo del catalogo y, a la vez, blindar sus botones y titulos
+   frente a las reglas .hero button / .hero h3 (la seccion #inicio es
+   .hero). Las tarjetas usan las .product-card originales sin tocar sus
+   estilos globales: la etiqueta de categoria (.product-badge) y los
+   textos ya vienen correctos del catalogo. */
+#inicio .home-products-carousel {
+  display: block;
+  margin: 2.5rem 0 0;
+  width: 100%;
+}
+
+#inicio .carousel-header h2 {
   margin: 0 0 1rem;
 }
 
-.carousel-viewport {
+#inicio .carousel-viewport {
   display: flex;
   align-items: center;
   gap: .75rem;
   position: relative;
 }
 
-.carousel-track {
+#inicio .carousel-track {
   display: flex;
   gap: 1.5rem;
   flex: 1;
@@ -1243,22 +1320,94 @@ body.no-scroll {
   padding: 1rem .5rem;
 }
 
-.carousel-track::-webkit-scrollbar {
+#inicio .carousel-track::-webkit-scrollbar {
   display: none;
 }
 
-.carousel-track .product-card {
+#inicio .carousel-track .product-card {
   flex: 0 0 min(280px, 100%);
+  max-width: 280px;
   scroll-snap-align: start;
 }
 
 @media (min-width: 768px) {
-  .carousel-track .product-card {
+  #inicio .carousel-track .product-card {
     flex-basis: calc(25% - 1.125rem);
+    max-width: none;
   }
 }
 
-.carousel-nav-btn {
+/* Restaura los valores originales del catalogo dentro del carrusel,
+   que .hero button / .hero h3 pisan (nombres y CTA quedaban como
+   pastillas outline). Solo rige aqui; el catalogo no se toca. */
+#inicio .home-products-carousel .product-name {
+  font-family: var(--serif);
+  font-size: 1.75rem;
+  letter-spacing: .02em;
+  color: var(--forest);
+  margin: 0 0 .25rem;
+  text-transform: uppercase;
+}
+
+#inicio .home-products-carousel .product-link {
+  display: inline-block;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  text-transform: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+#inicio .home-products-carousel .product-link:hover {
+  color: var(--moss);
+  background: none;
+  transform: none;
+  box-shadow: none;
+}
+
+#inicio .home-products-carousel .add-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  margin: 0;
+  min-height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--forest);
+  color: var(--cream);
+  font-size: .92rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+#inicio .home-products-carousel .add-cart:hover {
+  background: var(--moss);
+  color: var(--cream);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+#inicio .home-products-carousel .add-cart.added,
+#inicio .home-products-carousel .add-cart.added:hover {
+  background: var(--leaf);
+  color: var(--cream);
+  transform: none;
+  box-shadow: none;
+}
+
+#inicio .carousel-nav-btn {
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -1266,33 +1415,38 @@ body.no-scroll {
   width: 44px;
   height: 44px;
   padding: 0;
+  margin: 0;
   border: none;
   border-radius: 50%;
   background: var(--forest);
   color: var(--white);
   font-size: 1.5rem;
   line-height: 1;
+  box-shadow: none;
   cursor: pointer;
   z-index: 10;
   transition: background-color .2s ease;
 }
 
-.carousel-nav-btn:hover {
+#inicio .carousel-nav-btn:hover {
   background: var(--moss);
+  color: var(--white);
+  transform: none;
+  box-shadow: none;
 }
 
-.carousel-nav-btn:focus-visible {
+#inicio .carousel-nav-btn:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 3px;
 }
 
-.carousel-nav-btn:disabled {
+#inicio .carousel-nav-btn:disabled {
   opacity: .35;
   cursor: default;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .carousel-track {
+  #inicio .carousel-track {
     scroll-behavior: auto;
   }
 }
@@ -2963,6 +3117,19 @@ footer nav a:focus-visible {
   .logo {
     order: 0;
     margin-right: 0;
+  }
+
+  /* Las paginas de carrito/pedidos usan .cart-header sin buscador: sin
+     esto la nav (order 0) pintaba a la izquierda y el logo a la
+     derecha. Se restaura logo a la izquierda y nav a la derecha. El
+     header calificado vence a .cart-header .logo de stylecarrito.css,
+     que carga despues y con igual especificidad. */
+  header.cart-header .logo {
+    order: 0;
+  }
+
+  header.cart-header .nav-bar {
+    margin-left: auto;
   }
 
   /* Buscador amplio y centrado: ocupa el espacio libre entre el logo
