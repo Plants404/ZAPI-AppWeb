@@ -463,7 +463,7 @@ header.menu-abierto::before {
   height: 100vh;
   height: 100dvh;
 
-  padding: 8.5rem 1.5rem 2rem;
+  padding: 2rem 1.5rem 2rem;
   overflow-y: auto;
   background: var(--cream);
   box-shadow: var(--shadow-lg);
@@ -698,23 +698,46 @@ header.menu-abierto::before {
    ========================================================================== */
 @media (max-width: 1023px) {
 
+  /* Drawer al ras del borde superior: sin franja blanca arriba.
+     El top:0 y la altura completa ya vienen del bloque base; aqui se
+     fija el padding-top compacto para que la tarjeta superior arranque
+     justo debajo del boton de cierre. */
+  .nav-bar {
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    padding-top: 2rem;
+  }
+
   .nav-bar ul {
-    gap: .35rem;
+    gap: 0;
   }
 
   /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
      muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
   .nav-cuenta {
+    position: relative;
     display: block;
-    margin: 0 0 1rem;
-    padding: .5rem;
+    margin: 1rem 0 1.4rem;
+    padding: .4rem .5rem;
     background: var(--sand);
     border: 1px solid rgba(61, 107, 79, .16);
     border-radius: 14px;
   }
 
+  /* Linea divisoria sutil entre el bloque de cuenta y la navegacion. */
+  .nav-cuenta::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -.8rem;
+    height: 1px;
+    background: rgba(61, 107, 79, .22);
+  }
+
   .nav-usuario {
-    gap: .15rem;
+    gap: 0;
   }
 
   /* Cabecera "Hola Administrador": encabeza el bloque sin caja propia */
@@ -724,7 +747,7 @@ header.menu-abierto::before {
     gap: .5rem;
     width: 100%;
     min-height: 44px;
-    padding: .5rem .65rem .75rem;
+    padding: .5rem .35rem .7rem;
     border: 0;
     border-radius: 0;
     border-bottom: 1px solid rgba(61, 107, 79, .2);
@@ -752,23 +775,27 @@ header.menu-abierto::before {
   }
 
   .nav-usuario-menu {
-    gap: .15rem;
-    padding: .4rem 0 0;
+    gap: 0;
+    padding: 0;
   }
 
-  /* Carrito / Mis pedidos / Salir: filas tactiles con icono, sin caja
-     anidada (el fondo lo aporta el contenedor). */
+  /* Carrito / Mis pedidos / Salir: filas tactiles con icono, separadas
+     por lineas sutiles dentro del bloque unificado. */
   .nav-bar .nav-usuario-item {
     justify-content: flex-start;
     min-height: 48px;
-    padding: .7rem .65rem;
-    border-radius: 10px;
+    padding: .75rem .35rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .14);
     background: none;
-    border: 0;
+  }
+
+  .nav-bar .nav-usuario-item:last-child {
+    border-bottom: 0;
   }
 
   .nav-bar .nav-usuario-item:hover {
-    background: rgba(74, 124, 89, .14);
+    background: rgba(74, 124, 89, .12);
   }
 
   .nav-bar .nav-usuario-item::before {
@@ -841,9 +868,118 @@ header.menu-abierto::before {
     text-decoration: none;
   }
 
+  /* Bloque inferior de navegacion general: tarjeta unificada simetrica
+     al bloque superior de administrador. Cada li aporta un tramo de la
+     tarjeta (fondo + laterales) y el primero/ultimo cierran los radios;
+     las filas se separan con la misma linea sutil del bloque de cuenta.
+     Todos los enlaces superan el area tactil minima de 44x44 px. */
+  .nav-bar ul > li:not(.nav-cuenta) {
+    margin: 0;
+    padding: 0 .5rem;
+    background: var(--white);
+    border-left: 1px solid rgba(61, 107, 79, .16);
+    border-right: 1px solid rgba(61, 107, 79, .16);
+  }
+
+  .nav-bar ul > .nav-cuenta + li {
+    border-top: 1px solid rgba(61, 107, 79, .16);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    padding-top: .4rem;
+  }
+
+  .nav-bar ul > li:last-child {
+    border-bottom: 1px solid rgba(61, 107, 79, .16);
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    padding-bottom: .4rem;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: .75rem .35rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .14);
+  }
+
+  .nav-bar ul > li:last-child > a,
+  .nav-bar ul > li:last-child > .nav-link {
+    border-bottom: 0;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a:hover,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link:hover {
+    background: rgba(74, 124, 89, .12);
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a.active,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link.active {
+    color: var(--forest);
+    background: rgba(74, 124, 89, .12);
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link::after {
+    left: .35rem;
+    bottom: .45rem;
+    height: 2px;
+    background: var(--leaf);
+    border-radius: 2px;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a:hover::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link:hover::after,
+  .nav-bar ul > li:not(.nav-cuenta) > a.active::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link.active::after {
+    width: calc(100% - .7rem);
+  }
+
   /* CTA "Ver carrito" del drawer */
   .nav-cta {
     min-height: 48px;
+  }
+}
+
+/* Header completo y persistente en tablet y desktop: flex pegajoso al
+   tope, sin espacios vacios. El buscador, la navegacion y los accesos
+   de cuenta/carrito no se ocultan ni colapsan en estos anchos. */
+@media (min-width: 768px) {
+
+  header {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+}
+
+/* En tablet el header se mantiene completo aun con el drawer abierto,
+   asi que el drawer baja y libera su altura (cabecera de dos filas).
+   En movil estricto, en cambio, solo queda la X y el drawer va al ras. */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  .nav-bar {
+    padding-top: 8.5rem;
+  }
+
+  .nav-cuenta {
+    margin: 0 0 1.4rem;
+  }
+}
+
+/* Solo en movil estricto queda visible unicamente el toggle (X) con el
+   menu abierto: se ocultan logo, buscador y carrito del header para que
+   no se monten sobre la tarjeta superior del drawer compacto. */
+@media (max-width: 767px) {
+
+  header.menu-abierto .logo,
+  header.menu-abierto .header-search,
+  header.menu-abierto .header-cart {
+    display: none;
   }
 }
 
@@ -916,10 +1052,10 @@ html[data-auth="si"] .nav-cta {
   display: none;
 }
 
-/* En movil el carrito vive solo en la barra superior: ocultamos por
-   completo el boton flotante inferior (y su contador) para que no se
-   duplique ni estorbe el contenido. */
-@media (max-width: 767px) {
+/* En tablet y escritorio el carrito vive en la barra superior: ocultamos
+   por completo el boton flotante inferior (y su contador) para que no se
+   duplique ni estorbe el contenido. Solo queda visible en movil estricto. */
+@media (min-width: 768px) {
 
   .cart-link-float,
   .floating-cart-btn,
@@ -1019,6 +1155,146 @@ body.no-scroll {
   line-height: 1.7;
   max-width: 55ch;
   margin-bottom: 2rem;
+}
+
+/* Jerarquia del bloque de texto del hero: todos los bloques comparten
+   el mismo eje izquierdo, sin sangrias ni margenes desiguales. */
+.hero-lead,
+.hero-description,
+.hero-features {
+  text-align: left;
+  margin-left: 0;
+  max-width: 55ch;
+}
+
+.hero-lead {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.hero-lead strong {
+  color: var(--forest);
+}
+
+.hero-features {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 1.5rem;
+}
+
+.hero-features li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: .5rem;
+  font-size: .95rem;
+  line-height: 1.5;
+  color: var(--muted-texto);
+}
+
+.hero-features li strong {
+  color: var(--forest);
+}
+
+.hero-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--leaf-texto);
+  font-weight: 700;
+}
+
+.hero-description {
+  font-size: .95rem;
+  line-height: 1.7;
+  color: var(--muted-texto);
+  margin-bottom: 2rem;
+}
+
+/* Carrusel de destacados en Inicio: reutiliza las .product-card del
+   catalogo tal cual, asi el diseno vertical es identico. Vive dentro
+   de #inicio, asi que se oculta solo cuando la seccion se oculta. */
+.home-products-carousel {
+  margin: 3rem 0 0;
+  width: 100%;
+}
+
+.carousel-header h2 {
+  margin: 0 0 1rem;
+}
+
+.carousel-viewport {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 1rem .5rem;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track .product-card {
+  flex: 0 0 min(280px, 100%);
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  .carousel-track .product-card {
+    flex-basis: calc(25% - 1.125rem);
+  }
+}
+
+.carousel-nav-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--white);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color .2s ease;
+}
+
+.carousel-nav-btn:hover {
+  background: var(--moss);
+}
+
+.carousel-nav-btn:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.carousel-nav-btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-track {
+    scroll-behavior: auto;
+  }
 }
 
 .hero img {
@@ -2689,10 +2965,13 @@ footer nav a:focus-visible {
     margin-right: 0;
   }
 
+  /* Buscador amplio y centrado: ocupa el espacio libre entre el logo
+     y la navegacion, sin pasar de 480px para no saturar. */
   .header-search {
     order: 0;
     width: auto;
-    flex: 0 1 240px;
+    flex: 1 1 auto;
+    max-width: 480px;
 
     margin-inline: auto;
   }
@@ -2774,36 +3053,17 @@ footer nav a:focus-visible {
 
 @media (min-width: 1280px) {
 
+  /* Sticky intacto en escritorio amplio, asi el header no se despega
+     ni desaparece al hacer scroll. El buscador ya no va absoluto y
+     acotado: como item flex con max-width se centra solo y nunca se
+     solapa con la navegacion. */
   header {
-    position: relative;
-  }
-
-  .header-search {
-
-    position: absolute;
-
-    left: 50%;
-
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    width: 180px;
-
-    margin-inline: 0;
-
+    position: sticky;
   }
 
   .nav-bar {
     position: static;
     margin-left: auto;
-  }
-}
-
-@media (min-width: 1366px) {
-
-  .header-search {
-    width: 240px;
   }
 }
 

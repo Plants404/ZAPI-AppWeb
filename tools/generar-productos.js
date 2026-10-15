@@ -309,7 +309,7 @@ ${paraJsonLd(migas)}
 
     <div class="nav-backdrop" id="navBackdrop" hidden></div>
 
-    <main id="contenido">
+    <main id="contenido" tabindex="-1">
         <nav class="migas" aria-label="Ruta de navegacion">
             <ol>
                 <li><a href="../index.html">Inicio</a></li>
