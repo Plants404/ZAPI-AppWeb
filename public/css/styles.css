@@ -463,7 +463,7 @@ header.menu-abierto::before {
   height: 100vh;
   height: 100dvh;
 
-  padding: 8.5rem 1.5rem 2rem;
+  padding: 2rem 1.5rem 2rem;
   overflow-y: auto;
   background: var(--cream);
   box-shadow: var(--shadow-lg);
@@ -698,8 +698,28 @@ header.menu-abierto::before {
    ========================================================================== */
 @media (max-width: 1023px) {
 
+  /* Drawer al ras del borde superior: sin franja blanca arriba.
+     El top:0 y la altura completa ya vienen del bloque base; aqui se
+     fija el padding-top compacto para que la tarjeta superior arranque
+     justo debajo del boton de cierre. */
+  .nav-bar {
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    padding-top: 2rem;
+  }
+
+  /* Con el menu abierto solo queda visible el toggle (X): se ocultan
+     logo, buscador y carrito del header para que no se monten sobre
+     la tarjeta de "Hola Administrador" ahora que sube al tope. */
+  header.menu-abierto .logo,
+  header.menu-abierto .header-search,
+  header.menu-abierto .header-cart {
+    display: none;
+  }
+
   .nav-bar ul {
-    gap: .35rem;
+    gap: 0;
   }
 
   /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
@@ -707,7 +727,7 @@ header.menu-abierto::before {
   .nav-cuenta {
     position: relative;
     display: block;
-    margin: 0 0 1.4rem;
+    margin: 1rem 0 1.4rem;
     padding: .4rem .5rem;
     background: var(--sand);
     border: 1px solid rgba(61, 107, 79, .16);
@@ -857,6 +877,76 @@ header.menu-abierto::before {
     text-decoration: none;
   }
 
+  /* Bloque inferior de navegacion general: tarjeta unificada simetrica
+     al bloque superior de administrador. Cada li aporta un tramo de la
+     tarjeta (fondo + laterales) y el primero/ultimo cierran los radios;
+     las filas se separan con la misma linea sutil del bloque de cuenta.
+     Todos los enlaces superan el area tactil minima de 44x44 px. */
+  .nav-bar ul > li:not(.nav-cuenta) {
+    margin: 0;
+    padding: 0 .5rem;
+    background: var(--white);
+    border-left: 1px solid rgba(61, 107, 79, .16);
+    border-right: 1px solid rgba(61, 107, 79, .16);
+  }
+
+  .nav-bar ul > .nav-cuenta + li {
+    border-top: 1px solid rgba(61, 107, 79, .16);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    padding-top: .4rem;
+  }
+
+  .nav-bar ul > li:last-child {
+    border-bottom: 1px solid rgba(61, 107, 79, .16);
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    padding-bottom: .4rem;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: .75rem .35rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .14);
+  }
+
+  .nav-bar ul > li:last-child > a,
+  .nav-bar ul > li:last-child > .nav-link {
+    border-bottom: 0;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a:hover,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link:hover {
+    background: rgba(74, 124, 89, .12);
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a.active,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link.active {
+    color: var(--forest);
+    background: rgba(74, 124, 89, .12);
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link::after {
+    left: .35rem;
+    bottom: .45rem;
+    height: 2px;
+    background: var(--leaf);
+    border-radius: 2px;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a:hover::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link:hover::after,
+  .nav-bar ul > li:not(.nav-cuenta) > a.active::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link.active::after {
+    width: calc(100% - .7rem);
+  }
+
   /* CTA "Ver carrito" del drawer */
   .nav-cta {
     min-height: 48px;
@@ -932,10 +1022,10 @@ html[data-auth="si"] .nav-cta {
   display: none;
 }
 
-/* En movil el carrito vive solo en la barra superior: ocultamos por
-   completo el boton flotante inferior (y su contador) para que no se
-   duplique ni estorbe el contenido. */
-@media (max-width: 767px) {
+/* En tablet y escritorio el carrito vive en la barra superior: ocultamos
+   por completo el boton flotante inferior (y su contador) para que no se
+   duplique ni estorbe el contenido. Solo queda visible en movil estricto. */
+@media (min-width: 768px) {
 
   .cart-link-float,
   .floating-cart-btn,
