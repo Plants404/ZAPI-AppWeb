@@ -617,14 +617,6 @@ header.menu-abierto::before {
   border-radius: 999px;
 }
 
-/* El CTA solo aplica al drawer de celular: en tablet y escritorio el
-   carrito vive en la barra superior / menu, asi que se oculta. */
-@media (min-width: 768px) {
-  .nav-cta {
-    display: none;
-  }
-}
-
 .nav-bar li .nav-link:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 4px;
@@ -3133,11 +3125,13 @@ footer nav a:focus-visible {
   }
 
   /* Buscador amplio y centrado: ocupa el espacio libre entre el logo
-     y la navegacion, sin pasar de 480px para no saturar. */
+     y la navegacion, sin pasar de 480px para no saturar y sin
+     aplastarse por debajo de 200px para seguir usable. */
   .header-search {
     order: 0;
     width: auto;
     flex: 1 1 auto;
+    min-width: 200px;
     max-width: 480px;
 
     margin-inline: auto;
@@ -3173,6 +3167,54 @@ footer nav a:focus-visible {
   .nav-cuenta {
     order: 1;
     padding: 0;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: .85rem;
+  }
+
+  .nav-cuenta > * {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* "Ver carrito" en escritorio: enlace inline con icono y contador,
+     a juego con el resto de la nav (el pill forest queda solo para
+     el drawer movil). Vence a .nav-bar li a por especificidad. */
+  .nav-bar .nav-cuenta .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    min-height: 44px;
+    margin: 0;
+    padding: .4rem 0;
+    font-size: .88rem;
+    font-weight: 500;
+    color: var(--forest);
+    background: none;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+
+  .nav-bar .nav-cuenta .nav-cta:hover {
+    color: var(--moss);
+    background: none;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  /* Sin la barra creciente de los enlaces: el CTA ya subraya el texto. */
+  .nav-bar .nav-cuenta .nav-cta:hover::after {
+    display: none;
+  }
+
+  .nav-bar .nav-cuenta .nav-cta:focus-visible {
+    outline: 2px solid var(--leaf);
+    outline-offset: 3px;
+  }
+
+  /* Contador discreto: oculto en vacio, arena con productos. */
+  .nav-bar .nav-cuenta .nav-cta .cart-count:not(.con-productos) {
+    display: none;
   }
 
   .nav-usuario {
