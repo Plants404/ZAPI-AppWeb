@@ -99,10 +99,36 @@
         La página que buscás no existe o cambió de lugar.
         Volvamos a sembrar desde el inicio.
     </p>
-    <a class="boton" href="/">Volver al inicio</a>
+    <a class="boton" href="./index.html" id="volverInicio">Volver al inicio</a>
 
 </main>
 
 <script src="./public/js/404.js"></script>
+<script>
+(function () {
+    /* El 404 se sirve conservando la URL rota: a cualquier profundidad,
+       los scripts externos con ruta relativa no cargan, asi que esto va
+       inline. Prueba /<primer-segmento>/index.html (subpath tipo GitHub
+       Pages) y cae a /index.html (raiz, local o dominio propio). */
+    var boton = document.getElementById('volverInicio');
+    if (!boton || typeof fetch !== 'function') return;
+
+    var partes = window.location.pathname.split('/').filter(function (p) { return p; });
+    var candidatos = ['/index.html'];
+    if (partes.length > 1) candidatos.unshift('/' + partes[0] + '/index.html');
+
+    function probar(i) {
+        if (i >= candidatos.length) return;
+        fetch(candidatos[i], { method: 'HEAD' }).then(function (r) {
+            if (r.ok) boton.href = candidatos[i];
+            else probar(i + 1);
+        }).catch(function () {
+            probar(i + 1);
+        });
+    }
+
+    probar(0);
+})();
+</script>
 </body>
 </html>
