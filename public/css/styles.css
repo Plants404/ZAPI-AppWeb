@@ -3598,8 +3598,8 @@ body.con-testimonio-abierto {
 /* --- FIX DEFINITIVO PARA SECCION NOSOTROS EN MOVIL --- */
 @media (max-width: 767px) {
 
-  /* Contenedores generales */
-  #nosotros,
+  /* Contenedores generales (sin #nosotros: el section conserva su
+     display natural para que .hidden pueda ocultarlo al navegar) */
   .nosotros-inner,
   .nosotros-hero,
   .nosotros-hero-grid,
