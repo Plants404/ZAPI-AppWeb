@@ -241,6 +241,7 @@ ${paraJsonLd(migas)}
 </head>
 
 <body class="pagina-producto">
+    <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
 
     <header class="header-producto">
         <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
