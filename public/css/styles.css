@@ -170,6 +170,33 @@ section>* {
   gap: .5rem;
 }
 
+.saltar-contenido {
+  position: absolute;
+  left: .75rem;
+  top: -5rem;
+  z-index: 500;
+  min-height: 44px;
+  padding: .75rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  background: var(--forest);
+  color: var(--cream);
+  border-radius: 0 0 999px 999px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: top .2s ease;
+}
+
+.saltar-contenido:focus {
+  top: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saltar-contenido {
+    transition: none;
+  }
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
