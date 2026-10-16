@@ -559,6 +559,10 @@
         }
 
         .product-footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .75rem 1rem;
             padding: 1.25rem 1.4rem 1.5rem;
         }
 
@@ -604,7 +608,9 @@
             display: flex;
             align-items: baseline;
             gap: .6rem;
-            margin-bottom: 1rem;
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-bottom: 0;
         }
 
         .product-price .current {
@@ -652,14 +658,15 @@
             display: none;
         }
 
-.add-cart {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  padding: .75rem 1.25rem;
-  min-height: 44px;
-  border-radius: 999px;
+        .add-cart {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: .5rem;
+          padding: .75rem 1.25rem;
+          min-height: 44px;
+          flex: 0 0 auto;
+          border-radius: 999px;
             background: var(--forest);
             color: var(--cream);
             font-size: .92rem;
