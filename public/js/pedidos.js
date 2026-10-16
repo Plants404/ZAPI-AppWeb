@@ -224,7 +224,8 @@
     if (!auth) return;
 
     auth.listo.then(function () {
-        if (auth.autenticado) cargar();
+        if (!auth.exigirCuenta()) return;
+        cargar();
     });
 
 })();

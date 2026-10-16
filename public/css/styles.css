@@ -319,6 +319,14 @@ header img {
   border-radius: 10px;
 }
 
+/* En movil y tablet el carrito vive en el drawer (pill + fila de la
+   cuenta): se oculta el icono de la barra para afinar la cabecera. */
+@media (max-width: 1023px) {
+  .header-cart {
+    display: none;
+  }
+}
+
 .header-cart:hover,
 .header-cart:focus-visible {
   background: var(--sand);
@@ -734,6 +742,17 @@ header.menu-abierto::before {
     gap: 0;
   }
 
+  /* En movil y tablet el carrito vive dentro del drawer (fila Carrito +
+     contador); el boton flotante inferior no aporta nada y solo suma un
+     elemento sobrepuesto, asi que se oculta en estos anchos. */
+  .cart-link-float,
+  .floating-cart-btn,
+  #cartLinkFloat,
+  #floating-cart,
+  #cartCountFloat {
+    display: none !important;
+  }
+
   /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
      muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
   .nav-cuenta {
@@ -1070,6 +1089,12 @@ html:not([data-auth="si"]) main.cart-page {
 /* Con sesion el bloque de cuenta ya ofrece "Carrito"; el CTA "Ver carrito"
    queda como acompanante de "Ingresar" solo cuando no hay sesion. */
 html[data-auth="si"] .nav-cta {
+  display: none;
+}
+
+/* Sin sesion el pill tampoco se muestra: la unica puerta es "Ingresar".
+   Al iniciar sesion el acceso reaparece como fila Carrito del menu. */
+html:not([data-auth="si"]) .nav-cta {
   display: none;
 }
 
@@ -3177,43 +3202,10 @@ footer nav a:focus-visible {
     white-space: nowrap;
   }
 
-  /* "Ver carrito" en escritorio: enlace inline con icono y contador,
-     a juego con el resto de la nav (el pill forest queda solo para
-     el drawer movil). Vence a .nav-bar li a por especificidad. */
+  /* Sin "Ver carrito" en el menu de escritorio: el carrito vive en el
+     menu de cuenta (con sesion) y en el icono/flotante en movil. Vence
+     a .nav-bar li a por especificidad, sin !important. */
   .nav-bar .nav-cuenta .nav-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: .45rem;
-    min-height: 44px;
-    margin: 0;
-    padding: .4rem 0;
-    font-size: .88rem;
-    font-weight: 500;
-    color: var(--forest);
-    background: none;
-    border-radius: 4px;
-    text-decoration: none;
-  }
-
-  .nav-bar .nav-cuenta .nav-cta:hover {
-    color: var(--moss);
-    background: none;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
-
-  /* Sin la barra creciente de los enlaces: el CTA ya subraya el texto. */
-  .nav-bar .nav-cuenta .nav-cta:hover::after {
-    display: none;
-  }
-
-  .nav-bar .nav-cuenta .nav-cta:focus-visible {
-    outline: 2px solid var(--leaf);
-    outline-offset: 3px;
-  }
-
-  /* Contador discreto: oculto en vacio, arena con productos. */
-  .nav-bar .nav-cuenta .nav-cta .cart-count:not(.con-productos) {
     display: none;
   }
 
@@ -3623,8 +3615,8 @@ body.con-testimonio-abierto {
 /* --- FIX DEFINITIVO PARA SECCION NOSOTROS EN MOVIL --- */
 @media (max-width: 767px) {
 
-  /* Contenedores generales */
-  #nosotros,
+  /* Contenedores generales (sin #nosotros: el section conserva su
+     display natural para que .hidden pueda ocultarlo al navegar) */
   .nosotros-inner,
   .nosotros-hero,
   .nosotros-hero-grid,

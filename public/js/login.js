@@ -159,11 +159,22 @@
         }, 2400);
     }
 
-    /* Solo rutas internas (nunca //otro-sitio ni http://...): evita open redirect. */
+    /* Solo rutas internas relativas a la raiz del sitio ("carrito.html")
+       o absolutas simples ("/carrito.html" vale en raiz): nunca
+       //otro-sitio, esquemas ni backslashes. Asi no hay open redirect
+       ni doble subdirectorio en GitHub Pages. */
+    function esRutaInternaSegura(texto) {
+        return typeof texto === 'string'
+            && texto.length > 0
+            && texto.indexOf('\\') === -1
+            && texto.indexOf('//') !== 0
+            && !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(texto);
+    }
+
     function destino() {
         const volver = new URLSearchParams(window.location.search).get('volver');
 
-        if (volver && volver.charAt(0) === '/' && volver.charAt(1) !== '/') {
+        if (esRutaInternaSegura(volver)) {
             return window.urlDelSitio(volver);
         }
 
