@@ -303,3 +303,12 @@ button.link:focus-visible{
         transition: none !important;
     }
 }
+
+/* Resguardo movil: el boton fijo "Volver al inicio" flota sobre esta
+   zona; se baja el personaje para que nunca lo toque en pantallas
+   chicas. Solo mobile: en escritorio la composicion no cambia. */
+@media (max-width: 768px){
+    .head{
+        margin-top: 1.5rem;
+    }
+}

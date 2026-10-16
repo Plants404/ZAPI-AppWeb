@@ -633,6 +633,15 @@ function montarCheckout() {
 
 document.addEventListener("DOMContentLoaded", montarCheckout);
 
+/* Sin sesion no hay carrito que mostrar, pero solo en la pagina
+   dedicada: este script tambien carga en la home publica, donde el
+   visitante anonimo debe quedarse. */
+if (window.zapiAuth && /(^|\/)carrito\.html$/.test(window.location.pathname)) {
+    window.zapiAuth.listo.then(function () {
+        window.zapiAuth.exigirCuenta();
+    });
+}
+
 suscribirAlCarrito(sincronizarCarrito);
 alCargarElCatalogo(function () {
     sincronizarCarrito();

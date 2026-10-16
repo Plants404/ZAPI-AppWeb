@@ -127,6 +127,13 @@ for (const f of HTML) {
             avisar(f + ' referencia rota: ' + m[1]); malas++;
         }
     }
+    /* Sin rutas absolutas a la raiz del dominio ("/..."): en local
+       funcionan, pero en GitHub Pages bajo subpath escapan del sitio
+       y dan 404. Valen las relativas (./) y las URLs completas. */
+    for (const m of s.matchAll(/(?:href|src)="(\/[^"]*)"/g)) {
+        if (m[1].startsWith('//')) continue;
+        avisar(f + ' ruta absoluta a raiz: ' + m[1] + ' (usar relativa ./)'); malas++;
+    }
     if (!malas) ok(f);
 }
 

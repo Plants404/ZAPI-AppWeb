@@ -742,6 +742,17 @@ header.menu-abierto::before {
     gap: 0;
   }
 
+  /* En movil y tablet el carrito vive dentro del drawer (fila Carrito +
+     contador); el boton flotante inferior no aporta nada y solo suma un
+     elemento sobrepuesto, asi que se oculta en estos anchos. */
+  .cart-link-float,
+  .floating-cart-btn,
+  #cartLinkFloat,
+  #floating-cart,
+  #cartCountFloat {
+    display: none !important;
+  }
+
   /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
      muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
   .nav-cuenta {
@@ -1078,6 +1089,12 @@ html:not([data-auth="si"]) main.cart-page {
 /* Con sesion el bloque de cuenta ya ofrece "Carrito"; el CTA "Ver carrito"
    queda como acompanante de "Ingresar" solo cuando no hay sesion. */
 html[data-auth="si"] .nav-cta {
+  display: none;
+}
+
+/* Sin sesion el pill tampoco se muestra: la unica puerta es "Ingresar".
+   Al iniciar sesion el acceso reaparece como fila Carrito del menu. */
+html:not([data-auth="si"]) .nav-cta {
   display: none;
 }
 

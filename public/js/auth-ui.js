@@ -1,8 +1,6 @@
 'use strict';
 (function () {
 
-    const volver = encodeURIComponent(window.location.pathname + window.location.search);
-
     let usuario = null;
 
     function pintar() {
@@ -80,10 +78,32 @@
         pintarEstado();
     }
 
+    /* La vuelta se guarda relativa a la raiz del sitio (sin subpath):
+       con el pathname absoluto el retorno duplicaba el subdirectorio
+       en GitHub Pages (/repo/repo/...). */
+    function rutaRelativaAlSitio() {
+        let raiz = '/';
+
+        try {
+            raiz = new URL(window.urlDelSitio('/'), window.location.href).pathname;
+        } catch (error) {
+            raiz = '/';
+        }
+
+        const actual = window.location.pathname;
+
+        const sinRaiz = actual.indexOf(raiz) === 0
+            ? actual.slice(raiz.length)
+            : actual.replace(/^\/+/, '');
+
+        return sinRaiz + window.location.search;
+    }
+
     function exigirCuenta() {
         if (usuario) return true;
 
-        window.location.href = window.urlDelSitio('login.html') + '?volver=' + volver;
+        window.location.href = window.urlDelSitio('login.html')
+            + '?volver=' + encodeURIComponent(rutaRelativaAlSitio());
 
         return false;
     }
