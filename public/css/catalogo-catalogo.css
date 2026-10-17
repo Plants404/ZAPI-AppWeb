@@ -8,15 +8,32 @@
 background: var(--sand);
 }
 
-/* Cabecera editorial: en mobile apila; en pantallas grandes el
-lema respira a la izquierda y el bloque de confianza lo
-acompana a la derecha, alineado abajo (lectura en Z). */
+#catalogo.catalog {
+background: var(--cream);
+padding-top: 0;
+margin-top: 0;
+overflow-x: clip;
+}
+
+#catalogo.catalog .catalog-header {
+margin-top: 0;
+}
+
+/* Banda verde profunda del hero del catalogo. */
 .catalog-header {
 display: grid;
-gap: 2rem;
-max-width: var(--container);
-margin: 0 auto 2.5rem;
+grid-template-columns: 1fr;
+gap: 1.5rem;
+width: 100vw;
+max-width: none;
+margin: 0;
+margin-inline: calc(50% - 50vw);
+padding-block: clamp(1.5rem, 3vw, 2.25rem);
+padding-inline: max(var(--gutter), calc((100vw - var(--container)) / 2));
+background: var(--forest);
+border-radius: 0;
 text-align: left;
+align-items: center;
 }
 
 .catalog-intro {
@@ -32,10 +49,9 @@ gap: .5rem;
 font-size: .72rem;
 font-weight: 600;
 text-transform: uppercase;
-letter-spacing: .22em;
-color: var(--leaf-texto);
-background: rgba(74, 124, 89, .10);
-border: 1px solid rgba(74, 124, 89, .35);
+letter-spacing: .14em;
+color: var(--menta);
+background: var(--verde-secundario);
 padding: .4rem .95rem;
 border-radius: 999px;
 margin-bottom: 1.35rem;
@@ -46,82 +62,97 @@ font-size: 1.05rem;
 }
 
 .catalog-title {
-font-size: clamp(2.6rem, 6.5vw, 4.6rem);
-line-height: 1.1;
+font-family: var(--serif);
+font-size: clamp(2.75rem, 6.5vw, 5rem);
+line-height: 1;
 letter-spacing: .01em;
-color: var(--forest);
-margin: 0 0 .35rem;
-}
-
-/* "Vivo" late: un resplandor verde suave y lento da la idea de
-algo que respira. Se apaga con prefers-reduced-motion. */
-.catalog-title-acento {
-color: var(--leaf);
-animation: catalogoLatido 4.5s ease-in-out infinite;
+color: var(--cream);
+margin: .9rem 0 .35rem;
 }
 
 .catalog-lead {
-font-size: clamp(1.02rem, 1.6vw, 1.2rem);
-line-height: 1.5;
-color: var(--moss);
-max-width: 54ch;
+font-size: clamp(1.1rem, 1.6vw, 1.2rem);
+line-height: 1.55;
+color: var(--texto-verde-suave);
+max-width: 640px;
 margin: 0;
+text-wrap: pretty;
 }
 
-/* Aviso pasivo -> bloque de autoridad y alivio de friccion. */
+/* Sin acento de color ni animacion de latido en este diseno. */
+.catalog-title-acento {
+color: var(--cream);
+animation: none;
+}
+
+
+/* Bloque de beneficios: sin panel, lista simple. */
 .catalog-trust {
-align-self: end;
+align-self: center;
 min-width: 0;
-background: var(--white);
-border-radius: var(--radius);
-border-left: 3px solid var(--leaf);
-box-shadow: var(--shadow-sm);
-padding: 1.3rem 1.4rem;
-transition: transform .3s ease, box-shadow .3s ease;
+background: none;
+border: 0;
+border-top: 1px solid rgba(247, 244, 236, .18);
+box-shadow: none;
+padding: 1.25rem 0 0;
+transition: none;
 }
 
 .catalog-trust:hover {
-transform: translateY(-4px);
-box-shadow: var(--shadow-md);
+transform: none;
+box-shadow: none;
 }
 
 .catalog-trust-title {
-font-size: .72rem;
-font-weight: 700;
-text-transform: uppercase;
-letter-spacing: .18em;
-color: var(--moss);
-margin: 0 0 .85rem;
+position: absolute;
+width: 1px;
+height: 1px;
+padding: 0;
+margin: -1px;
+overflow: hidden;
+clip: rect(0 0 0 0);
+clip-path: inset(50%);
+white-space: nowrap;
+border: 0;
 }
 
 .catalog-trust ul {
 list-style: none;
 margin: 0;
 padding: 0;
-display: grid;
-gap: .65rem;
+display: flex;
+flex-direction: column;
+gap: 16px;
 }
 
 .catalog-trust li {
 display: flex;
 align-items: center;
 gap: .6rem;
-font-size: .92rem;
+font-size: 1.05rem;
 font-weight: 500;
-color: var(--ink);
+color: var(--cream);
 margin: 0;
+line-height: 1.4;
 }
 
 .catalog-trust .material-symbols-outlined {
-font-size: 1.15rem;
-color: var(--leaf);
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 28px;
+height: 28px;
+border-radius: 50%;
+background: var(--moss);
+color: var(--white);
+font-size: 16px;
 flex-shrink: 0;
-transition: transform .25s ease, color .25s ease;
+transition: none;
 }
 
 .catalog-trust li:hover .material-symbols-outlined {
-transform: scale(1.1);
-color: var(--moss);
+transform: none;
+color: var(--white);
 }
 
 /* Entrada escalonada: sello, luego titulo y bajada, luego la
@@ -199,6 +230,9 @@ border-radius: 999px;
 box-shadow: var(--shadow-sm);
 overflow-x: auto;
 scrollbar-width: none;
+width: 100%;
+max-width: var(--container);
+margin-inline: auto;
 }
 
 .catalog-filters::-webkit-scrollbar {
@@ -281,16 +315,19 @@ from { opacity: 0; transform: translateX(26px); }
 to { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes catalogoLatido {
-0%, 100% { color: var(--leaf); text-shadow: 0 0 0 rgba(74, 124, 89, 0); }
-50% { color: var(--moss); text-shadow: 0 0 16px rgba(74, 124, 89, .38); }
-}
 
 @media (min-width: 880px) {
 .catalog-header {
-grid-template-columns: minmax(0, 1.7fr) minmax(280px, .9fr);
+grid-template-columns: minmax(0, 1.7fr) minmax(260px, .9fr);
 gap: clamp(2rem, 5vw, 4.5rem);
-align-items: end;
+align-items: center;
+}
+
+.catalog-trust {
+border-top: 0;
+border-left: 1px solid rgba(247, 244, 236, .18);
+padding-top: 0;
+padding-left: clamp(1.5rem, 3vw, 3rem);
 }
 }
 
@@ -320,23 +357,17 @@ transform: none;
 se apilan en flujo vertical, a ancho completo y sin
 posicionamientos que puedan encimarse sobre el titulo, la bajada
 o la grilla de productos. */
-@media (max-width: 767px) {
+@media (max-width: 879px) {
 .catalog-header {
-display: flex;
-flex-direction: column;
+display: grid;
+grid-template-columns: 1fr;
 gap: 1.5rem;
-position: static !important;
 }
 
 .catalog-intro,
 .catalog-trust {
 width: 100%;
 min-width: 0;
-position: static !important;
-}
-
-.catalog-trust {
-align-self: stretch;
 }
 
 .catalog {
@@ -529,30 +560,6 @@ background: rgba(255, 103, 103, .65);
 color: #270702;
 }
 
-.catalog-trust li {
-display: flex;
-align-items: center;
-gap: .75rem;
-padding: clamp(1.5rem, 3.5vw, 2.1rem);
-border: 1px solid #e4dccb;
-border-radius: calc(var(--radius) + 2px);
-box-shadow: var(--shadow-sm);
-background: var(--white);
-margin-bottom: 1rem;
-}
-
-.catalog-trust li .material-symbols-outlined {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-width: 52px;
-height: 52px;
-border-radius: 14px;
-background: rgba(143, 174, 145, .18);
-color: var(--moss);
-font-size: 1.3rem;
-flex-shrink: 0;
-}
 
 .product-body {
 padding: 1.35rem;
