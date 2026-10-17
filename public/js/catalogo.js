@@ -180,8 +180,10 @@ function tarjetaProducto(producto) {
             <article class="product-card" data-id="${producto.id}">
 
                 <div class="product-visual">
-                    <span class="product-badge">${escaparHTML(producto.categoria)}</span>
-                    <span class="product-stock-pill" data-stock="${producto.id}"></span>
+                    <div class="product-etiquetas">
+                        <span class="product-badge">${escaparHTML(producto.categoria)}</span>
+                        <span class="product-stock-pill" data-stock="${producto.id}"></span>
+                    </div>
                     <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
                     <div class="product-beneficios-lista">
                         ${producto.infoDeVenta.map(item => `
