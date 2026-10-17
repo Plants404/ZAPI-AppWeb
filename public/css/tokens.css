@@ -1,0 +1,55 @@
+/* Tokens CSS de ZAPI — Valores únicos para todo el sitio.
+   Este archivo es la fuente única de verdad para colores, tipografías,
+   radios, sombras y espaciado. Ninguna otra hoja de estilo debe
+   contener valores hardcodeados de estos tipos. */
+
+/* Colores corporativos */
+:root {
+  --forest: #1f3a2e;
+  --moss: #3d6b4f;
+  --leaf: #4a7c59;
+  --cream: #f7f4ec;
+  --sand: #ece5d3;
+  --earth: #6b5a44;
+  --ink: #22261f;
+  --muted-texto: #6a6f65;
+  --leaf-texto: #2f5c3c;
+  --borde: #e4dccb;
+  --white: #ffffff;
+
+  /* Colores de estado y estados de stock */
+  --error: #a3341f;
+  --forest-bg: #f1ede2;
+  --leaf-bg: rgba(8, 255, 79, .65);
+  --leaf-hover: rgba(74, 124, 89, .35);
+  --leaf-texto-hover: #5b6058;
+
+  /* Tipografía */
+  --serif: 'Bebas Neue', Georgia, serif;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Radios */
+  --radius: 14px;
+  --radius-pill: 999px;
+
+  /* Sombras */
+  --shadow-sm: 0 2px 10px rgba(31, 58, 46, .06);
+  --shadow-md: 0 12px 30px rgba(31, 58, 46, .10);
+  --shadow-lg: 0 24px 60px rgba(31, 58, 46, .18);
+
+  /* Espaciado */
+  --gutter: 1.25rem;
+  --gutter-sm: .75rem;
+  --gutter-md: 1.5rem;
+  --gutter-lg: 2rem;
+
+  /* Tamaños de fuente */
+  --fs-xs: .72rem;
+  --fs-sm: .75rem;
+  --fs-md: .95rem;
+  --fs-md-lg: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.35rem;
+  --fs-3xl: 2rem;
+  --fs-4xl: 2.6rem;
+}
