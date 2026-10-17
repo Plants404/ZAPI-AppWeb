@@ -434,7 +434,7 @@ transition: transform .5s ease;
 transform: scale(1.06);
 }
 
-.product-stock-pill.agotado ~ .product-visual img {
+.product-visual:has(.product-stock-pill.agotado) img {
 opacity: .75;
 }
 
@@ -469,11 +469,27 @@ color: var(--cream);
 font-size: 1.1rem;
 }
 
-.product-badge {
+.product-etiquetas {
 position: absolute;
-top: .8rem;
-left: .8rem;
-padding: .6rem 1.2rem;
+top: 12px;
+left: 12px;
+right: 12px;
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+align-items: flex-start;
+gap: 6px 8px;
+z-index: 10;
+}
+
+.product-badge {
+white-space: nowrap;
+min-width: 0;
+max-width: 100%;
+overflow: hidden;
+text-overflow: ellipsis;
+flex: 1 1 auto;
+padding: 6px 12px;
 border-radius: 999px;
 background: var(--white);
 color: var(--forest);
@@ -481,18 +497,15 @@ font-size: .72rem;
 font-weight: 600;
 letter-spacing: .04em;
 text-transform: uppercase;
-z-index: 10;
 }
 
 .product-stock-pill {
-position: absolute;
-top: .8rem;
-right: .8rem;
-padding: .6rem 1.2rem;
+flex: none;
+white-space: nowrap;
+padding: 6px 12px;
 border-radius: 999px;
 font-size: .72rem;
 font-weight: 600;
-z-index: 10;
 }
 
 .product-stock-pill.stock-ok {
