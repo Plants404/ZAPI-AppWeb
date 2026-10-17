@@ -468,38 +468,46 @@
 
         .product-etiquetas {
             display: flex;
+            flex-direction: row;
             flex-wrap: wrap;
-            gap: 6px 8px;
             align-items: center;
             justify-content: flex-start;
+            gap: 6px 8px;
             margin-bottom: .5rem;
         }
 
         .product-badge {
+            flex: 0 0 auto;
+            width: auto;
+            max-width: 100%;
             white-space: nowrap;
             min-width: 0;
-            max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
-            flex: 1 1 auto;
+            box-sizing: border-box;
             padding: 5px 12px;
             border-radius: 999px;
+            border: 1px solid #e4dccb;
             background: #f1ede2;
             color: var(--leaf-texto);
-            border: 1px solid #e4dccb;
-            font-size: .72rem;
+            font-size: .75rem;
             font-weight: 600;
-            letter-spacing: .06em;
-            text-transform: uppercase;
+            line-height: 1.2;
+            letter-spacing: 0;
         }
 
         .product-stock-pill {
-            flex: none;
+            flex: 0 0 auto;
+            width: auto;
+            max-width: 100%;
             white-space: nowrap;
+            box-sizing: border-box;
             padding: 5px 12px;
             border-radius: 999px;
-            font-size: .72rem;
+            border: 1px solid transparent;
+            font-size: .75rem;
             font-weight: 600;
+            line-height: 1.2;
         }
 
         .product-stock-pill.stock-ok {
