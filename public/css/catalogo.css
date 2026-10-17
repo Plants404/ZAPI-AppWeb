@@ -406,6 +406,7 @@
             display: flex;
             flex-direction: column;
             min-width: 0;
+            padding: clamp(1.5rem, 3.5vw, 2.1rem);
         }
 
         .product-card:hover {
@@ -523,6 +524,31 @@
         .product-stock-pill.agotado {
             background: rgba(255, 103, 103, .65);
             color: #270702;
+        }
+
+        .catalog-trust li {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            padding: clamp(1.5rem, 3.5vw, 2.1rem);
+            border: 1px solid #e4dccb;
+            border-radius: calc(var(--radius) + 2px);
+            box-shadow: var(--shadow-sm);
+            background: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .catalog-trust li .material-symbols-outlined {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(143, 174, 145, .18);
+            color: var(--moss);
+            font-size: 1.3rem;
+            flex-shrink: 0;
         }
 
         .product-body {

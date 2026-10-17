@@ -1,4 +1,4 @@
-
+﻿
 
 .section.cart-page>* {
     max-width: none;
@@ -218,28 +218,16 @@
 
 
 .cart-item {
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    align-items: flex-start;
-
-    gap: 1.25rem;
-
-    padding: 1.2rem;
-
-    background: var(--white);
-
-    border-radius: var(--radius);
-
-    border: 1px solid rgba(31, 58, 46, .07);
-
-    box-shadow: var(--shadow-sm);
-
-    animation: cartItemIn .45s cubic-bezier(.22, 1, .36, 1);
-
-}
+            background: var(--white);
+            border: 1px solid #e4dccb;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            padding: clamp(1.5rem, 3.5vw, 2.1rem);
+        }
 
 
 @keyframes cartItemIn {
@@ -265,6 +253,16 @@
 
 
 .cart-item-image {
+            flex: 0 0 84px;
+            width: 84px;
+            height: auto;
+            aspect-ratio: 4 / 3;
+            border-radius: 12px;
+            overflow: hidden;
+            background: var(--white);
+            border: 1px solid rgba(31, 58, 46, .08);
+            box-shadow: var(--shadow-sm);
+        }cart-item-image {
 
     /* Misma proporcion 2:3 que el catalogo: las fotos son retrato y
        asi llenan el cuadro en vez de quedar chicas en una caja cuadrada. */
@@ -310,61 +308,55 @@
 
 
 .cart-item-info {
-
-    flex: 1 1 0;
-
-    min-width: 0;
-
-}
+            padding: 1.35rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1;
+        }
 
 
 
 .cart-item-info h3 {
-
-    margin: 0 0 .3rem;
-
-    font-family: var(--serif);
-
-    font-size: 1.4rem;
-
-    color: var(--forest);
-
-}
+            font-family: var(--serif);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--forest);
+            margin-bottom: .5rem;
+            text-transform: uppercase;
+        }
 
 
 .cart-item-category {
-
-    display: inline-block;
-
-    margin: 0 0 .65rem;
-
-    padding: .18rem .6rem;
-
-    border-radius: 999px;
-
-    background: rgba(143, 174, 145, .22);
-
-    color: var(--moss);
-
-    font-size: .68rem;
-
-    font-weight: 600;
-
-    letter-spacing: .08em;
-
-    text-transform: uppercase;
-
-}
+            flex: 0 0 auto;
+            width: auto;
+            max-width: 100%;
+            white-space: nowrap;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-sizing: border-box;
+            padding: 5px 12px;
+            border-radius: 999px;
+            background: #f1ede2;
+            color: var(--leaf-texto);
+            border: 1px solid #e4dccb;
+            font-size: .75rem;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
 
 
 
 .cart-item-price {
-
-    font-weight: 600;
-
-    color: var(--moss);
-
-}
+            display: flex;
+            align-items: baseline;
+            gap: .6rem;
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-bottom: 0;
+        }
 
 
 .cart-item-unit {
@@ -380,28 +372,34 @@
 
 
 .cart-item-stock {
+            flex: none;
+            white-space: nowrap;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: .75rem;
+            font-weight: 600;
+            line-height: 1.2;
+            box-sizing: border-box;
+        }
 
-    display: inline-flex;
+        .cart-item-stock.stock-ok {
+            background: var(--leaf-bg);
+            color: var(--forest);
+        }
 
-    align-items: center;
+        .cart-item-stock.pocas {
+            background: rgba(255, 176, 91, .65);
+            color: #442000;
+        }
 
-    gap: .4rem;
+        .cart-item-stock.agotado {
+            background: rgba(255, 103, 103, .65);
+            color: #270702;
+        }
 
-    margin-top: .5rem;
-
-    padding: .28rem .7rem;
-
-    border-radius: 999px;
-
-    background: rgba(74, 124, 89, .12);
-
-    font-size: .78rem;
-
-    font-weight: 600;
-
-    color: var(--leaf-texto);
-
-}
+        .cart-item .add-cart {
+            width: 100%;
+        }
 
 .cart-item-stock::before {
 
@@ -1679,3 +1677,7 @@
     }
 
 }
+
+
+
+
