@@ -755,15 +755,15 @@ header.menu-abierto::before {
 
   /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
      muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
-  .nav-cuenta {
-    position: relative;
-    display: block;
-    margin: 1rem 0 1.4rem;
-    padding: .4rem .5rem;
-    background: var(--sand);
-    border: 1px solid rgba(61, 107, 79, .16);
-    border-radius: 14px;
-  }
+        .nav-cuenta {
+          position: relative;
+          display: block;
+          margin: 1rem 0 0;
+          padding: .4rem .5rem;
+          background: var(--sand);
+          border: 1px solid rgba(61, 107, 79, .16);
+          border-radius: 14px;
+        }
 
   /* Linea divisoria sutil entre el bloque de cuenta y la navegacion. */
   .nav-cuenta::after {
@@ -1468,13 +1468,212 @@ body.no-scroll {
   }
 }
 
-.hero img {
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
-  aspect-ratio: 16/10;
-  object-fit: cover;
-  width: 100%;
+/* Carrito de compras: las tarjetas del carrito usan la misma
+   estructura visual que las tarjetas del catálogo para mantener
+   consistencia visual en todo el sitio. */
+.cart-item {
+    background: var(--white);
+    border: 1px solid #e4dccb;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: clamp(1.5rem, 3.5vw, 2.1rem);
 }
+
+.cart-item:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+}
+
+.cart-item-image {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--white);
+}
+
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+}
+
+.cart-item-image:hover img {
+    transform: scale(1.06);
+}
+
+.cart-item-stock.agotado ~ .cart-item-image img {
+    opacity: .75;
+}
+
+.cart-item-info {
+    padding: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.cart-item-info h3 {
+    font-family: var(--serif);
+    font-size: 2rem;
+    letter-spacing: .02em;
+    color: var(--forest);
+    margin-bottom: .5rem;
+    text-transform: uppercase;
+}
+
+.cart-item-info .cart-item-category {
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    text-transform: inherit;
+    text-align: left;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.cart-item-info .cart-item-category:hover {
+    color: var(--moss);
+}
+
+.cart-item-info .cart-item-category:focus-visible {
+    outline: 2px solid var(--leaf-texto);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.cart-item-info .cart-item-desc {
+    font-size: .94rem;
+    color: var(--muted-texto);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.cart-item-info .cart-item-benefit {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .94rem;
+    color: var(--muted-texto);
+}
+
+.cart-item-info .cart-item-benefit .benefit-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: rgba(8, 255, 79, .2);
+    color: var(--leaf-texto);
+    font-size: .75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.cart-item-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem 1.4rem 1.5rem;
+    border-top: 1px solid #e4dccb;
+}
+
+.cart-item-precio-cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.cart-item-precio {
+    display: flex;
+    align-items: baseline;
+    gap: .6rem;
+}
+
+.cart-item-precio .current {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    color: var(--forest);
+}
+
+.cart-item-precio .since {
+    font-size: .75rem;
+    color: var(--muted-texto);
+}
+
+.cart-item-cta {
+    font-size: .94rem;
+    font-weight: 600;
+    color: var(--forest);
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.cart-item-cta:hover {
+    color: var(--moss);
+}
+
+.cart-item-cta:focus-visible {
+    outline: 2px solid var(--leaf-texto);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.cart-add-cart {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .75rem 1.25rem;
+    min-height: 50px;
+    flex: 0 0 auto;
+    border-radius: 12px;
+    background: var(--forest);
+    color: var(--cream);
+    font-size: .94rem;
+    font-weight: 600;
+    text-align: center;
+    transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+    cursor: pointer;
+}
+
+.cart-add-cart:hover {
+    background: var(--moss);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.cart-add-cart.added {
+    background: var(--leaf);
+}
+
+.cart-add-cart:disabled {
+    background: var(--sand);
+    color: var(--muted-texto);
+    cursor: not-allowed;
+}
+
+.cart-add-cart:disabled:hover {
+    background: var(--sand);
+    transform: none;
+    box-shadow: none;
+}
+
 
 .hero button,
 .contacto-acciones button {
@@ -1735,15 +1934,15 @@ body.no-scroll {
   gap: 1.25rem;
 }
 
-.service-card {
+        .service-card {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  padding: 1.9rem 1.6rem 2rem;
+  padding: clamp(1.5rem, 3.5vw, 2.1rem);
   background: var(--white);
-  border: 1px solid rgba(31, 58, 46, .08);
-  border-radius: 16px;
+  border: 1px solid #e4dccb;
+  border-radius: 18px;
   box-shadow: var(--shadow-sm);
   transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
 }
@@ -3654,3 +3853,327 @@ body.con-testimonio-abierto {
     position: relative !important;
   }
 }
+
+/* ==========================================================================
+   Componentes base (styles.css)
+   Reutilizables en todo el sitio. Sin !important.
+   ========================================================================== */
+
+/* Botones base */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  min-height: 44px;
+  border-radius: var(--radius-pill);
+  border: none;
+  font-family: var(--sans);
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background: var(--forest);
+  color: var(--white);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--forest);
+  border: 1.5px solid var(--forest);
+}
+
+.btn-primary:hover {
+  background: var(--moss);
+}
+
+.btn-secondary:hover {
+  background: var(--cream);
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+/* Chips secundarios */
+.chip-category,
+.chip-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.chip-category {
+  background: #f1ede2;
+  color: var(--leaf-texto);
+  border: 1px solid #e4dccb;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.chip-stock {
+  flex: none;
+  border: 1px solid transparent;
+}
+
+/* Estados de stock */
+.chip-stock.stock-ok {
+  background: var(--leaf-bg);
+  color: var(--forest);
+}
+
+.chip-stock.pocas {
+  background: rgba(255, 176, 91, .65);
+  color: #442000;
+}
+
+.chip-stock.agotado {
+  background: rgba(255, 103, 103, .65);
+  color: #270702;
+}
+
+/* Tarjeta base */
+.card {
+  background: var(--white);
+  border: 1px solid #e4dccb;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Formularios base */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: .25rem;
+}
+
+.campo-input {
+  width: 100%;
+  padding: .8rem 1rem;
+  border: 2px solid var(--borde);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+}
+
+/* Header base */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: .75rem var(--gutter);
+  background: var(--cream);
+  box-sizing: border-box;
+}
+
+/* Footer base */
+footer {
+  background: var(--forest);
+  color: var(--cream);
+  padding: 3rem var(--gutter);
+}
+
+/* ==========================================================================
+   Componentes base (styles.css)
+   Reutilizables en todo el sitio. Sin !important.
+   ========================================================================== */
+
+/* Botones base */
+.nav-bar .nav-cta,
+.nav-bar .nav-ingresar,
+.nav-bar .nav-salir,
+.nav-bar .nav-usuario-item,
+.nav-bar .nav-link,
+.nav-bar .nav-link.active,
+.nav-bar .nav-link:hover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  margin: 0;
+  min-height: 44px;
+  padding: .9rem 1.25rem;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  text-align: left;
+  cursor: pointer;
+  transition: background .25s ease, transform .2s ease, box-shadow .2s ease;
+  box-sizing: border-box;
+}
+
+.nav-bar .nav-cuenta .nav-ingresar,
+.nav-bar .nav-cuenta .nav-cta,
+.nav-bar .nav-usuario-item {
+  background: var(--forest);
+  color: var(--white);
+  border: none;
+}
+
+.nav-bar .nav-cuenta .nav-ingresar:hover,
+.nav-bar .nav-cuenta .nav-cta:hover,
+.nav-bar .nav-usuario-item:hover {
+  background: var(--moss);
+  color: var(--white);
+}
+
+.nav-bar .nav-ingresar:focus-visible,
+.nav-bar .nav-cta:focus-visible,
+.nav-bar .nav-usuario-item:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: var(--radius-pill);
+}
+
+.nav-bar .nav-cuenta .nav-ingresar::after,
+.nav-bar .nav-cuenta .nav-cta::after,
+.nav-bar .nav-usuario-item::after {
+  display: none;
+}
+
+/* Chips secundarios */
+.nav-bar .nav-usuario-item .cart-count {
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 .35rem;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--forest);
+  background: var(--sand);
+  border-radius: 999px;
+}
+
+.nav-bar .nav-cuenta .nav-ingresar .cart-count,
+.nav-bar .nav-cuenta .nav-cta .cart-count,
+.nav-bar .nav-usuario-item .cart-count {
+  margin-left: auto;
+}
+
+/* Tarjeta base */
+.nav-bar .nav-cuenta .nav-usuario-item {
+  min-height: 48px;
+  padding: .7rem .85rem;
+}
+
+.nav-bar .nav-usuario-item {
+  justify-content: flex-start;
+}
+
+.nav-bar .nav-cuenta {
+  margin: 1rem 0 0;
+}
+
+/* Tarjeta base genérica */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: clamp(1.5rem, 3.5vw, 2.1rem);
+  background: var(--white);
+  border: 1px solid #e4dccb;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(74, 124, 89, .35);
+}
+
+/* Formularios base */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: .25rem;
+}
+
+.campo-input {
+  width: 100%;
+  padding: .8rem 1rem;
+  border: 2px solid var(--borde);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+}
+
+/* Header base */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: .75rem var(--gutter);
+  background: var(--cream);
+  box-sizing: border-box;
+}
+
+/* Footer base */
+footer {
+  background: var(--forest);
+  color: var(--cream);
+  padding: 3rem var(--gutter);
+}
+
+/* Fin de estilos globales */
+
