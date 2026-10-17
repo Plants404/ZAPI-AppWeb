@@ -438,6 +438,37 @@ transform: scale(1.06);
 opacity: .75;
 }
 
+.product-beneficios-lista {
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: .75rem;
+padding: 1rem;
+background: rgba(31, 58, 46, .85);
+opacity: 0;
+transition: opacity .3s ease;
+}
+
+.product-beneficio-item {
+display: flex;
+align-items: center;
+gap: .5rem;
+color: var(--white);
+font-size: .94rem;
+line-height: 1.5;
+}
+
+.product-beneficio-item .material-symbols-outlined {
+color: var(--cream);
+font-size: 1.1rem;
+}
+
 .product-badge {
 position: absolute;
 top: .8rem;
@@ -450,6 +481,7 @@ font-size: .72rem;
 font-weight: 600;
 letter-spacing: .04em;
 text-transform: uppercase;
+z-index: 10;
 }
 
 .product-stock-pill {
@@ -460,6 +492,7 @@ padding: .6rem 1.2rem;
 border-radius: 999px;
 font-size: .72rem;
 font-weight: 600;
+z-index: 10;
 }
 
 .product-stock-pill.stock-ok {
@@ -618,6 +651,27 @@ transform: none;
 box-shadow: none;
 }
 
+@media (hover: hover) {
+.product-card:hover .product-beneficios-lista,
+.product-card:focus-within .product-beneficios-lista {
+opacity: 1;
+}
+
+.product-card:hover .product-benefit,
+.product-card:focus-within .product-benefit {
+display: none;
+}
+}
+
+@media (hover: none) {
+.product-beneficios-lista {
+display: none;
+}
+
+.product-benefit {
+display: flex;
+}
+}
 
 
 .cart-link-text {

@@ -183,6 +183,14 @@ function tarjetaProducto(producto) {
                     <span class="product-badge">${escaparHTML(producto.categoria)}</span>
                     <span class="product-stock-pill" data-stock="${producto.id}"></span>
                     <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
+                    <div class="product-beneficios-lista">
+                        ${producto.infoDeVenta.map(item => `
+                            <div class="product-beneficio-item">
+                                <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                                <span>${escaparHTML(item)}</span>
+                            </div>
+                        `).join("")}
+                    </div>
                 </div>
 
                 <div class="product-body">
