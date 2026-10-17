@@ -173,12 +173,15 @@ let productosFiltrados = [];
 
 function tarjetaProducto(producto) {
 
+    const beneficio = producto.infoDeVenta && producto.infoDeVenta[0] ? producto.infoDeVenta[0] : "";
+
     return `
 
             <article class="product-card" data-id="${producto.id}">
 
                 <div class="product-visual">
                     <span class="product-badge">${escaparHTML(producto.categoria)}</span>
+                    <span class="product-stock-pill" data-stock="${producto.id}"></span>
                     <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
                 </div>
 
@@ -192,31 +195,23 @@ function tarjetaProducto(producto) {
 
                     <p class="product-desc">${escaparHTML(producto.descripcion)}</p>
 
-                    <div class="product-info-wrap">
-                        <div class="product-info">
-                            <ul>
-                                ${producto.infoDeVenta.map(item => `
-
-                                <li>
-                                    <span class="material-symbols-outlined">check_circle</span>
-                                    <span>${escaparHTML(item)}</span>
-                                </li>
-
-                                `).join("")}
-
-                            </ul>
-                        </div>
+                    <div class="product-benefit">
+                        <span class="benefit-icon" aria-hidden="true">✓</span>
+                        <span>${escaparHTML(beneficio)}</span>
                     </div>
                 </div>
 
                 <div class="product-footer">
-                    <span class="product-stock" data-stock="${producto.id}"></span>
-
-                    <div class="product-price">
-                        <span class="current">${formatearPrecio(precios[producto.id] ?? producto.precioBase)}</span>
-                        <span class="since">precio por unidad</span>
+                    <div class="product-precio-cta">
+                        <div class="product-price">
+                            <span class="current">${formatearPrecio(precios[producto.id] ?? producto.precioBase)}</span>
+                            <span class="since">precio por unidad</span>
+                        </div>
+                        <button class="btn-ver-detalle" type="button" data-id="${producto.id}"
+                            aria-label="Ver detalle de ${escaparHTML(producto.nombre)}">
+                            Ver detalle
+                        </button>
                     </div>
-
                     <button class="add-cart" type="button" data-id="${producto.id}">
                         <span class="material-symbols-outlined">add_shopping_cart</span>
                         Agregar al carrito
