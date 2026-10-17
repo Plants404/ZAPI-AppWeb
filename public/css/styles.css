@@ -4,6 +4,9 @@
   --sage: #8fae91;
   --leaf: #4a7c59;
   --cream: #f7f4ec;
+  --verde-secundario: #2e5240;
+  --menta: #e2ebdc;
+  --texto-verde-suave: #cfe0d3;
   --sand: #ece5d3;
   --earth: #6b5a44;
   --ink: #22261f;
@@ -219,7 +222,9 @@ header {
   flex-wrap: wrap;
   align-items: center;
   gap: .75rem;
-  padding: .75rem var(--gutter);
+  padding: 12px 24px;
+  background: #f7f5ed;
+  border-bottom: 1px solid #e2decb;
 }
 
 header::before {
@@ -227,10 +232,8 @@ header::before {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: rgba(247, 244, 236, .85);
-  backdrop-filter: saturate(140%) blur(12px);
-  -webkit-backdrop-filter: saturate(140%) blur(12px);
-  border-bottom: 1px solid rgba(31, 58, 46, .08);
+  background: #f7f5ed;
+  border-bottom: 1px solid #e2decb;
 }
 
 header h4 {
@@ -3311,7 +3314,9 @@ footer nav a:focus-visible {
   header {
     flex-wrap: nowrap;
     gap: 1.25rem;
-    padding: 1rem 2rem;
+    padding: 12px 24px;
+    background: #f7f5ed;
+    border-bottom: 1px solid #e2decb;
   }
 
   header.menu-abierto {
@@ -3380,20 +3385,42 @@ footer nav a:focus-visible {
     align-items: center;
   }
 
+  .nav-bar li {
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+
   .nav-bar li a,
   .nav-bar li .nav-link {
     width: auto;
     font-size: .88rem;
+    line-height: 1.5;
     padding: .4rem 0;
+    margin: 0;
     text-align: center;
+  }
+
+  .nav-bar li .nav-link.active {
+    font-size: .88rem;
+    color: #1e3a2b;
+    font-weight: 600;
+  }
+
+  .nav-bar li .nav-link.active::after {
+    width: 100%;
+    background: #2d5a3f;
   }
 
   .nav-cuenta {
     order: 1;
     padding: 0;
+    margin: 0;
     flex-wrap: nowrap;
     align-items: center;
     gap: .85rem;
+    font-size: .88rem;
+    line-height: 1.5;
   }
 
   .nav-cuenta > * {
@@ -3402,35 +3429,123 @@ footer nav a:focus-visible {
   }
 
   /* Sin "Ver carrito" en el menu de escritorio: el carrito vive en el
-     menu de cuenta (con sesion) y en el icono/flotante en movil. Vence
-     a .nav-bar li a por especificidad, sin !important. */
+      menu de cuenta (con sesion) y en el icono/flotante en movil. Vence
+      a .nav-bar li a por especificidad, sin !important. */
   .nav-bar .nav-cuenta .nav-cta {
     display: none;
   }
 
   .nav-usuario {
     width: auto;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: .88rem;
+    line-height: 1.5;
   }
 
   .nav-usuario-boton {
+    display: inline-flex;
+    align-items: center;
     font-size: .88rem;
+    line-height: 1.5;
     padding: .4rem 0;
+    margin: 0;
+    color: #1e3a2b;
+  }
+
+  .nav-usuario-boton::after {
+    content: "person";
+    font-family: 'Material Symbols Outlined';
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-left: .5rem;
+    border: 1px solid #e2decb;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #1e3a2b;
+    font-size: 1.1rem;
   }
 
   .nav-usuario-menu {
     position: absolute;
     top: calc(100% + .4rem);
     right: 0;
-    min-width: 13rem;
-    padding: .4rem;
-    background: var(--white);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-md);
+    width: 256px;
+    min-width: 256px;
+    padding: 12px;
+    background: #ffffff;
+    border: 1px solid #e2decb;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, .1);
     z-index: 5;
   }
 
   .nav-bar .nav-usuario-item {
-    font-size: .95rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: .9rem;
+    font-weight: 500;
+    color: #1e3a2b;
+    background: #f0ede1;
+    border-radius: 12px;
+    padding: 12px;
+    margin: .35rem 0;
+    transition: background-color .2s ease;
+  }
+
+  .nav-bar .nav-usuario-item:hover {
+    background: #e5e1d1;
+    color: #1e3a2b;
+  }
+
+  .nav-bar .nav-usuario-item::before {
+    font-family: 'Material Symbols Outlined';
+    font-size: 1.2rem;
+    color: #2d5a3f;
+    flex: 0 0 auto;
+  }
+
+  .nav-bar .nav-link-carrito::before {
+    content: "shopping_cart";
+  }
+
+  .nav-bar .nav-usuario-item[href*="pedidos"]::before {
+    content: "inventory_2";
+  }
+
+  .nav-bar #navSalir::before {
+    content: "logout";
+    color: #b42318;
+  }
+
+  .nav-bar .nav-usuario-item .cart-count {
+    margin-left: auto;
+    background: #1e3a2b;
+    color: #f7f5ed;
+    border-radius: 999px;
+    padding: .15rem .5rem;
+    font-size: .75rem;
+    font-weight: 600;
+  }
+
+  .nav-bar .nav-cuenta .nav-usuario-item {
+    background-color: #F4F1EA !important;
+    color: #1E3A2B !important;
+    border: none !important;
+  }
+
+  .nav-bar .nav-cuenta .nav-usuario-item:hover {
+    background-color: #EBE6D8 !important;
+    color: #1E3A2B !important;
+  }
+
+  .nav-bar .nav-cuenta .nav-usuario-item::before {
+    color: #1E3A2B !important;
   }
 
   .nav-bar li a::after,
