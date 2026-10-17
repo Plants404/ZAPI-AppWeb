@@ -399,14 +399,12 @@
 
         .product-card {
             background: var(--white);
-            border-radius: var(--radius);
+            border: 1px solid #e4dccb;
+            border-radius: 18px;
             overflow: hidden;
             box-shadow: var(--shadow-sm);
-            border-top: 3px solid var(--leaf);
-            transition: transform .3s ease, box-shadow .3s ease;
             display: flex;
             flex-direction: column;
-
             min-width: 0;
         }
 
@@ -417,18 +415,15 @@
 
         .product-visual {
             position: relative;
-
-            aspect-ratio: 2 / 3;
-
+            aspect-ratio: 4 / 3;
             overflow: hidden;
-
             background: var(--white);
         }
 
         .product-visual img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             transition: transform .5s ease;
         }
 
@@ -436,142 +431,63 @@
             transform: scale(1.06);
         }
 
+        .product-stock-pill.agotado ~ .product-visual img {
+            opacity: .75;
+        }
+
         .product-badge {
             position: absolute;
             top: .8rem;
             left: .8rem;
-            padding: .3rem .7rem;
+            padding: .6rem 1.2rem;
             border-radius: 999px;
-            background: rgba(247, 244, 236, .92);
-            color: var(--moss);
+            background: var(--white);
+            color: var(--forest);
             font-size: .72rem;
             font-weight: 600;
             letter-spacing: .04em;
             text-transform: uppercase;
         }
 
+        .product-stock-pill {
+            position: absolute;
+            top: .8rem;
+            right: .8rem;
+            padding: .6rem 1.2rem;
+            border-radius: 999px;
+            font-size: .72rem;
+            font-weight: 600;
+        }
+
+        .product-stock-pill.stock-ok {
+            background: rgba(8, 255, 79, .65);
+            color: var(--forest);
+        }
+
+        .product-stock-pill.pocas {
+            background: rgba(255, 176, 91, .65);
+            color: #442000;
+        }
+
+        .product-stock-pill.agotado {
+            background: rgba(255, 103, 103, .65);
+            color: #270702;
+        }
+
         .product-body {
-            padding: 1.25rem 1.4rem 0;
+            padding: 1.35rem;
             display: flex;
             flex-direction: column;
+            gap: 1rem;
             flex: 1;
-        }
-
-        .product-info-wrap {
-            display: grid;
-            grid-template-rows: 0fr;
-            transition: grid-template-rows .4s ease;
-        }
-
-        .product-card:hover .product-info-wrap,
-        .product-card:focus-within .product-info-wrap {
-            grid-template-rows: 1fr;
-        }
-
-        .product-info {
-            overflow: hidden;
-            min-height: 0;
-        }
-
-        .product-info ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            border-top: 1px dashed rgba(74, 124, 89, .35);
-            margin-top: .9rem;
-            padding-top: .9rem;
-        }
-
-        .product-info li {
-            display: flex;
-            align-items: flex-start;
-            gap: .55rem;
-            font-size: .86rem;
-            color: var(--ink);
-            margin-bottom: .45rem;
-            line-height: 1.35;
-        }
-
-        .product-info li:last-child {
-            margin-bottom: 0;
-        }
-
-        .product-info li .material-symbols-outlined {
-            font-size: 1.05rem;
-            color: var(--leaf);
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        /* Donde hay hover (mouse, trackpad o stylus), el detalle del
-           producto no expande la tarjeta: se muestra como una capa
-           superpuesta con gradiente sobre la imagen, de modo que la
-           altura de la grilla no cambia al pasar el puntero ni al
-           enfocar con el teclado. Sin hover (touch puro) se conserva
-           el acordeon, que si expande la tarjeta. */
-        @media (hover: hover) {
-            .product-card {
-                position: relative;
-            }
-
-            .product-info-wrap {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                aspect-ratio: 2 / 3;
-                display: flex;
-                align-items: flex-end;
-                padding: 1.1rem 1.4rem;
-                background: linear-gradient(to top,
-                        rgba(31, 58, 46, .94) 0%,
-                        rgba(31, 58, 46, .72) 45%,
-                        rgba(31, 58, 46, 0) 100%);
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity .3s ease;
-                grid-template-rows: none;
-            }
-
-            .product-card:hover .product-info-wrap,
-            .product-card:focus-within .product-info-wrap {
-                grid-template-rows: none;
-                opacity: 1;
-            }
-
-            .product-info {
-                overflow: visible;
-            }
-
-            .product-info ul {
-                border-top: 0;
-                margin-top: 0;
-                padding-top: 0;
-            }
-
-            .product-info li {
-                color: var(--white);
-            }
-
-            .product-info li .material-symbols-outlined {
-                color: var(--sage);
-            }
-        }
-
-        .product-footer {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: .75rem 1rem;
-            padding: 1.25rem 1.4rem 1.5rem;
         }
 
         .product-name {
             font-family: var(--serif);
-            font-size: 1.75rem;
+            font-size: 2rem;
             letter-spacing: .02em;
             color: var(--forest);
-            margin-bottom: .25rem;
+            margin-bottom: .5rem;
             text-transform: uppercase;
         }
 
@@ -598,24 +514,58 @@
         }
 
         .product-desc {
-            font-size: .9rem;
-            color: var(--muted);
-            margin-bottom: 1rem;
-            flex: 1;
+            font-size: .94rem;
+            color: var(--muted-texto);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .product-benefit {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: .94rem;
+            color: var(--muted-texto);
+        }
+
+        .product-benefit .benefit-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 50%;
+            background: rgba(8, 255, 79, .2);
+            color: var(--leaf-texto);
+            font-size: .75rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .product-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.25rem 1.4rem 1.5rem;
+            border-top: 1px solid #e4dccb;
+        }
+
+        .product-precio-cta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
         }
 
         .product-price {
             display: flex;
             align-items: baseline;
             gap: .6rem;
-            flex: 1 1 auto;
-            min-width: 0;
-            margin-bottom: 0;
         }
 
         .product-price .current {
             font-family: var(--serif);
-            font-size: 1.9rem;
+            font-size: 2.5rem;
             font-weight: 700;
             letter-spacing: .03em;
             color: var(--forest);
@@ -623,55 +573,50 @@
 
         .product-price .since {
             font-size: .75rem;
-            color: var(--muted);
+            color: var(--muted-texto);
         }
 
-        .product-stock {
-            display: inline-flex;
-            align-items: center;
-            gap: .4rem;
-            margin-bottom: .6rem;
-            font-size: .8rem;
+        .btn-ver-detalle {
+            font-size: .94rem;
             font-weight: 600;
-            color: var(--leaf-texto);
+            color: var(--forest);
+            text-decoration: underline;
+            text-decoration-color: var(--forest);
+            text-underline-offset: 3px;
+            background: none;
+            border: 0;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
         }
 
-        .product-stock::before {
-            content: "";
-            width: .5rem;
-            height: .5rem;
-            border-radius: 50%;
-            background: currentColor;
-            flex: 0 0 auto;
+        .btn-ver-detalle:hover {
+            color: var(--moss);
         }
 
-        .product-stock.pocas {
-            color: var(--earth);
-        }
-
-        .product-stock.agotado {
-            color: var(--error);
-        }
-
-        .product-stock:empty,
-        .product-stock[hidden] {
-            display: none;
+        .btn-ver-detalle:focus-visible {
+            outline: 2px solid var(--leaf-texto);
+            outline-offset: 3px;
+            border-radius: 4px;
         }
 
         .add-cart {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: .5rem;
-          padding: .75rem 1.25rem;
-          min-height: 44px;
-          flex: 0 0 auto;
-          border-radius: 999px;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            padding: .75rem 1.25rem;
+            min-height: 50px;
+            flex: 0 0 auto;
+            border-radius: 12px;
             background: var(--forest);
             color: var(--cream);
-            font-size: .92rem;
-            font-weight: 500;
+            font-size: .94rem;
+            font-weight: 600;
+            text-align: center;
             transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+            cursor: pointer;
         }
 
         .add-cart:hover {
@@ -683,6 +628,19 @@
         .add-cart.added {
             background: var(--leaf);
         }
+
+        .add-cart:disabled {
+            background: var(--sand);
+            color: var(--muted-texto);
+            cursor: not-allowed;
+        }
+
+        .add-cart:disabled:hover {
+            background: var(--sand);
+            transform: none;
+            box-shadow: none;
+        }
+
 
 
         .cart-link-text {
