@@ -198,6 +198,7 @@ function pintarStockDe(elemento) {
     elemento.textContent = textoDeStock(unidades);
     elemento.classList.toggle("agotado", unidades <= 0);
     elemento.classList.toggle("pocas", unidades > 0 && unidades <= 3);
+    elemento.classList.toggle("stock-ok", unidades > 3);
 
 }
 
