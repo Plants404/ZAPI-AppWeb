@@ -434,21 +434,6 @@ cargarStock();
 
        const idProducto = Number(id);
 
-       const auth = window.zapiAuth;
-
-       if (auth && !auth.autenticado) {
-
-           auth.listo.then(function () {
-
-               if (auth.autenticado) agregarProductoAlCarrito(id);
-               else auth.exigirCuenta();
-
-           });
-
-           return false;
-
-       }
-
        const producto = PRODUCTOS.find(p => p.id === idProducto);
 
        if (!producto) return false;
