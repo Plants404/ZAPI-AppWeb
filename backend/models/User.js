@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema({
         maxlength: 254,
         match: [EMAIL_PATTERN, 'Ingresá un correo válido.'],
     },
+    telefono: {
+        type: String,
+        trim: true,
+        maxlength: 30,
+        match: [/^\+?[0-9\s().-]{7,30}$/, 'Ingresá un teléfono válido.'],
+    },
     passwordHash: {
         type: String,
         required: true,
