@@ -5086,3 +5086,25 @@ a[href="carrito.html"]::before,
   display: none !important;
 }
 
+/* Forzar Full-Bleed (100vw) en banners de encabezado */
+.zapi-hero-banner,
+.catalog-header.zapi-hero-banner {
+  width: 100vw !important;
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  box-sizing: border-box !important;
+  background-color: #1E3A2B !important;
+  border-radius: 0 !important;
+}
+
+/* Alineación del contenido interior del banner dentro del ancho estándar */
+.zapi-hero-banner > div,
+.catalog-header.zapi-hero-banner .catalog-header-content {
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+}
+
