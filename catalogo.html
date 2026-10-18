@@ -37,8 +37,6 @@
 
 <body>
 
-    <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
-
     <header>
         
 
@@ -79,7 +77,7 @@
                 <li class="nav-cuenta">
                     <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
                     <div class="nav-usuario">
-                        <button type="button" class="nav-usuario-boton" id="navUsuarioBoton"
+                        <button type="button" class="nav-usuario-boton nav-usuario-alineado" id="navUsuarioBoton"
                             aria-expanded="false" aria-haspopup="true" aria-controls="navUsuarioMenu">
                             <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
                             
@@ -115,40 +113,37 @@
 
         <section class="catalog" id="catalogo">
 
-            <div class="catalog-header">
-                <div class="catalog-intro">
-                    <span class="catalog-eyebrow">
-                        <span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>
-                        Catálogo ZAPI
-                    </span>
-                    <h1 class="catalog-title">Catálogo <span class="catalog-title-acento">vivo</span></h1>
-                    <p class="catalog-lead">
-                        Elegí hoy tus plantas y tené tu rincón verde funcionando sin complicaciones.
-                        Nosotros preparamos todo; vos solo lo disfrutás.
-                    </p>
-                </div>
-
-                <aside class="catalog-trust" aria-label="Beneficios de compra">
-                    <p class="catalog-trust-title">Compra sin sorpresas</p>
-                    <ul>
-                        <li>
-                            <span class="material-symbols-outlined" aria-hidden="true">verified</span>
-                            Precios fijos, garantizados
-                        </li>
-                        <li>
-                            <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
-                            Stock disponible y actualizado
-                        </li>
-                        <li>
-                            <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
-                            Envío seguro en Montevideo
-                        </li>
-                    </ul>
-                </aside>
+                    <div class="catalog-header zapi-hero-banner">
+          <div class="zapi-hero-content">
+            <h1 class="zapi-hero-title">CATÁLOGO VIVO</h1>
+            <p class="zapi-hero-description">
+              Elegí hoy tus plantas y tené tu rincón verde funcionando sin complicaciones. Nosotros preparamos todo; vos solo lo disfrutás.
+            </p>
+          </div>
+          <div class="zapi-hero-divider"></div>
+          <div class="zapi-hero-trust">
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+              </div>
+              <div class="zapi-hero-trust-text">Precios fijos, garantizados</div>
             </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+              </div>
+              <div class="zapi-hero-trust-text">Stock disponible y actualizado</div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+              </div>
+              <div class="zapi-hero-trust-text">Envío seguro en Montevideo</div>
+            </div>
+          </div>
+        </div>
 
-            
-            <div class="catalog-filterbar">
+        <div class="catalog-filterbar">
                 <span class="catalog-filterbar-label" id="catalogFiltersLabel">Explorá por categoría</span>
                 <div class="catalog-filters" id="catalogFilters" role="group"
                     aria-labelledby="catalogFiltersLabel">
