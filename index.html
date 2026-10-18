@@ -38,8 +38,6 @@
 
 <body>
 
-    <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
-
   <header>
     
     <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
@@ -81,7 +79,7 @@
         <li class="nav-cuenta">
           <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
           <div class="nav-usuario">
-            <button type="button" class="nav-usuario-boton" id="navUsuarioBoton" aria-expanded="false"
+            <button type="button" class="nav-usuario-boton nav-usuario-alineado" id="navUsuarioBoton" aria-expanded="false"
               aria-haspopup="true" aria-controls="navUsuarioMenu">
               <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
               
@@ -128,21 +126,21 @@
           <h1>Transformamos en espacios con naturaleza. </h1>
 
           <p class="hero-lead">
-            En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a través de soluciones agroecológicas integrales.
+            En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a travÈs de soluciones agroecolÈgicas integrales.
           </p>
 
           <ul class="hero-features">
             <li><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</li>
-            <li><strong>Asesoramiento profesional:</strong> Guía técnica paso a paso.</li>
-            <li><strong>Cuidado inteligente:</strong> Herramientas diseñadas para facilitar su mantenimiento.</li>
+            <li><strong>Asesoramiento profesional:</strong> GuÌa tÈcnica paso a paso.</li>
+            <li><strong>Cuidado inteligente:</strong> Herramientas diseÈadas para facilitar su mantenimiento.</li>
           </ul>
 
           <p class="hero-description">
-            Ayudamos a hogares, empresas e instituciones a crear y mantener espacios verdes saludables con un acompañamiento continuo antes, durante y después de tu compra.
+            Ayudamos a hogares, empresas e instituciones a crear y mantener espacios verdes saludables con un acompaÈamiento continuo antes, durante y despuÈs de tu compra.
           </p>
 
           <div class="hero-ctas">
-            <button type="button" data-section="catalogo">Explorar Catálogo</button>
+            <button type="button" data-section="catalogo">Explorar CatÈlogo</button>
             <button type="button" data-section="servicios">Conocer nuestros servicios</button>
           </div>
         </div>
@@ -193,40 +191,37 @@
 
     
     <section class="section catalog hidden" id="catalogo">
-      <div class="catalog-header">
-        <div class="catalog-intro">
-          <span class="catalog-eyebrow">
-            <span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>
-            Catálogo ZAPI
-          </span>
-          <h2 class="catalog-title">Catálogo <span class="catalog-title-acento">vivo</span></h2>
-          <p class="catalog-lead">
-            Elegí hoy tus plantas y tené tu rincón verde funcionando sin complicaciones.
-            Nosotros preparamos todo; vos solo lo disfrutás.
-          </p>
+              <div class="catalog-header zapi-hero-banner">
+          <div class="zapi-hero-content">
+            <h1 class="zapi-hero-title">CATÁLOGO VIVO</h1>
+            <p class="zapi-hero-description">
+              Elegí hoy tus plantas y tené tu rincón verde funcionando sin complicaciones. Nosotros preparamos todo; vos solo lo disfrutás.
+            </p>
+          </div>
+          <div class="zapi-hero-divider"></div>
+          <div class="zapi-hero-trust">
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+              </div>
+              <div class="zapi-hero-trust-text">Precios fijos, garantizados</div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+              </div>
+              <div class="zapi-hero-trust-text">Stock disponible y actualizado</div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+              </div>
+              <div class="zapi-hero-trust-text">Envío seguro en Montevideo</div>
+            </div>
+          </div>
         </div>
 
-        <aside class="catalog-trust" aria-label="Beneficios de compra">
-          <p class="catalog-trust-title">Compra sin sorpresas</p>
-          <ul>
-            <li>
-              <span class="material-symbols-outlined" aria-hidden="true">verified</span>
-              Precios fijos, garantizados
-            </li>
-            <li>
-              <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
-              Stock disponible y actualizado
-            </li>
-            <li>
-              <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
-              Envío seguro en Montevideo
-            </li>
-          </ul>
-        </aside>
-      </div>
-
-      
-      <div class="catalog-filterbar">
+        <div class="catalog-filterbar">
         <span class="catalog-filterbar-label" id="catalogFiltersLabel">Explorá por categoría</span>
         <div class="catalog-filters" id="catalogFilters" role="group" aria-labelledby="catalogFiltersLabel">
           <span class="catalog-filter-indicator" id="catalogFilterIndicator" aria-hidden="true"></span>
@@ -396,36 +391,41 @@
     <section class="section services-view hidden" id="servicios">
       
       <div id="service" class="service">
-        <div class="service-header">
-          <div class="service-intro">
-            <span class="service-eyebrow">
-              <span class="material-symbols-outlined" aria-hidden="true">home_repair_service</span>
-              Servicios
-            </span>
-            <h2 class="service-title">Soluciones para cada <span class="service-title-acento">proyecto</span></h2>
-            <p class="service-lead">
-              Además de ofrecer productos, brindamos servicios especializados que ayudan a nuestros clientes a
-              planificar, desarrollar y mantener espacios verdes de forma eficiente.
+                                <div class="service-header zapi-hero-banner">
+          <div class="zapi-hero-content">
+            <h1 class="zapi-hero-title">SOLUCIONES PARA CADA PROYECTO</h1>
+            <p class="zapi-hero-description">
+              Además de ofrecer productos, brindamos servicios especializados que ayudan a nuestros clientes a planificar, desarrollar y mantener espacios verdes de forma eficiente.
             </p>
           </div>
-
-          <aside class="service-trust" aria-label="Cómo trabajamos">
-            <p class="service-trust-title">Cómo trabajamos</p>
-            <ul>
-              <li>
+          <div class="zapi-hero-divider"></div>
+          <div class="zapi-hero-trust">
+            <div class="zapi-hero-trust-heading">CÓMO TRABAJAMOS</div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
                 <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
-                <span><strong>Presupuesto sin compromiso:</strong> cotización clara y ajustada a tu espacio.</span>
-              </li>
-              <li>
+              </div>
+              <div class="zapi-hero-trust-text">
+                <strong>Presupuesto sin compromiso:</strong> cotización clara y ajustada a tu espacio.
+              </div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
                 <span class="material-symbols-outlined" aria-hidden="true">eco</span>
-                <span><strong>Enfoque 100% agroecológico:</strong> cuidado responsable de tu entorno y suelo.</span>
-              </li>
-              <li>
+              </div>
+              <div class="zapi-hero-trust-text">
+                <strong>Enfoque 100% agroecológico:</strong> cuidado responsable de tu entorno y suelo.
+              </div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
                 <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
-                <span><strong>Atención en Montevideo:</strong> acompañamiento cercano antes y después del proyecto.</span>
-              </li>
-            </ul>
-          </aside>
+              </div>
+              <div class="zapi-hero-trust-text">
+                <strong>Atención en Montevideo:</strong> acompañamiento cercano antes y después del proyecto.
+              </div>
+            </div>
+          </div>
         </div>
 
         
@@ -533,16 +533,36 @@
       <div class="nosotros-inner">
 
         <!-- 1. Propuesta de valor -->
-        <div class="nosotros-hero">
-          <div class="nosotros-hero-grid">
-            <div class="nosotros-hero-principal">
-              <span class="nosotros-eyebrow">Nosotros</span>
-
-              <h2 class="nosotros-titulo" id="nosotrosTitulo">Hacemos que empezar tu huerta o jardín sea tan simple como
-                abrir una caja.</h2>
+        <div class="nosotros-header zapi-hero-banner full-bleed">
+          <div class="zapi-hero-content">
+            <p class="zapi-hero-kicker">¿Quiénes somos?</p>
+            <h1 class="zapi-hero-title">
+              HACEMOS QUE EMPEZAR TU HUERTA O JARDÍN SEA TAN SIMPLE COMO ABRIR UNA CAJA.
+            </h1>
+            <p class="zapi-hero-description">
+              NO VENDEMOS PLANTAS, VENDEMOS EL PRIMER RINCÓN VERDE PROPIO.
+            </p>
+          </div>
+          <div class="zapi-hero-divider"></div>
+          <div class="zapi-hero-trust">
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 11 12 14 22 4"/></svg>
+              </div>
+              <div class="zapi-hero-trust-text">PAGO SEGURO, GARANTIZADO</div>
             </div>
-
-            <p class="nosotros-manifiesto">No vendemos plantas: vendemos el primer rincón verde propio.</p>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="13" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              </div>
+              <div class="zapi-hero-trust-text">ENVÍO GRATUITO EN MONTEVIDEO</div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10a6 6 0 0 0-6-6H3v3a6 6 0 0 0 6 6h3"/><path d="M12 10a6 6 0 0 1 6-6h3v3a6 6 0 0 1-6 6h-3"/><path d="M12 10v10"/></svg>
+              </div>
+              <div class="zapi-hero-trust-text">GARANTÍA DE CRECIMIENTO</div>
+            </div>
           </div>
         </div>
 
