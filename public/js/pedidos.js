@@ -101,8 +101,10 @@
                 </div>
                 <ul class="pedido-lineas">${items.map(lineaHTML).join('')}</ul>
                 <footer class="pedido-pie">
-                    <span>Total</span>
-                    <strong>${formatearPrecio(pedido.total)}</strong>
+                    <span>${pedido.envio_pendiente ? "Subtotal" : "Total"}</span>
+                    <strong>${pedido.envio_pendiente
+        ? `${formatearPrecio(pedido.total)} · envío a coordinar`
+        : formatearPrecio(pedido.total)}</strong>
                 </footer>
                 ${botonCancelar(pedido)}
             </article>

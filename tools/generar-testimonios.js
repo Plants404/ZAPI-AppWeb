@@ -2,10 +2,8 @@
 /* Genera public/data/testimonios.json desde datos/testimonios.js.
    Usage: node tools/generar-testimonios.js
 
-   El JSON es lo que baja el carrusel de la home cuando la API NO
-   esta (sitio estatico) o se cae, y tambien lo que siembra el
-   backend en GET /api/testimonios. Todo sale de la misma fuente,
-   asi que no pueden discrepar.
+   El JSON sirve como fuente de datos para GET /api/testimonios.
+   Todo sale de la misma fuente, asi que no pueden discrepar.
 
    De donde salen los datos
    ------------------------
@@ -16,7 +14,7 @@
 
    El JSON se versiona igual que productos.json: aunque es generado,
    el navegador lo pide por fetch y no sobra un paso de build antes
-   de desplegar. Verificar comprueba que no quede viejo. */
+   de desplegar. */
 
 const fs = require('fs');
 const path = require('path');
@@ -42,8 +40,8 @@ function extraerTestimonios() {
    ------------------------------------------------------------------ */
 
 function validar(lista) {
-    if (!Array.isArray(lista) || !lista.length) {
-        throw new Error('TESTIMONIOS no es una lista con elementos');
+    if (!Array.isArray(lista)) {
+        throw new Error('TESTIMONIOS no es una lista');
     }
 
     const vistos = new Set();

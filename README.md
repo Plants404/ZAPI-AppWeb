@@ -8,11 +8,9 @@ El front no usa framework ni build: HTML en la raíz, recursos en
 `public/`, catálogo y testimonios en `datos/`. El navegador carga los
 archivos tal cual.
 
-> **Sin backend.** El proyecto es un sitio estático. Este repositorio
-> tuvo una API Express + MongoDB que se quitó temporalmente; el front
-> está adaptado para funcionar sin ella (ver "Modo sin backend"). Para
-> recuperar la versión con backend está la etiqueta de git
-> `respaldo-con-backend`.
+> El frontend es estático, pero autenticación y envío de opiniones
+> requieren una API. Configurá `URL_API_PRODUCCION` o el meta `zapi-api`
+> antes de publicar esas funciones.
 
 ## Stack
 
@@ -47,30 +45,33 @@ También sirve cualquier otro servidor estático desde la raíz, o la
 extensión **Live Server / Live Preview** de VS Code (el puerto está
 configurado en `.vscode/settings.json`).
 
-Sin backend, el carrito, el login, los pedidos y el asistente funcionan
-igual: se resuelven en el navegador.
+Sin backend, solo se puede consultar el catálogo. La autenticación,
+agregar productos al carrito, pedidos y opiniones requieren la API.
 
-## Modo sin backend
+## Funcionalidad sin backend
 
-`public/js/config.js` decide si hay API. Hoy `URL_API_PRODUCCION` está
-vacía y no hay meta `zapi-api`, así que `hayApiConfigurada()` devuelve
-`false` en todos los hosts y el sitio arranca en modo estático:
+`public/js/config.js` decide si hay API. `URL_API_PRODUCCION` está vacía
+por defecto y no hay meta `zapi-api`; configurá una de esas opciones
+para habilitar autenticación y opiniones en producción.
 
 - **Catálogo:** se lee `public/data/productos.json`.
-- **Stock:** valor de demostración por producto (`STOCK_DEMO`), descontado
-  en `localStorage` (`zapiStockConsumido`) al enviar un pedido.
-- **Carrito / checkout:** al confirmar, prepara el mensaje de WhatsApp
-  (no hay servidor que reciba el pedido).
-- **Cuentas:** login local (`admi@zapi.com` / `admi2026`), sesión en
-  `localStorage` (`zapiSesionLocal`).
+- **Stock:** el valor de demostración no representa inventario real.
+- **Carrito / checkout:** requiere autenticación del servidor. El envío
+  es gratis desde $2.500; por debajo de ese monto el costo se coordina.
+- **Cuentas:** requieren una API configurada; no hay credenciales locales
+  ni contraseñas almacenadas en el código del navegador.
 - **Mis pedidos:** los pedidos enviados se guardan en `localStorage`
   (`zapiPedidosLocal`) y se pueden cancelar (repone el stock local).
 - **Contacto:** el aviso va solo por EmailJS.
-- **Opiniones:** se leen de `public/data/testimonios.json`.
+- **Opiniones:** se leen de la API únicamente si cada registro incluye
+  `verificado: true` y `autorizado: true`; el archivo de datos está vacío.
 - **Asistente:** responde por reglas con el catálogo, sin servicio externo.
 
-Para reactivar una API en local, alcanza con setear `URL_API_LOCAL` en
-`config.js` (o inyectar `window.__ZAPI_API__` / un meta `zapi-api`).
+El login usa autenticación de servidor. No configures contraseñas de demo
+ni sesiones locales como sustituto de la API.
+
+Para conectar una API en local, configurá `URL_API_LOCAL` en
+`config.js` (o inyectá `window.__ZAPI_API__` / un meta `zapi-api`).
 
 ## Scripts
 
@@ -78,7 +79,7 @@ Para reactivar una API en local, alcanza con setear `URL_API_LOCAL` en
 |---|---|
 | `npm start` | Sirve el sitio estático en `http://localhost:5500`. |
 | `npm run lint` | ESLint sobre todo el repo. |
-| `npm run verificar` | Verificación estática (CSS, ARIA, IDs, referencias, XSS, reduced motion, generados). Regenera el CSS derivado y las fichas. |
+| `npm run verificar` | Verificación estática de CSS, ARIA, IDs, referencias, XSS, reduced motion y archivos generados. No modifica archivos. |
 | `npm run check` | `lint` + `verificar`. Correr antes de commitear. |
 | `npm run contraste` | Verifica el contraste de los pares de color. |
 | `npm run generar` | Regenera `productos/*.html` desde `datos/catalogo.js` (y poda fichas huérfanas). |
@@ -109,12 +110,14 @@ tools/                          Servidor estático, generadores y verificadores.
   `productos/` (`npm run generar`) y `sitemap.xml`. Para cambiar un
   precio se toca solo `datos/catalogo.js`, y después `npm run generar`
   y `npm run verificar`.
-- **Testimonios:** `datos/testimonios.js` es la fuente. De ahí sale
-  `public/data/testimonios.json` (`npm run generar:testimonios`), que
-  sirve el carrusel.
+- **Testimonios:** `datos/testimonios.js` es la fuente para sembrar la
+  API. No se publican opiniones hasta contar con testimonios verificados
+  y autorizados.
 
-`npm run verificar` regenera el CSS derivado y las fichas, así que hay
-que commitear también esos archivos generados cuando cambie la fuente.
+La verificación compara archivos sin regenerarlos ni podar fichas.
+Después de cambiar una fuente, ejecutá por separado el generador
+correspondiente (`npm run css`, `npm run generar` o
+`npm run generar:testimonios`) y revisá los cambios antes de commitear.
 
 ## Formulario de contacto
 

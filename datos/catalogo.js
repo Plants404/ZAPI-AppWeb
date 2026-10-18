@@ -56,12 +56,12 @@ const PRODUCTOS = [
     {
         id: 2,
         nombre: "Ruda",
-        categoria: "Hortalizas",
+        categoria: "Plantas",
         imagen: "./public/img/ruda.opt.jpg",
         imagenes: [
             "./public/img/ruda.opt.jpg"
         ],
-        descripcion: "Tierna y picante, lista para tus ensaladas.",
+        descripcion: "Planta de ruda para cultivo. Consultá sus cuidados y usos antes de consumirla.",
         precioBase: 120,
         infoDeVenta: [
             "Resiembra: hasta 4 cortes por planta",
