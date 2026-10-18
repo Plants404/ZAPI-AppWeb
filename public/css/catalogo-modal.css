@@ -7,23 +7,25 @@ display: inline-flex;
 align-items: center;
 justify-content: center;
 gap: .5rem;
-padding: .75rem 1.25rem;
-min-height: 50px;
+padding: .7rem 1.1rem;
+min-height: 46px;
 flex: 0 0 auto;
-border-radius: 12px;
+border-radius: 14px;
+border: 0;
 background: var(--forest);
 color: var(--cream);
-font-size: .94rem;
+font-size: .92rem;
 font-weight: 600;
 text-align: center;
 transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
 cursor: pointer;
+box-shadow: 0 6px 16px rgba(31, 58, 46, .18);
 }
 
 .add-cart:hover {
 background: var(--moss);
 transform: translateY(-2px);
-box-shadow: var(--shadow-md);
+box-shadow: 0 10px 22px rgba(31, 58, 46, .22);
 }
 
 .add-cart.added {
