@@ -8,32 +8,15 @@
 background: var(--sand);
 }
 
-#catalogo.catalog {
-background: var(--cream);
-padding-top: 0;
-margin-top: 0;
-overflow-x: clip;
-}
-
-#catalogo.catalog .catalog-header {
-margin-top: 0;
-}
-
-/* Banda verde profunda del hero del catalogo. */
+/* Cabecera editorial: en mobile apila; en pantallas grandes el
+lema respira a la izquierda y el bloque de confianza lo
+acompana a la derecha, alineado abajo (lectura en Z). */
 .catalog-header {
 display: grid;
-grid-template-columns: 1fr;
-gap: 1.5rem;
-width: 100vw;
-max-width: none;
-margin: 0;
-margin-inline: calc(50% - 50vw);
-padding-block: clamp(1.5rem, 3vw, 2.25rem);
-padding-inline: max(var(--gutter), calc((100vw - var(--container)) / 2));
-background: var(--forest);
-border-radius: 0;
+gap: 2rem;
+max-width: var(--container);
+margin: 0 auto 2.5rem;
 text-align: left;
-align-items: center;
 }
 
 .catalog-intro {
@@ -49,9 +32,10 @@ gap: .5rem;
 font-size: .72rem;
 font-weight: 600;
 text-transform: uppercase;
-letter-spacing: .14em;
-color: var(--menta);
-background: var(--verde-secundario);
+letter-spacing: .22em;
+color: var(--leaf-texto);
+background: rgba(74, 124, 89, .10);
+border: 1px solid rgba(74, 124, 89, .35);
 padding: .4rem .95rem;
 border-radius: 999px;
 margin-bottom: 1.35rem;
@@ -62,97 +46,82 @@ font-size: 1.05rem;
 }
 
 .catalog-title {
-font-family: var(--serif);
-font-size: clamp(2.75rem, 6.5vw, 5rem);
-line-height: 1;
+font-size: clamp(2.6rem, 6.5vw, 4.6rem);
+line-height: 1.1;
 letter-spacing: .01em;
-color: var(--cream);
-margin: .9rem 0 .35rem;
+color: var(--forest);
+margin: 0 0 .35rem;
+}
+
+/* "Vivo" late: un resplandor verde suave y lento da la idea de
+algo que respira. Se apaga con prefers-reduced-motion. */
+.catalog-title-acento {
+color: var(--leaf);
+animation: catalogoLatido 4.5s ease-in-out infinite;
 }
 
 .catalog-lead {
-font-size: clamp(1.1rem, 1.6vw, 1.2rem);
-line-height: 1.55;
-color: var(--texto-verde-suave);
-max-width: 640px;
+font-size: clamp(1.02rem, 1.6vw, 1.2rem);
+line-height: 1.5;
+color: var(--moss);
+max-width: 54ch;
 margin: 0;
-text-wrap: pretty;
 }
 
-/* Sin acento de color ni animacion de latido en este diseno. */
-.catalog-title-acento {
-color: var(--cream);
-animation: none;
-}
-
-
-/* Bloque de beneficios: sin panel, lista simple. */
+/* Aviso pasivo -> bloque de autoridad y alivio de friccion. */
 .catalog-trust {
-align-self: center;
+align-self: end;
 min-width: 0;
-background: none;
-border: 0;
-border-top: 1px solid rgba(247, 244, 236, .18);
-box-shadow: none;
-padding: 1.25rem 0 0;
-transition: none;
+background: var(--white);
+border-radius: var(--radius);
+border-left: 3px solid var(--leaf);
+box-shadow: var(--shadow-sm);
+padding: 1.3rem 1.4rem;
+transition: transform .3s ease, box-shadow .3s ease;
 }
 
 .catalog-trust:hover {
-transform: none;
-box-shadow: none;
+transform: translateY(-4px);
+box-shadow: var(--shadow-md);
 }
 
 .catalog-trust-title {
-position: absolute;
-width: 1px;
-height: 1px;
-padding: 0;
-margin: -1px;
-overflow: hidden;
-clip: rect(0 0 0 0);
-clip-path: inset(50%);
-white-space: nowrap;
-border: 0;
+font-size: .72rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: .18em;
+color: var(--moss);
+margin: 0 0 .85rem;
 }
 
 .catalog-trust ul {
 list-style: none;
 margin: 0;
 padding: 0;
-display: flex;
-flex-direction: column;
-gap: 16px;
+display: grid;
+gap: .65rem;
 }
 
 .catalog-trust li {
 display: flex;
 align-items: center;
 gap: .6rem;
-font-size: 1.05rem;
+font-size: .92rem;
 font-weight: 500;
-color: var(--cream);
+color: var(--ink);
 margin: 0;
-line-height: 1.4;
 }
 
 .catalog-trust .material-symbols-outlined {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-width: 28px;
-height: 28px;
-border-radius: 50%;
-background: var(--moss);
-color: var(--white);
-font-size: 16px;
+font-size: 1.15rem;
+color: var(--leaf);
 flex-shrink: 0;
-transition: none;
+transition: transform .25s ease, color .25s ease;
 }
 
 .catalog-trust li:hover .material-symbols-outlined {
-transform: none;
-color: var(--white);
+transform: scale(1.1);
+color: var(--moss);
 }
 
 /* Entrada escalonada: sello, luego titulo y bajada, luego la
@@ -230,9 +199,6 @@ border-radius: 999px;
 box-shadow: var(--shadow-sm);
 overflow-x: auto;
 scrollbar-width: none;
-width: 100%;
-max-width: var(--container);
-margin-inline: auto;
 }
 
 .catalog-filters::-webkit-scrollbar {
@@ -315,19 +281,16 @@ from { opacity: 0; transform: translateX(26px); }
 to { opacity: 1; transform: translateX(0); }
 }
 
+@keyframes catalogoLatido {
+0%, 100% { color: var(--leaf); text-shadow: 0 0 0 rgba(74, 124, 89, 0); }
+50% { color: var(--moss); text-shadow: 0 0 16px rgba(74, 124, 89, .38); }
+}
 
 @media (min-width: 880px) {
 .catalog-header {
-grid-template-columns: minmax(0, 1.7fr) minmax(260px, .9fr);
+grid-template-columns: minmax(0, 1.7fr) minmax(280px, .9fr);
 gap: clamp(2rem, 5vw, 4.5rem);
-align-items: center;
-}
-
-.catalog-trust {
-border-top: 0;
-border-left: 1px solid rgba(247, 244, 236, .18);
-padding-top: 0;
-padding-left: clamp(1.5rem, 3vw, 3rem);
+align-items: end;
 }
 }
 
@@ -357,17 +320,23 @@ transform: none;
 se apilan en flujo vertical, a ancho completo y sin
 posicionamientos que puedan encimarse sobre el titulo, la bajada
 o la grilla de productos. */
-@media (max-width: 879px) {
+@media (max-width: 767px) {
 .catalog-header {
-display: grid;
-grid-template-columns: 1fr;
+display: flex;
+flex-direction: column;
 gap: 1.5rem;
+position: static !important;
 }
 
 .catalog-intro,
 .catalog-trust {
 width: 100%;
 min-width: 0;
+position: static !important;
+}
+
+.catalog-trust {
+align-self: stretch;
 }
 
 .catalog {
@@ -432,21 +401,20 @@ justify-self: start;
 }
 
 .product-card {
-background-color: #FFFFFF !important;
-border: 1px solid #E2DECB !important;
-border-radius: 20px !important;
-overflow: hidden !important;
-display: flex !important;
-flex-direction: column !important;
-justify-content: space-between !important;
-padding: 20px !important;
-box-shadow: 0 8px 24px rgba(30, 58, 43, 0.08) !important;
-transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+background: var(--white);
+border: 1px solid #e4dccb;
+border-radius: 18px;
+overflow: hidden;
+box-shadow: var(--shadow-sm);
+display: flex;
+flex-direction: column;
+min-width: 0;
+padding: clamp(1.5rem, 3.5vw, 2.1rem);
 }
 
 .product-card:hover {
-transform: translateY(-6px) !important;
-box-shadow: 0 16px 40px rgba(30, 58, 43, 0.15) !important;
+transform: translateY(-6px);
+box-shadow: var(--shadow-md);
 }
 
 .product-visual {
@@ -454,14 +422,6 @@ position: relative;
 aspect-ratio: 4 / 3;
 overflow: hidden;
 background: var(--white);
-border-radius: 12px 12px 0 0;
-}
-
-.product-tags {
-display: flex;
-justify-content: flex-start;
-gap: 8px;
-margin: .5rem 0;
 }
 
 .product-visual img {
@@ -521,22 +481,34 @@ margin-bottom: .5rem;
 }
 
 .product-badge {
-background: #F4F1EA;
-color: #1E3A2B;
-border: 1px solid #E2DECB;
-border-radius: 20px;
-padding: 4px 10px;
+flex: 0 0 auto;
+width: auto;
+max-width: 100%;
+white-space: nowrap;
+min-width: 0;
+overflow: hidden;
+text-overflow: ellipsis;
+box-sizing: border-box;
+padding: 5px 12px;
+border-radius: 999px;
+border: 1px solid #e4dccb;
+background: #f1ede2;
+color: var(--leaf-texto);
 font-size: .75rem;
 font-weight: 600;
 line-height: 1.2;
+letter-spacing: 0;
 }
 
 .product-stock-pill {
-background: #E8F0EC;
-color: #1E3A2B;
+flex: 0 0 auto;
+width: auto;
+max-width: 100%;
+white-space: nowrap;
+box-sizing: border-box;
+padding: 5px 12px;
+border-radius: 999px;
 border: 1px solid transparent;
-border-radius: 20px;
-padding: 4px 10px;
 font-size: .75rem;
 font-weight: 600;
 line-height: 1.2;
@@ -557,6 +529,30 @@ background: rgba(255, 103, 103, .65);
 color: #270702;
 }
 
+.catalog-trust li {
+display: flex;
+align-items: center;
+gap: .75rem;
+padding: clamp(1.5rem, 3.5vw, 2.1rem);
+border: 1px solid #e4dccb;
+border-radius: calc(var(--radius) + 2px);
+box-shadow: var(--shadow-sm);
+background: var(--white);
+margin-bottom: 1rem;
+}
+
+.catalog-trust li .material-symbols-outlined {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+width: 52px;
+height: 52px;
+border-radius: 14px;
+background: rgba(143, 174, 145, .18);
+color: var(--moss);
+font-size: 1.3rem;
+flex-shrink: 0;
+}
 
 .product-body {
 padding: 1.35rem;
@@ -568,12 +564,11 @@ flex: 1;
 
 .product-name {
 font-family: var(--serif);
-font-size: 1.125rem;
+font-size: 2rem;
 letter-spacing: .02em;
-color: #1E3A2B;
-margin-bottom: .25rem;
-text-transform: none;
-font-weight: 700;
+color: var(--forest);
+margin-bottom: .5rem;
+text-transform: uppercase;
 }
 
 .product-link {
@@ -599,8 +594,8 @@ border-radius: 4px;
 }
 
 .product-desc {
-font-size: .875rem;
-color: #64748B;
+font-size: .94rem;
+color: var(--muted-texto);
 line-height: 1.5;
 margin: 0;
 }
@@ -608,9 +603,9 @@ margin: 0;
 .product-benefit {
 display: flex;
 align-items: center;
-gap: 8px;
-font-size: .875rem;
-color: #4A5568;
+gap: .5rem;
+font-size: .94rem;
+color: var(--muted-texto);
 }
 
 .product-benefit .benefit-icon {
@@ -620,8 +615,8 @@ justify-content: center;
 width: 1.2rem;
 height: 1.2rem;
 border-radius: 50%;
-background: #E8F0EC;
-color: #1E3A2B;
+background: rgba(8, 255, 79, .2);
+color: var(--leaf-texto);
 font-size: .75rem;
 font-weight: 600;
 flex-shrink: 0;
@@ -630,31 +625,9 @@ flex-shrink: 0;
 .product-footer {
 display: flex;
 flex-direction: column;
-gap: .75rem;
-padding: 0;
-border-top: 0;
-}
-
-.product-card .add-cart {
-width: 100%;
-background: #1E3A2B;
-color: #FFFFFF;
-border-radius: 10px;
-padding: 10px 16px;
-font-size: .9rem;
-font-weight: 600;
-border: 0;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: .5rem;
-}
-
-.product-card .add-cart:hover {
-background: #2D5A3F;
-color: #FFFFFF;
-transform: none;
-box-shadow: none;
+gap: 1rem;
+padding: 1.25rem 1.4rem 1.5rem;
+border-top: 1px solid #e4dccb;
 }
 
 .product-precio-cta {
@@ -672,10 +645,10 @@ gap: .6rem;
 
 .product-price .current {
 font-family: var(--serif);
-font-size: 1.5rem;
+font-size: 2.5rem;
 font-weight: 700;
 letter-spacing: .03em;
-color: #1E3A2B;
+color: var(--forest);
 }
 
 .product-price .since {
