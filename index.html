@@ -126,21 +126,21 @@
           <h1>Transformamos en espacios con naturaleza. </h1>
 
           <p class="hero-lead">
-            En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a travÈs de soluciones agroecolÈgicas integrales.
+            En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a través de soluciones agroecológicas integrales.
           </p>
 
           <ul class="hero-features">
             <li><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</li>
-            <li><strong>Asesoramiento profesional:</strong> GuÌa tÈcnica paso a paso.</li>
-            <li><strong>Cuidado inteligente:</strong> Herramientas diseÈadas para facilitar su mantenimiento.</li>
+            <li><strong>Asesoramiento profesional:</strong> Guía técnica paso a paso.</li>
+            <li><strong>Cuidado inteligente:</strong> Herramientas diseñadas para facilitar su mantenimiento.</li>
           </ul>
 
           <p class="hero-description">
-            Ayudamos a hogares, empresas e instituciones a crear y mantener espacios verdes saludables con un acompaÈamiento continuo antes, durante y despuÈs de tu compra.
+            Ayudamos a hogares, empresas e instituciones a crear y mantener espacios verdes saludables con un acompañamiento continuo antes, durante y después de tu compra.
           </p>
 
           <div class="hero-ctas">
-            <button type="button" data-section="catalogo">Explorar CatÈlogo</button>
+            <button type="button" data-section="catalogo">Explorar Catálogo</button>
             <button type="button" data-section="servicios">Conocer nuestros servicios</button>
           </div>
         </div>
@@ -536,11 +536,11 @@
         <div class="nosotros-header zapi-hero-banner full-bleed">
           <div class="zapi-hero-content">
             <p class="zapi-hero-kicker">¿Quiénes somos?</p>
-            <h1 class="zapi-hero-title">
+            <h1 class="zapi-hero-title" id="nosotrosTitulo">
               HACEMOS QUE EMPEZAR TU HUERTA O JARDÍN SEA TAN SIMPLE COMO ABRIR UNA CAJA.
             </h1>
             <p class="zapi-hero-description">
-              NO VENDEMOS PLANTAS, VENDEMOS EL PRIMER RINCÓN VERDE PROPIO.
+              NO SOLO VENDEMOS PLANTAS: TE AYUDAMOS A CREAR TU PRIMER RINCÓN VERDE.
             </p>
           </div>
           <div class="zapi-hero-divider"></div>
@@ -777,41 +777,63 @@
         <span class="contacto-card-subtitle">ESCRIBINOS</span>
         <h2 class="contacto-card-title">Contanos qué necesitás y te respondemos a la brevedad.</h2>
       </div>
-      <form id="form-contacto" class="contacto-form">
+      <form id="contactoForm" class="contacto-form">
         <div class="form-row">
           <div class="form-group">
-            <label for="contacto-nombre">Nombre *</label>
-            <input type="text" id="contacto-nombre" name="nombre" placeholder="Tu nombre y apellido" required />
+            <label for="contactoNombre">Nombre *</label>
+            <input type="text" id="contactoNombre" name="nombre" placeholder="Tu nombre y apellido"
+              aria-describedby="errorNombre" required />
+            <span id="errorNombre" class="campo-error" aria-live="polite"></span>
           </div>
           <div class="form-group">
-            <label for="contacto-email">Correo electrónico *</label>
-            <input type="email" id="contacto-email" name="email" placeholder="tunombre@correo.com" required />
+            <label for="contactoCorreo">Correo electrónico *</label>
+            <input type="email" id="contactoCorreo" name="correo" placeholder="tunombre@correo.com"
+              aria-describedby="errorCorreo" required />
+            <span id="errorCorreo" class="campo-error" aria-live="polite"></span>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="contacto-asunto">Asunto *</label>
-            <input type="text" id="contacto-asunto" name="asunto" placeholder="¿Sobre qué querés escribirnos?" required />
+            <label for="contactoAsunto">Asunto *</label>
+            <input type="text" id="contactoAsunto" name="asunto" placeholder="¿Sobre qué querés escribirnos?"
+              aria-describedby="errorAsunto" required />
+            <span id="errorAsunto" class="campo-error" aria-live="polite"></span>
           </div>
           <div class="form-group">
-            <label for="contacto-telefono">Teléfono (opcional)</label>
-            <input type="tel" id="contacto-telefono" name="telefono" placeholder="098 765 432" />
+            <label for="contactoTelefono">Teléfono (opcional)</label>
+            <input type="tel" id="contactoTelefono" name="telefono" placeholder="098 765 432"
+              aria-describedby="errorTelefono" />
+            <span id="errorTelefono" class="campo-error" aria-live="polite"></span>
           </div>
         </div>
         <div class="form-group full-width">
-          <label for="contacto-mensaje">Mensaje *</label>
-          <textarea id="contacto-mensaje" name="mensaje" rows="4" placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..." required></textarea>
+          <label for="contactoConsulta">Mensaje *</label>
+          <textarea id="contactoConsulta" name="consulta" rows="4" maxlength="2000"
+            placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..."
+            aria-describedby="errorConsulta contactoContador" required></textarea>
+          <span id="errorConsulta" class="campo-error" aria-live="polite"></span>
+          <span class="contacto-contador" aria-live="polite">Caracteres restantes: <span id="contactoContador"></span></span>
         </div>
+        <div class="visually-hidden" aria-hidden="true">
+          <label for="contactoSitio">Dejá este campo vacío</label>
+          <input type="text" id="contactoSitio" name="sitio_web" tabindex="-1" autocomplete="off" />
+        </div>
+        <p id="contactoEstado" class="formulario-estado" role="status" aria-live="polite"></p>
         <div class="form-footer">
           <p class="privacy-note">
             Tus datos solo se usan para responderte esta consulta. Los campos con * son obligatorios.
           </p>
-          <button type="submit" class="btn-submit">
-            Enviar mensaje
+          <button type="submit" class="btn-submit" id="contactoEnviar">
+            <span id="contactoEnviarTexto">Enviar mensaje</span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
       </form>
+      <div id="contactoOk" class="contacto-confirmacion" hidden>
+        <h3 id="contactoOkTitulo" tabindex="-1">¡Gracias por escribirnos!</h3>
+        <p>Recibimos tu consulta y te responderemos a la brevedad.</p>
+        <button type="button" id="contactoReiniciar" class="btn-submit">Enviar otra consulta</button>
+      </div>
     </div>
   </div>
 </section>
