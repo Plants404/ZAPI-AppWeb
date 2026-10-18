@@ -114,11 +114,20 @@ function renderRecommendations() {
 
     lista.innerHTML = recomendaciones.map((producto, indice) => {
         const precio = precios[producto.id] || producto.precioBase;
+        const beneficios = Array.isArray(producto.infoDeVenta) ? producto.infoDeVenta : [];
 
         return `
             <article class="recommendation-card" style="--i: ${indice}" data-id="${producto.id}">
                 <div class="recommendation-image">
                     <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
+                    <div class="recommendation-beneficios-lista">
+                        ${beneficios.map(item => `
+                            <span class="recommendation-beneficio-item">
+                                <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                                <span>${escaparHTML(item)}</span>
+                            </span>
+                        `).join("")}
+                    </div>
                 </div>
                 <div class="recommendation-info">
                     <div class="recommendation-category">${escaparHTML(producto.categoria)}</div>
@@ -128,6 +137,14 @@ function renderRecommendations() {
                         </button>
                     </h3>
                     <p>${escaparHTML(producto.descripcion)}</p>
+                    <ul class="recommendation-beneficios-tactil" aria-label="Características">
+                        ${beneficios.map(item => `
+                            <li>
+                                <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                                <span>${escaparHTML(item)}</span>
+                            </li>
+                        `).join("")}
+                    </ul>
                     <div class="recommendation-footer">
                         <strong>${formatearPrecio(precio)}</strong>
                         <button class="recommendation-add" type="button" data-id="${producto.id}"
@@ -654,15 +671,6 @@ function montarCheckout() {
 /* --- Arranque ---------------------------------------------- */
 
 document.addEventListener("DOMContentLoaded", montarCheckout);
-
-/* Sin sesion no hay carrito que mostrar, pero solo en la pagina
-   dedicada: este script tambien carga en la home publica, donde el
-   visitante anonimo debe quedarse. */
-if (window.zapiAuth && /(^|\/)carrito\.html$/.test(window.location.pathname)) {
-    window.zapiAuth.listo.then(function () {
-        window.zapiAuth.exigirCuenta();
-    });
-}
 
 suscribirAlCarrito(sincronizarCarrito);
 alCargarElCatalogo(function () {

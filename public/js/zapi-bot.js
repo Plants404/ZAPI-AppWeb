@@ -702,19 +702,43 @@ function initZapiBot() {
         recomendaciones.slice(0, 3).forEach(producto => {
 
             const tarjeta = document.createElement("div");
+            const productoLocal = Array.isArray(PRODUCTOS)
+                ? PRODUCTOS.find(item => Number(item.id) === Number(producto.id))
+                : null;
+            const beneficios = productoLocal && Array.isArray(productoLocal.infoDeVenta)
+                ? productoLocal.infoDeVenta
+                : [];
 
             tarjeta.className = "zapi-reco";
 
-            const imagen = producto.imagen
-                ? `<img src="${escaparHTML(producto.imagen)}" alt="" loading="lazy">`
-                : "";
-
             tarjeta.innerHTML =
-                imagen +
+                `<div class="zapi-reco-visual">
+                    ${producto.imagen
+                        ? `<img src="${escaparHTML(producto.imagen)}" alt="" loading="lazy">`
+                        : ""}
+                    <div class="zapi-reco-beneficios-hover">
+                        ${beneficios.map(item => `
+                            <span>
+                                <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                                ${escaparHTML(item)}
+                            </span>
+                        `).join("")}
+                    </div>
+                </div>` +
                 `<div class="zapi-reco-info">
                     <a class="zapi-reco-nombre" href="${escaparHTML(producto.url)}">${escaparHTML(producto.nombre)}</a>
                     ${(typeof formatearPrecio === "function" && producto.precio !== null && producto.precio !== undefined)
                         ? `<span class="zapi-reco-precio">${escaparHTML(formatearPrecio(producto.precio))}</span>`
+                        : ""}
+                    ${beneficios.length
+                        ? `<ul class="zapi-reco-beneficios-tactil">
+                            ${beneficios.map(item => `
+                                <li>
+                                    <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                                    <span>${escaparHTML(item)}</span>
+                                </li>
+                            `).join("")}
+                        </ul>`
                         : ""}
                 </div>
                 <button type="button" class="zapi-reco-agregar" data-id="${escaparHTML(producto.id)}">Agregar</button>`;
