@@ -1056,11 +1056,11 @@
 
     display: flex;
 
-    align-items: center;
+    align-items: stretch;
 
-    gap: .7rem;
+    gap: .65rem;
 
-    padding: .55rem .7rem;
+    padding: .55rem;
 
     background: var(--white);
 
@@ -1068,22 +1068,152 @@
 
     border-radius: 14px;
 
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+
 }
 
+.zapi-reco:hover,
 
-.zapi-reco img {
+.zapi-reco:focus-within {
 
-    width: 46px;
+    border-color: rgba(74, 124, 89, .4);
 
-    height: 46px;
+    box-shadow: var(--shadow-sm);
+
+}
+
+.zapi-reco-visual {
+
+    position: relative;
+
+    flex: 0 0 72px;
+
+    min-height: 72px;
+
+    overflow: hidden;
+
+    align-self: flex-start;
 
     border-radius: 10px;
 
+    background: var(--cream);
+
+}
+
+.zapi-reco img {
+
+    width: 100%;
+
+    height: 100%;
+
+    min-height: 72px;
+
+
     object-fit: cover;
 
-    flex-shrink: 0;
+    object-position: center;
 
-    background: var(--cream);
+    transition: transform .35s ease;
+
+}
+
+.zapi-reco:hover img {
+
+    transform: scale(1.05);
+
+}
+
+.zapi-reco-beneficios-hover {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: grid;
+
+    align-content: center;
+
+    gap: .2rem;
+
+    padding: .3rem;
+
+    overflow: hidden;
+
+    background: rgba(31, 58, 46, .92);
+
+    color: var(--white);
+
+    font-size: .52rem;
+
+    line-height: 1.2;
+
+    opacity: 0;
+
+    transition: opacity .25s ease;
+
+}
+
+.zapi-reco:hover .zapi-reco-beneficios-hover,
+
+.zapi-reco:focus-within .zapi-reco-beneficios-hover {
+
+    opacity: 1;
+
+}
+
+.zapi-reco-beneficios-hover > span {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: .15rem;
+
+}
+
+.zapi-reco-beneficios-hover .material-symbols-outlined {
+
+    flex: 0 0 auto;
+
+    font-size: .6rem;
+
+}
+
+.zapi-reco-beneficios-tactil {
+
+    display: none;
+
+    margin: .25rem 0 0;
+
+    padding: 0;
+
+    color: var(--muted-texto);
+
+    font-size: .72rem;
+
+    line-height: 1.35;
+
+}
+
+.zapi-reco-beneficios-tactil li {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: .25rem;
+
+    margin-top: .18rem;
+
+}
+
+.zapi-reco-beneficios-tactil .material-symbols-outlined {
+
+    flex: 0 0 auto;
+
+    color: var(--leaf-texto);
+
+    font-size: .8rem;
 
 }
 
@@ -1149,11 +1279,11 @@
 
     border-radius: 999px;
 
-    background: var(--white);
+    background: var(--forest);
 
-    border: 1px solid rgba(74, 124, 89, .35);
+    border: 1px solid var(--forest);
 
-    color: var(--leaf-texto);
+    color: var(--cream);
 
     font-family: inherit;
 
@@ -1169,7 +1299,7 @@
 
 .zapi-reco-agregar:hover {
 
-    background: var(--leaf);
+    background: var(--moss);
 
     color: var(--cream);
 
@@ -1194,6 +1324,42 @@
     opacity: .55;
 
     cursor: default;
+
+}
+
+@media (hover: none) {
+
+    .zapi-reco-beneficios-hover {
+
+        display: none;
+
+    }
+
+    .zapi-reco-beneficios-tactil {
+
+        display: block;
+
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .zapi-reco,
+
+    .zapi-reco img,
+
+    .zapi-reco-beneficios-hover {
+
+        transition: none;
+
+    }
+
+    .zapi-reco:hover img {
+
+        transform: none;
+
+    }
 
 }
 

@@ -382,19 +382,9 @@
            que es lo que haria auto-fit al colapsarlas. */
         .catalog-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
-            gap: 1.5rem;
-        }
-
-        /* Segunda red en anchos de varias columnas: la tarjeta no pasa
-           de 320px y se alinea a la izquierda si sobra espacio. En
-           movil se deja a ancho completo a proposito. */
-        @media (min-width: 601px) {
-            .catalog-grid .product-card {
-                width: 100%;
-                max-width: 320px;
-                justify-self: start;
-            }
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 320px));
+            justify-content: center;
+            gap: clamp(1rem, 2vw, 1.5rem);
         }
 
         .product-card {
@@ -415,6 +405,11 @@
             border-color: rgba(74, 124, 89, .35);
         }
 
+        .product-card:focus-within {
+            border-color: rgba(74, 124, 89, .45);
+            box-shadow: 0 12px 30px rgba(31, 58, 46, .12);
+        }
+
         .product-visual {
             position: relative;
             aspect-ratio: 4 / 3;
@@ -426,6 +421,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center;
             transition: transform .5s ease;
         }
 
@@ -449,7 +445,7 @@
             justify-content: center;
             gap: .75rem;
             padding: 1rem;
-            background: rgba(31, 58, 46, .85);
+            background: rgba(31, 58, 46, .9);
             opacity: 0;
             transition: opacity .3s ease;
         }
@@ -627,12 +623,16 @@
             flex-shrink: 0;
         }
 
+        .product-beneficios-tactil {
+            display: none;
+        }
+
         .product-footer {
             display: flex;
             flex-direction: column;
             gap: .85rem;
             padding: 1rem 1.25rem 1.25rem;
-            border-top: 1px solid rgba(31, 58, 46, .08);
+            border-top: 1px solid rgba(31, 58, 46, .06);
             background: linear-gradient(180deg, rgba(247,244,236,0) 0%, rgba(247,244,236,.45) 100%);
         }
 
@@ -651,7 +651,7 @@
 
         .product-price .current {
             font-family: var(--serif);
-            font-size: 1.85rem;
+            font-size: clamp(1.55rem, 2.2vw, 1.85rem);
             font-weight: 700;
             letter-spacing: .03em;
             color: var(--forest);
@@ -693,7 +693,7 @@
             justify-content: center;
             gap: .5rem;
             padding: .7rem 1.1rem;
-            min-height: 46px;
+            min-height: 48px;
             flex: 0 0 auto;
             border-radius: 14px;
             border: 0;
@@ -748,7 +748,27 @@
             }
 
             .product-benefit {
+                display: none;
+            }
+
+            .product-beneficios-tactil {
+                display: grid;
+                gap: .5rem;
+                margin: 0;
+                padding: .25rem 0 0;
+                color: var(--muted-texto);
+                font-size: .86rem;
+                line-height: 1.45;
+            }
+
+            .product-beneficios-tactil li {
                 display: flex;
+                align-items: flex-start;
+                gap: .5rem;
+            }
+
+            .product-beneficios-tactil .benefit-icon {
+                margin-top: .12rem;
             }
         }
 
@@ -1652,6 +1672,20 @@ VENTANA FLOTANTE DE PRODUCTO
 
                 animation: none;
 
+            }
+
+            .product-card,
+            .product-visual img,
+            .product-beneficios-lista {
+                transition: none;
+            }
+
+            .product-card:hover {
+                transform: none;
+            }
+
+            .product-card:hover .product-visual img {
+                transform: none;
             }
 
         }

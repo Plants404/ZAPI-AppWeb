@@ -1,8 +1,4 @@
 
-html:not([data-auth="si"]) main.pedidos-page {
-    display: none;
-}
-
 .pedidos-page {
     width: min(760px, calc(100% - 2rem));
     margin: 0 auto;

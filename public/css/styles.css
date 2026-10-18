@@ -36,8 +36,8 @@
 
 * {
   box-sizing: border-box;
-  transition: all .2s ease;
 }
+
 *::before,
 *::after {
   box-sizing: border-box;
@@ -197,8 +197,9 @@ header {
   align-items: center;
   gap: .75rem;
   padding: 12px 24px;
-  background: #f7f5ed;
-  border-bottom: 1px solid #e2decb;
+  background: rgba(247, 245, 237, .92);
+  border-bottom: 1px solid var(--borde);
+  backdrop-filter: blur(10px);
 }
 
 header::before {
@@ -206,8 +207,8 @@ header::before {
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: #f7f5ed;
-  border-bottom: 1px solid #e2decb;
+  background: rgba(247, 245, 237, .92);
+  border-bottom: 1px solid var(--borde);
 }
 
 header h4 {
@@ -397,11 +398,11 @@ header.menu-abierto::before {
   font-size: .95rem;
   color: var(--ink);
   background: var(--white);
-  border: 2px solid var(--borde-input);
+  border: 1px solid var(--borde);
   border-radius: 999px;
   -webkit-appearance: none;
   appearance: none;
-  animation: buscadorPulso 2.6s ease-in-out infinite;
+  transition: border-color .2s ease, box-shadow .2s ease;
 }
 
 .header-search-input::-webkit-search-decoration,
@@ -455,17 +456,6 @@ header.menu-abierto::before {
   outline-offset: 2px;
 }
 
-@keyframes buscadorPulso {
-  0%,
-  100% {
-    border-color: var(--borde-input);
-    box-shadow: 0 0 0 0 rgba(74, 124, 89, .40);
-  }
-  50% {
-    border-color: var(--leaf-texto);
-    box-shadow: 0 0 0 7px rgba(74, 124, 89, 0);
-  }
-}
 
 
 .nav-bar {
@@ -1052,26 +1042,7 @@ html:not([data-auth="si"]) .nav-usuario {
   display: none !important;
 }
 
-html:not([data-auth="si"]) .nav-link-carrito,
-html:not([data-auth="si"]) .cart-link-float,
-html:not([data-auth="si"]) #carrito,
-html:not([data-auth="si"]) .footer-carrito {
-  display: none !important;
-}
-
-html:not([data-auth="si"]) main.cart-page {
-  display: none;
-}
-
-/* Con sesion el bloque de cuenta ya ofrece "Carrito"; el CTA "Ver carrito"
-   queda como acompanante de "Ingresar" solo cuando no hay sesion. */
 html[data-auth="si"] .nav-cta {
-  display: none;
-}
-
-/* Sin sesion el pill tampoco se muestra: la unica puerta es "Ingresar".
-   Al iniciar sesion el acceso reaparece como fila Carrito del menu. */
-html:not([data-auth="si"]) .nav-cta {
   display: none;
 }
 
@@ -1087,52 +1058,6 @@ html:not([data-auth="si"]) .nav-cta {
   #cartCountFloat {
     display: none !important;
   }
-}
-
-html:not([data-auth="no"]) #cartLogin {
-  display: none;
-}
-
-#cartLogin {
-  max-width: 480px;
-  margin: 9rem auto 3rem;
-  padding: 2rem 1.6rem;
-  text-align: center;
-  background: var(--cream);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-}
-
-#cartLogin .material-symbols-outlined {
-  font-size: 2.4rem;
-  color: var(--leaf);
-}
-
-#cartLogin h2 {
-  margin: .6rem 0 .5rem;
-  font-family: var(--serif);
-  font-size: 1.8rem;
-  color: var(--forest);
-}
-
-#cartLogin p {
-  margin: 0 0 1.4rem;
-  color: var(--muted-texto);
-  line-height: 1.5;
-}
-
-.cart-login-go {
-  display: inline-block;
-  padding: .8rem 1.4rem;
-  border-radius: 999px;
-  background: var(--leaf);
-  color: var(--cream);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.cart-login-go:hover {
-  background: var(--moss);
 }
 
 body.no-scroll {
@@ -5412,4 +5337,3 @@ a[href="carrito.html"]::before,
     height: 36px !important;
   }
 }
-

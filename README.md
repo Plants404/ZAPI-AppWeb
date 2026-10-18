@@ -45,8 +45,9 @@ También sirve cualquier otro servidor estático desde la raíz, o la
 extensión **Live Server / Live Preview** de VS Code (el puerto está
 configurado en `.vscode/settings.json`).
 
-Sin backend, solo se puede consultar el catálogo. La autenticación,
-agregar productos al carrito, pedidos y opiniones requieren la API.
+Sin backend, el sitio es público: se puede consultar el catálogo, armar
+un carrito y preparar pedidos por WhatsApp sin iniciar sesión. Las
+cuentas y funciones que guardan datos en el servidor requieren una API.
 
 ## Funcionalidad sin backend
 
@@ -56,12 +57,14 @@ para habilitar autenticación y opiniones en producción.
 
 - **Catálogo:** se lee `public/data/productos.json`.
 - **Stock:** el valor de demostración no representa inventario real.
-- **Carrito / checkout:** requiere autenticación del servidor. El envío
-  es gratis desde $2.500; por debajo de ese monto el costo se coordina.
+- **Carrito / checkout:** el carrito se guarda en este dispositivo y el
+  pedido se completa por WhatsApp. El envío es gratis desde $2.500; por
+  debajo de ese monto el costo se coordina.
 - **Cuentas:** requieren una API configurada; no hay credenciales locales
   ni contraseñas almacenadas en el código del navegador.
-- **Mis pedidos:** los pedidos enviados se guardan en `localStorage`
-  (`zapiPedidosLocal`) y se pueden cancelar (repone el stock local).
+- **Mis pedidos:** sin API, los pedidos preparados se guardan en
+  `localStorage` (`zapiPedidosLocal`) y se pueden cancelar (repone el
+  stock local).
 - **Contacto:** el aviso va solo por EmailJS.
 - **Opiniones:** se leen de la API únicamente si cada registro incluye
   `verificado: true` y `autorizado: true`; el archivo de datos está vacío.

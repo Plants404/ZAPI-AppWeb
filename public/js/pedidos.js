@@ -221,13 +221,6 @@
         cancelarPedido(boton.getAttribute('data-cancelar'));
     });
 
-    const auth = window.zapiAuth;
-
-    if (!auth) return;
-
-    auth.listo.then(function () {
-        if (!auth.exigirCuenta()) return;
-        cargar();
-    });
+    cargar();
 
 })();

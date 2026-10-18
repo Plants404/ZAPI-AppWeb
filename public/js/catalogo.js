@@ -210,6 +210,15 @@ function tarjetaProducto(producto) {
                         <span class="benefit-icon" aria-hidden="true">✓</span>
                         <span>${escaparHTML(beneficio)}</span>
                     </div>
+
+                    <ul class="product-beneficios-tactil" aria-label="Características">
+                        ${producto.infoDeVenta.map(item => `
+                            <li>
+                                <span class="benefit-icon" aria-hidden="true">✓</span>
+                                <span>${escaparHTML(item)}</span>
+                            </li>
+                        `).join("")}
+                    </ul>
                 </div>
 
                 <div class="product-footer">
