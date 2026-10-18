@@ -5078,3 +5078,11 @@ footer {
   margin: 0 0 8px 0 !important;
 }
 
+/* Eliminar el texto fantasma ::before inyectado por CSS */
+.nav-link-carrito::before,
+a[href="carrito.html"]::before,
+.header-cart::before {
+  content: none !important;
+  display: none !important;
+}
+
