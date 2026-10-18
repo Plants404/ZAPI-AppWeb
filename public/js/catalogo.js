@@ -199,7 +199,7 @@ function tarjetaProducto(producto) {
                         </button>
                     </h3>
 
-                    <div class="product-etiquetas">
+                    <div class="product-tags">
                         <span class="product-badge">${escaparHTML(producto.categoria)}</span>
                         <span class="product-stock-pill" data-stock="${producto.id}"></span>
                     </div>
@@ -213,18 +213,11 @@ function tarjetaProducto(producto) {
                 </div>
 
                 <div class="product-footer">
-                    <div class="product-precio-cta">
-                        <div class="product-price">
-                            <span class="current">${formatearPrecio(precios[producto.id] ?? producto.precioBase)}</span>
-                            <span class="since">precio por unidad</span>
-                        </div>
-                        <button class="btn-ver-detalle" type="button" data-id="${producto.id}"
-                            aria-label="Ver detalle de ${escaparHTML(producto.nombre)}">
-                            Ver detalle
-                        </button>
+                    <div class="product-price">
+                        <span class="current">${formatearPrecio(precios[producto.id] ?? producto.precioBase)}</span>
                     </div>
                     <button class="add-cart" type="button" data-id="${producto.id}">
-                        <span class="material-symbols-outlined">add_shopping_cart</span>
+                        <span class="material-symbols-outlined">shopping_cart</span>
                         Agregar al carrito
                     </button>
                 </div>

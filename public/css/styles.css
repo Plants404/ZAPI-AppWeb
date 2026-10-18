@@ -173,32 +173,6 @@ section>* {
   gap: .5rem;
 }
 
-.saltar-contenido {
-  position: absolute;
-  left: .75rem;
-  top: -5rem;
-  z-index: 500;
-  min-height: 44px;
-  padding: .75rem 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  background: var(--forest);
-  color: var(--cream);
-  border-radius: 0 0 999px 999px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: top .2s ease;
-}
-
-.saltar-contenido:focus {
-  top: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .saltar-contenido {
-    transition: none;
-  }
-}
 
 .visually-hidden {
   position: absolute;
@@ -1362,11 +1336,12 @@ body.no-scroll {
    pastillas outline). Solo rige aqui; el catalogo no se toca. */
 #inicio .home-products-carousel .product-name {
   font-family: var(--serif);
-  font-size: 1.75rem;
+  font-size: 1.125rem;
   letter-spacing: .02em;
-  color: var(--forest);
+  color: #1E3A2B;
   margin: 0 0 .25rem;
-  text-transform: uppercase;
+  text-transform: none;
+  font-weight: 700;
 }
 
 #inicio .home-products-carousel .product-link {
@@ -1397,15 +1372,15 @@ body.no-scroll {
   align-items: center;
   justify-content: center;
   gap: .5rem;
-  padding: .75rem 1.25rem;
+  padding: 10px 16px;
   margin: 0;
   min-height: 44px;
   border: 0;
-  border-radius: 999px;
-  background: var(--forest);
-  color: var(--cream);
-  font-size: .92rem;
-  font-weight: 500;
+  border-radius: 10px;
+  background: #1E3A2B;
+  color: #FFFFFF;
+  font-size: .9rem;
+  font-weight: 600;
   letter-spacing: normal;
   box-shadow: none;
   cursor: pointer;
@@ -1413,10 +1388,10 @@ body.no-scroll {
 }
 
 #inicio .home-products-carousel .add-cart:hover {
-  background: var(--moss);
-  color: var(--cream);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background: #2D5A3F;
+  color: #FFFFFF;
+  transform: none;
+  box-shadow: none;
 }
 
 #inicio .home-products-carousel .add-cart.added,
@@ -1471,19 +1446,141 @@ body.no-scroll {
   }
 }
 
+
+/* Override directo sobre el header de servicios */
+#servicios .service-header,
+.zapi-hero-banner {
+  background-color: #1E3A2B !important;
+  color: #F4F1EA !important;
+  padding: 40px 48px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 32px !important;
+  border-radius: 16px !important;
+  margin-bottom: 32px !important;
+}
+
+/* Columna Izquierda */
+.zapi-hero-content {
+  flex: 1 1 55% !important;
+  max-width: 600px !important;
+}
+
+.zapi-hero-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #F4F1EA !important;
+  margin-bottom: 16px !important;
+  text-transform: uppercase !important;
+}
+
+.zapi-hero-title {
+  font-size: 38px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #F4F1EA !important;
+  margin: 0 0 12px 0 !important;
+  line-height: 1.1 !important;
+}
+
+.zapi-hero-description {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: rgba(244, 241, 234, 0.9) !important;
+  margin: 0 !important;
+}
+
+/* Divisor Vertical */
+.zapi-hero-divider {
+  width: 1px !important;
+  height: 110px !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  flex-shrink: 0 !important;
+}
+
+/* Columna Derecha (Cómo Trabajamos) */
+.zapi-hero-trust {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  flex: 1 1 40% !important;
+}
+
+.zapi-hero-trust-heading {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  color: rgba(244, 241, 234, 0.7) !important;
+  margin-bottom: 4px !important;
+}
+
+.zapi-hero-trust-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  font-size: 14px !important;
+  color: #F4F1EA !important;
+}
+
+.zapi-hero-trust-icon {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
+}
+
+.zapi-hero-trust-icon .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 16px !important;
+  color: #F4F1EA !important;
+}
+
+.zapi-hero-trust-text strong {
+  color: #FFFFFF !important;
+}
+
+/* Responsivo para Móviles y Tabletas */
+@media (max-width: 850px) {
+  #servicios .service-header,
+  .zapi-hero-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 28px 20px !important;
+  }
+  .zapi-hero-divider {
+    display: none !important;
+  }
+}
+
 /* Carrito de compras: las tarjetas del carrito usan la misma
    estructura visual que las tarjetas del catálogo para mantener
    consistencia visual en todo el sitio. */
 .cart-item {
-    background: var(--white);
-    border: 1px solid #e4dccb;
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    padding: clamp(1.5rem, 3.5vw, 2.1rem);
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 20px !important;
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2DECB !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin-bottom: 12px !important;
 }
 
 .cart-item:hover {
@@ -3454,6 +3551,48 @@ footer nav a:focus-visible {
     color: #1e3a2b;
   }
 
+  .nav-usuario-alineado {
+    display: inline-flex !important;
+    align-items: center !important;
+    align-self: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    line-height: 1 !important;
+    position: static !important;
+    top: auto !important;
+  }
+
+  li.nav-cuenta,
+  div.nav-usuario {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    margin: 0 !important;
+  }
+
+  button#navUsuarioBoton,
+  .nav-usuario-boton,
+  .nav-usuario-alineado {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    line-height: 1 !important;
+    height: auto !important;
+  }
+
+  button#navUsuarioBoton * {
+    vertical-align: middle !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
   .nav-usuario-boton::after {
     content: "person";
     font-family: 'Material Symbols Outlined';
@@ -4291,4 +4430,411 @@ footer {
 }
 
 /* Fin de estilos globales */
+
+/* Banner del Catálogo Full Width */
+#catalogo .catalog-header,
+.catalog-header.zapi-hero-banner {
+  background-color: #1E3A2B !important;
+  color: #F4F1EA !important;
+  width: 100% !important;
+  margin: 0 0 28px 0 !important;
+  border-radius: 0 !important;
+  padding: 48px 64px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 40px !important;
+  box-sizing: border-box !important;
+}
+
+#catalogo .zapi-hero-content,
+#catalogo .catalog-intro {
+  flex: 1 1 60% !important;
+  max-width: 680px !important;
+}
+
+#catalogo .zapi-hero-title,
+#catalogo .catalog-title {
+  font-size: 52px !important;
+  font-weight: 800 !important;
+  font-family: inherit !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #F4F1EA !important;
+  margin: 0 0 12px 0 !important;
+  line-height: 1.05 !important;
+}
+
+#catalogo .zapi-hero-description,
+#catalogo .catalog-lead {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  color: rgba(244, 241, 234, 0.9) !important;
+  margin: 0 !important;
+  max-width: 580px !important;
+}
+
+#catalogo .zapi-hero-divider {
+  width: 1px !important;
+  height: 90px !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  flex-shrink: 0 !important;
+}
+
+#catalogo .zapi-hero-trust,
+#catalogo .catalog-trust {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  flex: 0 0 auto !important;
+}
+
+#catalogo .zapi-hero-trust-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #F4F1EA !important;
+}
+
+#catalogo .zapi-hero-trust-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+#catalogo {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Banner de Servicios Full Width */
+#servicios .service-header,
+.service-header.zapi-hero-banner {
+  background-color: #1E3A2B !important;
+  color: #F4F1EA !important;
+  width: 100% !important;
+  margin: 0 0 28px 0 !important;
+  border-radius: 0 !important;
+  padding: 48px 64px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 40px !important;
+  box-sizing: border-box !important;
+}
+
+#servicios .zapi-hero-content {
+  flex: 1 1 60% !important;
+  max-width: 680px !important;
+}
+
+#servicios .zapi-hero-title {
+  font-size: 52px !important;
+  font-weight: 800 !important;
+  font-family: inherit !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #F4F1EA !important;
+  margin: 0 0 12px 0 !important;
+  line-height: 1.05 !important;
+}
+
+#servicios .zapi-hero-description {
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  color: rgba(244, 241, 234, 0.9) !important;
+  margin: 0 !important;
+  max-width: 580px !important;
+}
+
+#servicios .zapi-hero-divider {
+  width: 1px !important;
+  height: 90px !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  flex-shrink: 0 !important;
+}
+
+#servicios .zapi-hero-trust {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  flex: 0 0 auto !important;
+}
+
+#servicios .zapi-hero-trust-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #F4F1EA !important;
+}
+
+#servicios .zapi-hero-trust-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+#servicios {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+#catalogo .catalog-header,
+.catalog-header.zapi-hero-banner,
+#servicios .service-header,
+.service-header.zapi-hero-banner {
+  border-radius: 0 !important;
+}
+
+#servicios,
+#servicios .service {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* 1. Anular restricciones del contenedor padre si es necesario */
+#servicios,
+.services-view {
+  width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  max-width: none !important;
+}
+
+/* 2. Banner de ancho completo absoluto */
+#servicios .service-header,
+.services-view .zapi-hero-banner {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  padding-left: 64px !important;
+  padding-right: 64px !important;
+}
+
+/* 3. Asegurar que los elementos internos mantengan su alineación */
+#servicios .service-header {
+  background-color: #1E3A2B !important;
+  color: #F4F1EA !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 40px !important;
+}
+
+#servicios,
+.services-view {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#servicios .service-header,
+.services-view .zapi-hero-banner {
+  width: 100vw !important;
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  padding-left: max(6vw, 48px) !important;
+  padding-right: max(6vw, 48px) !important;
+  padding-top: 48px !important;
+  padding-bottom: 48px !important;
+  background-color: #1E3A2B !important;
+  color: #F4F1EA !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 40px !important;
+}
+
+#servicios .service-items,
+#servicios .container {
+  max-width: 1240px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  box-sizing: border-box !important;
+}
+
+/* Quitar restricciones de la sección padre Nosotros */
+#nosotros,
+.section.nosotros {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Banner Verde Bosque Full-Bleed para la cabecera de Nosotros */
+#nosotros .nosotros-header,
+#nosotros .zapi-hero-banner.full-bleed {
+  width: 100vw !important;
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  padding-left: max(6vw, 48px) !important;
+  padding-right: max(6vw, 48px) !important;
+  padding-top: 56px !important;
+  padding-bottom: 56px !important;
+  background-color: #1E3A2B !important;
+  color: #F4F1EA !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 40px !important;
+  margin-bottom: 40px !important;
+}
+
+#nosotros .zapi-hero-content {
+  flex: 1 1 60% !important;
+  max-width: 720px !important;
+}
+
+#nosotros .zapi-hero-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  color: #F4F1EA !important;
+  margin-bottom: 16px !important;
+  text-transform: uppercase !important;
+}
+
+#nosotros .zapi-hero-title {
+  font-size: 44px !important;
+  font-weight: 800 !important;
+  font-family: inherit !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #F4F1EA !important;
+  margin: 0 0 16px 0 !important;
+  line-height: 1.05 !important;
+}
+
+#nosotros .zapi-hero-description {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  color: rgba(244, 241, 234, 0.85) !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+}
+
+#nosotros .zapi-hero-divider {
+  width: 1px !important;
+  height: 120px !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  flex-shrink: 0 !important;
+}
+
+#nosotros .zapi-hero-trust {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  flex: 0 0 auto !important;
+}
+
+#nosotros .zapi-hero-trust-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+#nosotros .zapi-hero-trust-icon {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #F4F1EA !important;
+  flex-shrink: 0 !important;
+}
+
+#nosotros .zapi-hero-trust-icon svg {
+  stroke: #F4F1EA !important;
+}
+
+#nosotros .zapi-hero-trust-text {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #F4F1EA !important;
+}
+
+@media (max-width: 850px) {
+  #nosotros .nosotros-header,
+  #nosotros .zapi-hero-banner.full-bleed {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 32px 20px !important;
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  #nosotros .zapi-hero-divider {
+    display: none !important;
+  }
+  #nosotros .zapi-hero-title {
+    font-size: 32px !important;
+  }
+}
+
+#nosotros,
+.section.nosotros {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+#nosotros .zapi-hero-kicker {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  color: rgba(244, 241, 234, 0.8) !important;
+  margin: 0 0 8px 0 !important;
+}
 
