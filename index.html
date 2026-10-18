@@ -38,8 +38,6 @@
 
 <body>
 
-    <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
-
   <header>
     
     <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
@@ -81,7 +79,7 @@
         <li class="nav-cuenta">
           <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
           <div class="nav-usuario">
-            <button type="button" class="nav-usuario-boton" id="navUsuarioBoton" aria-expanded="false"
+            <button type="button" class="nav-usuario-boton nav-usuario-alineado" id="navUsuarioBoton" aria-expanded="false"
               aria-haspopup="true" aria-controls="navUsuarioMenu">
               <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
               
@@ -128,21 +126,21 @@
           <h1>Transformamos en espacios con naturaleza. </h1>
 
           <p class="hero-lead">
-            En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a través de soluciones agroecológicas integrales.
+            En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a travÈs de soluciones agroecolÈgicas integrales.
           </p>
 
           <ul class="hero-features">
             <li><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</li>
-            <li><strong>Asesoramiento profesional:</strong> Guía técnica paso a paso.</li>
-            <li><strong>Cuidado inteligente:</strong> Herramientas diseñadas para facilitar su mantenimiento.</li>
+            <li><strong>Asesoramiento profesional:</strong> GuÌa tÈcnica paso a paso.</li>
+            <li><strong>Cuidado inteligente:</strong> Herramientas diseÈadas para facilitar su mantenimiento.</li>
           </ul>
 
           <p class="hero-description">
-            Ayudamos a hogares, empresas e instituciones a crear y mantener espacios verdes saludables con un acompañamiento continuo antes, durante y después de tu compra.
+            Ayudamos a hogares, empresas e instituciones a crear y mantener espacios verdes saludables con un acompaÈamiento continuo antes, durante y despuÈs de tu compra.
           </p>
 
           <div class="hero-ctas">
-            <button type="button" data-section="catalogo">Explorar Catálogo</button>
+            <button type="button" data-section="catalogo">Explorar CatÈlogo</button>
             <button type="button" data-section="servicios">Conocer nuestros servicios</button>
           </div>
         </div>
@@ -193,40 +191,37 @@
 
     
     <section class="section catalog hidden" id="catalogo">
-      <div class="catalog-header">
-        <div class="catalog-intro">
-          <span class="catalog-eyebrow">
-            <span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>
-            Catálogo ZAPI
-          </span>
-          <h2 class="catalog-title">Catálogo <span class="catalog-title-acento">vivo</span></h2>
-          <p class="catalog-lead">
-            Elegí hoy tus plantas y tené tu rincón verde funcionando sin complicaciones.
-            Nosotros preparamos todo; vos solo lo disfrutás.
-          </p>
+              <div class="catalog-header zapi-hero-banner">
+          <div class="zapi-hero-content">
+            <h1 class="zapi-hero-title">CATÁLOGO VIVO</h1>
+            <p class="zapi-hero-description">
+              Elegí hoy tus plantas y tené tu rincón verde funcionando sin complicaciones. Nosotros preparamos todo; vos solo lo disfrutás.
+            </p>
+          </div>
+          <div class="zapi-hero-divider"></div>
+          <div class="zapi-hero-trust">
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">verified</span>
+              </div>
+              <div class="zapi-hero-trust-text">Precios fijos, garantizados</div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
+              </div>
+              <div class="zapi-hero-trust-text">Stock disponible y actualizado</div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+              </div>
+              <div class="zapi-hero-trust-text">Envío seguro en Montevideo</div>
+            </div>
+          </div>
         </div>
 
-        <aside class="catalog-trust" aria-label="Beneficios de compra">
-          <p class="catalog-trust-title">Compra sin sorpresas</p>
-          <ul>
-            <li>
-              <span class="material-symbols-outlined" aria-hidden="true">verified</span>
-              Precios fijos, garantizados
-            </li>
-            <li>
-              <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
-              Stock disponible y actualizado
-            </li>
-            <li>
-              <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
-              Envío seguro en Montevideo
-            </li>
-          </ul>
-        </aside>
-      </div>
-
-      
-      <div class="catalog-filterbar">
+        <div class="catalog-filterbar">
         <span class="catalog-filterbar-label" id="catalogFiltersLabel">Explorá por categoría</span>
         <div class="catalog-filters" id="catalogFilters" role="group" aria-labelledby="catalogFiltersLabel">
           <span class="catalog-filter-indicator" id="catalogFilterIndicator" aria-hidden="true"></span>
@@ -396,36 +391,41 @@
     <section class="section services-view hidden" id="servicios">
       
       <div id="service" class="service">
-        <div class="service-header">
-          <div class="service-intro">
-            <span class="service-eyebrow">
-              <span class="material-symbols-outlined" aria-hidden="true">home_repair_service</span>
-              Servicios
-            </span>
-            <h2 class="service-title">Soluciones para cada <span class="service-title-acento">proyecto</span></h2>
-            <p class="service-lead">
-              Además de ofrecer productos, brindamos servicios especializados que ayudan a nuestros clientes a
-              planificar, desarrollar y mantener espacios verdes de forma eficiente.
+                                <div class="service-header zapi-hero-banner">
+          <div class="zapi-hero-content">
+            <h1 class="zapi-hero-title">SOLUCIONES PARA CADA PROYECTO</h1>
+            <p class="zapi-hero-description">
+              Además de ofrecer productos, brindamos servicios especializados que ayudan a nuestros clientes a planificar, desarrollar y mantener espacios verdes de forma eficiente.
             </p>
           </div>
-
-          <aside class="service-trust" aria-label="Cómo trabajamos">
-            <p class="service-trust-title">Cómo trabajamos</p>
-            <ul>
-              <li>
+          <div class="zapi-hero-divider"></div>
+          <div class="zapi-hero-trust">
+            <div class="zapi-hero-trust-heading">CÓMO TRABAJAMOS</div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
                 <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
-                <span><strong>Presupuesto sin compromiso:</strong> cotización clara y ajustada a tu espacio.</span>
-              </li>
-              <li>
+              </div>
+              <div class="zapi-hero-trust-text">
+                <strong>Presupuesto sin compromiso:</strong> cotización clara y ajustada a tu espacio.
+              </div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
                 <span class="material-symbols-outlined" aria-hidden="true">eco</span>
-                <span><strong>Enfoque 100% agroecológico:</strong> cuidado responsable de tu entorno y suelo.</span>
-              </li>
-              <li>
+              </div>
+              <div class="zapi-hero-trust-text">
+                <strong>Enfoque 100% agroecológico:</strong> cuidado responsable de tu entorno y suelo.
+              </div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
                 <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
-                <span><strong>Atención en Montevideo:</strong> acompañamiento cercano antes y después del proyecto.</span>
-              </li>
-            </ul>
-          </aside>
+              </div>
+              <div class="zapi-hero-trust-text">
+                <strong>Atención en Montevideo:</strong> acompañamiento cercano antes y después del proyecto.
+              </div>
+            </div>
+          </div>
         </div>
 
         
@@ -533,16 +533,36 @@
       <div class="nosotros-inner">
 
         <!-- 1. Propuesta de valor -->
-        <div class="nosotros-hero">
-          <div class="nosotros-hero-grid">
-            <div class="nosotros-hero-principal">
-              <span class="nosotros-eyebrow">Nosotros</span>
-
-              <h2 class="nosotros-titulo" id="nosotrosTitulo">Hacemos que empezar tu huerta o jardín sea tan simple como
-                abrir una caja.</h2>
+        <div class="nosotros-header zapi-hero-banner full-bleed">
+          <div class="zapi-hero-content">
+            <p class="zapi-hero-kicker">¿Quiénes somos?</p>
+            <h1 class="zapi-hero-title">
+              HACEMOS QUE EMPEZAR TU HUERTA O JARDÍN SEA TAN SIMPLE COMO ABRIR UNA CAJA.
+            </h1>
+            <p class="zapi-hero-description">
+              NO VENDEMOS PLANTAS, VENDEMOS EL PRIMER RINCÓN VERDE PROPIO.
+            </p>
+          </div>
+          <div class="zapi-hero-divider"></div>
+          <div class="zapi-hero-trust">
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 11 12 14 22 4"/></svg>
+              </div>
+              <div class="zapi-hero-trust-text">PAGO SEGURO, GARANTIZADO</div>
             </div>
-
-            <p class="nosotros-manifiesto">No vendemos plantas: vendemos el primer rincón verde propio.</p>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="13" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              </div>
+              <div class="zapi-hero-trust-text">ENVÍO GRATUITO EN MONTEVIDEO</div>
+            </div>
+            <div class="zapi-hero-trust-item">
+              <div class="zapi-hero-trust-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10a6 6 0 0 0-6-6H3v3a6 6 0 0 0 6 6h3"/><path d="M12 10a6 6 0 0 1 6-6h3v3a6 6 0 0 1-6 6h-3"/><path d="M12 10v10"/></svg>
+              </div>
+              <div class="zapi-hero-trust-text">GARANTÍA DE CRECIMIENTO</div>
+            </div>
           </div>
         </div>
 
@@ -717,135 +737,84 @@
     </section>
 
     
-    <section class="section call-to-actions-view hidden" id="contacto">
-      <div class="contacto">
-
-        
-        <div class="contacto-info">
-          <span class="contacto-eyebrow">CONTACTO</span>
-
-          <h2>Empezá hoy a transformar tus espacios</h2>
-
-          <p>Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada
-            etapa del proceso.</p>
-
-          
-          <div class="contacto-acciones">
-            <button type="button" data-section="catalogo">
-              <span class="material-symbols-outlined" aria-hidden="true">storefront</span>
-              Explorar Catálogo
-            </button>
-            <button type="button" data-section="servicios">
-              <span class="material-symbols-outlined" aria-hidden="true">local_florist</span>
-              Conocer nuestros servicios
-            </button>
-          </div>
-
-          <p class="contacto-nota">
-            <span class="material-symbols-outlined" aria-hidden="true">lock</span>
-            Tus datos solo se usan para responderte esta consulta.
-          </p>
+        <section class="section call-to-actions-view hidden" id="contacto">
+  <div class="contacto-header zapi-hero-banner full-bleed">
+    <div class="zapi-hero-content">
+      <p class="zapi-hero-kicker">Contacto</p>
+      <h1 class="zapi-hero-title">
+        EMPEZÁ HOY A TRANSFORMAR TUS ESPACIOS
+      </h1>
+      <p class="zapi-hero-description">
+        Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada etapa del proceso.
+      </p>
+    </div>
+    <div class="zapi-hero-divider"></div>
+    <div class="zapi-hero-trust">
+      <div class="zapi-hero-trust-heading">ATENCIÓN DIRECTA</div>
+      <div class="zapi-hero-trust-item">
+        <div class="zapi-hero-trust-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-
-        
-        <div class="contacto-panel">
-          <h3 class="contacto-panel-titulo" id="contactoPanelTitulo">Escribinos</h3>
-          <p class="contacto-panel-sub">Contanos qué necesitás y te respondemos a la brevedad.</p>
-
-          <form class="formulario" id="contactoForm" novalidate aria-labelledby="contactoPanelTitulo">
-            
-            <div class="formulario-trampa" aria-hidden="true">
-              <label for="contactoSitio">No completes este campo</label>
-              <input type="text" id="contactoSitio" name="sitio_web" tabindex="-1" autocomplete="off">
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoNombre">Nombre <span aria-hidden="true">*</span></label>
-              <div class="campo-control">
-                <span class="material-symbols-outlined campo-icono" aria-hidden="true">person</span>
-                <input class="campo-input" type="text" id="contactoNombre" name="nombre" autocomplete="name"
-                  maxlength="120" required aria-required="true" aria-describedby="errorNombre"
-                  placeholder="Tu nombre y apellido">
-              </div>
-              <span class="campo-error" id="errorNombre"></span>
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoCorreo">Correo electrónico <span aria-hidden="true">*</span></label>
-              <div class="campo-control">
-                <span class="material-symbols-outlined campo-icono" aria-hidden="true">mail</span>
-                <input class="campo-input" type="email" id="contactoCorreo" name="correo" autocomplete="email"
-                  inputmode="email" maxlength="160" required aria-required="true" aria-describedby="errorCorreo"
-                  placeholder="tunombre@correo.com">
-              </div>
-              <span class="campo-error" id="errorCorreo"></span>
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoAsunto">Asunto <span aria-hidden="true">*</span></label>
-              <div class="campo-control">
-                <span class="material-symbols-outlined campo-icono" aria-hidden="true">sell</span>
-                <input class="campo-input" type="text" id="contactoAsunto" name="asunto"
-                  maxlength="160" required aria-required="true" aria-describedby="errorAsunto"
-                  placeholder="¿Sobre qué querés escribirnos?">
-              </div>
-              <span class="campo-error" id="errorAsunto"></span>
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoTelefono">Teléfono <span class="campo-opcional">(opcional)</span></label>
-              <div class="campo-control">
-                <span class="material-symbols-outlined campo-icono" aria-hidden="true">call</span>
-                <input class="campo-input" type="tel" id="contactoTelefono" name="telefono" autocomplete="tel"
-                  inputmode="tel" maxlength="40" aria-describedby="errorTelefono"
-                  placeholder="098 268 560">
-              </div>
-              <span class="campo-error" id="errorTelefono"></span>
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoConsulta">Mensaje <span aria-hidden="true">*</span></label>
-              <textarea class="campo-input campo-area" id="contactoConsulta" name="consulta" rows="5"
-                maxlength="2000" required aria-required="true" aria-describedby="errorConsulta"
-                placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..."></textarea>
-              <div class="campo-ayuda">
-                
-                <span class="campo-error" id="errorConsulta"></span>
-                <span class="campo-contador" id="contactoContador" aria-hidden="true">2000</span>
-              </div>
-            </div>
-
-            <div class="formulario-pie">
-              <button class="formulario-enviar" type="submit" id="contactoEnviar">
-                <span class="material-symbols-outlined" aria-hidden="true">send</span>
-                <span id="contactoEnviarTexto">Enviar mensaje</span>
-              </button>
-
-              <p class="formulario-obligatorio">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
-            </div>
-
-            
-            <p class="formulario-estado" id="contactoEstado" role="status" aria-live="polite"></p>
-          </form>
-
-          
-          <div class="formulario-ok" id="contactoOk" role="group" aria-labelledby="contactoOkTitulo" hidden>
-            <span class="material-symbols-outlined formulario-ok-icono" aria-hidden="true">mark_email_read</span>
-
-            
-            <h3 class="formulario-ok-titulo" id="contactoOkTitulo" tabindex="-1">¡Gracias por escribirnos!</h3>
-
-            <p>Recibimos tu mensaje y te vamos a responder al correo o al teléfono que dejaste.</p>
-
-            <button class="formulario-ok-boton" type="button" id="contactoReiniciar">
-              <span class="material-symbols-outlined" aria-hidden="true">add</span>
-              Enviar otro mensaje
-            </button>
-          </div>
-        </div>
-
+        <div class="zapi-hero-trust-text">Presupuesto claro y personalizado</div>
       </div>
-    </section>
+      <div class="zapi-hero-trust-item">
+        <div class="zapi-hero-trust-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="zapi-hero-trust-text">Asesoramiento agroecológico dedicado</div>
+      </div>
+      <div class="zapi-hero-trust-item">
+        <div class="zapi-hero-trust-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="zapi-hero-trust-text">Atención cercana en Montevideo</div>
+      </div>
+    </div>
+  </div>
+  <div class="contacto-card-container">
+    <div class="contacto-card">
+      <div class="contacto-card-header">
+        <span class="contacto-card-subtitle">ESCRIBINOS</span>
+        <h2 class="contacto-card-title">Contanos qué necesitás y te respondemos a la brevedad.</h2>
+      </div>
+      <form id="form-contacto" class="contacto-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contacto-nombre">Nombre *</label>
+            <input type="text" id="contacto-nombre" name="nombre" placeholder="Tu nombre y apellido" required />
+          </div>
+          <div class="form-group">
+            <label for="contacto-email">Correo electrónico *</label>
+            <input type="email" id="contacto-email" name="email" placeholder="tunombre@correo.com" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contacto-asunto">Asunto *</label>
+            <input type="text" id="contacto-asunto" name="asunto" placeholder="¿Sobre qué querés escribirnos?" required />
+          </div>
+          <div class="form-group">
+            <label for="contacto-telefono">Teléfono (opcional)</label>
+            <input type="tel" id="contacto-telefono" name="telefono" placeholder="098 765 432" />
+          </div>
+        </div>
+        <div class="form-group full-width">
+          <label for="contacto-mensaje">Mensaje *</label>
+          <textarea id="contacto-mensaje" name="mensaje" rows="4" placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..." required></textarea>
+        </div>
+        <div class="form-footer">
+          <p class="privacy-note">
+            Tus datos solo se usan para responderte esta consulta. Los campos con * son obligatorios.
+          </p>
+          <button type="submit" class="btn-submit">
+            Enviar mensaje
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
 
     
     <div class="aviso-flotante" id="avisoFlotante" role="alert" hidden>
