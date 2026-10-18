@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const request = require('supertest');
+const ContactForm = require('../../backend/models/ContactForm');
+const Order = require('../../backend/models/Order');
 const User = require('../../backend/models/User');
 const { createApp } = require('../../backend/app');
 
@@ -34,7 +36,11 @@ before(async () => {
 });
 
 beforeEach(async () => {
-    await User.deleteMany({});
+    await Promise.all([
+        ContactForm.deleteMany({}),
+        Order.deleteMany({}),
+        User.deleteMany({}),
+    ]);
 });
 
 after(async () => {
@@ -65,6 +71,102 @@ test('registra usuarios como user y establece cookie HttpOnly', async () => {
 
     const savedUser = await User.findOne({ email: 'ana@example.com' }).select('+passwordHash');
     assert.notEqual(savedUser.passwordHash, 'clave-segura-2026');
+});
+
+test('valida el teléfono opcional del usuario', async () => {
+    const user = new User({
+        nombre: 'Ana Zapi',
+        email: 'ana@example.com',
+        telefono: '+54 11 5555-1234',
+        passwordHash: 'hash',
+    });
+
+    await user.validate();
+    user.telefono = 'teléfono inválido';
+    await assert.rejects(user.validate(), error => Boolean(error.errors.telefono));
+});
+
+test('acepta formularios de contacto anónimos y vinculados a una cuenta', async () => {
+    const user = await User.create({
+        nombre: 'Ana Zapi',
+        email: 'ana@example.com',
+        passwordHash: 'hash',
+    });
+    const anonymousForm = new ContactForm({
+        nombre: 'Visitante',
+        email: 'visitante@example.com',
+        asunto: 'Consulta general',
+        mensaje: 'Quisiera recibir información del vivero.',
+    });
+    const registeredForm = new ContactForm({
+        userId: user._id,
+        nombre: user.nombre,
+        email: user.email,
+        asunto: 'Consulta de pedido',
+        mensaje: 'Quisiera consultar por el estado de mi pedido.',
+    });
+
+    await anonymousForm.validate();
+    assert.equal(anonymousForm.userId, null);
+    await registeredForm.validate();
+    assert.equal(registeredForm.estado, 'nuevo');
+});
+
+test('valida pedidos con snapshot histórico de productos y dirección incrustada', async () => {
+    const order = new Order({
+        userId: new mongoose.Types.ObjectId(),
+        items: [{
+            productId: new mongoose.Types.ObjectId(),
+            nombre: 'Albahaca',
+            cantidad: 2,
+            precioUnitario: 1200,
+        }],
+        total: 2400,
+        metodoPago: 'transferencia',
+        direccionEnvio: {
+            nombreDestinatario: 'Ana Zapi',
+            telefono: '+54 11 5555-1234',
+            calle: 'Calle Verde',
+            numero: '123',
+            ciudad: 'Buenos Aires',
+            provincia: 'Buenos Aires',
+            codigoPostal: '1000',
+        },
+    });
+
+    await order.validate();
+    assert.equal(order.estado, 'pendiente');
+    assert.equal(order.moneda, 'ARS');
+    assert.equal(order.items[0].precioUnitario, 1200);
+    assert.ok(order.items[0].schema.path('precioUnitario').options.immutable);
+});
+
+test('rechaza pedidos sin productos o con cantidades fraccionarias', async () => {
+    const emptyOrder = new Order({
+        userId: new mongoose.Types.ObjectId(),
+        items: [],
+        total: 0,
+        metodoPago: 'efectivo',
+        direccionEnvio: {},
+    });
+    const fractionalOrder = new Order({
+        userId: new mongoose.Types.ObjectId(),
+        items: [{
+            productId: new mongoose.Types.ObjectId(),
+            nombre: 'Albahaca',
+            cantidad: 1.5,
+            precioUnitario: 1200,
+        }],
+        total: 1800,
+        metodoPago: 'efectivo',
+        direccionEnvio: {},
+    });
+
+    await assert.rejects(emptyOrder.validate(), error => Boolean(error.errors.items));
+    await assert.rejects(
+        fractionalOrder.validate(),
+        error => Boolean(error.errors['items.0.cantidad'])
+    );
 });
 
 test('rechaza claves débiles y registros duplicados', async () => {

@@ -59,6 +59,32 @@ Registro e inicio de sesión usan el contrato del frontend (`nombre`,
 una cookie `HttpOnly`, no en `localStorage`. Las nuevas cuentas reciben
 el rol `user`; solo el script administrativo explícito asigna `admin`.
 
+Los modelos de datos también incluyen `ContactForm` y `Order`.
+`ContactForm.userId` es opcional para aceptar consultas anónimas.
+`Order.userId` referencia al comprador y sus ítems guardan el ID del
+producto junto con nombre, cantidad y precio unitario como snapshot
+inmutable. La dirección de envío se incrusta en el pedido para conservar
+los datos utilizados en esa compra. `productId` referencia un modelo
+`Product`; el catálogo actual todavía es estático, así que para resolver
+esa referencia con `populate()` habrá que incorporar el modelo de
+productos a MongoDB.
+
+Ejemplos de consultas desde código backend:
+
+```js
+const pedidos = await Order.find({ userId })
+    .sort({ createdAt: -1 })
+    .populate('userId', 'nombre email');
+
+const mensajes = await ContactForm.find({ estado: 'nuevo' })
+    .sort({ createdAt: -1 })
+    .populate('userId', 'nombre email');
+```
+
+Los precios de cada pedido deben calcularse en el servidor a partir del
+catálogo confiable al crear la compra; nunca deben aceptarse como válidos
+los precios ni el `total` enviados por el navegador.
+
 ### Desarrollo local
 
 1. Instalá MongoDB local o creá una base en MongoDB Atlas.
