@@ -4719,16 +4719,25 @@ footer {
   padding-bottom: 56px !important;
   background-color: #1E3A2B !important;
   color: #F4F1EA !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  gap: 40px !important;
+  display: block !important;
   margin-bottom: 40px !important;
 }
 
+/* Wrapper de las dos columnas del hero */
+#nosotros .nosotros-hero-grid {
+  width: 100% !important;
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Columna izquierda: kicker + titular + cierre. Sin topes de ancho
+   heredados, para que el titular corra 3-5 palabras por renglon. */
 #nosotros .zapi-hero-content {
-  flex: 1 1 60% !important;
-  max-width: 720px !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  flex: none !important;
 }
 
 #nosotros .zapi-hero-badge {
@@ -4748,14 +4757,17 @@ footer {
 }
 
 #nosotros .zapi-hero-title {
-  font-size: 44px !important;
+  font-size: clamp(30px, 3.4vw, 44px) !important;
   font-weight: 800 !important;
   font-family: inherit !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
   color: #F4F1EA !important;
-  margin: 0 0 16px 0 !important;
-  line-height: 1.05 !important;
+  margin: 0 0 20px 0 !important;
+  line-height: 1.12 !important;
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
 }
 
 #nosotros .zapi-hero-description {
@@ -4765,32 +4777,36 @@ footer {
   text-transform: uppercase !important;
   color: rgba(244, 241, 234, 0.85) !important;
   margin: 0 !important;
-  line-height: 1.3 !important;
+  line-height: 1.5 !important;
+  max-width: 52ch !important;
 }
 
-#nosotros .zapi-hero-divider {
-  width: 1px !important;
-  height: 120px !important;
-  background-color: rgba(255, 255, 255, 0.2) !important;
-  flex-shrink: 0 !important;
-}
-
+/* Columna derecha: lista de beneficios institucionales */
 #nosotros .zapi-hero-trust {
   display: flex !important;
   flex-direction: column !important;
-  gap: 20px !important;
-  flex: 0 0 auto !important;
+  gap: 14px !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  flex: none !important;
+  margin: 0 !important;
 }
 
 #nosotros .zapi-hero-trust-item {
   display: flex !important;
   align-items: center !important;
-  gap: 14px !important;
+  gap: 16px !important;
+  padding: 16px 20px !important;
+  box-sizing: border-box !important;
+  background-color: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px !important;
 }
 
 #nosotros .zapi-hero-trust-icon {
-  width: 36px !important;
-  height: 36px !important;
+  width: 42px !important;
+  height: 42px !important;
   border-radius: 50% !important;
   background-color: rgba(255, 255, 255, 0.12) !important;
   display: flex !important;
@@ -4805,17 +4821,27 @@ footer {
 }
 
 #nosotros .zapi-hero-trust-text {
-  font-size: 15px !important;
+  font-size: 14px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.5px !important;
+  line-height: 1.35 !important;
   color: #F4F1EA !important;
+}
+
+/* Escritorio / tablet ancha: las dos columnas equilibradas */
+@media (min-width: 851px) {
+  #nosotros .nosotros-hero-grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) !important;
+    align-items: center !important;
+    gap: clamp(2.5rem, 5vw, 4.5rem) !important;
+  }
 }
 
 @media (max-width: 850px) {
   #nosotros .nosotros-header,
   #nosotros .zapi-hero-banner.full-bleed {
-    flex-direction: column !important;
     align-items: flex-start !important;
     padding: 32px 20px !important;
     width: 100% !important;
@@ -4828,7 +4854,19 @@ footer {
     display: none !important;
   }
   #nosotros .zapi-hero-title {
-    font-size: 32px !important;
+    font-size: clamp(26px, 7vw, 32px) !important;
+    line-height: 1.15 !important;
+  }
+  #nosotros .zapi-hero-description {
+    font-size: 16px !important;
+  }
+  #nosotros .zapi-hero-trust-item {
+    padding: 14px 16px !important;
+    gap: 14px !important;
+  }
+  #nosotros .zapi-hero-trust-icon {
+    width: 36px !important;
+    height: 36px !important;
   }
 }
 
