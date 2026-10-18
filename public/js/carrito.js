@@ -10,9 +10,13 @@
 
 // WhatsApp: 598 + numero sin el 0 inicial (098 268 560 -> 59898268560)
 const WHATSAPP_NUMBER = "59898268560";
-const SHIPPING_COST = 0;
+const FREE_SHIPPING_THRESHOLD = window.ENVIO_GRATIS_MINIMO;
 
 let cart = [];
+
+document.querySelectorAll("[data-shipping-threshold]").forEach(elemento => {
+    elemento.textContent = formatearPrecio(FREE_SHIPPING_THRESHOLD);
+});
 
 /* --- Estado y persistencia --------------------------------- */
 
@@ -31,17 +35,19 @@ function sincronizarCarrito() {
 
 function calcularTotales(items = cart) {
     const subtotal = items.reduce((total, item) => total + item.precio * item.cantidad, 0);
-    const shipping = items.length > 0 ? SHIPPING_COST : 0;
+    const shipping = items.length === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : null;
 
-    return { subtotal, shipping, total: subtotal + shipping };
+    return { subtotal, shipping, total: shipping === null ? null : subtotal + shipping };
 }
 
 function updateSummary() {
     const { subtotal, shipping, total } = calcularTotales();
 
     document.getElementById("subtotal").textContent = formatearPrecio(subtotal);
-    document.getElementById("shipping").textContent = formatearPrecio(shipping);
-    document.getElementById("total").textContent = formatearPrecio(total);
+    document.getElementById("shipping").textContent =
+        shipping === null ? "A coordinar" : shipping === 0 && subtotal > 0 ? "Gratis" : formatearPrecio(shipping);
+    document.getElementById("total").textContent =
+        total === null ? "A coordinar" : formatearPrecio(total);
 }
 
 /* --- Recomendaciones --------------------------------------- */
@@ -199,6 +205,14 @@ function changeQuantity(id, amount) {
     const item = cart.find(({ id: idItem }) => idItem === Number(id));
     if (!item) return;
 
+    if (amount > 0) {
+        const unidadesDisponibles = window.unidadesDe(item.id);
+        if (Number.isFinite(unidadesDisponibles) && item.cantidad + amount > unidadesDisponibles) {
+            mostrarEstado("No hay más unidades disponibles para este producto.", true);
+            return;
+        }
+    }
+
     /* Bajar la cantidad nunca borra el producto: el 1 es el piso;
        para sacarlo esta la papelera. */
     item.cantidad = Math.max(1, item.cantidad + amount);
@@ -234,7 +248,7 @@ document.addEventListener("click", event => {
 
     const agregar = target.closest(".recommendation-add");
     if (agregar) {
-        agregarProductoAlCarrito(Number(agregar.dataset.id));
+        if (!agregarProductoAlCarrito(Number(agregar.dataset.id))) return;
         return;
     }
 
@@ -288,6 +302,15 @@ function construirUrlWhatsapp(datos = {}) {
         datos.notas ? `Notas: ${datos.notas}` : "",
     ].filter(Boolean).join("\n");
 
+    const envioTexto = shipping === null
+        ? "A coordinar por WhatsApp"
+        : shipping === 0 && subtotal > 0
+            ? "Gratis"
+            : formatearPrecio(shipping);
+    const totalTexto = total === null
+        ? `${formatearPrecio(subtotal)} + envío a coordinar`
+        : formatearPrecio(total);
+
     const mensaje = `Hola ZAPI
 
 Quiero realizar el siguiente pedido:
@@ -297,9 +320,9 @@ ${productosTexto}
 ━━━━━━━━━━━━━━━━━━
 
 Subtotal: ${formatearPrecio(subtotal)}
-Envío: ${formatearPrecio(shipping)}
+Envío: ${envioTexto}
 
-TOTAL: ${formatearPrecio(total)}
+TOTAL: ${totalTexto}
 
 ━━━━━━━━━━━━━━━━━━
 
@@ -317,10 +340,8 @@ Gracias.`;
 /* Redireccion directa: window.open() puede devolver una ventana no
    nula aunque el navegador haya bloqueado el popup, y en ese caso el
    chat nunca se abria. Con location.href siempre carga. */
-function redirigirAWhatsApp(datos, etiqueta) {
+function redirigirAWhatsApp(datos) {
     const urlWhatsApp = construirUrlWhatsapp(datos);
-
-    console.log(etiqueta, urlWhatsApp);
 
     if (urlWhatsApp) window.location.href = urlWhatsApp;
 
@@ -328,7 +349,7 @@ function redirigirAWhatsApp(datos, etiqueta) {
 }
 
 function abrirWhatsappPedido(datos) {
-    return redirigirAWhatsApp(datos, "Redirigiendo a WhatsApp:");
+    return redirigirAWhatsApp(datos);
 }
 
 /* Baja el stock mostrado por las cantidades que se acaban de pedir.
@@ -359,13 +380,14 @@ function registrarPedidoLocal(datos) {
 
     if (cart.length === 0) return;
 
-    const { total } = calcularTotales(cart);
+    const { subtotal, total } = calcularTotales(cart);
 
     guardar({
         id: generarCodigoPedido(),
         creado: new Date().toISOString(),
         estado: "pendiente",
-        total,
+        total: total === null ? subtotal : total,
+        envio_pendiente: total === null,
         zona: datos.zona || null,
         notas: datos.notas || null,
         items: cart.map(({ id, nombre, precio, cantidad }) => ({
@@ -389,7 +411,7 @@ function respaldoAWhatsApp(datos) {
 
     registrarPedidoLocal(datos);
 
-    return redirigirAWhatsApp(datos, "Fallback a WhatsApp activado con URL:");
+    return redirigirAWhatsApp(datos);
 }
 
 /* --- Formulario de checkout -------------------------------- */

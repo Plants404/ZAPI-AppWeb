@@ -181,31 +181,6 @@
         return window.urlDelSitio('/');
     }
 
-    /* Modo estatico: cuando no hay API alcanzable (GitHub Pages, una
-       vista previa estatica), el login valida el usuario fijo de
-       config.js y guarda la sesion en el navegador. De todos modos se
-       intenta primero la API real; esto es el plan B, no el A. */
-    function entrarLocal(correo, clave) {
-        if (modo !== 'login') return false;
-
-        const fijo = window.USUARIO_FIJO;
-
-        if (!fijo ||
-            correo.toLowerCase() !== String(fijo.email).toLowerCase() ||
-            clave !== fijo.clave) {
-            return false;
-        }
-
-        window.guardarSesionLocal(fijo);
-
-        st('ok', '¡Listo! Entrando…');
-        window.setTimeout(function () {
-            window.location.href = destino();
-        }, 1500);
-
-        return true;
-    }
-
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
 
@@ -228,12 +203,11 @@
             ? { email: correo, clave: p.value }
             : { nombre: n.value.trim(), email: correo, clave: p.value };
 
-        /* Sin backend configurado (hosting estatico): no se intenta la
-           red, se entra directo por el modo estatico. */
+        /* Sin backend configurado no se acepta una sesion local: la
+           autenticacion siempre debe validarse en el servidor. */
         const fnHayApi = window.hayApiConfigurada;
-        if (typeof fnHayApi === 'function' && !fnHayApi()) {
-            if (entrarLocal(correo, p.value)) return;
-            st('error', 'Esta página no la sirve el backend. Revisá la configuración de la API y volvé a intentar.');
+        if (typeof fnHayApi !== 'function' || !fnHayApi()) {
+            st('error', 'La autenticación no está configurada. Contactá al equipo.');
             sacudir();
             return;
         }
@@ -251,23 +225,7 @@
             const datos = await respuesta.json().catch(function () { return {}; });
 
             if (!respuesta.ok) {
-                /* Si contesta JSON es el backend: un 401 con "error" o
-                   el fallback de datos. Si NO es JSON, el pedido lo
-                   atendio un servidor estatico (vista previa), que no
-                   tiene /api/auth/login: se prueba el modo estatico y
-                   solo si tampoco coincide se avisa. */
-                const esBackend = (respuesta.headers.get('content-type') || '')
-                    .indexOf('application/json') !== -1;
-
-                if (esBackend) {
-                    st('error', datos.error || 'Ups, revisá tus datos e intentá de nuevo');
-                    sacudir();
-                    return;
-                }
-
-                if (entrarLocal(correo, p.value)) return;
-
-                st('error', 'Esta página no la sirve el backend. Revisá la configuración de la API y volvé a intentar.');
+                st('error', datos.error || 'Ups, revisá tus datos e intentá de nuevo');
                 sacudir();
                 return;
             }
@@ -276,16 +234,21 @@
             window.setTimeout(function () {
                 window.location.href = destino();
             }, 1500);
-        } catch (error) {
-            /* Red caida o API por configurar: el plan B valida el
-               usuario fijo para que la demo estatica pueda entrar. */
-            if (!entrarLocal(correo, p.value)) {
-                st('error', 'No pudimos conectarnos. Revisá tus datos e intentá de nuevo');
-                sacudir();
-            }
+        } catch {
+            st('error', 'No pudimos conectarnos. Revisá la conexión e intentá de nuevo.');
+            sacudir();
         } finally {
             go.disabled = false;
         }
     });
+
+    if (typeof window.hayApiConfigurada !== 'function' || !window.hayApiConfigurada()) {
+        u.disabled = true;
+        p.disabled = true;
+        t.disabled = true;
+        go.disabled = true;
+        swap.disabled = true;
+        st('error', 'El acceso requiere una API configurada. Contactá al equipo.');
+    }
 
 })();

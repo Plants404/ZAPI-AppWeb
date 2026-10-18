@@ -173,6 +173,8 @@ function unidadesDe(id) {
 
 }
 
+window.unidadesDe = unidadesDe;
+
 function textoDeStock(unidades) {
 
     if (unidades <= 0) return "No hay stock";
@@ -443,17 +445,23 @@ cargarStock();
 
            });
 
-           return;
+           return false;
 
        }
 
        const producto = PRODUCTOS.find(p => p.id === idProducto);
 
-       if (!producto) return;
+       if (!producto) return false;
 
        const carrito = obtenerCarrito();
 
        const existente = carrito.find(item => item.id === producto.id);
+       const unidadesDisponibles = unidadesDe(producto.id);
+
+       if (Number.isFinite(unidadesDisponibles) &&
+           (existente ? existente.cantidad : 0) >= unidadesDisponibles) {
+           return false;
+       }
 
        if (existente) {
 
@@ -477,14 +485,9 @@ cargarStock();
        actualizarContador(true);
        sonidoAgregar();
        avisarCambioDelCarrito();
+       return true;
 
    }
-
-document.addEventListener("modal:agregar", function (evento) {
-
-    agregarProductoAlCarrito(evento.detail.id);
-
-});
   function actualizarContador(animar) {
 
       const total = obtenerCarrito().reduce(

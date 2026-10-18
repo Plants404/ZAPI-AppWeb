@@ -1,6 +1,6 @@
 'use strict';
 /* Verificacion estatica del sitio. Usage: node tools/verificar.js
-   No modifica nada: solo informa lo que encuentra. */
+   No modifica archivos: los generadores se ejecutan por separado. */
 
 const fs = require('fs');
 const path = require('path');
@@ -74,11 +74,6 @@ function leerTestimoniosJSON() {
 let problemas = 0;
 const avisar = m => { problemas++; console.log('  FALLA  ' + m); };
 const ok = m => console.log('  ok     ' + m);
-
-/* Para lo que hay que ver pero no esta mal. Renombrar un producto
-   borra su ficha vieja: eso es lo correcto, no un error, pero tiene
-   que quedar a la vista porque se borro un archivo. */
-const nota = m => console.log('  nota   ' + m);
 
 /* --- 1. CSS: llaves balanceadas --- */
 console.log('\nCSS');
@@ -260,15 +255,14 @@ function revisarBloqueHTML(archivo, bloque) {
     return fuera;
 }
 
-/* --- 6. Los archivos generados estan al dia --- */
-console.log('\nArchivos generados');
-const { execFileSync } = require('child_process');
-try {
-    execFileSync('node', [path.join(raiz, 'tools', 'extraer-modal-css.js')],
-        { cwd: raiz, stdio: 'pipe' });
-    ok('public/css/catalogo-modal.css y catalogo-catalogo.css regenerados');
-} catch (e) {
-    avisar('no se pudo regenerar el CSS del catalogo: ' + e.message);
+/* --- 6. Los CSS generados existen -------------------------- */
+console.log('\nCSS generado');
+for (const archivo of ['catalogo-modal.css', 'catalogo-catalogo.css']) {
+    if (fs.existsSync(path.join(raiz, 'public', 'css', archivo))) {
+        ok('public/css/' + archivo + ' existe');
+    } else {
+        avisar('falta public/css/' + archivo + ': corré npm run css');
+    }
 }
 
 /* --- 7. Scripts que faltan en cada pagina ---
@@ -300,7 +294,7 @@ const globales = new Set();
 
 for (const f of JS) {
     const s = fs.readFileSync(rutaJs(f), 'utf8');
-    for (const m of s.matchAll(/window\.([a-zA-Z_$][\w$]*)\s*=/g)) {
+    for (const m of s.matchAll(/window\.([a-zA-Z_$][\w$]*)\s*=(?!=)/g)) {
         define.set(m[1], f);
         globales.add(m[1]);
     }
@@ -435,11 +429,8 @@ if (sinCubrir.length === 0) {
 }
 
 /* --- 9. Paginas de producto generadas ---
-   Se corre el generador primero, asi que ademas de validar lo
-   que hay en disco esto deja las paginas al dia con el catalogo.
-   De cada pagina se mira que el JSON-LD parse, que el canonical
-   apunte a la pagina misma, y que las imagenes y los enlaces que
-   usa existan de verdad. */
+   Se valida lo que hay en disco sin ejecutar el generador, porque
+   generar paginas y podar fichas son operaciones explicitas. */
 console.log('\nPaginas de producto');
 
 const gen = path.join(raiz, 'tools', 'generar-productos.js');
@@ -447,40 +438,6 @@ const gen = path.join(raiz, 'tools', 'generar-productos.js');
 if (!fs.existsSync(gen)) {
     avisar('falta tools/generar-productos.js');
 } else {
-    try {
-        const salida = execFileSync('node', [gen], { cwd: raiz, stdio: 'pipe' }).toString();
-
-        /* El generador poda las fichas que ya no estan en el catalogo
-           y lo dice en su salida. Como acá la salida se traga, se lee
-           para que quien verifica se entere de que se borro algo. */
-        const podadas = [];
-        let dentro = false;
-
-        for (const linea of salida.split('\n')) {
-            const t = linea.trim();
-
-            if (/^Fichas borradas/.test(t) || /^Poda suspendida/.test(t)) {
-                dentro = true;
-                continue;
-            }
-            if (dentro && /^Archivos \.html/.test(t)) { dentro = false; continue; }
-
-            if (dentro && /^productos\//.test(t)) {
-                podadas.push(t.replace(/\s+\(.*/, ''));
-            }
-        }
-
-        for (const ficha of podadas) {
-            nota(ficha + ' se borro: su producto ya no esta en el catalogo');
-        }
-
-        if (podadas.length) {
-            nota('  esas fichas quedaban publicadas con el precio anterior y en el sitemap');
-        }
-    } catch (e) {
-        avisar('el generador fallo: ' + String(e.stderr || e.message).trim().split('\n').pop());
-    }
-
     const carpeta = path.join(raiz, 'productos');
     const paginas = fs.existsSync(carpeta)
         ? fs.readdirSync(carpeta).filter(f => f.endsWith('.html'))
@@ -706,30 +663,11 @@ console.log('\nEl catalogo en JSON');
 
 
 /* --- 11. El JSON de testimonios esta al dia -------------------
-
-   Testimonios sigue el mismo reparto que el catalogo: se edita
-   datos/testimonios.js, de ahi sale public/data/testimonios.json,
-   y ese mismo JSON siembra la coleccion del backend. Para que el
-   carrusel no quede con opiniones viejas si cambiaron la fuente y
-   se olvidaron de correr el generador, se regenera y se compara
-   una a una. */
+   Se comparan fuente y JSON sin ejecutar el generador. */
 
 console.log('\nTestimonios');
 
 {
-    const generadorTestimonios = path.join(raiz, 'tools', 'generar-testimonios.js');
-
-    if (!fs.existsSync(generadorTestimonios)) {
-        avisar('falta tools/generar-testimonios.js');
-    } else {
-        try {
-            execFileSync('node', [generadorTestimonios], { cwd: raiz, stdio: 'pipe' });
-        } catch (e) {
-            avisar('el generador de testimonios fallo: ' +
-                String(e.stderr || e.message).trim().split('\n').pop());
-        }
-    }
-
     const fuente = leerTestimoniosFuente();
     const delJson = leerTestimoniosJSON();
 
@@ -762,16 +700,8 @@ console.log('\nTestimonios');
 
 
 /* --- Fichas huerfanas -------------------------------------------
-
-   No hace falta buscarlas aca: el generador de arriba ya las poda,
-   porque su unica fuente es datos/catalogo.js. Lo que si hace falta es no
-   tragarse lo que hizo. Correr verificar puede borrar fichas, y
-   borrar sin avisar es la clase de sorpresa que hace que la gente
-   deje de correr la herramienta.
-
-   Por eso se lee la salida del generador y lo que podo se reporta
-   como aviso: si alguien renombro un producto, al verificar se entera
-   de que la ficha vieja desaparecio y de por que. */
+   La verificacion no poda archivos. Las fichas sin correspondencia con
+   el catalogo se reportan para que la limpieza sea una accion explicita. */
 
 console.log('\n' + (problemas ? problemas + ' problema(s)' : 'Sin problemas'));
 

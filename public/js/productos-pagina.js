@@ -35,7 +35,13 @@
 
     boton.addEventListener('click', function () {
 
-        agregarProductoAlCarrito(Number(boton.dataset.id));
+        if (!agregarProductoAlCarrito(Number(boton.dataset.id))) {
+            if (aviso) {
+                aviso.textContent = 'No se pudo agregar. Verificá la disponibilidad e iniciá sesión.';
+                aviso.classList.add('error');
+            }
+            return;
+        }
 
         if (!aviso) return;
 

@@ -13,53 +13,35 @@ const ZAPI_FAQ = [
     {
         claves: ["horario", "horarios", "abren", "cierran", "atencion", "atención", "cuando", "dias", "días"],
         respuesta:
-            "Atendemos de <strong>lunes a viernes de 9 a 18 hs</strong> y " +
-            "<strong>sábados de 9 a 13 hs</strong>. 🌿<br><br>" +
-            "El vivero queda en Canelones y también coordinamos entregas " +
-            "a todo el país. Si escribinos fuera de horario, te contestamos " +
-            "lo antes posible por WhatsApp."
+            "La dirección publicada de ZAPI está en Montevideo. 🌿<br><br>" +
+            "Escribinos por WhatsApp para confirmar los horarios de atención."
     },
     {
         claves: ["envio", "envíos", "enviar", "delivery", "entrega", "entregar", "reparto", "llegan", "llega", "domicilio", "transportista"],
         respuesta:
-            "Sí, hacemos <strong>envíos a todo el Uruguay</strong>. 📦<br><br>" +
-            "<ul>" +
-            "<li>Montevideo: entregas en 24 hs</li>" +
-            "<li>Interior: 48 a 72 hs</li>" +
-            "<li>Retiro en vivero: sin costo</li>" +
-            "</ul>" +
-            "El costo se calcula según la cantidad y el destino. " +
-            "Lo coordinamos contigo al confirmar el pedido."
+            `El envío es gratis en compras desde <strong>${formatearPrecio(window.ENVIO_GRATIS_MINIMO)}</strong>. 📦<br><br>` +
+            "Para compras menores, el costo se coordina por WhatsApp. " +
+            "Consultanos también la disponibilidad y el plazo para tu zona."
     },
     {
         claves: ["precio", "precios", "cuanto", "cuesta", "valor", "cuánto", "caro", "barato", "descuento", "oferta", "promo", "promocion", "promoción", "rebaja", "sale"],
         respuesta:
-            "Todos nuestros productos tienen <strong>precios fijos</strong> " +
-            "y los podés ver directamente en el catálogo. 💰<br><br>" +
-            "Además, con el <strong>Club ZAPI</strong> acumulás puntos por " +
-            "cada compra y los usás como descuento en tu próximo pedido. " +
-            "¿Querés que te muestre las promociones vigentes?"
+            "Podés consultar los precios actuales en el catálogo. 💰<br><br>" +
+            "Para confirmar promociones o descuentos vigentes, escribinos por WhatsApp."
     },
     {
         claves: ["stock", "disponible", "disponibilidad", "existe", "hay", "tienen"],
         respuesta:
-            "El stock cambia seguido, sobre todo en temporada. 🌱<br><br>" +
+            "La disponibilidad debe confirmarse al armar el pedido. 🌱<br><br>" +
             "Lo más seguro es <strong>armar tu carrito</strong> y enviarlo " +
-            "por WhatsApp: te confirmamos disponibilidad al instante y te " +
-            "reservamos todo lo que pediste."
+            "por WhatsApp para que el equipo confirme la disponibilidad."
     },
     {
         claves: ["cuidado", "cuidados", "regar", "riego", "agua", "luz", "sol", "cultivar", "como crece", "mantener", "sustrato", "fertilizar", "plaga", "amarillo", "amarillenta", "seca", "caen", "hojas", "marchita", "murio", "se muere"],
         respuesta:
-            "Cada compra incluye una <strong>guía de cuidados digital</strong> 📖<br><br>" +
-            " Tips generales:<br>" +
-            "<ul>" +
-            "<li>Revisá la humedad del sustrato antes de regar</li>" +
-            "<li>Ubicá según la necesidad de luz de la especie</li>" +
-            "<li>Las suculentas y cactus necesitan poca agua</li>" +
-            "<li>Las aromáticas agradan el sol directo</li>" +
-            "</ul>" +
-            "Decime qué planta tenés y te doy indicaciones puntuales."
+            "Los cuidados dependen de cada especie. 🌿<br><br>" +
+            "Decime qué planta tenés y te ayudo a encontrar información " +
+            "general; para recomendaciones específicas, consultá su ficha."
     },
     {
         claves: ["servicio", "servicios", "asesoria", "asesoramiento", "consultoria", "jardin", "jardín", "huerta", "diseno", "diseño", "mantenimiento", "empresa", "corporativo", "capacitacion", "capacitación", "taller", "proyecto"],
@@ -79,50 +61,37 @@ const ZAPI_FAQ = [
     {
         claves: ["pago", "pagar", "forma", "tarjeta", "credito", "crédito", "debito", "débito", "transferencia", "efectivo", "factura", "facturar"],
         respuesta:
-            "Aceptamos:<br><br>" +
-            "<ul>" +
-            "<li>Efectivo</li>" +
-            "<li>Transferencia bancaria</li>" +
-            "<li>Tarjetas de crédito y débito</li>" +
-            "</ul>" +
-            "Emitimos factura electrónica sin costo adicional. 🧾"
+            "El pedido se coordina por WhatsApp. Escribinos para confirmar " +
+            "los medios de pago y las opciones de facturación disponibles."
     },
     {
         claves: ["punto", "puntos", "club", "fidelidad", "recompensa", "acumular", "acumulo", "acumula", "beneficio", "vip", "miembro", "socio"],
         respuesta:
-            "¡Somos el <strong>Club ZAPI</strong>! 🌟<br><br>" +
-            "Por cada $1.000 que gastás sumás <strong>100 puntos</strong>. " +
-            "Con 500 puntos te llevás un <strong>10% de descuento</strong>, " +
-            "y con 1.500 puntos, un <strong>15%</strong> en tu próxima compra.<br><br>" +
-            "Los puntos no vencen y se acumulan con cada pedido. " +
-            "¿Querés consultar tus puntos?"
+            "No tengo información confirmada sobre un programa de puntos " +
+            "vigente. Consultá al equipo por WhatsApp."
     },
     {
         claves: ["pedido", "mi pedido", "estado", "seguimiento", "rastreo", "llegó", "llego", "recibí", "recibí"],
         respuesta:
             "Para consultar el estado de tu pedido, escribinos por " +
-            "<strong>WhatsApp</strong> con tu nombre y te lo verificamos al " +
-            "instante. 📲<br><br>" +
+            "<strong>WhatsApp</strong> con tu nombre y los datos del pedido. " +
+            "El equipo te responderá cuando reciba la consulta. 📲<br><br>" +
             "Si tu pedido ya está en el carrito, podés enviarlo " +
             "directamente desde la página del carrito."
     },
     {
         claves: ["cactus", "suculenta", "suculentas"],
         respuesta:
-            "Las suculentas y cactus son de los más elegidos. 🌵<br><br>" +
-            "Vienen en maceta cerámica, necesitan muy poco riego y son " +
-            "perfectos para interiores luminosos. En el catálogo tenés el " +
-            "<strong>pack mix</strong>, que sale hasta un 30% más barato " +
-            "que comprarlas por separado."
+            "Podés consultar los productos disponibles y sus cuidados " +
+            "en el catálogo. Las necesidades varían según la especie."
     },
     {
         claves: ["aromatica", "aromáticas", "aromatica", "albahaca", "ruda", "romero", "menta", "huerta", "hortaliza", "verdura", "comestible", "cultivo", "siembra", "plantin"],
         respuesta:
             "Tenemos aromáticas y hortalizas de <strong>cultivo " +
             "agroecológico</strong> 🌿<br><br>" +
-            "La albahaca rinde más de 8 semanas de cosecha continua y la " +
-            "ruda se puede resilembrar hasta 4 veces. Ideal para empezar " +
-            "tu huerta en casa o balcón."
+            "Revisá la descripción de cada producto y consultanos sus " +
+            "cuidados antes de consumir una planta."
     },
     {
         claves: ["recomienda", "recomendacion", "recomendación", "sugerencia", "sugerencias", "que me recomendas", "cual compro", "qué me compr", "ayuda", "no sé", "no se"],
@@ -132,19 +101,18 @@ const ZAPI_FAQ = [
             "<ul>" +
             "<li>¿Lo querés para interior o exterior?</li>" +
             "<li>¿Tenés mucha luz o poca?</li>" +
-            "<li>¿Lo querés lindo o comestible?</li>" +
+            "<li>¿Qué tipo de espacio querés armar?</li>" +
             "<li>¿Cuánto regás?</li>" +
             "</ul>" +
-            "Con eso te digo exactamente qué planta te conviene."
+            "Con eso puedo ayudarte a comparar opciones del catálogo."
     },
     {
         claves: ["mascota", "gato", "perro", "animal", "toxica", "tóxica", "venenosa", "seguro", "niños", "niño", "bebe", "bebé"],
         respuesta:
             "Buena pregunta. 🌿<br><br>" +
-            "<strong>La albahaca y la ruda son seguras</strong> para " +
-            "mascotas y niños, pero algunas suculentas <strong>no son " +
-            "tóxicas para gatos ni perros</strong>.<br><br>" +
-            "Decime cuáles tenés en casa y te confirmo antes de comprar."
+            "La seguridad depende de la especie y de la exposición. No " +
+            "puedo confirmar que una planta sea segura para mascotas o niños; " +
+            "consultá a un veterinario o profesional de salud."
     },
     {
         claves: ["gracias", "genial", "perfecto", "buenisimo", "barbaro", "barbaro", "copado", "joya"],
@@ -158,56 +126,10 @@ const ZAPI_FAQ = [
 ];
 
 
-const ZAPI_PROMOS = {
-
-    primera: {
-        titulo: "🎁 10% en tu primera compra",
-        detalle:
-            "Mostrame este código al confirmar tu pedido y te lo aplicamos " +
-            "directo. <strong>Válido en toda la web.</strong>",
-        codigo: "ZAPI10"
-    },
-
-    envio: {
-        titulo: "🚚 Envío gratis",
-        detalle:
-            "En compras superiores a <strong>$2.500</strong> el envío a " +
-            "Montevideo y áreas metropolitanas no tiene costo.",
-        codigo: null
-    },
-
-    club: {
-        titulo: "🌟 Club ZAPI: 15% en tu próxima compra",
-        detalle:
-            "Con 1.500 puntos acumulados te corresponde un 15% de " +
-            "descuento. Los puntos se acreditan al confirmar cada pedido " +
-            "y <strong>no vencen</strong>.",
-        codigo: null
-    },
-
-    combo: {
-        titulo: "🌵 Pack Suculentas: 30% OFF",
-        detalle:
-            "El <strong>pack mix de 6 suculentas</strong> tiene el mejor " +
-            "precio por unidad de todo el catálogo. Limitado a stock.",
-        codigo: null
-    },
-
-    referred: {
-        titulo: "🤝 Traé un amigo y ganá",
-        detalle:
-            "Si tu amigo se registra con tu recomendación, ambos reciben " +
-            "<strong>$200 de descuento</strong> en su primer pedido.",
-        codigo: null
-    }
-
-};
-
-
 const ZAPI_MENU = [
     { etiqueta: "Cuidados", icono: "eco", clave: "cuidado" },
     { etiqueta: "Envíos", icono: "local_shipping", clave: "envio" },
-    { etiqueta: "Club ZAPI · beneficios", icono: "star", clave: "club" },
+    { etiqueta: "Consultar beneficios", icono: "star", clave: "club" },
     { etiqueta: "Servicios", icono: "home_repair_service", clave: "servicio" },
     { etiqueta: "Promociones", icono: "local_offer", clave: "promo" }
 ];
@@ -267,47 +189,14 @@ function detectarIntencion(texto) {
 
 
 function respuestaPromociones() {
-
-    const p = ZAPI_PROMOS;
-
     return (
-        "Estas son las <strong>promociones vigentes</strong> ahora: 🎁<br><br>" +
-
-        `<strong>${p.primera.titulo}</strong><br>${p.primera.detalle}<br>` +
-        `Código: <strong>${p.primera.codigo}</strong><br><br>` +
-
-        `<strong>${p.envio.titulo}</strong><br>${p.envio.detalle}<br><br>` +
-
-        `<strong>${p.combo.titulo}</strong><br>${p.combo.detalle}<br><br>` +
-
-        `<strong>${p.referred.titulo}</strong><br>${p.referred.detalle}<br><br>` +
-
-        `¿Querés que te ayude a armar el pedido con alguna de estas?`
+        "No tengo promociones confirmadas para mostrar ahora. " +
+        "Consultá al equipo por WhatsApp antes de realizar tu pedido."
     );
 }
 
 function respuestaClub() {
-
-    const c = ZAPI_PROMOS.club;
-
-    return (
-        `¡Bienvenido al <strong>Club ZAPI</strong>! 🌟<br><br>` +
-
-        "<strong>Cómo funciona:</strong><br>" +
-        "<ul>" +
-        "<li>Por cada $1.000 de compra sumás 100 puntos</li>" +
-        "<li>500 puntos = 10% de descuento</li>" +
-        "<li>1.000 puntos = 12% de descuento</li>" +
-        "<li>1.500 puntos = 15% de descuento</li>" +
-        "</ul>" +
-
-        `<strong>Ventajas extra:</strong><br>${c.detalle}<br><br>` +
-
-        "Los puntos se acreditan al confirmar el pedido, nunca vencen y " +
-        "se pueden usar en compras online o en el vivero.<br><br>" +
-
-        "¿Querés que te recomiende un producto para empezar a sumar puntos?"
-    );
+    return "No tengo información confirmada sobre un programa de puntos vigente. Consultá al equipo por WhatsApp.";
 }
 
 function respuestaCarrito() {
@@ -332,14 +221,13 @@ function respuestaCarrito() {
         (suma, i) => suma + (i.precio * i.cantidad), 0
     );
 
-    const faltaParaEnvioGratis = 2500 - subtotal;
-
     let extra = "";
 
-    if (faltaParaEnvioGratis > 0) {
+    if (subtotal < window.ENVIO_GRATIS_MINIMO) {
+        const faltaParaEnvioGratis = window.ENVIO_GRATIS_MINIMO - subtotal;
         extra =
             `<br><br>💡 Te faltan <strong>${formatearPrecio(faltaParaEnvioGratis)}</strong> ` +
-            "para tener <strong>envío gratis</strong>.";
+            "para alcanzar el envío gratis. El costo para pedidos menores se coordina por WhatsApp.";
     } else {
         extra = "<br><br>🎉 ¡Tu pedido ya califica para <strong>envío gratis</strong>!";
     }
@@ -412,17 +300,10 @@ function generarRespuesta(texto) {
         );
     }
 
-    const codigo = ZAPI_PROMOS.primera.codigo.toLowerCase();
-
-    if (pregunta.includes(codigo) || pregunta.includes("codigo") ||
+    if (pregunta.includes("codigo") ||
         pregunta.includes("código") || pregunta.includes("cupon") ||
         pregunta.includes("cupón")) {
-
-        return (
-            `Tu código es <strong>${ZAPI_PROMOS.primera.codigo}</strong> 🎁<br><br>` +
-            "Agrégalo al confirmar el pedido por WhatsApp y te aplicamos " +
-            "el 10% de descuento en tu primera compra."
-        );
+        return respuestaPromociones();
     }
 
     const faq = detectarIntencion(texto);
@@ -439,7 +320,7 @@ function generarRespuesta(texto) {
         "<li>Promociones y descuentos</li>" +
         "<li>Cuidados de tus plantas</li>" +
         "<li>Servicios para tu proyecto</li>" +
-        "<li>Club ZAPI y puntos</li>" +
+        "<li>Beneficios y promociones</li>" +
         "</ul>" +
         "Si preferís hablar con una persona, escribinos por WhatsApp " +
         "al <strong>098 268 560</strong>. 🌿"
@@ -542,7 +423,7 @@ const ZAPI_BOT_HTML = `
             <span>¿Preferís hablar con una persona?</span>
             <a
                 class="zapi-humano-link"
-                href="https://wa.me/098268560?text=Hola%20ZAPI%2C%20necesito%20ayuda%20con%20un%20pedido"
+                href="https://wa.me/59898268560?text=Hola%20ZAPI%2C%20necesito%20ayuda%20con%20un%20pedido"
                 target="_blank"
                 rel="noopener">
                 <span class="material-symbols-outlined" aria-hidden="true">support_agent</span>
@@ -908,9 +789,8 @@ function initZapiBot() {
         if (faq && faq.despedida) {
             setTimeout(() => {
                 agregarMensaje(
-                    "Por cierto, si querés sumar puntos al Club ZAPI, " +
-                    "hoy tenés <strong>envío gratis</strong> en compras " +
-                    "mayores a $2.500. 🚚 ¿Te ayudo a armar el pedido?",
+                    `Recordá: el envío es gratis desde <strong>${formatearPrecio(window.ENVIO_GRATIS_MINIMO)}</strong>. ` +
+                    "Para pedidos menores, coordinamos el costo por WhatsApp. 🚚",
                     "bot"
                 );
             }, 900);
@@ -1021,15 +901,12 @@ function initZapiBot() {
 
         if (!boton) return;
 
-        try {
-            if (typeof agregarProductoAlCarrito === "function") {
-                agregarProductoAlCarrito(Number(boton.dataset.id));
-                boton.textContent = "Agregado";
-                boton.disabled = true;
-                zapiTrack("agregar_carrito", { productoId: Number(boton.dataset.id) });
-            }
-        } catch {
-        }
+        if (typeof agregarProductoAlCarrito !== "function" ||
+            !agregarProductoAlCarrito(Number(boton.dataset.id))) return;
+
+        boton.textContent = "Agregado";
+        boton.disabled = true;
+        zapiTrack("agregar_carrito", { productoId: Number(boton.dataset.id) });
 
     });
 

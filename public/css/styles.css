@@ -1259,6 +1259,9 @@ body.no-scroll {
   grid-row: auto;
   grid-column: auto;
   width: 100%;
+  /* La foto es 3:2; con aspect-ratio 4/5 y object-fit fill se
+     estiraba y salía deformada. Cover recorta sin deformar. */
+  object-fit: cover;
 }
 
 #inicio .hero-ctas {
@@ -1276,6 +1279,15 @@ body.no-scroll {
   #inicio .hero-grid {
     grid-template-columns: 1.1fr 1fr;
     gap: 4rem;
+  }
+  #inicio .hero-grid img {
+    /* El 4/5 original recortaba demasiado una foto 3:2 (y con fill
+       salía deformada). Cuadrado: mismo alto que la columna de texto,
+       columnas parejadas; cover centra el recorte. El radio de 18px
+       coincide con el de las tarjetas del catálogo. */
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 18px;
   }
 }
 
@@ -4483,13 +4495,6 @@ footer {
   max-width: 580px !important;
 }
 
-#catalogo .zapi-hero-divider {
-  width: 1px !important;
-  height: 90px !important;
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  flex-shrink: 0 !important;
-}
-
 #catalogo .zapi-hero-trust,
 #catalogo .catalog-trust {
   display: flex !important;
@@ -4561,13 +4566,6 @@ footer {
   color: rgba(244, 241, 234, 0.9) !important;
   margin: 0 !important;
   max-width: 580px !important;
-}
-
-#servicios .zapi-hero-divider {
-  width: 1px !important;
-  height: 90px !important;
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  flex-shrink: 0 !important;
 }
 
 #servicios .zapi-hero-trust {
@@ -4723,14 +4721,6 @@ footer {
   margin-bottom: 40px !important;
 }
 
-/* Wrapper de las dos columnas del hero */
-#nosotros .nosotros-hero-grid {
-  width: 100% !important;
-  max-width: 1180px !important;
-  margin: 0 auto !important;
-  box-sizing: border-box !important;
-}
-
 /* Columna izquierda: kicker + titular + cierre. Sin topes de ancho
    heredados, para que el titular corra 3-5 palabras por renglon. */
 #nosotros .zapi-hero-content {
@@ -4829,15 +4819,8 @@ footer {
   color: #F4F1EA !important;
 }
 
-/* Escritorio / tablet ancha: las dos columnas equilibradas */
-@media (min-width: 851px) {
-  #nosotros .nosotros-hero-grid {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) !important;
-    align-items: center !important;
-    gap: clamp(2.5rem, 5vw, 4.5rem) !important;
-  }
-}
+/* Escritorio / tablet ancha: las dos columnas equilibradas
+   (ver bloque consolidado "HERO GLOBAL" al final del archivo) */
 
 @media (max-width: 850px) {
   #nosotros .nosotros-header,
@@ -4849,9 +4832,6 @@ footer {
     right: 0 !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-  }
-  #nosotros .zapi-hero-divider {
-    display: none !important;
   }
   #nosotros .zapi-hero-title {
     font-size: clamp(26px, 7vw, 32px) !important;
@@ -4937,13 +4917,6 @@ footer {
   margin: 0 !important;
 }
 
-#contacto .zapi-hero-divider {
-  width: 1px !important;
-  height: 110px !important;
-  background-color: rgba(255, 255, 255, 0.18) !important;
-  flex-shrink: 0 !important;
-}
-
 #contacto .zapi-hero-trust {
   display: flex !important;
   flex-direction: column !important;
@@ -5010,7 +4983,10 @@ footer {
   margin: 4px 0 24px 0 !important;
 }
 
-/* 3. Inputs del Formulario */
+/* 3. Inputs del Formulario: borde delgado verde corporativo sobre
+   fondo blanco (sin relleno crema), radio suave y aire interno.
+   Cada input lleva su icono SVG nativo a la izquierda; el textarea
+   conserva el mismo borde sin icono. */
 .contacto-form .form-row {
   display: flex !important;
   gap: 20px !important;
@@ -5034,20 +5010,65 @@ footer {
 .contacto-form textarea {
   width: 100% !important;
   box-sizing: border-box !important;
-  padding: 10px 14px !important;
-  background-color: #F7F5ED !important;
-  border: 1px solid #D0C9B6 !important;
-  border-radius: 8px !important;
+  padding: 12px 14px !important;
+  background-color: #FFFFFF !important;
+  border: 1.5px solid #1f382b !important;
+  border-radius: 10px !important;
   font-size: 14px !important;
   color: #333333 !important;
   outline: none !important;
-  transition: border-color 0.2s !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+}
+
+.contacto-form input::placeholder,
+.contacto-form textarea::placeholder {
+  color: var(--muted) !important;
+  opacity: 1 !important;
 }
 
 .contacto-form input:focus,
 .contacto-form textarea:focus {
-  border-color: #1E3A2B !important;
+  border-color: #1f382b !important;
   background-color: #FFFFFF !important;
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, .18) !important;
+}
+
+/* Contenedor del icono: lo posiciona dentro del input sin alterar
+   el flujo del label ni del mensaje de error */
+.campo-con-icono {
+  position: relative !important;
+  display: block !important;
+}
+
+.campo-con-icono .campo-icono {
+  position: absolute !important;
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: #1f382b !important;
+  opacity: .7 !important;
+  display: flex !important;
+  pointer-events: none !important;
+}
+
+.campo-con-icono input {
+  padding-left: 44px !important;
+}
+
+/* Estado de error: contacto.js agrega/quita .campo-con-error */
+.contacto-form .campo-con-error {
+  border-color: var(--error) !important;
+  box-shadow: 0 0 0 3px rgba(163, 52, 31, .14) !important;
+}
+
+/* Contador "restantes/total" alineado a la derecha, bajo el textarea */
+.contacto-contador {
+  align-self: flex-end !important;
+  margin-top: 2px !important;
+  font-family: var(--sans) !important;
+  font-size: .78rem !important;
+  color: var(--muted) !important;
+  white-space: nowrap !important;
 }
 
 /* 4. Footer del Formulario */
@@ -5070,14 +5091,16 @@ footer {
   background-color: #1E3A2B !important;
   color: #F7F5ED !important;
   border: none !important;
-  padding: 12px 24px !important;
+  /* padding generoso: el botón queda alineado a la derecha en
+     .form-footer (justify-content: space-between) con su flecha */
+  padding: 14px 30px !important;
   border-radius: 24px !important;
   font-size: 14px !important;
   font-weight: 700 !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 10px !important;
   transition: background-color 0.2s !important;
 }
 
@@ -5092,9 +5115,6 @@ footer {
     align-items: flex-start !important;
     padding: 28px 20px !important;
   }
-  #contacto .zapi-hero-divider {
-    display: none !important;
-  }
   .contacto-card-container {
     margin-top: 20px !important;
   }
@@ -5104,6 +5124,11 @@ footer {
   .contacto-form .form-footer {
     flex-direction: column !important;
     align-items: stretch !important;
+  }
+  /* En una sola columna el pie se apila, pero el botón mantiene
+     su alineación a la derecha (no se estira al ancho completo) */
+  .contacto-form .btn-submit {
+    align-self: flex-end !important;
   }
 }
 
@@ -5138,11 +5163,253 @@ a[href="carrito.html"]::before,
   border-radius: 0 !important;
 }
 
-/* Alineación del contenido interior del banner dentro del ancho estándar */
-.zapi-hero-banner > div,
+/* Alineación del contenido interior del banner dentro del ancho estándar.
+   El wrapper .zapi-hero-grid se excluye: lo centra su propia regla. */
+.zapi-hero-banner > div:not(.zapi-hero-grid),
 .catalog-header.zapi-hero-banner .catalog-header-content {
   max-width: 1280px !important;
   margin: 0 auto !important;
   width: 100% !important;
+}
+
+/* ==========================================================================
+   HERO GLOBAL — #servicios / #nosotros / #contacto
+   Dos columnas equilibradas (texto | beneficios), padding vertical
+   uniforme, tipografía consistente y divisorio por border-left.
+   ========================================================================== */
+
+/* Wrapper de las dos columnas (mobile-first: apilado) */
+.zapi-hero-grid {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 4vw, 3rem);
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+@media (min-width: 851px) {
+  .zapi-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+  }
+  /* Nosotros: el titular tiene 75 caracteres en mayúscula y con la
+     grilla general (1.6fr ≈ 680px) caía a 4 renglones. Columna
+     izquierda más ancha (2fr ≈ 740px): baja a 3 renglones y la
+     columna de beneficios (≈370px) sigue holgada. */
+  #nosotros .zapi-hero-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+/* Padding del banner consistente en las cuatro vistas */
+#servicios .service-header.zapi-hero-banner,
+#nosotros .nosotros-header.zapi-hero-banner,
+#contacto .contacto-header.zapi-hero-banner.full-bleed,
+#catalogo .catalog-header.zapi-hero-banner {
+  display: block !important;
+  padding-top: 56px !important;
+  padding-bottom: 56px !important;
+  padding-left: max(6vw, 48px) !important;
+  padding-right: max(6vw, 48px) !important;
+}
+
+/* Sin franja entre el header sticky y el hero: el banner arranca
+   pegado a la barra de navegación. La sección conserva solo el
+   padding inferior (ritmo con el contenido que sigue). */
+#catalogo,
+#servicios,
+#nosotros,
+#contacto {
+  padding-top: 0 !important;
+}
+
+/* En Servicios el hero vive dentro de #service, que suma su propio
+   padding por encima del de la sección. */
+#service {
+  padding-top: 0 !important;
+}
+
+/* #catalogo: full-bleed real. La regla #catalogo .catalog-header
+   (styles.css:4444) anulaba width/margin del full-bleed global y el
+   bloque quedaba corrido 50% a la derecha, dejando un hueco crema a la
+   izquierda. Acá se reimpone a mayor especificidad. El degradado
+   sutil da profundidad sin sumar assets externos. */
+#catalogo .catalog-header.zapi-hero-banner {
+  width: 100vw !important;
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  margin-top: 0 !important;
+  /* pegado a .catalog-filterbar: sin franja arena entre el verde y la
+     barra crema de categorías */
+  margin-bottom: 0 !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  background-color: #1E3A2B !important;
+  background-image: radial-gradient(55rem 28rem at 88% -15%, rgba(247, 245, 237, 0.10), transparent 60%),
+    radial-gradient(40rem 24rem at 8% 115%, rgba(74, 124, 89, 0.38), transparent 65%) !important;
+  color: #F4F1EA !important;
+}
+
+/* Columna izquierda: ancho de columna acotado (≈3-5 palabras por renglón) */
+#servicios .zapi-hero-content,
+#nosotros .zapi-hero-content,
+#contacto .zapi-hero-content,
+#catalogo .zapi-hero-content {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 680px !important;
+  flex: none !important;
+}
+
+/* Excepción: el titular de Nosotros tiene 75 caracteres en mayúscula
+   y con 680px caía a 4 renglones. Con la grilla 2fr (≈740px) y este
+   tope baja a 3 renglones; la columna de beneficios queda en ≈370px,
+   holgada para icono + texto. Va después de la regla general porque
+   ambas usan !important. */
+#nosotros .zapi-hero-content {
+  max-width: 780px !important;
+}
+
+/* Titulares: jerarquía y line-height uniformes */
+#servicios .zapi-hero-title,
+#nosotros .zapi-hero-title,
+#contacto .zapi-hero-title,
+#catalogo .zapi-hero-title {
+  font-size: clamp(30px, 3.4vw, 46px) !important;
+  line-height: 1.12 !important;
+  margin: 0 0 18px 0 !important;
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+}
+
+/* Bajada: medida de lectura pareja */
+#servicios .zapi-hero-description,
+#nosotros .zapi-hero-description,
+#contacto .zapi-hero-description,
+#catalogo .zapi-hero-description {
+  margin: 0 !important;
+  line-height: 1.55 !important;
+  max-width: 58ch !important;
+}
+
+/* Columna derecha: centrada en vertical, con línea divisoria por
+   border-left que ocupa toda la altura de la fila */
+#servicios .zapi-hero-trust,
+#nosotros .zapi-hero-trust,
+#contacto .zapi-hero-trust,
+#catalogo .zapi-hero-trust {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 1rem !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  flex: none !important;
+  margin: 0 !important;
+  align-self: stretch !important;
+  border-left: 1px solid rgba(247, 245, 237, 0.2) !important;
+  padding-left: clamp(1.5rem, 3vw, 2.5rem) !important;
+}
+
+/* Ítems de beneficios: espaciado y fondo consistentes */
+#servicios .zapi-hero-trust-item,
+#nosotros .zapi-hero-trust-item,
+#contacto .zapi-hero-trust-item,
+#catalogo .zapi-hero-trust-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  padding: 14px 16px !important;
+  box-sizing: border-box !important;
+  background-color: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px !important;
+  color: #F7F5ED !important;
+}
+
+/* Iconos: círculo idéntico en las cuatro secciones */
+#servicios .zapi-hero-trust-icon,
+#nosotros .zapi-hero-trust-icon,
+#contacto .zapi-hero-trust-icon,
+#catalogo .zapi-hero-trust-icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  color: #F7F5ED !important;
+}
+
+#servicios .zapi-hero-trust-icon .material-symbols-outlined,
+#catalogo .zapi-hero-trust-icon .material-symbols-outlined {
+  font-size: 20px !important;
+  color: #F7F5ED !important;
+}
+
+#nosotros .zapi-hero-trust-icon svg {
+  stroke: #F7F5ED !important;
+}
+
+/* Texto de beneficios */
+#servicios .zapi-hero-trust-text,
+#nosotros .zapi-hero-trust-text,
+#contacto .zapi-hero-trust-text,
+#catalogo .zapi-hero-trust-text {
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  color: #F7F5ED !important;
+}
+
+/* Móvil / tablet angosta: una sola columna, divisorio superior */
+@media (max-width: 850px) {
+  #servicios .service-header.zapi-hero-banner,
+  #nosotros .nosotros-header.zapi-hero-banner,
+  #contacto .contacto-header.zapi-hero-banner.full-bleed,
+  #catalogo .catalog-header.zapi-hero-banner {
+    padding: 36px 20px !important;
+  }
+  #servicios .zapi-hero-title,
+  #nosotros .zapi-hero-title,
+  #contacto .zapi-hero-title,
+  #catalogo .zapi-hero-title {
+    font-size: clamp(26px, 7vw, 34px) !important;
+    line-height: 1.15 !important;
+  }
+  #servicios .zapi-hero-trust,
+  #nosotros .zapi-hero-trust,
+  #contacto .zapi-hero-trust,
+  #catalogo .zapi-hero-trust {
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-top: 1px solid rgba(247, 245, 237, 0.2) !important;
+    padding-top: 1.5rem !important;
+    justify-content: flex-start !important;
+  }
+  #servicios .zapi-hero-trust-item,
+  #nosotros .zapi-hero-trust-item,
+  #contacto .zapi-hero-trust-item,
+  #catalogo .zapi-hero-trust-item {
+    padding: 12px 14px !important;
+    gap: 0.875rem !important;
+  }
+  #servicios .zapi-hero-trust-icon,
+  #nosotros .zapi-hero-trust-icon,
+  #contacto .zapi-hero-trust-icon,
+  #catalogo .zapi-hero-trust-icon {
+    width: 36px !important;
+    height: 36px !important;
+  }
 }
 

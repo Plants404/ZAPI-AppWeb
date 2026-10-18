@@ -24,6 +24,7 @@
         caja.setAttribute("role", "dialog");
         caja.setAttribute("aria-modal", "true");
         caja.setAttribute("aria-labelledby", "testimonioTitulo");
+        caja.tabIndex = -1;
 
         const cerrarX = document.createElement("button");
         cerrarX.type = "button";
@@ -77,7 +78,7 @@
         const gracias = document.createElement("div");
         gracias.className = "testimonio-gracias";
         gracias.hidden = true;
-        gracias.textContent = "¡Gracias por tu opinión! Ya está publicada.";
+        gracias.textContent = "¡Gracias por tu opinión! La recibimos para su revisión.";
 
         caja.appendChild(cerrarX);
         caja.appendChild(titulo);
@@ -251,6 +252,17 @@
         raiz.hidden = false;
         document.body.classList.add("con-testimonio-abierto");
 
+        const enviar = raiz.querySelector(".testimonio-btn-primario");
+        const general = raiz.querySelector('[data-error="general"]');
+        const hayApi = typeof window.hayApiConfigurada === "function"
+            && window.hayApiConfigurada();
+
+        enviar.disabled = !hayApi;
+        if (!hayApi) {
+            general.textContent = "El envío de opiniones no está disponible: se requiere el backend.";
+            general.hidden = false;
+        }
+
         const nombre = raiz.querySelector("#testimonioAutor");
         if (nombre) nombre.focus();
     }
@@ -299,7 +311,36 @@
 
     function alTeclado(evento) {
 
-        if (evento.key === "Escape" && raiz && !raiz.hidden) cerrar();
+        if (!raiz || raiz.hidden) return;
+
+        if (evento.key === "Escape") {
+            cerrar();
+            return;
+        }
+
+        if (evento.key !== "Tab") return;
+
+        const caja = raiz.querySelector(".testimonio-caja");
+        const enfocados = Array.from(caja.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )).filter(elemento => !elemento.hidden && elemento.getClientRects().length > 0);
+
+        if (!enfocados.length) {
+            evento.preventDefault();
+            caja.focus();
+            return;
+        }
+
+        const primero = enfocados[0];
+        const ultimo = enfocados[enfocados.length - 1];
+
+        if (evento.shiftKey && (document.activeElement === primero || !caja.contains(document.activeElement))) {
+            evento.preventDefault();
+            ultimo.focus();
+        } else if (!evento.shiftKey && (document.activeElement === ultimo || !caja.contains(document.activeElement))) {
+            evento.preventDefault();
+            primero.focus();
+        }
     }
 
     

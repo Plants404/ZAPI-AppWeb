@@ -5,10 +5,8 @@
    El sitio se abre de dos maneras, y la API cambia de direccion
    segun donde este:
 
-     * Local:    la pagina llega de tu maquina. En el caso normal la
-                 sirve el propio backend (npm start, dev:memoria), asi
-                 que la API esta en el mismo origen y no hace falta
-                 nada mas.
+     * Local:    la pagina llega de tu maquina. Si la sirve el backend
+                 en el puerto configurado, la API usa el mismo origen.
      * Producci: GitHub Pages solo aloja estaticos; la API esta en el
                  backend desplegado (Render/Railway), en la URL de
                  abajo.
@@ -18,8 +16,8 @@
      * local (localhost, *.localhost, 127.*, ::1, 0.0.0.0):
          - si la sirve el propio backend (PUERTO_BACKEND_LOCAL)
                                        -> mismo origen, con backend
-         - si la sirve otro server local (Show Preview, Live Server
-           en 3000/5500, etc.)         -> SIN backend (modo estatico)
+         - si la sirve otro server local (Show Preview, Live Server)
+                                       -> URL_API_LOCAL o sin backend
      * cualquier otro host (tu hosting)          -> URL_API_PRODUCCION
 
    Un meta en el HTML pisa la decision para una pagina aparte:
@@ -46,23 +44,23 @@
           - cualquier otro host: URL_API_PRODUCCION
             (pegar aca la URL del backend desplegado).
 
-   Si en produccion URL_API_PRODUCCION queda vacia, el sitio NO
-   rompe: hayApiConfigurada() devuelve false y las partes que
-   dependen del backend (login, pedidos) usan su modo sin backend
-   (login fijo / WhatsApp). Asi la web funciona en cualquier
-   hosting estatico aunque todavia no este la API.
+   Si en produccion URL_API_PRODUCCION queda vacia, las funciones que
+   requieren el backend permanecen deshabilitadas y muestran un error
+   explicito. No se usan credenciales ni sesiones locales en el cliente.
    ------------------------------------------------------------ */
 
-/* URL del backend en produccion (Render/Railway). Ejemplo:
-   "https://zapi-api.onrender.com". Vacio = sin backend. */
+/* URL del backend en produccion (Render/Railway). Debe configurarse
+   antes de publicar las funciones que requieren autenticacion. */
 const URL_API_PRODUCCION = "";
 
-/* URL del backend local, para previsualizar en un server estatico
+/* URL del backend local, para previsualizar en un server estático
    (Show Preview, Live Server en 3000/5500) y pegarle a un backend
    levantado en otro puerto. Vacio (recomendado) = modo sin backend
    cuando la pagina no la sirve el backend. Ejemplo:
    "http://localhost:5501". */
 const URL_API_LOCAL = "";
+const ENVIO_GRATIS_MINIMO = 2500;
+window.ENVIO_GRATIS_MINIMO = ENVIO_GRATIS_MINIMO;
 
 /* Puerto del backend en tu maquina (npm start, dev:memoria). Si la
    pagina la sirve ESE backend, la API es el mismo origen. Si la sirve
@@ -123,9 +121,7 @@ window.API_BASE = API_BASE;
 
 /* ¿Hay un backend al que apuntar? Verdadero si se definio una URL
    (__ZAPI_API__, meta, URL_API_LOCAL o URL_API_PRODUCCION) o si la
-   pagina la sirve el backend en el mismo origen. Falso cuando se
-   previsualiza en un server estatico: ahi el sitio usa su modo sin
-   backend (login fijo, pedidos por WhatsApp, stock de demostracion). */
+   pagina la sirve el backend en el mismo origen. */
 function hayApiConfigurada() {
     if (API_BASE !== "") return true;
     return backendMismoOrigen();
@@ -156,64 +152,6 @@ function urlDelSitio(ruta) {
 }
 
 window.urlDelSitio = urlDelSitio;
-
-/* ==========================================================
-   ACCESO SIN BACKEND (MODO ESTATICO)
-   ------------------------------------------------------------
-   GitHub Pages no ejecuta servidores: cuando la API no responde,
-   el login valida contra este usuario fijo y guarda la sesion en
-   el navegador (localStorage). La clave queda visible en el codigo:
-   es solo para publicar una demo estatica. Con el backend al
-   alcance, el login pasa por /api/auth/login y esta ruta no se usa.
-   ========================================================== */
-
-const USUARIO_FIJO = {
-    email: "admi@zapi.com",
-    clave: "admi2026",
-    nombre: "Administrador"
-};
-
-window.USUARIO_FIJO = USUARIO_FIJO;
-
-const SESION_LOCAL_CLAVE = "zapiSesionLocal";
-
-function guardarSesionLocal(usuario) {
-    try {
-        window.localStorage.setItem(SESION_LOCAL_CLAVE, JSON.stringify({
-            v: 1,
-            nombre: usuario.nombre,
-            email: usuario.email
-        }));
-    } catch (error) {
-    }
-}
-
-function leerSesionLocal() {
-    try {
-        const crudo = window.localStorage.getItem(SESION_LOCAL_CLAVE);
-
-        if (!crudo) return null;
-
-        const datos = JSON.parse(crudo);
-
-        return datos && datos.v === 1 && typeof datos.nombre === "string"
-            ? { nombre: datos.nombre, email: datos.email || "" }
-            : null;
-    } catch (error) {
-        return null;
-    }
-}
-
-function cerrarSesionLocal() {
-    try {
-        window.localStorage.removeItem(SESION_LOCAL_CLAVE);
-    } catch (error) {
-    }
-}
-
-window.guardarSesionLocal = guardarSesionLocal;
-window.leerSesionLocal = leerSesionLocal;
-window.cerrarSesionLocal = cerrarSesionLocal;
 
 /* ==========================================================
    PEDIDOS LOCALES (MODO ESTATICO)

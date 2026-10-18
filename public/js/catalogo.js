@@ -309,7 +309,7 @@ document.addEventListener("click", function (event) {
 
     if (button.closest(".modal-producto")) return;
 
-    agregarProductoAlCarrito(Number(button.dataset.id));
+    if (!agregarProductoAlCarrito(Number(button.dataset.id))) return;
 
     button.classList.add("added");
 
@@ -333,8 +333,8 @@ document.addEventListener("click", function (event) {
     const tarjeta = event.target.closest(".product-card");
 
     if (tarjeta && !event.target.closest(".add-cart")) {
-
-        window.abrirModalProducto(Number(tarjeta.dataset.id), tarjeta);
+        const controlDeApertura = tarjeta.querySelector(".product-link");
+        window.abrirModalProducto(Number(tarjeta.dataset.id), controlDeApertura);
 
     }
 

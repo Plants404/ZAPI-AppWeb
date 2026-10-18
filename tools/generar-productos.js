@@ -16,7 +16,7 @@
    datos/catalogo.js es un modulo de Node: se importa con require() y
    ya esta. Si el precio cambia alla, se corre esto y quedan al dia
    las siete paginas, el JSON y el sitemap. No hay build ni bundler,
-   solo Node >= 18.
+   solo Node >= 24.
 
    El JSON se versiona, igual que las fichas y que las dos partes de
    catalogo.css: aunque es generado, el navegador lo pide por fetch
@@ -361,7 +361,7 @@ ${paraJsonLd(migas)}
                         Agregar al carrito
                     </button>
                     <a class="whatsapp"
-                        href="https://wa.me/098268560?text=${encodeURIComponent('Hola ' + NOMBRE + ', quiero consultar por ' + producto.nombre)}"
+                        href="https://wa.me/59898268560?text=${encodeURIComponent('Hola ' + NOMBRE + ', quiero consultar por ' + producto.nombre)}"
                         target="_blank" rel="noopener">
                         Consultar por WhatsApp
                     </a>

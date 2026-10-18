@@ -24,7 +24,7 @@ if (modalProducto) {
     let galeriaActual = [];
     let indiceActual = 0;
     let productoAbierto = null;
-    let tarjetaQueAbrio = null;
+    let focoQueAbrio = null;
     let scrollBloqueado = false;
 
     /* Mismo criterio de slug que tools/generar-productos.js: deben coincidir. */
@@ -98,7 +98,7 @@ if (modalProducto) {
         if (!producto) return;
 
         productoAbierto = producto;
-        tarjetaQueAbrio = tarjeta || null;
+        focoQueAbrio = tarjeta || null;
         galeriaActual = fotosDe(producto);
 
         modalCategoria.textContent = producto.categoria;
@@ -192,12 +192,12 @@ if (modalProducto) {
 
         }, 250);
 
-        if (tarjetaQueAbrio) {
+        if (focoQueAbrio && focoQueAbrio.isConnected) {
 
-            tarjetaQueAbrio.focus();
-            tarjetaQueAbrio = null;
+            focoQueAbrio.focus();
 
         }
+        focoQueAbrio = null;
 
     }
 
@@ -269,9 +269,11 @@ if (modalProducto) {
 
         if (!id) return;
 
-        document.dispatchEvent(new CustomEvent("modal:agregar", {
-            detail: { id }
-        }));
+        if (typeof agregarProductoAlCarrito !== "function" ||
+            !agregarProductoAlCarrito(id)) {
+            modalAgregar.textContent = "No se pudo agregar";
+            return;
+        }
 
         modalAgregar.classList.add("added");
 
