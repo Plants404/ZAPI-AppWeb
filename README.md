@@ -17,7 +17,8 @@ archivos tal cual.
 - **Frontend:** HTML + CSS + JavaScript clásico (sin módulos ni bundler).
 - **Datos:** JSON generados en `public/data/` a partir de `datos/`.
 - **Herramientas:** Node (>= 24) para generar y verificar.
-- **Pruebas:** no hay (eran de la API).
+- **API:** Express + MongoDB/Mongoose para autenticación.
+- **Pruebas:** `node:test`, Supertest y MongoDB en memoria para la API.
 
 ## Requisitos
 
@@ -49,6 +50,81 @@ Sin backend, el sitio es público: se puede consultar el catálogo, armar
 un carrito y preparar pedidos por WhatsApp sin iniciar sesión. Las
 cuentas y funciones que guardan datos en el servidor requieren una API.
 
+## API de autenticación
+
+La API implementa `POST /api/auth/registro`, `POST /api/auth/login`,
+`GET /api/auth/yo`, `POST /api/auth/logout` y `GET /api/health`.
+Registro e inicio de sesión usan el contrato del frontend (`nombre`,
+`email`, `clave`). La contraseña se guarda con bcrypt; el JWT se envía en
+una cookie `HttpOnly`, no en `localStorage`. Las nuevas cuentas reciben
+el rol `user`; solo el script administrativo explícito asigna `admin`.
+
+### Desarrollo local
+
+1. Instalá MongoDB local o creá una base en MongoDB Atlas.
+2. Copiá `.env.example` a `.env`; completá `MONGODB_URI` y generá un
+   secreto aleatorio para `JWT_SECRET` (mínimo 32 bytes). No compartas ni
+   subas `.env`.
+3. En una terminal ejecutá `npm run start:api` (API en
+   `http://localhost:5501`).
+4. En otra, ejecutá `npm start` (sitio en `http://localhost:5500`).
+   `public/js/config.js` ya apunta a la API local. Para otro puerto de
+   Show Preview agregá su **origen exacto** a `FRONTEND_ORIGINS` en `.env`.
+5. El login y registro crean una cookie de sesión. La configuración local
+   usa `SameSite=Lax`; producción usa `SameSite=None; Secure` para permitir
+   credenciales entre el frontend y la API. Algunos navegadores bloquean
+   cookies de terceros: para producción es preferible usar frontend y API
+   bajo el mismo dominio registrable.
+
+No guardes contraseñas en el frontend ni en `localStorage`. La cookie
+HttpOnly se adjunta mediante `fetch(..., { credentials: "include" })`;
+esa opción ya está configurada en los flujos de autenticación existentes.
+
+Ejemplo de login para otro cliente web:
+
+```js
+const respuesta = await fetch(`${API_BASE}/api/auth/login`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, clave })
+});
+
+const datos = await respuesta.json();
+if (!respuesta.ok) throw new Error(datos.error);
+
+// La cookie HttpOnly mantiene la sesión; no copies ningún token a localStorage.
+```
+
+### Crear el usuario administrador
+
+No existe una contraseña de administrador en el código. Para crear o
+actualizar un administrador, ejecutá `npm run admin:crear` con
+`MONGODB_URI`, `ADMIN_NAME`, `ADMIN_EMAIL` y `ADMIN_PASSWORD` definidos
+como variables de entorno en una terminal segura o en el gestor de
+secretos del despliegue. La contraseña debe ser nueva, única y tener al
+menos 12 caracteres. No reutilices una contraseña que ya hayas compartido.
+Este comando explícito guarda únicamente su hash y asigna el rol `admin`.
+
+### Despliegue
+
+Desplegá la API separada del frontend y configurá en el proveedor
+`NODE_ENV=production`, `MONGODB_URI`, `JWT_SECRET`, `FRONTEND_ORIGINS`
+(orígenes exactos, separados por coma), `COOKIE_SAME_SITE=none` y
+`COOKIE_SECURE=true`. Definí `URL_API_PRODUCCION` en
+`public/js/config.js` con la URL HTTPS de la API antes de publicar el
+frontend. `FRONTEND_ORIGINS` no admite comodines.
+
+### Endpoints
+
+| Método y ruta | Comportamiento |
+|---|---|
+| `POST /api/auth/registro` | Valida datos, crea cuenta `user` y abre sesión. Contraseña: 12–128 caracteres. |
+| `POST /api/auth/login` | Valida credenciales y abre sesión. |
+| `GET /api/auth/yo` | Devuelve el usuario autenticado o `401`. |
+| `POST /api/auth/logout` | Elimina la cookie de sesión. |
+| `GET /api/health` | Comprueba disponibilidad HTTP. |
+
 ## Funcionalidad sin backend
 
 `public/js/config.js` decide si hay API. `URL_API_PRODUCCION` está vacía
@@ -73,7 +149,7 @@ para habilitar autenticación y opiniones en producción.
 El login usa autenticación de servidor. No configures contraseñas de demo
 ni sesiones locales como sustituto de la API.
 
-Para conectar una API en local, configurá `URL_API_LOCAL` en
+Para reemplazar la URL de API en local, configurá `URL_API_LOCAL` en
 `config.js` (o inyectá `window.__ZAPI_API__` / un meta `zapi-api`).
 
 ## Scripts
@@ -81,6 +157,9 @@ Para conectar una API en local, configurá `URL_API_LOCAL` en
 | Comando | Qué hace |
 |---|---|
 | `npm start` | Sirve el sitio estático en `http://localhost:5500`. |
+| `npm run start:api` | Inicia la API Express (requiere `.env` y MongoDB). |
+| `npm run admin:crear` | Crea o actualiza un administrador desde variables de entorno. |
+| `npm run test:api` | Ejecuta pruebas de autenticación con MongoDB en memoria. |
 | `npm run lint` | ESLint sobre todo el repo. |
 | `npm run verificar` | Verificación estática de CSS, ARIA, IDs, referencias, XSS, reduced motion y archivos generados. No modifica archivos. |
 | `npm run check` | `lint` + `verificar`. Correr antes de commitear. |

@@ -53,12 +53,10 @@
    antes de publicar las funciones que requieren autenticacion. */
 const URL_API_PRODUCCION = "";
 
-/* URL del backend local, para previsualizar en un server estático
-   (Show Preview, Live Server en 3000/5500) y pegarle a un backend
-   levantado en otro puerto. Vacio (recomendado) = modo sin backend
-   cuando la pagina no la sirve el backend. Ejemplo:
-   "http://localhost:5501". */
-const URL_API_LOCAL = "";
+/* URL del backend local, para previsualizar en Show Preview / Live
+   Server (5500) y conectar con npm run start:api (5501). Para apagar
+   la conexión local, dejá este valor vacío. */
+const URL_API_LOCAL = "http://localhost:5501";
 const ENVIO_GRATIS_MINIMO = 2500;
 window.ENVIO_GRATIS_MINIMO = ENVIO_GRATIS_MINIMO;
 
