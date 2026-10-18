@@ -34,7 +34,8 @@ async function cargarOpiniones() {
             const cuerpo = await respuesta.json();
 
             const opiniones = Array.isArray(cuerpo.testimonios)
-                ? cuerpo.testimonios.filter(Boolean)
+                ? cuerpo.testimonios.filter(opinion =>
+                    opinion && opinion.verificado === true && opinion.autorizado === true)
                 : [];
 
             if (opiniones.length) return opiniones;

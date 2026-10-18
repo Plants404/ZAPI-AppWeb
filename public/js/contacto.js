@@ -303,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const limite = Number(consulta.getAttribute("maxlength")) || 0;
         const quedan = limite - consulta.value.length;
 
-        contador.textContent = String(Math.max(0, quedan));
+        contador.textContent = Math.max(0, quedan) + "/" + limite;
         contador.classList.toggle("contador-cerca", quedan <= 100);
     }
 
