@@ -101,6 +101,9 @@ module.exports = [
         files: [
             'tools/**/*.js',
             'datos/**/*.js',
+            'backend/**/*.js',
+            'scripts/**/*.js',
+            'tests/**/*.js',
             'eslint.config.js',
         ],
         languageOptions: {
