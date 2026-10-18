@@ -121,8 +121,6 @@
             }
         }
 
-        window.cerrarSesionLocal();
-
         try {
             window.localStorage.removeItem('zapiCart');
         } catch (error) {
@@ -131,8 +129,6 @@
         window.location.href = window.urlDelSitio('index.html');
     }
 
-    /* Sin backend no se golpea /api/auth/yo: la sesion estatica que dejo
-       el login local (localStorage) hace las veces de cuenta. */
     const sesion = hayBackend()
         ? fetch(window.urlApi('/api/auth/yo'), { credentials: 'include' })
             .then(function (res) { return res.json(); })
@@ -140,10 +136,10 @@
                 usuario = datos && datos.usuario ? datos.usuario : null;
             })
             .catch(function () {
-                usuario = window.leerSesionLocal();
+                usuario = null;
             })
         : Promise.resolve().then(function () {
-            usuario = window.leerSesionLocal();
+            usuario = null;
         });
 
     const listo = sesion.then(function () {

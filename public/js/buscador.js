@@ -91,4 +91,7 @@
     event.preventDefault();
   });
 
+  const terminoInicial = new URLSearchParams(window.location.search).get("q");
+  if (terminoInicial) buscar(terminoInicial);
+
 })();
