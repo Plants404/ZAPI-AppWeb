@@ -737,135 +737,84 @@
     </section>
 
     
-    <section class="section call-to-actions-view hidden" id="contacto">
-      <div class="contacto">
-
-        
-        <div class="contacto-info">
-          <span class="contacto-eyebrow">CONTACTO</span>
-
-          <h2>Empezá hoy a transformar tus espacios</h2>
-
-          <p>Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada
-            etapa del proceso.</p>
-
-          
-          <div class="contacto-acciones">
-            <button type="button" data-section="catalogo">
-              <span class="material-symbols-outlined" aria-hidden="true">storefront</span>
-              Explorar Catálogo
-            </button>
-            <button type="button" data-section="servicios">
-              <span class="material-symbols-outlined" aria-hidden="true">local_florist</span>
-              Conocer nuestros servicios
-            </button>
-          </div>
-
-          <p class="contacto-nota">
-            <span class="material-symbols-outlined" aria-hidden="true">lock</span>
-            Tus datos solo se usan para responderte esta consulta.
-          </p>
+        <section class="section call-to-actions-view hidden" id="contacto">
+  <div class="contacto-header zapi-hero-banner full-bleed">
+    <div class="zapi-hero-content">
+      <p class="zapi-hero-kicker">Contacto</p>
+      <h1 class="zapi-hero-title">
+        EMPEZÁ HOY A TRANSFORMAR TUS ESPACIOS
+      </h1>
+      <p class="zapi-hero-description">
+        Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada etapa del proceso.
+      </p>
+    </div>
+    <div class="zapi-hero-divider"></div>
+    <div class="zapi-hero-trust">
+      <div class="zapi-hero-trust-heading">ATENCIÓN DIRECTA</div>
+      <div class="zapi-hero-trust-item">
+        <div class="zapi-hero-trust-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-
-        
-        <div class="contacto-panel">
-          <h3 class="contacto-panel-titulo" id="contactoPanelTitulo">Escribinos</h3>
-          <p class="contacto-panel-sub">Contanos qué necesitás y te respondemos a la brevedad.</p>
-
-          <form class="formulario" id="contactoForm" novalidate aria-labelledby="contactoPanelTitulo">
-            
-            <div class="formulario-trampa" aria-hidden="true">
-              <label for="contactoSitio">No completes este campo</label>
-              <input type="text" id="contactoSitio" name="sitio_web" tabindex="-1" autocomplete="off">
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoNombre">Nombre <span aria-hidden="true">*</span></label>
-              <div class="campo-control">
-                <span class="material-symbols-outlined campo-icono" aria-hidden="true">person</span>
-                <input class="campo-input" type="text" id="contactoNombre" name="nombre" autocomplete="name"
-                  maxlength="120" required aria-required="true" aria-describedby="errorNombre"
-                  placeholder="Tu nombre y apellido">
-              </div>
-              <span class="campo-error" id="errorNombre"></span>
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoCorreo">Correo electrónico <span aria-hidden="true">*</span></label>
-              <div class="campo-control">
-                <span class="material-symbols-outlined campo-icono" aria-hidden="true">mail</span>
-                <input class="campo-input" type="email" id="contactoCorreo" name="correo" autocomplete="email"
-                  inputmode="email" maxlength="160" required aria-required="true" aria-describedby="errorCorreo"
-                  placeholder="tunombre@correo.com">
-              </div>
-              <span class="campo-error" id="errorCorreo"></span>
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoAsunto">Asunto <span aria-hidden="true">*</span></label>
-              <div class="campo-control">
-                <span class="material-symbols-outlined campo-icono" aria-hidden="true">sell</span>
-                <input class="campo-input" type="text" id="contactoAsunto" name="asunto"
-                  maxlength="160" required aria-required="true" aria-describedby="errorAsunto"
-                  placeholder="¿Sobre qué querés escribirnos?">
-              </div>
-              <span class="campo-error" id="errorAsunto"></span>
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoTelefono">Teléfono <span class="campo-opcional">(opcional)</span></label>
-              <div class="campo-control">
-                <span class="material-symbols-outlined campo-icono" aria-hidden="true">call</span>
-                <input class="campo-input" type="tel" id="contactoTelefono" name="telefono" autocomplete="tel"
-                  inputmode="tel" maxlength="40" aria-describedby="errorTelefono"
-                  placeholder="098 268 560">
-              </div>
-              <span class="campo-error" id="errorTelefono"></span>
-            </div>
-
-            <div class="campo">
-              <label class="campo-label" for="contactoConsulta">Mensaje <span aria-hidden="true">*</span></label>
-              <textarea class="campo-input campo-area" id="contactoConsulta" name="consulta" rows="5"
-                maxlength="2000" required aria-required="true" aria-describedby="errorConsulta"
-                placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..."></textarea>
-              <div class="campo-ayuda">
-                
-                <span class="campo-error" id="errorConsulta"></span>
-                <span class="campo-contador" id="contactoContador" aria-hidden="true">2000</span>
-              </div>
-            </div>
-
-            <div class="formulario-pie">
-              <button class="formulario-enviar" type="submit" id="contactoEnviar">
-                <span class="material-symbols-outlined" aria-hidden="true">send</span>
-                <span id="contactoEnviarTexto">Enviar mensaje</span>
-              </button>
-
-              <p class="formulario-obligatorio">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
-            </div>
-
-            
-            <p class="formulario-estado" id="contactoEstado" role="status" aria-live="polite"></p>
-          </form>
-
-          
-          <div class="formulario-ok" id="contactoOk" role="group" aria-labelledby="contactoOkTitulo" hidden>
-            <span class="material-symbols-outlined formulario-ok-icono" aria-hidden="true">mark_email_read</span>
-
-            
-            <h3 class="formulario-ok-titulo" id="contactoOkTitulo" tabindex="-1">¡Gracias por escribirnos!</h3>
-
-            <p>Recibimos tu mensaje y te vamos a responder al correo o al teléfono que dejaste.</p>
-
-            <button class="formulario-ok-boton" type="button" id="contactoReiniciar">
-              <span class="material-symbols-outlined" aria-hidden="true">add</span>
-              Enviar otro mensaje
-            </button>
-          </div>
-        </div>
-
+        <div class="zapi-hero-trust-text">Presupuesto claro y personalizado</div>
       </div>
-    </section>
+      <div class="zapi-hero-trust-item">
+        <div class="zapi-hero-trust-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="zapi-hero-trust-text">Asesoramiento agroecológico dedicado</div>
+      </div>
+      <div class="zapi-hero-trust-item">
+        <div class="zapi-hero-trust-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="zapi-hero-trust-text">Atención cercana en Montevideo</div>
+      </div>
+    </div>
+  </div>
+  <div class="contacto-card-container">
+    <div class="contacto-card">
+      <div class="contacto-card-header">
+        <span class="contacto-card-subtitle">ESCRIBINOS</span>
+        <h2 class="contacto-card-title">Contanos qué necesitás y te respondemos a la brevedad.</h2>
+      </div>
+      <form id="form-contacto" class="contacto-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contacto-nombre">Nombre *</label>
+            <input type="text" id="contacto-nombre" name="nombre" placeholder="Tu nombre y apellido" required />
+          </div>
+          <div class="form-group">
+            <label for="contacto-email">Correo electrónico *</label>
+            <input type="email" id="contacto-email" name="email" placeholder="tunombre@correo.com" required />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contacto-asunto">Asunto *</label>
+            <input type="text" id="contacto-asunto" name="asunto" placeholder="¿Sobre qué querés escribirnos?" required />
+          </div>
+          <div class="form-group">
+            <label for="contacto-telefono">Teléfono (opcional)</label>
+            <input type="tel" id="contacto-telefono" name="telefono" placeholder="098 765 432" />
+          </div>
+        </div>
+        <div class="form-group full-width">
+          <label for="contacto-mensaje">Mensaje *</label>
+          <textarea id="contacto-mensaje" name="mensaje" rows="4" placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..." required></textarea>
+        </div>
+        <div class="form-footer">
+          <p class="privacy-note">
+            Tus datos solo se usan para responderte esta consulta. Los campos con * son obligatorios.
+          </p>
+          <button type="submit" class="btn-submit">
+            Enviar mensaje
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
 
     
     <div class="aviso-flotante" id="avisoFlotante" role="alert" hidden>

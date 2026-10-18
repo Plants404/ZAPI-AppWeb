@@ -434,18 +434,19 @@ justify-self: start;
 .product-card {
 background-color: #FFFFFF !important;
 border: 1px solid #E2DECB !important;
-border-radius: 16px !important;
+border-radius: 20px !important;
 overflow: hidden !important;
 display: flex !important;
 flex-direction: column !important;
 justify-content: space-between !important;
-padding: 16px !important;
+padding: 20px !important;
+box-shadow: 0 8px 24px rgba(30, 58, 43, 0.08) !important;
 transition: transform 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 .product-card:hover {
-transform: translateY(-4px) !important;
-box-shadow: 0 14px 30px -10px rgba(30, 58, 43, 0.12) !important;
+transform: translateY(-6px) !important;
+box-shadow: 0 16px 40px rgba(30, 58, 43, 0.15) !important;
 }
 
 .product-visual {

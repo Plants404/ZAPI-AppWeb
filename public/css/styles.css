@@ -1049,7 +1049,7 @@ html[data-auth="si"] .nav-ingresar {
 }
 
 html:not([data-auth="si"]) .nav-usuario {
-  display: none;
+  display: none !important;
 }
 
 html:not([data-auth="si"]) .nav-link-carrito,
@@ -3551,6 +3551,15 @@ footer nav a:focus-visible {
     color: #1e3a2b;
   }
 
+  .nav-bar li a.nav-ingresar,
+  .nav-bar li .nav-ingresar {
+    font-size: 1rem !important;
+    padding: .5rem 1rem !important;
+    min-height: 36px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+  }
+
   .nav-usuario-alineado {
     display: inline-flex !important;
     align-items: center !important;
@@ -3566,7 +3575,7 @@ footer nav a:focus-visible {
 
   li.nav-cuenta,
   div.nav-usuario {
-    display: flex !important;
+    display: flex;
     align-items: center !important;
     height: 100% !important;
     margin: 0 !important;
@@ -4835,6 +4844,237 @@ footer {
   letter-spacing: 1px !important;
   text-transform: uppercase !important;
   color: rgba(244, 241, 234, 0.8) !important;
+  margin: 0 0 8px 0 !important;
+}
+
+/* Limpiar contenedor padre de contacto */
+#contacto,
+.call-to-actions-view {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* 1. Hero Banner Full-Bleed */
+#contacto .contacto-header.zapi-hero-banner.full-bleed {
+  width: 100vw !important;
+  position: relative !important;
+  left: 50% !important;
+  right: 50% !important;
+  margin-left: -50vw !important;
+  margin-right: -50vw !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+  box-sizing: border-box !important;
+  padding: 48px max(6vw, 48px) !important;
+  background-color: #1E3A2B !important;
+  color: #F7F5ED !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 40px !important;
+}
+
+#contacto .zapi-hero-content {
+  flex: 1 1 55% !important;
+  max-width: 650px !important;
+}
+
+#contacto .zapi-hero-title {
+  font-size: 38px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #F7F5ED !important;
+  margin: 0 0 12px 0 !important;
+  line-height: 1.1 !important;
+}
+
+#contacto .zapi-hero-description {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: rgba(247, 245, 237, 0.85) !important;
+  margin: 0 !important;
+}
+
+#contacto .zapi-hero-divider {
+  width: 1px !important;
+  height: 110px !important;
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  flex-shrink: 0 !important;
+}
+
+#contacto .zapi-hero-trust {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  flex: 1 1 40% !important;
+}
+
+#contacto .zapi-hero-trust-heading {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  color: rgba(247, 245, 237, 0.7) !important;
+}
+
+#contacto .zapi-hero-trust-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #F7F5ED !important;
+}
+
+#contacto .zapi-hero-trust-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+/* 2. Contenedor del Formulario */
+.contacto-card-container {
+  max-width: 900px !important;
+  margin: -30px auto 60px auto !important;
+  padding: 0 20px !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.contacto-card {
+  background-color: #FFFFFF !important;
+  border: 1px solid #E2DECB !important;
+  border-radius: 16px !important;
+  padding: 36px 40px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+.contacto-card-subtitle {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  color: #1E3A2B !important;
+  text-transform: uppercase !important;
+}
+
+.contacto-card-title {
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  color: #555555 !important;
+  margin: 4px 0 24px 0 !important;
+}
+
+/* 3. Inputs del Formulario */
+.contacto-form .form-row {
+  display: flex !important;
+  gap: 20px !important;
+  margin-bottom: 20px !important;
+}
+
+.contacto-form .form-group {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.contacto-form label {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #333333 !important;
+}
+
+.contacto-form input,
+.contacto-form textarea {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 10px 14px !important;
+  background-color: #F7F5ED !important;
+  border: 1px solid #D0C9B6 !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  color: #333333 !important;
+  outline: none !important;
+  transition: border-color 0.2s !important;
+}
+
+.contacto-form input:focus,
+.contacto-form textarea:focus {
+  border-color: #1E3A2B !important;
+  background-color: #FFFFFF !important;
+}
+
+/* 4. Footer del Formulario */
+.contacto-form .form-footer {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-top: 24px !important;
+  gap: 20px !important;
+}
+
+.contacto-form .privacy-note {
+  font-size: 12px !important;
+  color: #777777 !important;
+  margin: 0 !important;
+  max-width: 500px !important;
+}
+
+.contacto-form .btn-submit {
+  background-color: #1E3A2B !important;
+  color: #F7F5ED !important;
+  border: none !important;
+  padding: 12px 24px !important;
+  border-radius: 24px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: background-color 0.2s !important;
+}
+
+.contacto-form .btn-submit:hover {
+  background-color: #152A1F !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  #contacto .contacto-header.zapi-hero-banner.full-bleed {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 28px 20px !important;
+  }
+  #contacto .zapi-hero-divider {
+    display: none !important;
+  }
+  .contacto-card-container {
+    margin-top: 20px !important;
+  }
+  .contacto-form .form-row {
+    flex-direction: column !important;
+  }
+  .contacto-form .form-footer {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+
+#contacto .zapi-hero-kicker {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  color: rgba(247, 245, 237, 0.8) !important;
   margin: 0 0 8px 0 !important;
 }
 
