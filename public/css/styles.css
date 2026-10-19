@@ -4222,7 +4222,7 @@ body.con-testimonio-abierto {
 }
 
 /* Footer base */
-footer {
+footer:not(.pedido-pie) {
   background: var(--forest);
   color: var(--cream);
   padding: 3rem var(--gutter);
@@ -4406,7 +4406,7 @@ header {
 }
 
 /* Footer base */
-footer {
+footer:not(.pedido-pie) {
   background: var(--forest);
   color: var(--cream);
   padding: 3rem var(--gutter);

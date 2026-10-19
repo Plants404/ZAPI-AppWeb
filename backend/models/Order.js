@@ -108,6 +108,11 @@ const orderSchema = new mongoose.Schema({
         required: true,
         default: false,
     },
+    ocultoEnHistorial: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
 }, {
     timestamps: true,
     versionKey: false,
