@@ -776,9 +776,13 @@ header.menu-abierto::before {
     font-weight: 700;
   }
 
-  /* El contador vive en la fila de Carrito, no en la cabecera */
+  /* El saludo también muestra el conteo cuando el carrito tiene productos. */
   .nav-bar .nav-usuario-boton .cart-count.cart-count-header {
     display: none;
+  }
+
+  .nav-bar .nav-usuario-boton .cart-count.cart-count-header.con-productos {
+    display: inline-flex;
   }
 
   .nav-usuario-menu {
@@ -4305,6 +4309,28 @@ footer {
 
 .nav-bar .nav-cuenta {
   margin: 1rem 0 0;
+}
+
+@media (max-width: 1023px) {
+  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item {
+    justify-content: flex-start;
+    min-height: 48px;
+    padding: .75rem .35rem;
+    border: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .14);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item:last-child {
+    border-bottom: 0;
+  }
+
+  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item:hover {
+    background: rgba(74, 124, 89, .12);
+    color: var(--forest);
+  }
 }
 
 /* Tarjeta base genérica */
