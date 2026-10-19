@@ -91,6 +91,25 @@ function backendMismoOrigen() {
     return esHostLocal() && window.location.port === PUERTO_BACKEND_LOCAL;
 }
 
+function alinearHostLocalDeApi(url) {
+    if (!esHostLocal()) return url;
+
+    const hostnamePagina = window.location.hostname.replace(/^\[|\]$/g, "");
+    const hostnameApi = url.hostname.replace(/^\[|\]$/g, "");
+    const apiUsaLoopback = hostnameApi === "localhost" || hostnameApi === "127.0.0.1";
+    const paginaUsaLoopback = hostnamePagina === "localhost"
+        || hostnamePagina === "::1"
+        || hostnamePagina.indexOf("127.") === 0;
+
+    if (!apiUsaLoopback || !paginaUsaLoopback) return url;
+
+    url.hostname = hostnamePagina.indexOf(":") !== -1
+        ? "[" + hostnamePagina + "]"
+        : hostnamePagina;
+
+    return url;
+}
+
 const API_BASE = (function () {
     const inyectada = window.__ZAPI_API__;
     if (typeof inyectada === "string" && inyectada.trim()) {
@@ -106,7 +125,13 @@ const API_BASE = (function () {
        previsualizar (Show Preview, Live Server) contra un backend que
        corre en otro puerto. Pisa a la deteccion. */
     const localFija = normalizarBase(URL_API_LOCAL);
-    if (localFija) return localFija;
+    if (localFija) {
+        try {
+            return alinearHostLocalDeApi(new URL(localFija)).toString().replace(/\/+$/, "");
+        } catch (error) {
+            return localFija;
+        }
+    }
 
     /* Local sin URL fija: la API es el mismo origen solo si la sirve
        el backend; si la sirve un server estatico, no hay API (''). */

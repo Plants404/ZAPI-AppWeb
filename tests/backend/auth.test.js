@@ -212,7 +212,10 @@ test('login, sesión /yo y logout validan el JWT de la cookie', async () => {
 
     assert.equal(login.status, 200);
     assert.equal(login.body.usuario.role, 'user');
-    assert.match(login.headers['set-cookie'][0], /HttpOnly/i);
+    const sessionCookie = login.headers['set-cookie'][0];
+    assert.match(sessionCookie, /^zapi_session=/);
+    assert.match(sessionCookie, /HttpOnly/i);
+    assert.match(sessionCookie, /Path=\/api/i);
 
     const session = await agent.get('/api/auth/yo').set('Origin', ORIGIN);
     assert.equal(session.status, 200);
@@ -242,6 +245,41 @@ test('rechaza escrituras desde orígenes no configurados', async () => {
         .send({ nombre: 'Ana', email: 'ana@example.com', clave: 'clave-segura-2026' });
 
     assert.equal(response.status, 403);
+});
+
+test('acepta origen localhost con puerto alternativo en desarrollo', async () => {
+    const developmentApp = createApp({ ...config, nodeEnv: 'development' });
+    const response = await request(developmentApp)
+        .post('/api/auth/registro')
+        .set('Origin', 'http://127.0.0.1:5502')
+        .send({});
+
+    assert.equal(response.status, 400);
+    assert.equal(response.headers['access-control-allow-origin'], 'http://127.0.0.1:5502');
+});
+
+test('rechaza origen localhost no configurado en producción', async () => {
+    const productionApp = createApp({ ...config, nodeEnv: 'production' });
+    const response = await request(productionApp)
+        .post('/api/auth/registro')
+        .set('Origin', 'http://127.0.0.1:5502')
+        .send({});
+
+    assert.equal(response.status, 403);
+    assert.equal(response.headers['access-control-allow-origin'], undefined);
+});
+
+test('rechaza siempre orígenes externos no configurados', async () => {
+    for (const nodeEnv of ['development', 'production']) {
+        const isolatedApp = createApp({ ...config, nodeEnv });
+        const response = await request(isolatedApp)
+            .post('/api/auth/registro')
+            .set('Origin', 'https://ejemplo.com')
+            .send({});
+
+        assert.equal(response.status, 403);
+        assert.equal(response.headers['access-control-allow-origin'], undefined);
+    }
 });
 
 test('las solicitudes sin sesión no pueden consultar /yo', async () => {

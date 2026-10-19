@@ -38,6 +38,26 @@ function loadConfig(environment = process.env) {
     };
 }
 
+function createOriginValidator(config) {
+    const allowedOrigins = new Set(config.frontendOrigins);
+    const allowLocalhostPorts = config.nodeEnv !== 'production';
+
+    return function isAllowedOrigin(origin) {
+        if (!origin) return true;
+        if (allowedOrigins.has(origin)) return true;
+        if (!allowLocalhostPorts) return false;
+
+        try {
+            const parsed = new URL(origin);
+            return parsed.origin === origin
+                && parsed.protocol === 'http:'
+                && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
+        } catch {
+            return false;
+        }
+    };
+}
+
 function validateConfig(config) {
     if (!config.mongoUri) {
         throw new Error('Falta MONGODB_URI en el entorno.');
@@ -52,4 +72,4 @@ function validateConfig(config) {
     }
 }
 
-module.exports = { loadConfig, validateConfig };
+module.exports = { createOriginValidator, loadConfig, validateConfig };
