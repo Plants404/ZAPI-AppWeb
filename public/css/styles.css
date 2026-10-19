@@ -1260,15 +1260,26 @@ body.no-scroll {
 }
 
 #inicio .carousel-track .product-card {
-  flex: 0 0 min(280px, 100%);
-  max-width: 280px;
+  flex: 0 0 100%;
+  max-width: none;
   scroll-snap-align: start;
 }
 
 @media (min-width: 768px) {
   #inicio .carousel-track .product-card {
+    flex-basis: calc(50% - .75rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  #inicio .carousel-track .product-card {
+    flex-basis: calc(33.333% - 1rem);
+  }
+}
+
+@media (min-width: 1440px) {
+  #inicio .carousel-track .product-card {
     flex-basis: calc(25% - 1.125rem);
-    max-width: none;
   }
 }
 
