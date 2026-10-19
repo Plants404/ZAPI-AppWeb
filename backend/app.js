@@ -6,6 +6,7 @@ const express = require('express');
 const { rateLimit } = require('express-rate-limit');
 const helmet = require('helmet');
 const productosData = require('../public/data/productos.json');
+const { createOriginValidator } = require('./config');
 const { createAuthRouter } = require('./routes/auth');
 const { createContactRouter } = require('./routes/contacto');
 const { createOrdersRouter } = require('./routes/pedidos');
@@ -14,7 +15,7 @@ const { createTestimoniosRouter } = require('./routes/testimonios');
 
 function createApp(config) {
     const app = express();
-    const allowedOrigins = new Set(config.frontendOrigins);
+    const isAllowedOrigin = createOriginValidator(config);
     const productos = Array.isArray(productosData.productos) ? productosData.productos : [];
 
     app.disable('x-powered-by');
@@ -23,7 +24,7 @@ function createApp(config) {
     app.use(helmet());
     app.use(cors({
         origin(origin, callback) {
-            if (!origin || allowedOrigins.has(origin)) return callback(null, true);
+            if (isAllowedOrigin(origin)) return callback(null, true);
             return callback(null, false);
         },
         credentials: true,
@@ -38,7 +39,7 @@ function createApp(config) {
         const changesData = !['GET', 'HEAD', 'OPTIONS'].includes(request.method);
         const origin = request.get('Origin');
 
-        if (changesData && origin && !allowedOrigins.has(origin)) {
+        if (changesData && !isAllowedOrigin(origin)) {
             return response.status(403).json({ error: 'Origen no autorizado.' });
         }
 
