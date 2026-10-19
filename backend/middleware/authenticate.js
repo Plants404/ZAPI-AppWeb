@@ -3,12 +3,13 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-function createAuthenticate(config) {
+function createAuthenticate(config, unauthorizedMessage) {
     return async function authenticate(request, response, next) {
         const token = request.cookies[config.cookieName];
+        const errorMessage = unauthorizedMessage || 'Iniciá sesión para continuar.';
 
         if (!token) {
-            return response.status(401).json({ error: 'Iniciá sesión para continuar.' });
+            return response.status(401).json({ error: errorMessage });
         }
 
         try {
@@ -21,7 +22,7 @@ function createAuthenticate(config) {
             const user = await User.findById(claims.sub);
             if (!user) {
                 response.clearCookie(config.cookieName, cookieOptions(config, false));
-                return response.status(401).json({ error: 'La cuenta ya no está disponible.' });
+                return response.status(401).json({ error: unauthorizedMessage || 'La cuenta ya no está disponible.' });
             }
 
             request.auth = { sub: claims.sub };
@@ -30,7 +31,9 @@ function createAuthenticate(config) {
         } catch (error) {
             if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
                 response.clearCookie(config.cookieName, cookieOptions(config, false));
-                return response.status(401).json({ error: 'La sesión venció. Iniciá sesión nuevamente.' });
+                return response.status(401).json({
+                    error: unauthorizedMessage || 'La sesión venció. Iniciá sesión nuevamente.',
+                });
             }
 
             return next(error);

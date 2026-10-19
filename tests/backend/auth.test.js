@@ -112,54 +112,53 @@ test('acepta formularios de contacto anónimos y vinculados a una cuenta', async
     assert.equal(registeredForm.estado, 'nuevo');
 });
 
-test('valida pedidos con snapshot histórico de productos y dirección incrustada', async () => {
+test('valida pedidos con precio histórico y contacto incrustado', async () => {
     const order = new Order({
         userId: new mongoose.Types.ObjectId(),
+        contacto: {
+            nombre: 'Ana Zapi',
+            telefono: '+598 99 123 456',
+            email: 'ana@example.com',
+        },
         items: [{
-            productId: new mongoose.Types.ObjectId(),
+            productoId: 1,
             nombre: 'Albahaca',
             cantidad: 2,
-            precioUnitario: 1200,
+            precio: 150,
         }],
-        total: 2400,
-        metodoPago: 'transferencia',
-        direccionEnvio: {
-            nombreDestinatario: 'Ana Zapi',
-            telefono: '+54 11 5555-1234',
-            calle: 'Calle Verde',
-            numero: '123',
-            ciudad: 'Buenos Aires',
-            provincia: 'Buenos Aires',
-            codigoPostal: '1000',
-        },
+        total: 300,
+        moneda: 'UYU',
+        envioPendiente: true,
     });
 
     await order.validate();
     assert.equal(order.estado, 'pendiente');
-    assert.equal(order.moneda, 'ARS');
-    assert.equal(order.items[0].precioUnitario, 1200);
-    assert.ok(order.items[0].schema.path('precioUnitario').options.immutable);
+    assert.equal(order.moneda, 'UYU');
+    assert.equal(order.items[0].precio, 150);
+    assert.ok(order.items[0].schema.path('precio').options.immutable);
 });
 
 test('rechaza pedidos sin productos o con cantidades fraccionarias', async () => {
     const emptyOrder = new Order({
         userId: new mongoose.Types.ObjectId(),
+        contacto: { nombre: 'Ana', telefono: '123456' },
         items: [],
         total: 0,
-        metodoPago: 'efectivo',
-        direccionEnvio: {},
+        moneda: 'UYU',
+        envioPendiente: true,
     });
     const fractionalOrder = new Order({
         userId: new mongoose.Types.ObjectId(),
+        contacto: { nombre: 'Ana', telefono: '123456' },
         items: [{
-            productId: new mongoose.Types.ObjectId(),
+            productoId: 1,
             nombre: 'Albahaca',
             cantidad: 1.5,
-            precioUnitario: 1200,
+            precio: 150,
         }],
-        total: 1800,
-        metodoPago: 'efectivo',
-        direccionEnvio: {},
+        total: 225,
+        moneda: 'UYU',
+        envioPendiente: true,
     });
 
     await assert.rejects(emptyOrder.validate(), error => Boolean(error.errors.items));
