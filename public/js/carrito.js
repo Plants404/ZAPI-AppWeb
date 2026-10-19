@@ -228,17 +228,32 @@ function renderCart() {
 
     emptyCart.classList.add("hidden");
 
-    container.innerHTML = cart.map(item => `
-        <article class="cart-item" data-id="${item.id}">
-            <div class="cart-item-image">
+    container.innerHTML = cart.map(item => {
+        const producto = PRODUCTOS.find(({ id }) => id === item.id);
+        const descripcion = producto?.descripcion || "";
+        const beneficio = producto?.infoDeVenta?.[0] || "";
+
+        return `
+        <article class="cart-item product-card" data-id="${item.id}">
+            <div class="cart-item-image product-visual">
                 <img src="${escaparHTML(item.imagen)}" alt="${escaparHTML(item.nombre)}" loading="lazy" decoding="async">
             </div>
-            <div class="cart-item-info">
-                <h3>${escaparHTML(item.nombre)}</h3>
-                <div class="cart-item-category">${escaparHTML(item.categoria) || "Producto ZAPI"}</div>
-                <span class="cart-item-stock" data-stock="${item.id}"></span>
+            <div class="cart-item-info product-body">
+                <h3 class="product-name">${escaparHTML(item.nombre)}</h3>
+                <div class="product-tags">
+                    <span class="cart-item-category product-badge">${escaparHTML(item.categoria) || "Producto ZAPI"}</span>
+                    <span class="cart-item-stock product-stock-pill" data-stock="${item.id}"
+                        data-id="${item.id}"></span>
+                </div>
+                ${descripcion ? `<p class="product-desc">${escaparHTML(descripcion)}</p>` : ""}
+                ${beneficio ? `
+                    <div class="product-benefit">
+                        <span class="benefit-icon" aria-hidden="true">✓</span>
+                        <span>${escaparHTML(beneficio)}</span>
+                    </div>
+                ` : ""}
             </div>
-            <div class="cart-item-actions">
+            <div class="cart-item-actions product-footer">
                 <div class="quantity-control" role="group" aria-label="Cantidad">
                     <button class="quantity-minus" data-id="${item.id}" aria-label="Disminuir cantidad" type="button">
                         <span class="material-symbols-outlined" aria-hidden="true">remove</span>
@@ -262,7 +277,8 @@ function renderCart() {
                 </div>
             </div>
         </article>
-    `).join("");
+    `;
+    }).join("");
 
     pintarStockEnPantalla();
     updateSummary();
