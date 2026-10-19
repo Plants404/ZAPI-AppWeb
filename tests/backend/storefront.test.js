@@ -122,6 +122,54 @@ test('crea un pedido con precio del catálogo y descuenta stock', async () => {
     assert.equal(history.body.pedidos[0].envio_pendiente, true);
 });
 
+test('permite quitar un pedido propio del historial sin borrarlo de la base de datos', async () => {
+    await seedProductStock(5);
+    const cookie = await createSession();
+    const otherCookie = await createSession('admin');
+    const created = await request(app)
+        .post('/api/pedidos')
+        .set('Origin', ORIGIN)
+        .set('Cookie', cookie)
+        .send({
+            nombre: 'Ana Zapi',
+            telefono: '123456',
+            items: [{ id: 1, cantidad: 1 }],
+        });
+    const id = created.body.id;
+
+    assert.equal(created.status, 201);
+
+    const unauthorized = await request(app)
+        .patch(`/api/pedidos/${id}/ocultar`)
+        .set('Origin', ORIGIN);
+    assert.equal(unauthorized.status, 401);
+
+    const otherUser = await request(app)
+        .patch(`/api/pedidos/${id}/ocultar`)
+        .set('Origin', ORIGIN)
+        .set('Cookie', otherCookie);
+    assert.equal(otherUser.status, 404);
+    assert.equal((await Order.findById(id)).ocultoEnHistorial, false);
+
+    const hidden = await request(app)
+        .patch(`/api/pedidos/${id}/ocultar`)
+        .set('Origin', ORIGIN)
+        .set('Cookie', cookie);
+    assert.equal(hidden.status, 200);
+    assert.deepEqual(hidden.body, { ok: true });
+
+    const history = await request(app)
+        .get('/api/pedidos')
+        .set('Origin', ORIGIN)
+        .set('Cookie', cookie);
+    assert.equal(history.status, 200);
+    assert.deepEqual(history.body.pedidos, []);
+
+    const storedOrder = await Order.findById(id).lean();
+    assert.ok(storedOrder);
+    assert.equal(storedOrder.ocultoEnHistorial, true);
+});
+
 test('rechaza pedido sin sesión con 401', async () => {
     const response = await request(app)
         .post('/api/pedidos')

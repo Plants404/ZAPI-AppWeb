@@ -193,7 +193,10 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
 
     router.get('/', readLimiter, authenticate, async (request, response, next) => {
         try {
-            const orders = await Order.find({ userId: request.user._id })
+            const orders = await Order.find({
+                userId: request.user._id,
+                ocultoEnHistorial: { $ne: true },
+            })
                 .sort({ createdAt: -1 })
                 .limit(50)
                 .lean();
@@ -211,6 +214,25 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
                 })),
             }));
             return response.status(200).json({ pedidos });
+        } catch (error) {
+            return next(error);
+        }
+    });
+
+    router.patch('/:id/ocultar', writeLimiter, authenticate, async (request, response, next) => {
+        if (!/^[a-f\d]{24}$/i.test(request.params.id)) {
+            return response.status(404).json({ error: 'Pedido no encontrado.' });
+        }
+
+        try {
+            const order = await Order.findOneAndUpdate(
+                { _id: request.params.id, userId: request.user._id },
+                { $set: { ocultoEnHistorial: true } },
+                { returnDocument: 'after', runValidators: true }
+            ).select('_id').lean();
+
+            if (!order) return response.status(404).json({ error: 'Pedido no encontrado.' });
+            return response.status(200).json({ ok: true });
         } catch (error) {
             return next(error);
         }

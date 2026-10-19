@@ -16,11 +16,12 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
 
-    
     <link rel="stylesheet" href="./public/css/styles.css">
 
     
     <link rel="stylesheet" href="./public/css/stylecarrito.css">
+
+    <link rel="stylesheet" href="./public/css/tokens.css">
 
     
     <link rel="stylesheet" href="./public/css/pedidos.css">
@@ -56,7 +57,6 @@
         <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
             <ul>
                 <li class="nav-cuenta">
-                    <a class="nav-link nav-ingresar" href="login.html">Ingresar</a>
                     <div class="nav-usuario">
                         <button type="button" class="nav-usuario-boton nav-usuario-alineado" id="navUsuarioBoton"
                             aria-expanded="false" aria-haspopup="true" aria-controls="navUsuarioMenu">
@@ -92,67 +92,94 @@
     
     <main class="pedidos-page" id="contenido" tabindex="-1">
 
-        <div class="cart-title">
-            <span class="material-symbols-outlined">
-                receipt_long
-            </span>
-
-            <h1>Mis pedidos</h1>
-        </div>
-
         <div class="pedidos-heading">
-            <span class="cart-eyebrow">
-                TU HISTORIAL
-            </span>
-
-            <h2>Pedidos que hiciste</h2>
-
-            <p>
-                Consultá los pedidos guardados en este dispositivo o en
-                tu cuenta si la API está conectada.
-            </p>
+            <div class="pedidos-heading-copy">
+                <span class="cart-eyebrow">TU HISTORIAL</span>
+                <h1>Mis pedidos</h1>
+                <p id="pedidosSubtitulo">Acá vas a ver el estado de cada pedido que hagas.</p>
+            </div>
+            <a class="pedidos-explorar" id="pedidosExplorar" href="catalogo.html" hidden>
+                <span class="material-symbols-outlined" aria-hidden="true">eco</span>
+                Explorar catálogo
+            </a>
         </div>
-
-
-        
 
         <p class="pedidos-aviso" id="pedidosError" role="status" hidden>
+            <span class="material-symbols-outlined" aria-hidden="true">error</span>
             No pudimos cargar tus pedidos. Recargá la página e intentá de nuevo.
         </p>
 
-
-        
-
         <div id="pedidosLista" class="pedidos-lista">
-            
         </div>
 
+        <div id="pedidosVacio" class="pedidos-vacio hidden">
+            <div class="pedidos-vacio-principal">
+                <div class="pedidos-vacio-mensaje">
+                    <span class="pedidos-vacio-icono material-symbols-outlined" aria-hidden="true">
+                        receipt_long
+                    </span>
+                    <h2>Todavía no hiciste pedidos</h2>
+                    <p>
+                        Cuando envíes un pedido desde el carrito, va a aparecer acá con su estado,
+                        para que lo sigas hasta la entrega.
+                    </p>
+                    <div class="pedidos-vacio-acciones">
+                        <a href="catalogo.html" class="pedidos-boton pedidos-boton-principal">
+                            <span class="material-symbols-outlined" aria-hidden="true">eco</span>
+                            Explorar catálogo
+                        </a>
+                        <a href="carrito.html" class="pedidos-boton pedidos-boton-secundario">
+                            Ir al carrito
+                        </a>
+                    </div>
+                </div>
 
-        
+                <div class="pedidos-ejemplo" aria-hidden="true">
+                    <p class="pedidos-ejemplo-eyebrow">ASÍ SE VERÁ TU PRIMER PEDIDO</p>
+                    <div class="pedidos-ejemplo-tarjeta">
+                        <div class="pedidos-ejemplo-cabecera">
+                            <strong>Pedido de ejemplo</strong>
+                            <span>Pendiente</span>
+                        </div>
+                        <div class="pedidos-ejemplo-linea">
+                            <span>2× Albahaca</span>
+                            <strong>$ 300</strong>
+                        </div>
+                        <div class="pedidos-ejemplo-linea">
+                            <span>1× Ruda</span>
+                            <strong>$ 120</strong>
+                        </div>
+                        <div class="pedidos-ejemplo-total">
+                            <span>Total</span>
+                            <strong>$ 420</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <div id="pedidosVacio" class="empty-cart hidden">
-
-            <span class="material-symbols-outlined">
-                receipt_long
-            </span>
-
-            <h3>Todavía no hiciste pedidos</h3>
-
-            <p>
-                Cuando prepares un pedido desde el carrito, su registro
-                aparecerá acá en este dispositivo.
-            </p>
-
-            <a href="catalogo.html" class="primary-button">
-
-                <span class="material-symbols-outlined">
-                    eco
-                </span>
-
-                Explorar catálogo
-
-            </a>
-
+            <ol class="pedidos-pasos">
+                <li>
+                    <span class="pedidos-paso-numero">01</span>
+                    <div>
+                        <h3>Armá tu carrito</h3>
+                        <p>Elegí tus plantas del catálogo y ajustá las cantidades.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="pedidos-paso-numero">02</span>
+                    <div>
+                        <h3>Enviá tu pedido</h3>
+                        <p>Lo mandás por WhatsApp y lo confirmamos con vos.</p>
+                    </div>
+                </li>
+                <li>
+                    <span class="pedidos-paso-numero">03</span>
+                    <div>
+                        <h3>Seguilo acá</h3>
+                        <p>Pendiente, confirmado, preparando, enviado y entregado.</p>
+                    </div>
+                </li>
+            </ol>
         </div>
 
     </main>
