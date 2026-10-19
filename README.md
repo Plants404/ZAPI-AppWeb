@@ -50,7 +50,7 @@ Sin backend, el sitio es público: se puede consultar el catálogo, armar
 un carrito y preparar pedidos por WhatsApp sin iniciar sesión. Las
 cuentas y funciones que guardan datos en el servidor requieren una API.
 
-## API de autenticación
+## API
 
 La API implementa `POST /api/auth/registro`, `POST /api/auth/login`,
 `GET /api/auth/yo`, `POST /api/auth/logout` y `GET /api/health`.
@@ -59,31 +59,13 @@ Registro e inicio de sesión usan el contrato del frontend (`nombre`,
 una cookie `HttpOnly`, no en `localStorage`. Las nuevas cuentas reciben
 el rol `user`; solo el script administrativo explícito asigna `admin`.
 
-Los modelos de datos también incluyen `ContactForm` y `Order`.
-`ContactForm.userId` es opcional para aceptar consultas anónimas.
-`Order.userId` referencia al comprador y sus ítems guardan el ID del
-producto junto con nombre, cantidad y precio unitario como snapshot
-inmutable. La dirección de envío se incrusta en el pedido para conservar
-los datos utilizados en esa compra. `productId` referencia un modelo
-`Product`; el catálogo actual todavía es estático, así que para resolver
-esa referencia con `populate()` habrá que incorporar el modelo de
-productos a MongoDB.
-
-Ejemplos de consultas desde código backend:
-
-```js
-const pedidos = await Order.find({ userId })
-    .sort({ createdAt: -1 })
-    .populate('userId', 'nombre email');
-
-const mensajes = await ContactForm.find({ estado: 'nuevo' })
-    .sort({ createdAt: -1 })
-    .populate('userId', 'nombre email');
-```
-
-Los precios de cada pedido deben calcularse en el servidor a partir del
-catálogo confiable al crear la compra; nunca deben aceptarse como válidos
-los precios ni el `total` enviados por el navegador.
+Los modelos `ContactForm` permiten mensajes anónimos. `Order.userId` y
+`Testimonio.userId` se toman de la sesión del servidor. Los pedidos
+conservan IDs numéricos de catálogo, nombres, cantidades y precios
+históricos; el backend calcula sus importes desde
+`public/data/productos.json`, ignora precios y totales del navegador,
+descuenta stock con actualización condicional y usa UYU. Las opiniones
+quedan ocultas hasta ser verificadas y autorizadas por un administrador.
 
 ### Desarrollo local
 
@@ -149,7 +131,21 @@ frontend. `FRONTEND_ORIGINS` no admite comodines.
 | `POST /api/auth/login` | Valida credenciales y abre sesión. |
 | `GET /api/auth/yo` | Devuelve el usuario autenticado o `401`. |
 | `POST /api/auth/logout` | Elimina la cookie de sesión. |
+| `GET /api/stock` | Público; devuelve unidades por ID de producto. |
+| `PUT /api/stock/:id` | Admin; actualiza unidades (`{ "unidades": 10 }`). |
+| `POST /api/pedidos` | Requiere sesión; calcula precios/total y descuenta stock. |
+| `GET /api/pedidos` | Requiere sesión; historial propio, máximo 50. |
+| `POST /api/contacto` | Público; guarda consultas y acepta honeypot `sitio_web`. |
+| `GET /api/testimonios` | Público; solo opiniones verificadas y autorizadas. |
+| `POST /api/testimonios` | Requiere sesión; crea opinión pendiente de moderación. |
+| `PATCH /api/testimonios/:id/aprobar` | Admin; verifica y autoriza una opinión. |
 | `GET /api/health` | Comprueba disponibilidad HTTP. |
+
+Los endpoints de lectura tienen un límite de 120 solicitudes por minuto
+por IP; los de escritura, 20 por cada 10 minutos. Para inicializar el
+stock desde el catálogo con 10 unidades para cada producto nuevo, ejecutá
+`npm run stock:sembrar`. Las ejecuciones posteriores actualizan nombre y
+precio de referencia sin reemplazar las unidades existentes.
 
 ## Funcionalidad sin backend
 
@@ -158,16 +154,16 @@ por defecto y no hay meta `zapi-api`; configurá una de esas opciones
 para habilitar autenticación y opiniones en producción.
 
 - **Catálogo:** se lee `public/data/productos.json`.
-- **Stock:** el valor de demostración no representa inventario real.
+- **Stock:** con la API configurada se consulta el inventario de MongoDB; sin API se usa el valor de demostración local.
 - **Carrito / checkout:** el carrito se guarda en este dispositivo y el
-  pedido se completa por WhatsApp. El envío es gratis desde $2.500; por
-  debajo de ese monto el costo se coordina.
+  pedido se completa por WhatsApp sin API. En el backend los importes son
+  UYU: el envío es gratis desde 2500; por debajo se coordina.
 - **Cuentas:** requieren una API configurada; no hay credenciales locales
   ni contraseñas almacenadas en el código del navegador.
 - **Mis pedidos:** sin API, los pedidos preparados se guardan en
   `localStorage` (`zapiPedidosLocal`) y se pueden cancelar (repone el
   stock local).
-- **Contacto:** el aviso va solo por EmailJS.
+- **Contacto:** con API la consulta se guarda en MongoDB y se intenta enviar el aviso por EmailJS; sin API se usa solo EmailJS.
 - **Opiniones:** se leen de la API únicamente si cada registro incluye
   `verificado: true` y `autorizado: true`; el archivo de datos está vacío.
 - **Asistente:** responde por reglas con el catálogo, sin servicio externo.
@@ -185,7 +181,8 @@ Para reemplazar la URL de API en local, configurá `URL_API_LOCAL` en
 | `npm start` | Sirve el sitio estático en `http://localhost:5500`. |
 | `npm run start:api` | Inicia la API Express (requiere `.env` y MongoDB). |
 | `npm run admin:crear` | Crea o actualiza un administrador desde variables de entorno. |
-| `npm run test:api` | Ejecuta pruebas de autenticación con MongoDB en memoria. |
+| `npm run stock:sembrar` | Inicializa stock desde el catálogo y preserva unidades existentes. |
+| `npm run test:api` | Ejecuta pruebas de autenticación y API con MongoDB en memoria. |
 | `npm run lint` | ESLint sobre todo el repo. |
 | `npm run verificar` | Verificación estática de CSS, ARIA, IDs, referencias, XSS, reduced motion y archivos generados. No modifica archivos. |
 | `npm run check` | `lint` + `verificar`. Correr antes de commitear. |

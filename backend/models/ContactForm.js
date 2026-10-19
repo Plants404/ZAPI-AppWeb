@@ -29,15 +29,20 @@ const contactFormSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        minlength: 2,
+        minlength: 3,
         maxlength: 150,
+    },
+    telefono: {
+        type: String,
+        trim: true,
+        maxlength: 40,
     },
     mensaje: {
         type: String,
         required: true,
         trim: true,
         minlength: 10,
-        maxlength: 5000,
+        maxlength: 2000,
     },
     estado: {
         type: String,

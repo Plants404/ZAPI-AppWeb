@@ -3,9 +3,8 @@
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
-    productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
+    productoId: {
+        type: Number,
         required: true,
         immutable: true,
     },
@@ -21,12 +20,12 @@ const orderItemSchema = new mongoose.Schema({
         required: true,
         min: 1,
         validate: {
-            validator: Number.isInteger,
+            validator: Number.isSafeInteger,
             message: 'La cantidad debe ser un número entero.',
         },
         immutable: true,
     },
-    precioUnitario: {
+    precio: {
         type: Number,
         required: true,
         min: 0,
@@ -34,53 +33,25 @@ const orderItemSchema = new mongoose.Schema({
     },
 }, { _id: false });
 
-const shippingAddressSchema = new mongoose.Schema({
-    nombreDestinatario: {
+const orderContactSchema = new mongoose.Schema({
+    nombre: {
         type: String,
         required: true,
         trim: true,
-        maxlength: 100,
+        minlength: 2,
+        maxlength: 120,
     },
     telefono: {
         type: String,
         required: true,
         trim: true,
-        maxlength: 30,
+        maxlength: 40,
     },
-    calle: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 150,
-    },
-    numero: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 20,
-    },
-    ciudad: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 100,
-    },
-    provincia: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 100,
-    },
-    codigoPostal: {
-        type: String,
-        required: true,
-        trim: true,
-        maxlength: 20,
-    },
-    referencias: {
+    email: {
         type: String,
         trim: true,
-        maxlength: 500,
+        lowercase: true,
+        maxlength: 254,
     },
 }, { _id: false });
 
@@ -90,6 +61,22 @@ const orderSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
         index: true,
+    },
+    contacto: {
+        type: orderContactSchema,
+        required: true,
+    },
+    zona: {
+        type: String,
+        trim: true,
+        maxlength: 200,
+        default: null,
+    },
+    notas: {
+        type: String,
+        trim: true,
+        maxlength: 2000,
+        default: null,
     },
     items: {
         type: [orderItemSchema],
@@ -106,10 +93,9 @@ const orderSchema = new mongoose.Schema({
     },
     moneda: {
         type: String,
+        enum: ['UYU'],
+        default: 'UYU',
         required: true,
-        uppercase: true,
-        default: 'ARS',
-        match: /^[A-Z]{3}$/,
     },
     estado: {
         type: String,
@@ -117,15 +103,10 @@ const orderSchema = new mongoose.Schema({
         default: 'pendiente',
         required: true,
     },
-    metodoPago: {
-        type: String,
+    envioPendiente: {
+        type: Boolean,
         required: true,
-        trim: true,
-        maxlength: 50,
-    },
-    direccionEnvio: {
-        type: shippingAddressSchema,
-        required: true,
+        default: false,
     },
 }, {
     timestamps: true,
