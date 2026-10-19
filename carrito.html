@@ -40,6 +40,7 @@
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
         </button>
 
         <a href="index.html" class="logo">
@@ -91,77 +92,43 @@
     <main class="cart-page" id="contenido" tabindex="-1">
 
         <section class="cart-content">
-
-            <div class="cart-title">
-                <span class="material-symbols-outlined">
-                    shopping_bag
-                </span>
-
-                <h1>Tu carrito</h1>
-            </div>
-
             <div class="cart-heading">
-
-                <div>
+                <div class="cart-heading-copy">
                     <span class="cart-eyebrow">
                         TU SELECCIÓN
                     </span>
-
-                    <h2>Productos seleccionados</h2>
+                    <h1>Tu carrito</h1>
                 </div>
-
-                <button
-                    class="clear-cart"
-                    id="clearCart">
-
-                    <span class="material-symbols-outlined">
+                <button class="clear-cart" id="clearCart" type="button">
+                    <span class="material-symbols-outlined" aria-hidden="true">
                         delete_sweep
                     </span>
-
                     Vaciar carrito
-
                 </button>
-
             </div>
-
-
-            
 
             <div id="cartItems" class="cart-items">
-                
             </div>
 
-
-            
-
             <div id="emptyCart" class="empty-cart hidden">
-
-                <span class="material-symbols-outlined">
+                <span class="material-symbols-outlined" aria-hidden="true">
                     shopping_basket
                 </span>
-
                 <h3>Tu carrito está vacío</h3>
-
                 <p>
                     Todavía no agregaste ningún producto.
                     Explorá nuestro catálogo y encontrá
                     algo para tu jardín o huerta.
                 </p>
-
                 <a href="catalogo.html" class="primary-button">
-
-                    <span class="material-symbols-outlined">
+                    <span class="material-symbols-outlined" aria-hidden="true">
                         eco
                     </span>
-
                     Explorar catálogo
-
                 </a>
-
             </div>
 
-
-            
+            <a class="continue-shopping" href="catalogo.html">← Seguir comprando</a>
 
             <section
                 class="recommendations"
@@ -192,20 +159,24 @@
         
 
         <aside class="cart-summary">
-
             <div class="summary-header">
-
-                <span class="cart-eyebrow">
-                    RESUMEN
-                </span>
-
+                <span class="cart-eyebrow">RESUMEN</span>
                 <h2>Tu pedido</h2>
-
             </div>
 
+            <div class="shipping-progress-section" id="shippingProgressSection">
+                <p class="shipping-progress-message" id="shippingProgressMessage" aria-live="polite"></p>
+                <div class="shipping-progress-track" id="shippingProgress" role="progressbar"
+                    aria-label="Progreso hacia el envío gratis" aria-valuemin="0"
+                    aria-valuemax="2500" aria-valuenow="0" aria-valuetext="" hidden>
+                    <span class="shipping-progress-fill" id="shippingProgressFill"></span>
+                </div>
+                <p class="shipping-threshold-note">
+                    Envío gratis desde <span data-shipping-threshold></span>
+                </p>
+            </div>
 
             <div class="summary-lines">
-
                 <div>
                     <span>Productos</span>
                     <strong id="subtotal">$0</strong>
@@ -215,87 +186,32 @@
                     <span>Envío</span>
                     <strong id="shipping">$0</strong>
                 </div>
-
             </div>
-
 
             <div class="summary-total">
-
                 <span>Total</span>
-
-                <strong id="total">
-                    $0
-                </strong>
-
-            </div>
-
-
-            
-
-            <div class="delivery-box">
-
-                <span class="material-symbols-outlined">
-                    local_shipping
-                </span>
-
-                <div>
-                    <strong>Entrega</strong>
-
-                    <p>
-                        Envío gratis desde <span data-shipping-threshold></span>. Para pedidos menores,
-                        coordinaremos el costo por WhatsApp.
-                    </p>
+                <div class="summary-total-value">
+                    <strong id="total">$0</strong>
+                    <small id="shippingPendingNote" hidden>+ envío a coordinar</small>
                 </div>
-
             </div>
-
-
-            
 
             <div id="checkoutRoot" class="checkout-root"></div>
-
-
-            
-
-           <button
-    type="button"
-    class="btn-whatsapp"
-    id="whatsappButton"
->
-    <span class="material-symbols-outlined">
-        chat
-    </span>
-
-    Enviar pedido por WhatsApp
-</button>
-
-
-            <p class="secure-message">
-
-                <span class="material-symbols-outlined">
-                    verified_user
-                </span>
-
-                Tu pedido será confirmado
-                directamente con ZAPI.
-
-            </p>
-
-
-            
-
-            <button
-                type="button"
-                class="btn-testimonio btn-testimonio-bloque"
-                data-abrir-testimonio
-            >
-                <span class="material-symbols-outlined" aria-hidden="true">
-                    rate_review
-                </span>
-
-                Dejar un testimonio
+            <button type="button" class="btn-whatsapp" id="whatsappButton">
+                <span class="material-symbols-outlined" aria-hidden="true">chat</span>
+                Enviar pedido por WhatsApp
             </button>
 
+            <p class="secure-message">
+                <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
+                Tu pedido será confirmado
+                directamente con ZAPI.
+            </p>
+
+            <button type="button" class="btn-testimonio btn-testimonio-bloque" data-abrir-testimonio>
+                <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
+                Dejar un testimonio
+            </button>
         </aside>
 
     </main>
