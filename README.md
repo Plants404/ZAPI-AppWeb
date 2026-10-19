@@ -76,8 +76,11 @@ quedan ocultas hasta ser verificadas y autorizadas por un administrador.
 3. En una terminal ejecutá `npm run start:api` (API en
    `http://localhost:5501`).
 4. En otra, ejecutá `npm start` (sitio en `http://localhost:5500`).
-   `public/js/config.js` ya apunta a la API local. Para otro puerto de
-   Show Preview agregá su **origen exacto** a `FRONTEND_ORIGINS` en `.env`.
+   `public/js/config.js` ya apunta a la API local y adapta `localhost`,
+   `127.0.0.1` o `::1` para que la página y la API usen el mismo host.
+   En desarrollo también se permiten orígenes HTTP de `localhost` y
+   `127.0.0.1` con cualquier puerto; en producción sigue aplicándose
+   únicamente la lista exacta de `FRONTEND_ORIGINS`.
 5. El login y registro crean una cookie de sesión. La configuración local
    usa `SameSite=Lax`; producción usa `SameSite=None; Secure` para permitir
    credenciales entre el frontend y la API. Algunos navegadores bloquean
