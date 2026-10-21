@@ -4,7 +4,7 @@ const { after, before, beforeEach, test } = require('node:test');
 const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const { MongoMemoryReplSet } = require('mongodb-memory-server');
 const request = require('supertest');
 const { createApp } = require('../../backend/app');
 const ContactForm = require('../../backend/models/ContactForm');
@@ -32,7 +32,7 @@ let mongoServer;
 let app;
 
 before(async () => {
-    mongoServer = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
     await mongoose.connect(mongoServer.getUri());
     app = createApp(config);
 });
@@ -181,6 +181,36 @@ test('rechaza pedido sin sesión con 401', async () => {
         });
 
     assert.equal(response.status, 401);
+});
+
+test('revierte el descuento de stock si no se puede guardar el pedido', async () => {
+    await seedProductStock(5);
+    const cookie = await createSession();
+    const originalCreate = Order.create;
+    Order.create = async () => {
+        throw new Error('fallo simulado al crear el pedido');
+    };
+
+    try {
+        const response = await request(app)
+            .post('/api/pedidos')
+            .set('Origin', ORIGIN)
+            .set('Cookie', cookie)
+            .send({
+                nombre: 'Ana Zapi',
+                telefono: '+598 99 123 456',
+                email: null,
+                zona: null,
+                notas: null,
+                items: [{ id: 1, cantidad: 2 }],
+            });
+
+        assert.equal(response.status, 500);
+        assert.equal((await Stock.findOne({ productoId: 1 })).unidades, 5);
+        assert.equal(await Order.countDocuments(), 0);
+    } finally {
+        Order.create = originalCreate;
+    }
 });
 
 test('responde 409 con faltantes sin descontar unidades', async () => {

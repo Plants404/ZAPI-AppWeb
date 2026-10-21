@@ -4,7 +4,7 @@ const { after, before, beforeEach, test } = require('node:test');
 const assert = require('node:assert/strict');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
-const { MongoMemoryServer } = require('mongodb-memory-server');
+const { MongoMemoryReplSet } = require('mongodb-memory-server');
 const request = require('supertest');
 const ContactForm = require('../../backend/models/ContactForm');
 const Order = require('../../backend/models/Order');
@@ -30,7 +30,7 @@ let mongoServer;
 let app;
 
 before(async () => {
-    mongoServer = await MongoMemoryServer.create();
+    mongoServer = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
     await mongoose.connect(mongoServer.getUri());
     app = createApp(config);
 });

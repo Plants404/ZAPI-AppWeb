@@ -67,7 +67,7 @@
         abierto = true;
 
         toggle.setAttribute('aria-expanded', 'true');
-        toggle.setAttribute('aria-label', 'Cerrar menu de navegacion');
+        toggle.setAttribute('aria-label', 'Cerrar menú de navegación');
         nav.classList.add('esta-abierto');
 
         header?.classList.add('menu-abierto');
@@ -89,7 +89,7 @@
         abierto = false;
 
         toggle.setAttribute('aria-expanded', 'false');
-        toggle.setAttribute('aria-label', 'Abrir menu de navegacion');
+        toggle.setAttribute('aria-label', 'Abrir menú de navegación');
         nav.classList.remove('esta-abierto');
         header?.classList.remove('menu-abierto');
         body.classList.remove('no-scroll');

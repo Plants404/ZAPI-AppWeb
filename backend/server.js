@@ -3,12 +3,13 @@
 const mongoose = require('mongoose');
 const { createApp } = require('./app');
 const { loadConfig, validateConfig } = require('./config');
+const { ensureDatabaseConnected } = require('./database');
 
 async function start() {
     const config = loadConfig();
     validateConfig(config);
 
-    await mongoose.connect(config.mongoUri, { serverSelectionTimeoutMS: 10000 });
+    await ensureDatabaseConnected(config.mongoUri);
 
     const server = createApp(config).listen(config.port, () => {
         console.log(`ZAPI API escuchando en el puerto ${config.port}.`);

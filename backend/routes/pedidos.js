@@ -52,19 +52,6 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
     const authenticate = createAuthenticate(config);
     const catalog = new Map(productos.map(producto => [producto.id, producto]));
 
-    async function rollbackStock(decrements) {
-        for (const decrement of [...decrements].reverse()) {
-            const result = await Stock.updateOne(
-                { productoId: decrement.productoId },
-                { $inc: { unidades: decrement.cantidad } }
-            );
-            if (result.matchedCount !== 1) {
-                throw new Error(`No se pudo restaurar el stock del producto ${decrement.productoId}.`);
-            }
-            decrements.pop();
-        }
-    }
-
     async function shortagesFor(requested, forcedIds = []) {
         const rows = await Stock.find({ productoId: { $in: [...requested.keys()] } })
             .select('productoId unidades -_id')
@@ -131,49 +118,54 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
         }
 
         const { orderItems, requested } = parsed;
-        const initialShortages = await shortagesFor(requested);
-        if (initialShortages.length) {
-            return response.status(409).json({ error: 'No hay stock suficiente para algunos productos.', shortages: initialShortages });
-        }
-
         const total = orderItems.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
         if (!Number.isFinite(total)) {
             return fieldError(response, 'items', 'El total del pedido no es válido.');
         }
 
         const envioPendiente = total < FREE_SHIPPING_THRESHOLD;
-        const decrements = [];
+        const session = await Order.startSession();
+        let failedProductId = null;
 
         try {
-            for (const [productoId, cantidad] of requested) {
-                const result = await Stock.updateOne(
-                    { productoId, unidades: { $gte: cantidad } },
-                    { $inc: { unidades: -cantidad } }
-                );
+            let order;
 
-                if (result.modifiedCount !== 1) {
-                    await rollbackStock(decrements);
-                    const shortages = await shortagesFor(requested, [productoId]);
-                    return response.status(409).json({
-                        error: 'No hay stock suficiente para algunos productos.',
-                        shortages,
-                    });
+            await session.withTransaction(async () => {
+                failedProductId = null;
+
+                for (const [productoId, cantidad] of requested) {
+                    const result = await Stock.updateOne(
+                        { productoId, unidades: { $gte: cantidad } },
+                        { $inc: { unidades: -cantidad } },
+                        { session }
+                    );
+
+                    if (result.modifiedCount !== 1) {
+                        failedProductId = productoId;
+                        throw new Error('No hay stock suficiente para completar el pedido.');
+                    }
                 }
 
-                decrements.push({ productoId, cantidad });
-            }
+                [order] = await Order.create([{
+                    userId: request.user._id,
+                    contacto: { nombre, telefono, ...(email ? { email } : {}) },
+                    zona,
+                    notas,
+                    items: orderItems,
+                    total,
+                    moneda: 'UYU',
+                    estado: 'pendiente',
+                    envioPendiente,
+                }], { session });
+            });
 
-            const [order] = await Order.create([{
-                userId: request.user._id,
-                contacto: { nombre, telefono, ...(email ? { email } : {}) },
-                zona,
-                notas,
-                items: orderItems,
-                total,
-                moneda: 'UYU',
-                estado: 'pendiente',
-                envioPendiente,
-            }]);
+            if (failedProductId !== null) {
+                const shortages = await shortagesFor(requested, [failedProductId]);
+                return response.status(409).json({
+                    error: 'No hay stock suficiente para algunos productos.',
+                    shortages,
+                });
+            }
 
             return response.status(201).json({
                 id: String(order._id),
@@ -181,13 +173,21 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
                 estado: order.estado,
             });
         } catch (error) {
-            try {
-                await rollbackStock(decrements);
-            } catch (rollbackError) {
-                console.error('No se pudo completar el rollback de stock:', rollbackError.message);
-                return next(rollbackError);
+            if (failedProductId !== null) {
+                try {
+                    const shortages = await shortagesFor(requested, [failedProductId]);
+                    return response.status(409).json({
+                        error: 'No hay stock suficiente para algunos productos.',
+                        shortages,
+                    });
+                } catch (shortageError) {
+                    return next(shortageError);
+                }
             }
+
             return next(error);
+        } finally {
+            await session.endSession();
         }
     });
 
