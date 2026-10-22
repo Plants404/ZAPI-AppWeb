@@ -210,7 +210,7 @@ header::before {
   border-bottom: 1px solid var(--borde);
 }
 
-header h4 {
+header .logo-nombre {
   font-family: var(--serif);
   font-size: 1.6rem;
   font-weight: 700;
@@ -431,6 +431,10 @@ header.menu-abierto::before {
   color: var(--muted-texto);
   background: none;
   border-radius: 50%;
+}
+
+.header-search-limpiar[hidden] {
+  display: none;
 }
 
 .header-search-limpiar:hover {
