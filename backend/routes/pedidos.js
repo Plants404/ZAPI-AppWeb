@@ -3,7 +3,7 @@
 const express = require('express');
 const Stock = require('../models/Stock');
 const Order = require('../models/Order');
-const { createAuthenticate } = require('../middleware/authenticate');
+const { createAuthenticate, createAuthenticateOpcional } = require('../middleware/authenticate');
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const FREE_SHIPPING_THRESHOLD = 2500;
@@ -50,6 +50,8 @@ function orderItemsFromBody(items, catalog) {
 function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
     const router = express.Router();
     const authenticate = createAuthenticate(config);
+    const authenticateOpcional = createAuthenticateOpcional(config);
+    const authMiddleware = config.requiereCuenta ? authenticate : authenticateOpcional;
     const catalog = new Map(productos.map(producto => [producto.id, producto]));
 
     async function shortagesFor(requested, forcedIds = []) {
@@ -73,7 +75,7 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
         return shortages;
     }
 
-    router.post('/', writeLimiter, authenticate, async (request, response, next) => {
+    router.post('/', writeLimiter, authMiddleware, async (request, response, next) => {
         const body = request.body && typeof request.body === 'object' && !Array.isArray(request.body)
             ? request.body
             : {};
@@ -147,7 +149,7 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
                 }
 
                 [order] = await Order.create([{
-                    userId: request.user._id,
+                    userId: request.user ? request.user._id : null,
                     contacto: { nombre, telefono, ...(email ? { email } : {}) },
                     zona,
                     notas,
@@ -191,8 +193,12 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
         }
     });
 
-    router.get('/', readLimiter, authenticate, async (request, response, next) => {
+    router.get('/', readLimiter, authMiddleware, async (request, response, next) => {
         try {
+            if (!request.user) {
+                return response.status(401).json({ error: 'Iniciá sesión para ver tus pedidos.' });
+            }
+
             const orders = await Order.find({
                 userId: request.user._id,
                 ocultoEnHistorial: { $ne: true },
@@ -219,7 +225,11 @@ function createOrdersRouter({ config, readLimiter, writeLimiter, productos }) {
         }
     });
 
-    router.patch('/:id/ocultar', writeLimiter, authenticate, async (request, response, next) => {
+    router.patch('/:id/ocultar', writeLimiter, authMiddleware, async (request, response, next) => {
+        if (!request.user) {
+            return response.status(401).json({ error: 'Iniciá sesión para ocultar pedidos.' });
+        }
+
         if (!/^[a-f\d]{24}$/i.test(request.params.id)) {
             return response.status(404).json({ error: 'Pedido no encontrado.' });
         }

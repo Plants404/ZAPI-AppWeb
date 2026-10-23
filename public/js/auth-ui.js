@@ -4,7 +4,9 @@
     let usuario = null;
 
     function pintar() {
-        document.documentElement.dataset.auth = usuario ? 'si' : 'no';
+        document.documentElement.dataset.cuentas = window.REQUIERE_CUENTA
+            ? (usuario ? 'si' : 'no')
+            : 'off';
 
         const nombre = document.getElementById('navUsuarioNombre');
         if (nombre && usuario) nombre.textContent = 'Hola ' + usuario.nombre;
@@ -17,6 +19,8 @@
     }
 
     function prepararMenuDeCuenta() {
+        if (!window.REQUIERE_CUENTA) return;
+
         const boton = document.getElementById('navUsuarioBoton');
         const menu = document.getElementById('navUsuarioMenu');
 
@@ -103,6 +107,8 @@
     }
 
     function exigirCuenta() {
+        if (!window.REQUIERE_CUENTA) return true;
+
         if (usuario) return true;
 
         window.location.href = window.urlDelSitio('login.html')
@@ -132,7 +138,7 @@
         window.location.href = window.urlDelSitio('index.html');
     }
 
-    const sesion = hayBackend()
+    const sesion = (window.REQUIERE_CUENTA && hayBackend())
         ? fetch(window.urlApi('/api/auth/yo'), { credentials: 'include' })
             .then(function (res) { return res.json(); })
             .then(function (datos) {

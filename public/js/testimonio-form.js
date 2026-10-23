@@ -286,9 +286,7 @@
         const form = raiz.querySelector(".testimonio-form");
         const gracias = raiz.querySelector(".testimonio-gracias");
 
-        const cuenta = window.zapiAuth && window.zapiAuth.usuario;
-
-        autor.value = cuenta && cuenta.nombre ? cuenta.nombre : "";
+        autor.value = "";
         lugar.value = "";
         texto.value = "";
         contador.textContent = "0";
@@ -524,7 +522,7 @@
             }
         }
 
-        if (!window.zapiAuth || !window.zapiAuth.autenticado) {
+        if (window.REQUIERE_CUENTA && (!window.zapiAuth || !window.zapiAuth.autenticado)) {
 
             if (window.zapiAuth && typeof window.zapiAuth.exigirCuenta === "function") {
                 window.zapiAuth.exigirCuenta();
