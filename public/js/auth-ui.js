@@ -9,6 +9,9 @@
         const nombre = document.getElementById('navUsuarioNombre');
         if (nombre && usuario) nombre.textContent = 'Hola ' + usuario.nombre;
 
+        const nombreSheet = document.querySelector('.bottom-sheet-hola');
+        if (nombreSheet && usuario) nombreSheet.textContent = 'Hola ' + usuario.nombre;
+
         const salir = document.getElementById('navSalir');
         if (salir) salir.addEventListener('click', window.zapiAuth.salir);
     }

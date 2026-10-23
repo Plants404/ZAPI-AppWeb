@@ -3,51 +3,40 @@
 (function () {
 
     const toggle = document.getElementById('navToggle');
-    const nav = document.getElementById('navPrincipal');
+    const sheet = document.getElementById('hojaMenu');
     const backdrop = document.getElementById('navBackdrop');
     const body = document.body;
+    const html = document.documentElement;
     const header = document.querySelector('header');
 
-    if (!toggle || !nav) return;
+    if (!toggle || !sheet) return;
 
-    if (nav.dataset.menuListo === 'si') return;
-    nav.dataset.menuListo = 'si';
+    if (sheet.dataset.menuListo === 'si') return;
+    sheet.dataset.menuListo = 'si';
 
     let abierto = false;
+    let scrollY = 0;
+    let iosLock = false;
 
-    function enfocarPrimerLink() {
-        const primero = nav.querySelector(
+    function focusables() {
+        return Array.from(sheet.querySelectorAll(
             'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-        );
-        if (primero instanceof HTMLElement) {
-            primero.focus({ preventScroll: true });
-        }
+        )).filter(function (el) {
+            return el.offsetParent !== null;
+        });
     }
 
-    function elementosEnfocables() {
-        const selector = 'a[href], button:not([disabled]), input:not([disabled]),' +
-            ' [tabindex]:not([tabindex="-1"])';
-        const zonas = [header, nav].filter(zona => zona);
-
-        return zonas.flatMap(zona =>
-            Array.from(zona.querySelectorAll(selector))
-        ).filter(elemento =>
-            elemento.offsetParent !== null
-        );
-    }
-
-    function atraparFoco(evento) {
+    function trapFocus(evento) {
         if (evento.key !== 'Tab' || !abierto) return;
 
-        const focusables = elementosEnfocables();
+        const foc = focusables();
+        if (!foc.length) return;
 
-        if (!focusables.length) return;
-
-        const primero = focusables[0];
-        const ultimo = focusables[focusables.length - 1];
+        const primero = foc[0];
+        const ultimo = foc[foc.length - 1];
         const actual = document.activeElement;
 
-        if (!focusables.includes(actual)) {
+        if (!foc.includes(actual)) {
             evento.preventDefault();
             primero.focus({ preventScroll: true });
             return;
@@ -62,48 +51,112 @@
         }
     }
 
+    function actualizarAriaLabel() {
+        const badge = toggle.querySelector('.cart-count-toggle');
+        const count = badge ? badge.textContent : '0';
+        const plural = count === '1' ? 'producto' : 'productos';
+        const accion = abierto ? 'Cerrar' : 'Abrir';
+        toggle.setAttribute('aria-expanded', abierto ? 'true' : 'false');
+        toggle.setAttribute(
+            'aria-label',
+            accion + ' menú de navegación, Carrito, ' + count + ' ' + plural
+        );
+    }
+
+    function copiarNombreSesion() {
+        const nombreDesktop = document.getElementById('navUsuarioNombre');
+        const nombreSheet = sheet.querySelector('.bottom-sheet-hola');
+        if (nombreDesktop && nombreSheet && nombreDesktop.textContent) {
+            nombreSheet.textContent = nombreDesktop.textContent;
+        }
+    }
+
+    function bloquearScroll() {
+        scrollY = window.scrollY || window.pageYOffset || 0;
+        html.style.scrollBehavior = 'auto';
+
+        if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
+            body.style.top = '-' + scrollY + 'px';
+            body.style.position = 'fixed';
+            body.style.width = '100%';
+            iosLock = true;
+        }
+    }
+
+    function desbloquearScroll() {
+        html.style.scrollBehavior = '';
+
+        if (iosLock) {
+            const y = scrollY;
+            body.style.position = '';
+            body.style.top = '';
+            iosLock = false;
+            requestAnimationFrame(function () {
+                window.scrollTo(0, y);
+            });
+        }
+    }
+
     function abrir() {
         if (abierto) return;
         abierto = true;
 
-        toggle.setAttribute('aria-expanded', 'true');
-        toggle.setAttribute('aria-label', 'Cerrar menú de navegación');
-        nav.classList.add('esta-abierto');
+        sheet.hidden = false;
+        sheet.removeAttribute('inert');
+        sheet.offsetHeight;
+        sheet.classList.add('esta-abierto');
 
         header?.classList.add('menu-abierto');
-        body.classList.add('no-scroll');
-        /* Velar el HTML completo, no solo el body, para que el chat y el botón del carrito no queden encima. */
-        document.documentElement.classList.add('menu-abierto');
+        html.classList.add('menu-abierto');
 
-        // El fondo se muestra primero y la clase al frame siguiente, o el navegador agrupa y no se ve la transición.
         if (backdrop) {
             backdrop.hidden = false;
-            requestAnimationFrame(() => backdrop.classList.add('esta-activo'));
+            requestAnimationFrame(function () {
+                backdrop.classList.add('esta-activo');
+            });
         }
 
-        enfocarPrimerLink();
+        actualizarAriaLabel();
+        copiarNombreSesion();
+        bloquearScroll();
+
+        const cerrarBtn = sheet.querySelector('.bottom-sheet-cerrar');
+        const foc = focusables();
+        const target = cerrarBtn || foc[0];
+        if (target instanceof HTMLElement) {
+            target.focus({ preventScroll: true });
+        }
     }
 
     function cerrar() {
         if (!abierto) return;
         abierto = false;
 
-        toggle.setAttribute('aria-expanded', 'false');
-        toggle.setAttribute('aria-label', 'Abrir menú de navegación');
-        nav.classList.remove('esta-abierto');
+        sheet.classList.remove('esta-abierto');
         header?.classList.remove('menu-abierto');
-        body.classList.remove('no-scroll');
-        document.documentElement.classList.remove('menu-abierto');
+        html.classList.remove('menu-abierto');
+
+        actualizarAriaLabel();
+        desbloquearScroll();
 
         if (backdrop) {
             backdrop.classList.remove('esta-activo');
-            // Se espera el desvanecido antes de sacarlo del flujo.
-            const quitar = () => { backdrop.hidden = true; };
+            let quitar = function () { backdrop.hidden = true; };
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                 quitar();
             } else {
-                setTimeout(quitar, 300);
+                setTimeout(quitar, 250);
             }
+        }
+
+        let ocultar = function () {
+            sheet.hidden = true;
+            sheet.setAttribute('inert', '');
+        };
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            ocultar();
+        } else {
+            setTimeout(ocultar, 250);
         }
 
         toggle.focus({ preventScroll: true });
@@ -118,6 +171,20 @@
         backdrop.addEventListener('click', cerrar);
     }
 
+    sheet.addEventListener('click', function (evento) {
+        if (!(evento.target instanceof Element)) return;
+        const link = evento.target.closest('a');
+        if (link && sheet.contains(link)) cerrar();
+    });
+
+    const salirSheet = sheet.querySelector('[data-auth-salir]');
+    if (salirSheet && window.zapiAuth) {
+        salirSheet.addEventListener('click', function () {
+            cerrar();
+            window.zapiAuth.salir();
+        });
+    }
+
     document.addEventListener('keydown', function (evento) {
         if (!abierto) return;
 
@@ -127,18 +194,10 @@
             return;
         }
 
-        /* El Tab va síncrono: preventDefault debe correr antes de que el navegador mueva el foco. */
-        if (evento.key === 'Tab') atraparFoco(evento);
-    });
-
-    nav.addEventListener('click', function (evento) {
-        if (!(evento.target instanceof Element)) return;
-        const control = evento.target.closest('.nav-link, [data-section], .nav-usuario-item');
-        if (control && nav.contains(control)) cerrar();
+        if (evento.key === 'Tab') trapFocus(evento);
     });
 
     const escritorio = window.matchMedia('(min-width: 1024px)');
-
     function alCambiarDeAncho() {
         if (escritorio.matches && abierto) cerrar();
     }
@@ -146,7 +205,6 @@
     if (typeof escritorio.addEventListener === 'function') {
         escritorio.addEventListener('change', alCambiarDeAncho);
     } else if (typeof escritorio.addListener === 'function') {
-        // Safari viejo.
         escritorio.addListener(alCambiarDeAncho);
     }
 
