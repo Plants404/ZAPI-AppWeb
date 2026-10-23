@@ -799,14 +799,14 @@ header.menu-abierto::before {
   display: none;
 }
 
-html[data-auth="si"] .bottom-sheet-fila-cuenta {
-  display: flex;
+html[data-cuentas="si"] .bottom-sheet-fila-cuenta {
+  display: flex !important;
 }
-html[data-auth="si"] .bottom-sheet-salir {
-  display: block;
+html[data-cuentas="si"] .bottom-sheet-salir {
+  display: block !important;
 }
-html:not([data-auth="si"]) .bottom-sheet-ingresar {
-  display: flex;
+html[data-cuentas="no"] .bottom-sheet-ingresar {
+  display: flex !important;
 }
 
 html[data-cuentas="off"] .bottom-sheet-fila-cuenta,
@@ -816,9 +816,6 @@ html[data-cuentas="off"] .bottom-sheet-ingresar {
 }
 html[data-cuentas="off"] .bottom-sheet-fila-pedidos {
   display: flex !important;
-}
-html[data-auth="si"] .bottom-sheet-fila-pedidos {
-  display: none;
 }
 
 /* En móvil y tablet el drawer lateral queda desactivado: la navegación
@@ -1080,12 +1077,14 @@ body.no-scroll {
   border-radius: 4px;
 }
 
-html[data-auth="si"] .nav-ingresar {
-  display: none;
-}
-
-html:not([data-auth="si"]) .nav-usuario {
+html[data-cuentas="si"] .nav-ingresar {
   display: none !important;
+}
+html[data-cuentas="no"] .nav-usuario {
+  display: none !important;
+}
+html[data-cuentas="si"] .nav-usuario {
+  display: inline-flex !important;
 }
 
 html[data-cuentas="off"] .nav-bar .nav-usuario,
@@ -1097,9 +1096,11 @@ html[data-cuentas="off"] .nav-bar .nav-suelto-carrito,
 html[data-cuentas="off"] .nav-bar .nav-suelto-pedidos {
   display: flex !important;
 }
-html[data-auth="si"] .nav-bar .nav-suelto-carrito,
-html[data-auth="si"] .nav-bar .nav-suelto-pedidos {
-  display: none;
+html[data-cuentas="si"] .nav-bar .nav-suelto-carrito,
+html[data-cuentas="si"] .nav-bar .nav-suelto-pedidos,
+html[data-cuentas="no"] .nav-bar .nav-suelto-carrito,
+html[data-cuentas="no"] .nav-bar .nav-suelto-pedidos {
+  display: none !important;
 }
 
 /* En tablet y escritorio el carrito vive en la barra superior: ocultamos

@@ -123,6 +123,17 @@
     }
 
     async function salir() {
+        /* Sin cuentas no hay sesion que cerrar en el backend: solo se
+           limpia el carrito local y se vuelve al inicio. */
+        if (!window.REQUIERE_CUENTA) {
+            try {
+                window.localStorage.removeItem('zapiCart');
+            } catch (error) {
+            }
+            window.location.href = window.urlDelSitio('index.html');
+            return;
+        }
+
         if (hayBackend()) {
             try {
                 await fetch(window.urlApi('/api/auth/logout'), { method: 'POST', credentials: 'include' });
