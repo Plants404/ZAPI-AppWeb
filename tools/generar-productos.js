@@ -299,6 +299,17 @@ ${paraJsonLd(migas)}
                         <span class="cart-count" data-cart-count aria-hidden="true">0</span>
                     </a>
                 </li>
+
+                <li class="nav-suelto-carrito" style="display:none">
+                    <a class="nav-link" href="../carrito.html">
+                        <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+                        Carrito
+                        <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+                    </a>
+                </li>
+                <li class="nav-suelto-pedidos" style="display:none">
+                    <a class="nav-link" href="../pedidos.html">Mis pedidos</a>
+                </li>
                 <li><a class="nav-link" href="../index.html">Inicio</a></li>
                 <li><a class="nav-link" href="../catalogo.html">Catálogo</a></li>
                 <li><a class="nav-link" href="../index.html#servicios">Servicios</a></li>
@@ -360,6 +371,9 @@ ${paraJsonLd(migas)}
             </ul>
           </nav>
           <div class="bottom-sheet-cuenta">
+            <div class="bottom-sheet-fila-pedidos" data-cuentas-off style="display:none">
+              <a href="../pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
+            </div>
             <div class="bottom-sheet-fila-cuenta" data-auth-sesion>
               <div class="bottom-sheet-avatar" aria-hidden="true">A</div>
               <span class="bottom-sheet-hola" data-sheet-nombre>Hola</span>

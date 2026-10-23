@@ -7,8 +7,22 @@
    local (5501). Los overrides window.__ZAPI_API__ y el meta zapi-api
    pisan la deteccion automatica:
 
-       <meta name="zapi-api" content="https://api.example.com">
+        <meta name="zapi-api" content="https://api.example.com">
+
+   MODO SIN CUENTAS
+   ----------------
+   REQUIERE_CUENTA controla si el sitio exige iniciar sesion para usar
+   funciones de cuenta (login, Mi cuenta, Mis pedidos, Cerrar sesion,
+   dejar testimonios). Cuando esta en false, el sitio se comporta como
+   si no existieran cuentas: cualquier visitante puede usar el carrito,
+   ver Mis pedidos (historial local del dispositivo) y dejar testimonios
+   sin iniciar sesion. Cuando esta en true, se restaura el comportamiento
+   actual (se exige sesion en auth-ui.js y en el backend). No borra el
+   codigo de autenticacion, los modelos de usuario ni las rutas
+   /api/auth/*; solo las deja inactivas.
    ========================================================== */
+
+const REQUIERE_CUENTA = false;
 
 /* ------------------------------------------------------------
    CONFIGURACION DE LA API (un solo lugar)
@@ -216,3 +230,5 @@ window.leerPedidosLocales = leerPedidosLocales;
 window.guardarPedidoLocal = guardarPedidoLocal;
 window.listarPedidosLocales = listarPedidosLocales;
 window.cancelarPedidoLocal = cancelarPedidoLocal;
+
+window.REQUIERE_CUENTA = REQUIERE_CUENTA;

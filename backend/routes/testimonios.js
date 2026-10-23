@@ -3,7 +3,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Testimonio = require('../models/Testimonio');
-const { createAuthenticate } = require('../middleware/authenticate');
+const { createAuthenticate, createAuthenticateOpcional } = require('../middleware/authenticate');
 
 function fieldError(response, campo, error) {
     return response.status(400).json({ error, campo });
@@ -12,7 +12,8 @@ function fieldError(response, campo, error) {
 function createTestimoniosRouter({ config, readLimiter, writeLimiter }) {
     const router = express.Router();
     const authenticate = createAuthenticate(config);
-    const authenticateForReview = createAuthenticate(config, 'Iniciá sesión para dejar tu opinión.');
+    const authenticateOpcional = createAuthenticateOpcional(config);
+    const authMiddleware = config.requiereCuenta ? authenticate : authenticateOpcional;
 
     router.get('/', readLimiter, async (request, response, next) => {
         try {
@@ -34,7 +35,7 @@ function createTestimoniosRouter({ config, readLimiter, writeLimiter }) {
         }
     });
 
-    router.post('/', writeLimiter, authenticateForReview, async (request, response, next) => {
+    router.post('/', writeLimiter, authMiddleware, async (request, response, next) => {
         const body = request.body && typeof request.body === 'object' && !Array.isArray(request.body)
             ? request.body
             : {};
@@ -67,7 +68,7 @@ function createTestimoniosRouter({ config, readLimiter, writeLimiter }) {
                 lugar,
                 texto,
                 estrellas: body.estrellas,
-                userId: request.user._id,
+                userId: request.user ? request.user._id : null,
                 verificado: false,
                 autorizado: false,
             });

@@ -809,6 +809,18 @@ html:not([data-auth="si"]) .bottom-sheet-ingresar {
   display: flex;
 }
 
+html[data-cuentas="off"] .bottom-sheet-fila-cuenta,
+html[data-cuentas="off"] .bottom-sheet-salir,
+html[data-cuentas="off"] .bottom-sheet-ingresar {
+  display: none !important;
+}
+html[data-cuentas="off"] .bottom-sheet-fila-pedidos {
+  display: flex !important;
+}
+html[data-auth="si"] .bottom-sheet-fila-pedidos {
+  display: none;
+}
+
 /* En móvil y tablet el drawer lateral queda desactivado: la navegación
    vive en la hoja inferior. En escritorio (.nav-bar) se comporta como
    siempre. */
@@ -1074,6 +1086,20 @@ html[data-auth="si"] .nav-ingresar {
 
 html:not([data-auth="si"]) .nav-usuario {
   display: none !important;
+}
+
+html[data-cuentas="off"] .nav-bar .nav-usuario,
+html[data-cuentas="off"] .nav-bar .nav-cta,
+html[data-cuentas="off"] .nav-bar .nav-ingresar {
+  display: none !important;
+}
+html[data-cuentas="off"] .nav-bar .nav-suelto-carrito,
+html[data-cuentas="off"] .nav-bar .nav-suelto-pedidos {
+  display: flex !important;
+}
+html[data-auth="si"] .nav-bar .nav-suelto-carrito,
+html[data-auth="si"] .nav-bar .nav-suelto-pedidos {
+  display: none;
 }
 
 /* En tablet y escritorio el carrito vive en la barra superior: ocultamos

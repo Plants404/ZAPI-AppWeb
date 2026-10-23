@@ -116,7 +116,7 @@
         const indiceEstado = estadosProgreso.indexOf(pedido.estado);
         let estadoPedido = '';
 
-        if (hayBackend() && indiceEstado !== -1) {
+        if (window.REQUIERE_CUENTA && hayBackend() && indiceEstado !== -1) {
             estadoPedido = `
                 <ol class="pedido-progreso" aria-label="Estado del pedido">
                     ${estadosProgreso.map((estado, indice) => {
@@ -168,7 +168,9 @@
         lista.innerHTML = '';
         lista.hidden = true;
         vacio.classList.remove('hidden');
-        if (subtitulo) subtitulo.textContent = 'Acá vas a ver el estado de cada pedido que hagas.';
+        if (subtitulo) subtitulo.textContent = !window.REQUIERE_CUENTA
+            ? 'Acá ves los pedidos hechos desde este dispositivo.'
+            : 'Acá vas a ver el estado de cada pedido que hagas.';
         if (explorar) explorar.hidden = true;
     }
 
@@ -221,9 +223,10 @@
     }
 
     async function cargar() {
-        /* Sin backend el historial es local: los pedidos que se
-           guardaron en el navegador al enviarlos. */
-        if (!hayBackend()) {
+        /* Sin cuentas (REQUIERE_CUENTA=false) el historial es siempre
+           local: los pedidos que se guardaron en el navegador. Nunca se
+           consulta el backend ni se exige sesion. */
+        if (!window.REQUIERE_CUENTA || !hayBackend()) {
             const listar = window.listarPedidosLocales;
             const locales = typeof listar === 'function' ? listar() : [];
 
