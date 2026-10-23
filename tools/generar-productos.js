@@ -249,6 +249,7 @@ ${paraJsonLd(migas)}
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
         </button>
 
         <a class="logo" href="../index.html" aria-label="${escapar(NOMBRE)}, ir al inicio">
@@ -307,9 +308,69 @@ ${paraJsonLd(migas)}
         </nav>
     </header>
 
-    <div class="nav-backdrop" id="navBackdrop" hidden></div>
+        <div class="nav-backdrop" id="navBackdrop" hidden></div>
 
-    <main id="contenido" tabindex="-1">
+        <div class="bottom-sheet" id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden inert>
+          <div class="bottom-sheet-manija" aria-hidden="true"></div>
+          <header class="bottom-sheet-cabecera">
+            <h2 class="bottom-sheet-titulo">Menú</h2>
+            <button type="button" class="bottom-sheet-cerrar" aria-label="Cerrar menú">
+              <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+          </header>
+          <nav class="bottom-sheet-nav" aria-label="Opciones del menú">
+            <ul class="bottom-sheet-grilla">
+              <li>
+                <a class="bottom-sheet-tarjeta" href="../index.html">
+                  <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">home</span></div>
+                  <span class="bottom-sheet-etiq">Inicio</span>
+                </a>
+              </li>
+              <li>
+                <a class="bottom-sheet-tarjeta" href="../catalogo.html">
+                  <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">eco</span></div>
+                  <span class="bottom-sheet-etiq">Catálogo</span>
+                </a>
+              </li>
+              <li>
+                <a class="bottom-sheet-tarjeta" href="../index.html#servicios">
+                  <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span></div>
+                  <span class="bottom-sheet-etiq">Servicios</span>
+                </a>
+              </li>
+              <li>
+                <a class="bottom-sheet-tarjeta" href="../index.html#nosotros">
+                  <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">group</span></div>
+                  <span class="bottom-sheet-etiq">Nosotros</span>
+                </a>
+              </li>
+              <li>
+                <a class="bottom-sheet-tarjeta" href="../index.html#contacto">
+                  <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">mail</span></div>
+                  <span class="bottom-sheet-etiq">Contacto</span>
+                </a>
+              </li>
+              <li>
+                <a class="bottom-sheet-tarjeta" href="../carrito.html">
+                  <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span></div>
+                  <span class="bottom-sheet-etiq">Carrito</span>
+                  <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <div class="bottom-sheet-cuenta">
+            <div class="bottom-sheet-fila-cuenta" data-auth-sesion>
+              <div class="bottom-sheet-avatar" aria-hidden="true">A</div>
+              <span class="bottom-sheet-hola" data-sheet-nombre>Hola</span>
+              <a href="../pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
+            </div>
+            <button type="button" class="bottom-sheet-salir" data-auth-salir>Cerrar sesión</button>
+            <a href="../login.html" class="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</a>
+          </div>
+        </div>
+
+        <main id="contenido" tabindex="-1">
         <nav class="migas" aria-label="Ruta de navegacion">
             <ol>
                 <li><a href="../index.html">Inicio</a></li>
