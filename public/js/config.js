@@ -2,28 +2,27 @@
 /* ==========================================================
    DONDE VIVE LA API
    ------------------------------------------------------------
-   El sitio se abre de dos maneras, y la API cambia de direccion
-   segun donde este:
+   En produccion, el navegador usa el mismo origen del sitio Netlify
+   para las rutas /api/*. En desarrollo, Live Server (5500) usa la API
+   local (5501). Los overrides window.__ZAPI_API__ y el meta zapi-api
+   pisan la deteccion automatica:
 
-     * Local:    la pagina llega de tu maquina. Si la sirve el backend
-                 en el puerto configurado, la API usa el mismo origen.
-     * Producci: GitHub Pages solo aloja estaticos; la API esta en el
-                 backend desplegado (Render/Railway), en la URL de
-                 abajo.
+        <meta name="zapi-api" content="https://api.example.com">
 
-   urlApi() decide sola con la direccion de la pagina:
-
-     * local (localhost, *.localhost, 127.*, ::1, 0.0.0.0):
-         - si la sirve el propio backend (PUERTO_BACKEND_LOCAL)
-                                       -> mismo origen, con backend
-         - si la sirve otro server local (Show Preview, Live Server)
-                                       -> URL_API_LOCAL o sin backend
-     * cualquier otro host (tu hosting)          -> URL_API_PRODUCCION
-
-   Un meta en el HTML pisa la decision para una pagina aparte:
-
-       <meta name="zapi-api" content="https://zapi-api.onrender.com">
+   MODO SIN CUENTAS
+   ----------------
+   REQUIERE_CUENTA controla si el sitio exige iniciar sesion para usar
+   funciones de cuenta (login, Mi cuenta, Mis pedidos, Cerrar sesion,
+   dejar testimonios). Cuando esta en false, el sitio se comporta como
+   si no existieran cuentas: cualquier visitante puede usar el carrito,
+   ver Mis pedidos (historial local del dispositivo) y dejar testimonios
+   sin iniciar sesion. Cuando esta en true, se restaura el comportamiento
+   actual (se exige sesion en auth-ui.js y en el backend). No borra el
+   codigo de autenticacion, los modelos de usuario ni las rutas
+   /api/auth/*; solo las deja inactivas.
    ========================================================== */
+
+const REQUIERE_CUENTA = false;
 
 /* ------------------------------------------------------------
    CONFIGURACION DE LA API (un solo lugar)
@@ -36,29 +35,19 @@
      2. <meta name="zapi-api" content="https://...">  -> override
         por pagina.
      3. Deteccion por entorno:
-          - local (localhost, *.localhost, 127.*, ::1, 0.0.0.0): hay
-            backend solo si la pagina la sirve el propio backend
-            (PUERTO_BACKEND_LOCAL); entonces la API es el mismo
-            origen. Si la sirve otro server local (Show Preview, Live
-            Server), el sitio queda SIN backend.
-          - cualquier otro host: URL_API_PRODUCCION
-            (pegar aca la URL del backend desplegado).
+          - localhost, 127.* o ::1: URL_API_LOCAL
+          - cualquier otro host: rutas relativas /api/* del propio sitio.
 
-   Si en produccion URL_API_PRODUCCION queda vacia, las funciones que
-   requieren el backend permanecen deshabilitadas y muestran un error
-   explicito. No se usan credenciales ni sesiones locales en el cliente.
+   En produccion, Netlify dirige /api/* a Netlify Functions.
    ------------------------------------------------------------ */
 
-/* URL del backend en produccion (Render/Railway). Debe configurarse
-   antes de publicar las funciones que requieren autenticacion. */
+/* En produccion se usan rutas relativas del mismo origen. */
 const URL_API_PRODUCCION = "";
 
-/* URL del backend local, para previsualizar en un server estático
-   (Show Preview, Live Server en 3000/5500) y pegarle a un backend
-   levantado en otro puerto. Vacio (recomendado) = modo sin backend
-   cuando la pagina no la sirve el backend. Ejemplo:
-   "http://localhost:5501". */
-const URL_API_LOCAL = "";
+/* URL del backend local, para previsualizar en Show Preview / Live
+   Server (5500) y conectar con npm run start:api (5501). Para apagar
+   la conexión local, dejá este valor vacío. */
+const URL_API_LOCAL = "http://localhost:5501";
 const ENVIO_GRATIS_MINIMO = 2500;
 window.ENVIO_GRATIS_MINIMO = ENVIO_GRATIS_MINIMO;
 
@@ -67,20 +56,17 @@ window.ENVIO_GRATIS_MINIMO = ENVIO_GRATIS_MINIMO;
    otro server (Show Preview, Live Server), no hay backend salvo que
    definas URL_API_LOCAL. */
 const PUERTO_BACKEND_LOCAL = "5501";
+const PUERTO_NETLIFY_LOCAL = "8888";
 
 function normalizarBase(url) {
     return String(url || "").trim().replace(/\/+$/, "");
 }
 
-/* ¿La pagina se esta abriendo desde la maquina de desarrollo? Cubre
-   localhost y sus subdominios, todo el rango 127.0.0.0/8, ::1 y
-   0.0.0.0, sin mirar el puerto (Live Preview usa puertos variables). */
+/* ¿La pagina se esta abriendo desde un host local de desarrollo? */
 function esHostLocal() {
     const host = window.location.hostname;
-    if (!host) return true; // file:// o preview embebido sin host
-    if (host === "localhost" || host.endsWith(".localhost")) return true;
+    if (host === "localhost") return true;
     if (host === "::1" || host === "[::1]") return true;
-    if (host === "0.0.0.0") return true;
     if (host.indexOf("127.") === 0) return true;
     return false;
 }
@@ -91,6 +77,25 @@ function esHostLocal() {
    el sitio entra en modo sin backend. */
 function backendMismoOrigen() {
     return esHostLocal() && window.location.port === PUERTO_BACKEND_LOCAL;
+}
+
+function alinearHostLocalDeApi(url) {
+    if (!esHostLocal()) return url;
+
+    const hostnamePagina = window.location.hostname.replace(/^\[|\]$/g, "");
+    const hostnameApi = url.hostname.replace(/^\[|\]$/g, "");
+    const apiUsaLoopback = hostnameApi === "localhost" || hostnameApi === "127.0.0.1";
+    const paginaUsaLoopback = hostnamePagina === "localhost"
+        || hostnamePagina === "::1"
+        || hostnamePagina.indexOf("127.") === 0;
+
+    if (!apiUsaLoopback || !paginaUsaLoopback) return url;
+
+    url.hostname = hostnamePagina.indexOf(":") !== -1
+        ? "[" + hostnamePagina + "]"
+        : hostnamePagina;
+
+    return url;
 }
 
 const API_BASE = (function () {
@@ -104,15 +109,23 @@ const API_BASE = (function () {
         return normalizarBase(meta.content);
     }
 
-    /* URL_API_LOCAL fija a mano el backend local: sirve para
-       previsualizar (Show Preview, Live Server) contra un backend que
-       corre en otro puerto. Pisa a la deteccion. */
-    const localFija = normalizarBase(URL_API_LOCAL);
-    if (localFija) return localFija;
+    if (esHostLocal()) {
+        /* netlify dev sirve tambien las funciones bajo el mismo origen. */
+        if (window.location.port === PUERTO_NETLIFY_LOCAL) return "";
 
-    /* Local sin URL fija: la API es el mismo origen solo si la sirve
-       el backend; si la sirve un server estatico, no hay API (''). */
-    if (esHostLocal()) return "";
+        /* URL_API_LOCAL permite que Live Server (5500) use la API (5501). */
+        const localFija = normalizarBase(URL_API_LOCAL);
+        if (localFija) {
+            try {
+                return alinearHostLocalDeApi(new URL(localFija)).toString().replace(/\/+$/, "");
+            } catch (error) {
+                return localFija;
+            }
+        }
+
+        /* Sin URL fija, la API local queda sin configurar. */
+        return "";
+    }
 
     return normalizarBase(URL_API_PRODUCCION);
 }());
@@ -124,7 +137,9 @@ window.API_BASE = API_BASE;
    pagina la sirve el backend en el mismo origen. */
 function hayApiConfigurada() {
     if (API_BASE !== "") return true;
-    return backendMismoOrigen();
+    return backendMismoOrigen()
+        || window.location.port === PUERTO_NETLIFY_LOCAL
+        || !esHostLocal();
 }
 
 window.hayApiConfigurada = hayApiConfigurada;
@@ -135,7 +150,7 @@ function urlApi(ruta) {
 
 window.urlApi = urlApi;
 
-/* El sitio puede cuelgar de un subpath (GitHub Pages). urlDelSitio()
+/* El sitio puede colgar de un subpath. urlDelSitio()
    resuelve las rutas absolutas internas desde la ubicacion de este
    script (public/js/) en vez de desde la raiz del domino, asi un
    redirect a /login.html funciona igual bajo /usuario/repo/. */
@@ -215,3 +230,5 @@ window.leerPedidosLocales = leerPedidosLocales;
 window.guardarPedidoLocal = guardarPedidoLocal;
 window.listarPedidosLocales = listarPedidosLocales;
 window.cancelarPedidoLocal = cancelarPedidoLocal;
+
+window.REQUIERE_CUENTA = REQUIERE_CUENTA;

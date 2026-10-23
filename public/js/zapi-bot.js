@@ -1,13 +1,5 @@
 const ZAPI_NOMBRE = "Brotecito";
 
-const ZAPI_API = window.urlApi("/api/asistente");
-const ZAPI_HISTORIAL_MAX = 12;
-const ZAPI_ESPERA_MS = 25000;
-
-let zapiAsistenteActivo = false;
-let zapiHistorial = [];
-
-
 const ZAPI_FAQ = [
 
     {
@@ -519,86 +511,6 @@ function zapiEsperar(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function zapiTrack(tipo, datos = {}) {
-    const fnHayApi = window.hayApiConfigurada;
-    if (typeof fnHayApi === "function" && !fnHayApi()) return;
-
-    try {
-        fetch(`${ZAPI_API}/tracking`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ tipo, ...datos }),
-            keepalive: true,
-        }).catch(() => {});
-    } catch {
-    }
-}
-
-window.zapiTrack = zapiTrack;
-
-function zapiSlugProducto() {
-    const coincidencia = (window.location.pathname || "")
-        .match(/\/productos\/([^/]+)\.html$/i);
-
-    return coincidencia ? coincidencia[1] : "";
-}
-
-async function zapiCargarConfig() {
-    /* Sin backend el bot no tiene configuracion: queda apagado (sus
-       respuestas locales de FAQ siguen andando). */
-    const fnHayApi = window.hayApiConfigurada;
-    if (typeof fnHayApi === "function" && !fnHayApi()) {
-        zapiAsistenteActivo = false;
-        return;
-    }
-
-    try {
-        const respuesta = await fetch(`${ZAPI_API}/config`);
-
-        if (!respuesta.ok) return;
-
-        const datos = await respuesta.json();
-
-        zapiAsistenteActivo = Boolean(datos && datos.asistente);
-
-        const enlace = datos && datos.negocio && datos.negocio.contacto
-            && datos.negocio.contacto.whatsappUrl;
-
-        if (enlace) {
-            const humano = document.querySelector(".zapi-humano-link");
-
-            if (humano) humano.setAttribute("href", enlace);
-        }
-    } catch {
-        zapiAsistenteActivo = false;
-    }
-}
-
-async function zapiConsultar(texto) {
-    const fnHayApi = window.hayApiConfigurada;
-    if (typeof fnHayApi === "function" && !fnHayApi()) return null;
-
-    const control = new AbortController();
-    const reloj = setTimeout(() => control.abort(), ZAPI_ESPERA_MS);
-
-    try {
-        const respuesta = await fetch(`${ZAPI_API}/chat`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ mensaje: texto }),
-            signal: control.signal,
-        });
-
-        if (!respuesta.ok) return null;
-
-        return await respuesta.json();
-    } catch {
-        return null;
-    } finally {
-        clearTimeout(reloj);
-    }
-}
-
 function initZapiBot() {
 
     if (document.getElementById("zapiBot")) return;
@@ -690,121 +602,17 @@ function initZapiBot() {
 
     }
 
-    /* Tarjetas de productos sugeridos por el asistente: se escapa todo por las dudas. */
-    function pintarRecomendaciones(recomendaciones) {
-
-        if (!Array.isArray(recomendaciones) || !recomendaciones.length) return;
-
-        const contenedor = document.createElement("div");
-
-        contenedor.className = "zapi-recos";
-
-        recomendaciones.slice(0, 3).forEach(producto => {
-
-            const tarjeta = document.createElement("div");
-            const productoLocal = Array.isArray(PRODUCTOS)
-                ? PRODUCTOS.find(item => Number(item.id) === Number(producto.id))
-                : null;
-            const beneficios = productoLocal && Array.isArray(productoLocal.infoDeVenta)
-                ? productoLocal.infoDeVenta
-                : [];
-
-            tarjeta.className = "zapi-reco";
-
-            tarjeta.innerHTML =
-                `<div class="zapi-reco-visual">
-                    ${producto.imagen
-                        ? `<img src="${escaparHTML(producto.imagen)}" alt="" loading="lazy">`
-                        : ""}
-                    <div class="zapi-reco-beneficios-hover">
-                        ${beneficios.map(item => `
-                            <span>
-                                <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                                ${escaparHTML(item)}
-                            </span>
-                        `).join("")}
-                    </div>
-                </div>` +
-                `<div class="zapi-reco-info">
-                    <a class="zapi-reco-nombre" href="${escaparHTML(producto.url)}">${escaparHTML(producto.nombre)}</a>
-                    ${(typeof formatearPrecio === "function" && producto.precio !== null && producto.precio !== undefined)
-                        ? `<span class="zapi-reco-precio">${escaparHTML(formatearPrecio(producto.precio))}</span>`
-                        : ""}
-                    ${beneficios.length
-                        ? `<ul class="zapi-reco-beneficios-tactil">
-                            ${beneficios.map(item => `
-                                <li>
-                                    <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                                    <span>${escaparHTML(item)}</span>
-                                </li>
-                            `).join("")}
-                        </ul>`
-                        : ""}
-                </div>
-                <button type="button" class="zapi-reco-agregar" data-id="${escaparHTML(producto.id)}">Agregar</button>`;
-
-            contenedor.appendChild(tarjeta);
-
-        });
-
-        messages.appendChild(contenedor);
-
-        contenedor.querySelectorAll("img").forEach(img => {
-            const ajustar = () => scrollAbajo();
-
-            if (img.complete) {
-                ajustar();
-            } else {
-                img.addEventListener("load", ajustar, { once: true });
-            }
-        });
-
-        scrollAbajo();
-    }
-
     async function responder(texto) {
 
         agregarMensaje(texto, "user", false);
 
-        zapiHistorial.push({ rol: "user", texto });
-
-        if (zapiHistorial.length > ZAPI_HISTORIAL_MAX) {
-            zapiHistorial = zapiHistorial.slice(-ZAPI_HISTORIAL_MAX);
-        }
-
-        zapiTrack("mensaje_chat", { detalle: texto.slice(0, 120) });
-
         mostrarEscribiendo();
-
-        let salida = null;
-
-        if (zapiAsistenteActivo) {
-            salida = await zapiConsultar(texto);
-        } else {
-            await zapiEsperar(400 + Math.random() * 400);
-        }
+        await zapiEsperar(400 + Math.random() * 400);
 
         quitarEscribiendo();
 
         const preguntaCarrito = normalizar(texto).includes("carrito")
             || normalizar(texto).includes("pedido");
-
-        if (salida && typeof salida.respuesta === "string" && salida.respuesta.trim()) {
-
-            agregarMensaje(salida.respuesta, "bot");
-
-            zapiHistorial.push({ rol: "bot", texto: salida.respuesta });
-
-            if (zapiHistorial.length > ZAPI_HISTORIAL_MAX) {
-                zapiHistorial = zapiHistorial.slice(-ZAPI_HISTORIAL_MAX);
-            }
-
-            pintarRecomendaciones(salida.recomendaciones);
-
-            if (preguntaCarrito) setTimeout(() => actualizarContador(), 100);
-
-            return;
-        }
 
         const faq = detectarIntencion(texto);
 
@@ -918,32 +726,6 @@ function initZapiBot() {
     });
 
     pintarChips();
-
-    messages.addEventListener("click", event => {
-
-        const boton = event.target.closest(".zapi-reco-agregar");
-
-        if (!boton) return;
-
-        if (typeof agregarProductoAlCarrito !== "function" ||
-            !agregarProductoAlCarrito(Number(boton.dataset.id))) return;
-
-        boton.textContent = "Agregado";
-        boton.disabled = true;
-        zapiTrack("agregar_carrito", { productoId: Number(boton.dataset.id) });
-
-    });
-
-    zapiCargarConfig();
-
-    const slugActual = zapiSlugProducto();
-
-    if (slugActual) {
-        zapiTrack("ver_producto", {
-            detalle: slugActual,
-            pagina: window.location.pathname,
-        });
-    }
 
     initZapiHeaderMeasure();
 
