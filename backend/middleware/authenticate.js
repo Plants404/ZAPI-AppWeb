@@ -53,4 +53,47 @@ function cookieOptions(config, includeMaxAge = true) {
     return options;
 }
 
-module.exports = { createAuthenticate, cookieOptions };
+/* Autenticacion opcional: adjunta request.user si hay una cookie de
+   sesion valida, pero deja pasar la peticion igual si no la hay. Se usa
+   cuando REQUIERE_CUENTA=false para permitir pedidos y testimonios
+   sin iniciar sesion, sin eliminar el middleware de autenticacion
+   estricto. */
+function createAuthenticateOpcional(config) {
+    return async function authenticateOpcional(request, response, next) {
+        const token = request.cookies[config.cookieName];
+
+        if (!token) {
+            request.user = undefined;
+            request.auth = undefined;
+            return next();
+        }
+
+        try {
+            const claims = jwt.verify(token, config.jwtSecret, {
+                algorithms: ['HS256'],
+                issuer: 'zapi-api',
+                audience: 'zapi-web',
+            });
+
+            const user = await User.findById(claims.sub);
+            if (user) {
+                request.auth = { sub: claims.sub };
+                request.user = user;
+            } else {
+                response.clearCookie(config.cookieName, cookieOptions(config, false));
+                request.user = undefined;
+                request.auth = undefined;
+            }
+        } catch (error) {
+            if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+                response.clearCookie(config.cookieName, cookieOptions(config, false));
+            }
+            request.user = undefined;
+            request.auth = undefined;
+        }
+
+        return next();
+    };
+}
+
+module.exports = { createAuthenticate, cookieOptions, createAuthenticateOpcional };
