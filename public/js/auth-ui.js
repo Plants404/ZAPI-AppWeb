@@ -4,16 +4,32 @@
     let usuario = null;
 
     function pintar() {
-        document.documentElement.dataset.auth = usuario ? 'si' : 'no';
+        document.documentElement.dataset.cuentas = window.REQUIERE_CUENTA
+            ? (usuario ? 'si' : 'no')
+            : 'off';
 
         const nombre = document.getElementById('navUsuarioNombre');
         if (nombre && usuario) nombre.textContent = 'Hola ' + usuario.nombre;
+
+        const nombreSheet = document.querySelector('.bottom-sheet-hola');
+        if (nombreSheet && usuario) nombreSheet.textContent = 'Hola ' + usuario.nombre;
+
+        const adminEnlace = document.querySelector('.header-admin');
+        if (adminEnlace) {
+            if (usuario && usuario.role === 'admin') {
+                adminEnlace.style.display = 'inline-flex';
+            } else {
+                adminEnlace.style.display = 'none';
+            }
+        }
 
         const salir = document.getElementById('navSalir');
         if (salir) salir.addEventListener('click', window.zapiAuth.salir);
     }
 
     function prepararMenuDeCuenta() {
+        if (!window.REQUIERE_CUENTA) return;
+
         const boton = document.getElementById('navUsuarioBoton');
         const menu = document.getElementById('navUsuarioMenu');
 
@@ -100,6 +116,8 @@
     }
 
     function exigirCuenta() {
+        if (!window.REQUIERE_CUENTA) return true;
+
         if (usuario) return true;
 
         window.location.href = window.urlDelSitio('login.html')
@@ -114,6 +132,17 @@
     }
 
     async function salir() {
+        /* Sin cuentas no hay sesion que cerrar en el backend: solo se
+           limpia el carrito local y se vuelve al inicio. */
+        if (!window.REQUIERE_CUENTA) {
+            try {
+                window.localStorage.removeItem('zapiCart');
+            } catch (error) {
+            }
+            window.location.href = window.urlDelSitio('index.html');
+            return;
+        }
+
         if (hayBackend()) {
             try {
                 await fetch(window.urlApi('/api/auth/logout'), { method: 'POST', credentials: 'include' });
@@ -129,7 +158,7 @@
         window.location.href = window.urlDelSitio('index.html');
     }
 
-    const sesion = hayBackend()
+    const sesion = (window.REQUIERE_CUENTA && hayBackend())
         ? fetch(window.urlApi('/api/auth/yo'), { credentials: 'include' })
             .then(function (res) { return res.json(); })
             .then(function (datos) {

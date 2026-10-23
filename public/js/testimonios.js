@@ -117,6 +117,8 @@ async function cargarOpiniones() {
     function pintar() {
         if (!opiniones.length) {
             contenedor.classList.add("sin-opiniones");
+            contenedor.removeAttribute("role");
+            contenedor.removeAttribute("aria-label");
             contenedor.innerHTML =
                 '<p class="testimonios-vacio">Todavía no hay opiniones publicadas.</p>';
             return;

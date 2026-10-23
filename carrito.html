@@ -16,6 +16,8 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
 
+    <link rel="stylesheet" href="./public/css/tokens.css">
+
     
     <link rel="stylesheet" href="./public/css/styles.css">
 
@@ -40,10 +42,16 @@
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
             <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
         </button>
 
         <a href="index.html" class="logo">
             <h4>ZAPI</h4>
+        </a>
+
+        <a class="header-admin" href="admin.html" aria-label="Panel de administración" style="display:none">
+            <span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>
+            Admin
         </a>
 
         <a class="header-cart" href="carrito.html" aria-label="Ver carrito">
@@ -77,91 +85,131 @@
                         <span class="cart-count" data-cart-count aria-hidden="true">0</span>
                     </a>
                 </li>
+
+                <li class="nav-suelto-carrito" style="display:none">
+                    <a class="nav-link" href="carrito.html">
+                        <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+                        Carrito
+                        <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+                    </a>
+                </li>
+                <li class="nav-suelto-pedidos" style="display:none">
+                    <a class="nav-link" href="pedidos.html">Mis pedidos</a>
+                </li>
                 <li><a class="nav-link" href="index.html">Inicio</a></li>
                 <li><a class="nav-link" href="catalogo.html">Catálogo</a></li>
                 <li><a class="nav-link" href="pedidos.html">Mis pedidos</a></li>
             </ul>
         </nav>
     </header>
-
     <div class="nav-backdrop" id="navBackdrop" hidden></div>
+
+    <div class="bottom-sheet" id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden inert>
+      <div class="bottom-sheet-manija" aria-hidden="true"></div>
+      <header class="bottom-sheet-cabecera">
+        <h2 class="bottom-sheet-titulo">Menú</h2>
+        <button type="button" class="bottom-sheet-cerrar" aria-label="Cerrar menú">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </header>
+      <nav class="bottom-sheet-nav" aria-label="Opciones del menú">
+        <ul class="bottom-sheet-grilla">
+          <li>
+            <a class="bottom-sheet-tarjeta" href="index.html">
+              <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">home</span></div>
+              <span class="bottom-sheet-etiq">Inicio</span>
+            </a>
+          </li>
+          <li>
+            <a class="bottom-sheet-tarjeta" href="catalogo.html">
+              <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">eco</span></div>
+              <span class="bottom-sheet-etiq">Catálogo</span>
+            </a>
+          </li>
+          <li>
+            <a class="bottom-sheet-tarjeta" href="index.html#servicios">
+              <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span></div>
+              <span class="bottom-sheet-etiq">Servicios</span>
+            </a>
+          </li>
+          <li>
+            <a class="bottom-sheet-tarjeta" href="index.html#nosotros">
+              <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">group</span></div>
+              <span class="bottom-sheet-etiq">Nosotros</span>
+            </a>
+          </li>
+          <li>
+            <a class="bottom-sheet-tarjeta" href="index.html#contacto">
+              <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">mail</span></div>
+              <span class="bottom-sheet-etiq">Contacto</span>
+            </a>
+          </li>
+          <li>
+            <a class="bottom-sheet-tarjeta" href="carrito.html">
+              <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span></div>
+              <span class="bottom-sheet-etiq">Carrito</span>
+              <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+        <div class="bottom-sheet-cuenta">
+          <div class="bottom-sheet-fila-pedidos" data-cuentas-off style="display:none">
+            <a href="pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
+          </div>
+          <div class="bottom-sheet-fila-cuenta" data-auth-sesion>
+            <div class="bottom-sheet-avatar" aria-hidden="true">A</div>
+            <span class="bottom-sheet-hola" data-sheet-nombre>Hola</span>
+            <a href="pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
+          </div>
+          <button type="button" class="bottom-sheet-salir" data-auth-salir>Cerrar sesión</button>
+          <a href="login.html" class="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</a>
+        </div>
+    </div>
+
 
 
     
     <main class="cart-page" id="contenido" tabindex="-1">
 
         <section class="cart-content">
-
-            <div class="cart-title">
-                <span class="material-symbols-outlined">
-                    shopping_bag
-                </span>
-
-                <h1>Tu carrito</h1>
-            </div>
-
             <div class="cart-heading">
-
-                <div>
+                <div class="cart-heading-copy">
                     <span class="cart-eyebrow">
                         TU SELECCIÓN
                     </span>
-
-                    <h2>Productos seleccionados</h2>
+                    <h1>Tu carrito</h1>
                 </div>
-
-                <button
-                    class="clear-cart"
-                    id="clearCart">
-
-                    <span class="material-symbols-outlined">
+                <button class="clear-cart" id="clearCart" type="button">
+                    <span class="material-symbols-outlined" aria-hidden="true">
                         delete_sweep
                     </span>
-
                     Vaciar carrito
-
                 </button>
-
             </div>
-
-
-            
 
             <div id="cartItems" class="cart-items">
-                
             </div>
 
-
-            
-
             <div id="emptyCart" class="empty-cart hidden">
-
-                <span class="material-symbols-outlined">
+                <span class="material-symbols-outlined" aria-hidden="true">
                     shopping_basket
                 </span>
-
                 <h3>Tu carrito está vacío</h3>
-
                 <p>
                     Todavía no agregaste ningún producto.
                     Explorá nuestro catálogo y encontrá
                     algo para tu jardín o huerta.
                 </p>
-
                 <a href="catalogo.html" class="primary-button">
-
-                    <span class="material-symbols-outlined">
+                    <span class="material-symbols-outlined" aria-hidden="true">
                         eco
                     </span>
-
                     Explorar catálogo
-
                 </a>
-
             </div>
 
-
-            
+            <a class="continue-shopping" href="catalogo.html">← Seguir comprando</a>
 
             <section
                 class="recommendations"
@@ -192,20 +240,24 @@
         
 
         <aside class="cart-summary">
-
             <div class="summary-header">
-
-                <span class="cart-eyebrow">
-                    RESUMEN
-                </span>
-
+                <span class="cart-eyebrow">RESUMEN</span>
                 <h2>Tu pedido</h2>
-
             </div>
 
+            <div class="shipping-progress-section" id="shippingProgressSection">
+                <p class="shipping-progress-message" id="shippingProgressMessage" aria-live="polite"></p>
+                <div class="shipping-progress-track" id="shippingProgress" role="progressbar"
+                    aria-label="Progreso hacia el envío gratis" aria-valuemin="0"
+                    aria-valuemax="2500" aria-valuenow="0" aria-valuetext="" hidden>
+                    <span class="shipping-progress-fill" id="shippingProgressFill"></span>
+                </div>
+                <p class="shipping-threshold-note">
+                    Envío gratis desde <span data-shipping-threshold></span>
+                </p>
+            </div>
 
             <div class="summary-lines">
-
                 <div>
                     <span>Productos</span>
                     <strong id="subtotal">$0</strong>
@@ -215,87 +267,32 @@
                     <span>Envío</span>
                     <strong id="shipping">$0</strong>
                 </div>
-
             </div>
-
 
             <div class="summary-total">
-
                 <span>Total</span>
-
-                <strong id="total">
-                    $0
-                </strong>
-
-            </div>
-
-
-            
-
-            <div class="delivery-box">
-
-                <span class="material-symbols-outlined">
-                    local_shipping
-                </span>
-
-                <div>
-                    <strong>Entrega</strong>
-
-                    <p>
-                        Envío gratis desde <span data-shipping-threshold></span>. Para pedidos menores,
-                        coordinaremos el costo por WhatsApp.
-                    </p>
+                <div class="summary-total-value">
+                    <strong id="total">$0</strong>
+                    <small id="shippingPendingNote" hidden>+ envío a coordinar</small>
                 </div>
-
             </div>
-
-
-            
 
             <div id="checkoutRoot" class="checkout-root"></div>
-
-
-            
-
-           <button
-    type="button"
-    class="btn-whatsapp"
-    id="whatsappButton"
->
-    <span class="material-symbols-outlined">
-        chat
-    </span>
-
-    Enviar pedido por WhatsApp
-</button>
-
-
-            <p class="secure-message">
-
-                <span class="material-symbols-outlined">
-                    verified_user
-                </span>
-
-                Tu pedido será confirmado
-                directamente con ZAPI.
-
-            </p>
-
-
-            
-
-            <button
-                type="button"
-                class="btn-testimonio btn-testimonio-bloque"
-                data-abrir-testimonio
-            >
-                <span class="material-symbols-outlined" aria-hidden="true">
-                    rate_review
-                </span>
-
-                Dejar un testimonio
+            <button type="button" class="btn-whatsapp" id="whatsappButton">
+                <span class="material-symbols-outlined" aria-hidden="true">chat</span>
+                Enviar pedido por WhatsApp
             </button>
 
+            <p class="secure-message">
+                <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
+                Tu pedido será confirmado
+                directamente con ZAPI.
+            </p>
+
+            <button type="button" class="btn-testimonio btn-testimonio-bloque" data-abrir-testimonio>
+                <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
+                Dejar un testimonio
+            </button>
         </aside>
 
     </main>
