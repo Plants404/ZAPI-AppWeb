@@ -12,6 +12,7 @@ const { createContactRouter } = require('./routes/contacto');
 const { createOrdersRouter } = require('./routes/pedidos');
 const { createStockRouter } = require('./routes/stock');
 const { createTestimoniosRouter } = require('./routes/testimonios');
+const { createAdminRouter } = require('./routes/admin');
 
 function createApp(config) {
     const app = express();
@@ -85,6 +86,7 @@ function createApp(config) {
     app.use('/api/pedidos', createOrdersRouter({ config, readLimiter, writeLimiter, productos }));
     app.use('/api/contacto', createContactRouter({ writeLimiter }));
     app.use('/api/testimonios', createTestimoniosRouter({ config, readLimiter, writeLimiter }));
+    app.use('/api/admin', createAdminRouter({ config, readLimiter, writeLimiter }));
 
     app.use((request, response) => {
         response.status(404).json({ error: 'Ruta no encontrada.' });

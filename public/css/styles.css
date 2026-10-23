@@ -277,6 +277,35 @@ header img {
   outline-offset: 3px;
 }
 
+.header-admin {
+  order: 2;
+  position: relative;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  background: none;
+  border: 1px solid rgba(31, 58, 46, .12);
+  border-radius: 10px;
+  flex-shrink: 0;
+  color: var(--forest);
+  text-decoration: none;
+  font-size: 1.25rem;
+}
+
+.header-admin:hover {
+  background: rgba(74, 124, 89, .12);
+}
+
+.header-admin:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
 /* Acceso directo al carrito para la barra movil: hamburguesa a la
    izquierda, logo al centro-izquierda y carrito a la derecha con su
    contador siempre visible. En escritorio el badge vive en la cuenta. */

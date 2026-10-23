@@ -14,6 +14,15 @@
         const nombreSheet = document.querySelector('.bottom-sheet-hola');
         if (nombreSheet && usuario) nombreSheet.textContent = 'Hola ' + usuario.nombre;
 
+        const adminEnlace = document.querySelector('.header-admin');
+        if (adminEnlace) {
+            if (usuario && usuario.role === 'admin') {
+                adminEnlace.style.display = 'inline-flex';
+            } else {
+                adminEnlace.style.display = 'none';
+            }
+        }
+
         const salir = document.getElementById('navSalir');
         if (salir) salir.addEventListener('click', window.zapiAuth.salir);
     }

@@ -257,6 +257,11 @@ ${paraJsonLd(migas)}
             <span>${escapar(NOMBRE)}</span>
         </a>
 
+        <a class="header-admin" href="../admin.html" aria-label="Panel de administración" style="display:none">
+            <span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>
+            Admin
+        </a>
+
         <form class="buscador-producto" action="../catalogo.html" role="search">
             <label class="visually-hidden" for="q">Buscar productos</label>
             <input type="search" id="q" name="q" placeholder="Buscar productos"
