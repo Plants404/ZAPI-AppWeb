@@ -14,11 +14,11 @@ const HTML = ['index.html', 'catalogo.html', 'carrito.html', 'pedidos.html',
     'login.html', '404.html'];
 const CSS = ['styles.css', 'catalogo.css', 'catalogo-modal.css',
     'catalogo-catalogo.css', 'stylecarrito.css', 'pedidos.css', 'zapi-bot.css',
-    'login.css',
+    'login.css', 'tokens.css', 'estilos-producto.css',
     '404.css'];
 const JS = ['config.js', 'auth-ui.js', 'productos.js', 'modal.js', 'catalogo.js',
     'carrito.js', 'pedidos.js', 'testimonio-form.js', 'zapi-bot.js',
-    'navigation.js', 'buscador.js',
+    'navigation.js', 'buscador.js', 'home-carousel.js', 'productos-pagina.js',
     'menu.js', 'testimonios.js', 'contacto.js', 'login.js', '404.js'];
 
 const rutaCss = nombre => path.join(raiz, 'public', 'css', nombre);

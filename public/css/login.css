@@ -111,13 +111,8 @@ body{
 .head[data-face="3"]  .f3,
 .head[data-face="4"]  .f4,
 .head[data-face="5"]  .f5,
-.head[data-face="6"]  .f6,
 .head[data-face="7"]  .f7,
-.head[data-face="8"]  .f8,
-.head[data-face="9"]  .f9,
-.head[data-face="10"] .f10,
-.head[data-face="11"] .f11,
-.head[data-face="12"] .f12{ opacity: 1; }
+.head[data-face="8"]  .f8{ opacity: 1; }
 
 .shake{ animation: shake .5s; }
 

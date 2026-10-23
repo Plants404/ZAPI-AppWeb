@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Administración | ZAPI Vivero Agroecológico</title>
+    <meta name="description" content="Panel de administración de ZAPI: gestiona pedidos, productos, stock y usuarios.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
+
+    <link rel="stylesheet" href="./public/css/styles.css">
+    <link rel="stylesheet" href="./public/css/tokens.css">
+    <link rel="stylesheet" href="./public/css/zapi-bot.css">
+    <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg">
+</head>
+
+<body>
+
+    <header>
+        <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
+            aria-label="Abrir menú de navegación">
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="nav-toggle-barra" aria-hidden="true"></span>
+            <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
+        </button>
+
+        <a class="logo" href="./index.html" aria-label="ZAPI, ir al inicio">
+            <div class="logo-items-text">
+                <span class="logo-nombre">ZAPI</span>
+            </div>
+            <div class="logo-items-img">
+                <img src="./public/img/logo.svg" alt="" width="40" height="40">
+            </div>
+        </a>
+
+        <a class="header-admin" href="admin.html" aria-label="Panel de administración">
+            <span class="material-symbols-outlined" aria-hidden="true">admin_panel_settings</span>
+            Admin
+        </a>
+
+        <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
+            <ul>
+                <li class="nav-cuenta">
+                    <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
+                    <div class="nav-usuario">
+                        <button type="button" class="nav-usuario-boton nav-usuario-alineado" id="navUsuarioBoton"
+                            aria-expanded="false" aria-haspopup="true" aria-controls="navUsuarioMenu">
+                            <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
+                            <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
+                        </button>
+                        <div class="nav-usuario-menu" id="navUsuarioMenu" hidden>
+                            <a class="nav-usuario-item nav-link-carrito" href="carrito.html" id="navLinkCarrito">
+                                Carrito
+                                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+                            </a>
+                            <a class="nav-usuario-item" href="pedidos.html">Mis pedidos</a>
+                            <button type="button" class="nav-usuario-item" id="navSalir">Salir</button>
+                        </div>
+                    </div>
+
+                    <a class="nav-cta" href="carrito.html">
+                        <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+                        Ver carrito
+                        <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+                    </a>
+                </li>
+                <li><a class="nav-link" href="index.html">Inicio</a></li>
+                <li><a class="nav-link" href="catalogo.html">Catálogo</a></li>
+                <li><a class="nav-link nav-link-admin" href="admin.html" style="display:none">Administración</a></li>
+                <li><a class="nav-link" href="carrito.html">Carrito</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="nav-backdrop" id="navBackdrop" hidden></div>
+
+    <main class="admin-page" id="contenido" tabindex="-1">
+
+        <section class="admin-dashboard" id="adminDashboard">
+            <div class="admin-header">
+                <h1>Panel de Administración</h1>
+                <p class="admin-subtitle">Gestiona pedidos, productos, stock y usuarios de ZAPI.</p>
+            </div>
+
+            <div class="admin-stats">
+                <div class="admin-stat-card">
+                    <span class="admin-stat-label">Total pedidos</span>
+                    <span class="admin-stat-value" id="statTotalPedidos">—</span>
+                </div>
+                <div class="admin-stat-card">
+                    <span class="admin-stat-label">Pedidos pendientes</span>
+                    <span class="admin-stat-value" id="statPedidosPendientes">—</span>
+                </div>
+                <div class="admin-stat-card">
+                    <span class="admin-stat-label">Usuarios</span>
+                    <span class="admin-stat-value" id="statTotalUsuarios">—</span>
+                </div>
+                <div class="admin-stat-card">
+                    <span class="admin-stat-label">Administradores</span>
+                    <span class="admin-stat-value" id="statTotalAdmins">—</span>
+                </div>
+                <div class="admin-stat-card">
+                    <span class="admin-stat-label">Testimonios pendientes</span>
+                    <span class="admin-stat-value" id="statTestimoniosPendientes">—</span>
+                </div>
+                <div class="admin-stat-card">
+                    <span class="admin-stat-label">Stock bajo</span>
+                    <span class="admin-stat-value" id="statStockBajo">—</span>
+                </div>
+            </div>
+
+            <div class="admin-seccion">
+                <h2 class="admin-seccion-titulo">Pedidos recientes</h2>
+                <div class="admin-tabla" id="adminPedidosRecientes">
+                    <p class="admin-vacio">Cargando pedidos…</p>
+                </div>
+            </div>
+
+            <div class="admin-seccion">
+                <h2 class="admin-seccion-titulo">Testimonios pendientes de aprobación</h2>
+                <div class="admin-tabla" id="adminTestimoniosPendientes">
+                    <p class="admin-vacio">Cargando testimonios…</p>
+                </div>
+            </div>
+
+            <div class="admin-seccion">
+                <h2 class="admin-seccion-titulo">Stock bajo (5 o menos unidades)</h2>
+                <div class="admin-tabla" id="adminStockBajo">
+                    <p class="admin-vacio">Cargando stock…</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="./public/js/config.js" defer></script>
+    <script src="./public/js/auth-ui.js" defer></script>
+    <script src="./public/js/productos.js" defer></script>
+    <script src="./public/js/menu.js" defer></script>
+    <script src="./public/js/admin.js" defer></script>
+    <script src="./public/js/zapi-bot.js" defer></script>
+
+</body>
+</html>

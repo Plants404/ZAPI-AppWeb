@@ -64,8 +64,9 @@ function actualizarFlechasCarrusel() {
     if (!anterior || !siguiente) return;
 
     const maximo = pista.scrollWidth - pista.clientWidth;
+    const bordeInicial = parseFloat(getComputedStyle(pista).paddingLeft) || 0;
 
-    anterior.disabled = pista.scrollLeft <= 1;
+    anterior.disabled = pista.scrollLeft <= bordeInicial + 1;
     siguiente.disabled = pista.scrollLeft >= maximo - 1;
 
 }

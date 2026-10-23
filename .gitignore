@@ -1,16 +1,14 @@
-# Base de datos: estado, no codigo. Hoy no hay backend, pero la regla
-# queda para cuando se vuelva a armar (pedidos, telefonos, stock).
-# La barra inicial importa: sin ella, git ignoraria tambien
-# public/data/, que es el catalogo en JSON que si se versiona.
+# Estado de base de datos local, nunca código fuente. La barra inicial
+# evita ignorar public/data/, que contiene los JSON versionados del sitio.
 /data/
 
-# Secretos. Cuando vuelva el backend leera .env. Nunca se versiona
-# ningun .env.
+# Secretos locales: nunca se versiona ningún archivo .env.
 .env
 .env.*
 
 # Dependencias de desarrollo (eslint y globals).
 node_modules/
+.netlify/
 
 # Sistema operativo y editores
 .DS_Store

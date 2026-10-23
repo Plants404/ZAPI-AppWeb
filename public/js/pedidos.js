@@ -4,6 +4,9 @@
     const lista = document.getElementById('pedidosLista');
     const vacio = document.getElementById('pedidosVacio');
     const aviso = document.getElementById('pedidosError');
+    const subtitulo = document.getElementById('pedidosSubtitulo');
+    const explorar = document.getElementById('pedidosExplorar');
+    const estadosProgreso = ['pendiente', 'confirmado', 'preparando', 'enviado', 'entregado'];
 
     if (!lista || !vacio) return;
 
@@ -28,13 +31,18 @@
 
         if (Number.isNaN(fecha.getTime())) return '';
 
-        return new Intl.DateTimeFormat('es-UY', {
-            day: '2-digit',
-            month: '2-digit',
+        const fechaLarga = new Intl.DateTimeFormat('es-UY', {
+            day: 'numeric',
+            month: 'long',
             year: 'numeric',
+        }).format(fecha);
+        const hora = new Intl.DateTimeFormat('es-UY', {
             hour: '2-digit',
             minute: '2-digit',
+            hourCycle: 'h23',
         }).format(fecha);
+
+        return `${fechaLarga} · ${hora}`;
     }
 
     /* Miniatura real desde el catalogo por producto_id, con fallback
@@ -53,10 +61,10 @@
     function lineaHTML(item) {
         return `
             <li class="pedido-linea">
-                <span class="pedido-linea-cantidad">${item.cantidad}×</span>
+                <span class="pedido-linea-cantidad">${escaparHTML(item.cantidad)}×</span>
                 ${imagenDeLinea(item)}
                 <span class="pedido-linea-nombre">${escaparHTML(item.nombre)}</span>
-                <span class="pedido-linea-precio">${formatearPrecio(item.precio * item.cantidad)}</span>
+                <span class="pedido-linea-precio">${formatearPrecio(Number(item.precio) * Number(item.cantidad))}</span>
             </li>
         `;
     }
@@ -67,8 +75,9 @@
     }
 
     function claseEstado(estado) {
-        return estado === 'cancelado'
-            ? 'pedido-estado pedido-estado-cancelado'
+        if (estado === 'cancelado') return 'pedido-estado pedido-estado-cancelado';
+        return estadosProgreso.includes(estado)
+            ? `pedido-estado pedido-estado-${estado}`
             : 'pedido-estado';
     }
 
@@ -87,26 +96,70 @@
         `;
     }
 
+    function botonOcultar(pedido) {
+        if (!hayBackend()) return '';
+
+        return `
+                <div class="pedido-acciones">
+                    <button type="button" class="pedido-ocultar" data-ocultar="${escaparHTML(pedido.id)}">
+                        <span class="material-symbols-outlined" aria-hidden="true">visibility_off</span>
+                        Quitar del historial
+                    </button>
+                </div>
+        `;
+    }
+
     function pedidoHTML(pedido) {
         const items = Array.isArray(pedido.items) ? pedido.items : [];
+        const id = String(pedido.id ?? '');
+        const codigo = id.length > 6 ? id.slice(-6).toUpperCase() : id;
+        const indiceEstado = estadosProgreso.indexOf(pedido.estado);
+        let estadoPedido = '';
+
+        if (window.REQUIERE_CUENTA && hayBackend() && indiceEstado !== -1) {
+            estadoPedido = `
+                <ol class="pedido-progreso" aria-label="Estado del pedido">
+                    ${estadosProgreso.map((estado, indice) => {
+        const actual = indice === indiceEstado;
+        const completado = indice < indiceEstado;
+        const clasePaso = actual ? 'pedido-progreso-actual' : completado ? 'pedido-progreso-completado' : '';
+        return `
+                    <li class="pedido-progreso-paso ${clasePaso}" ${actual ? 'aria-current="step"' : ''}>
+                        <span>${escaparHTML(estado)}</span>
+                    </li>
+                `;
+    }).join('')}
+                </ol>
+            `;
+        } else if (pedido.estado === 'cancelado') {
+            estadoPedido = '<p class="pedido-cancelado-nota">Este pedido fue cancelado.</p>';
+        }
 
         return `
             <article class="pedido-card">
                 <div class="pedido-cabecera">
                     <div>
-                        <span class="pedido-codigo">${escaparHTML(pedido.id)}</span>
+                        <span class="pedido-codigo" title="${escaparHTML(id)}">Pedido #${escaparHTML(codigo)}</span>
                         <span class="pedido-fecha">${escaparHTML(formatearFecha(pedido.creado))}</span>
                     </div>
                     <span class="${claseEstado(pedido.estado)}">${escaparHTML(pedido.estado)}</span>
                 </div>
-                <ul class="pedido-lineas">${items.map(lineaHTML).join('')}</ul>
-                <footer class="pedido-pie">
-                    <span>${pedido.envio_pendiente ? "Subtotal" : "Total"}</span>
-                    <strong>${pedido.envio_pendiente
-        ? `${formatearPrecio(pedido.total)} · envío a coordinar`
-        : formatearPrecio(pedido.total)}</strong>
-                </footer>
+                ${estadoPedido}
+                <div class="pedido-contenido">
+                    <ul class="pedido-lineas">${items.map(lineaHTML).join('')}</ul>
+                    <aside class="pedido-resumen">
+                        <div class="pedido-envio">
+                            <span>Envío</span>
+                            <strong>${pedido.envio_pendiente ? 'A coordinar' : 'Gratis'}</strong>
+                        </div>
+                        <footer class="pedido-pie">
+                            <span>${pedido.envio_pendiente ? 'Subtotal' : 'Total'}</span>
+                            <strong>${formatearPrecio(pedido.total)}</strong>
+                        </footer>
+                    </aside>
+                </div>
                 ${botonCancelar(pedido)}
+                ${botonOcultar(pedido)}
             </article>
         `;
     }
@@ -115,6 +168,10 @@
         lista.innerHTML = '';
         lista.hidden = true;
         vacio.classList.remove('hidden');
+        if (subtitulo) subtitulo.textContent = !window.REQUIERE_CUENTA
+            ? 'Acá ves los pedidos hechos desde este dispositivo.'
+            : 'Acá vas a ver el estado de cada pedido que hagas.';
+        if (explorar) explorar.hidden = true;
     }
 
     function mostrarAviso() {
@@ -139,6 +196,11 @@
 
         lista.hidden = false;
         vacio.classList.add('hidden');
+        if (subtitulo) {
+            const cantidad = pedidos.length;
+            subtitulo.textContent = `${cantidad} pedido${cantidad === 1 ? '' : 's'} realizado${cantidad === 1 ? '' : 's'}`;
+        }
+        if (explorar) explorar.hidden = false;
         lista.innerHTML = pedidos.map(pedidoHTML).join('');
     }
 
@@ -161,9 +223,10 @@
     }
 
     async function cargar() {
-        /* Sin backend el historial es local: los pedidos que se
-           guardaron en el navegador al enviarlos. */
-        if (!hayBackend()) {
+        /* Sin cuentas (REQUIERE_CUENTA=false) el historial es siempre
+           local: los pedidos que se guardaron en el navegador. Nunca se
+           consulta el backend ni se exige sesion. */
+        if (!window.REQUIERE_CUENTA || !hayBackend()) {
             const listar = window.listarPedidosLocales;
             const locales = typeof listar === 'function' ? listar() : [];
 
@@ -213,12 +276,37 @@
         cargar();
     }
 
+    async function ocultarPedido(id) {
+        if (!id || !window.confirm('¿Quitar este pedido de tu historial? El pedido se conservará en la base de datos.')) return;
+
+        try {
+            const respuesta = await fetch(window.urlApi(`/api/pedidos/${encodeURIComponent(id)}/ocultar`), {
+                method: 'PATCH',
+                credentials: 'include',
+                headers: { Accept: 'application/json' },
+            });
+
+            if (!respuesta.ok) {
+                window.alert('No se pudo quitar el pedido del historial. El pedido sigue guardado.');
+                return;
+            }
+
+            await cargar();
+        } catch (error) {
+            window.alert('No se pudo conectar con el servidor. El pedido sigue guardado en el historial.');
+        }
+    }
+
     lista.addEventListener('click', function (evento) {
         const boton = evento.target.closest('[data-cancelar]');
 
-        if (!boton) return;
+        if (boton) {
+            cancelarPedido(boton.getAttribute('data-cancelar'));
+            return;
+        }
 
-        cancelarPedido(boton.getAttribute('data-cancelar'));
+        const ocultar = evento.target.closest('[data-ocultar]');
+        if (ocultar) ocultarPedido(ocultar.getAttribute('data-ocultar'));
     });
 
     cargar();

@@ -42,12 +42,60 @@ function calcularTotales(items = cart) {
 
 function updateSummary() {
     const { subtotal, shipping, total } = calcularTotales();
+    const progresoEnvio = document.getElementById("shippingProgress");
+    const seccionProgreso = document.getElementById("shippingProgressSection");
+    const mensajeProgreso = document.getElementById("shippingProgressMessage");
+    const rellenoProgreso = document.getElementById("shippingProgressFill");
+    const notaEnvioPendiente = document.getElementById("shippingPendingNote");
+    const progreso = Math.min(subtotal, FREE_SHIPPING_THRESHOLD);
+    const porcentajeProgreso = FREE_SHIPPING_THRESHOLD > 0
+        ? (progreso / FREE_SHIPPING_THRESHOLD) * 100
+        : 100;
 
     document.getElementById("subtotal").textContent = formatearPrecio(subtotal);
     document.getElementById("shipping").textContent =
         shipping === null ? "A coordinar" : shipping === 0 && subtotal > 0 ? "Gratis" : formatearPrecio(shipping);
     document.getElementById("total").textContent =
-        total === null ? "A coordinar" : formatearPrecio(total);
+        formatearPrecio(total === null ? subtotal : total);
+
+    if (notaEnvioPendiente) notaEnvioPendiente.hidden = total !== null || cart.length === 0;
+
+    if (seccionProgreso) seccionProgreso.hidden = cart.length === 0;
+    if (progresoEnvio) {
+        progresoEnvio.hidden = cart.length === 0;
+        progresoEnvio.setAttribute("aria-valuemax", String(FREE_SHIPPING_THRESHOLD));
+        progresoEnvio.setAttribute("aria-valuenow", String(progreso));
+        progresoEnvio.setAttribute(
+            "aria-valuetext",
+            subtotal >= FREE_SHIPPING_THRESHOLD
+                ? "Envío gratis alcanzado"
+                : `${formatearPrecio(Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal))} para alcanzar el envío gratis`
+        );
+    }
+
+    if (mensajeProgreso) {
+        mensajeProgreso.textContent = subtotal >= FREE_SHIPPING_THRESHOLD
+            ? "¡Tenés envío gratis!"
+            : `Te faltan ${formatearPrecio(Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal))} para el envío gratis`;
+    }
+
+    if (rellenoProgreso) rellenoProgreso.style.width = `${porcentajeProgreso}%`;
+}
+
+function actualizarFilaCarrito(item) {
+    const fila = document.querySelector(`.cart-item[data-id="${item.id}"]`);
+    if (!fila) return;
+
+    const cantidad = fila.querySelector(".quantity-value");
+    const totalLinea = fila.querySelector(".cart-item-line-total");
+    const detalle = fila.querySelector(".cart-item-unit-detail");
+
+    if (cantidad) cantidad.textContent = String(item.cantidad);
+    if (totalLinea) totalLinea.textContent = formatearPrecio(item.precio * item.cantidad);
+    if (detalle) {
+        detalle.textContent = `${item.cantidad} × ${formatearPrecio(item.precio)}`;
+        detalle.hidden = item.cantidad <= 1;
+    }
 }
 
 /* --- Recomendaciones --------------------------------------- */
@@ -180,36 +228,43 @@ function renderCart() {
 
     emptyCart.classList.add("hidden");
 
-    container.innerHTML = cart.map(item => `
+    container.innerHTML = cart.map(item => {
+        return `
         <article class="cart-item" data-id="${item.id}">
             <div class="cart-item-image">
                 <img src="${escaparHTML(item.imagen)}" alt="${escaparHTML(item.nombre)}" loading="lazy" decoding="async">
             </div>
             <div class="cart-item-info">
                 <h3>${escaparHTML(item.nombre)}</h3>
-                <div class="cart-item-category">${escaparHTML(item.categoria) || "Producto ZAPI"}</div>
-                <div class="cart-item-price">${formatearPrecio(item.precio)}<span class="cart-item-unit"> c/u</span></div>
-                <span class="cart-item-stock" data-stock="${item.id}"></span>
-                <div class="quantity-control">
+                <span class="cart-item-category">${escaparHTML(item.categoria) || "Producto ZAPI"}</span>
+                <span class="cart-item-stock" data-stock="${item.id}" data-id="${item.id}"></span>
+            </div>
+            <div class="cart-item-actions">
+                <div class="quantity-control" role="group" aria-label="Cantidad">
                     <button class="quantity-minus" data-id="${item.id}" aria-label="Disminuir cantidad" type="button">
-                        <span class="material-symbols-outlined">remove</span>
+                        <span class="material-symbols-outlined" aria-hidden="true">remove</span>
                     </button>
-                    <span>${item.cantidad}</span>
+                    <span class="quantity-value" aria-live="polite">${item.cantidad}</span>
                     <button class="quantity-plus" data-id="${item.id}" aria-label="Aumentar cantidad" type="button">
-                        <span class="material-symbols-outlined">add</span>
+                        <span class="material-symbols-outlined" aria-hidden="true">add</span>
+                    </button>
+                </div>
+                <div class="cart-item-total">
+                    <div class="cart-item-total-text">
+                        <strong class="cart-item-line-total">${formatearPrecio(item.precio * item.cantidad)}</strong>
+                        <small class="cart-item-unit-detail" ${item.cantidad <= 1 ? "hidden" : ""}>
+                            ${item.cantidad} × ${formatearPrecio(item.precio)}
+                        </small>
+                    </div>
+                    <button class="remove-item" data-id="${item.id}"
+                        aria-label="Eliminar ${escaparHTML(item.nombre)} del carrito" type="button">
+                        <span class="material-symbols-outlined" aria-hidden="true">delete</span>
                     </button>
                 </div>
             </div>
-            <div class="cart-item-total">
-                <strong>${formatearPrecio(item.precio * item.cantidad)}</strong>
-                <small>${item.cantidad} × ${formatearPrecio(item.precio)}</small>
-                <button class="remove-item" data-id="${item.id}"
-                    aria-label="Eliminar ${escaparHTML(item.nombre)} del carrito" type="button">
-                    <span class="material-symbols-outlined">delete</span>
-                </button>
-            </div>
         </article>
-    `).join("");
+    `;
+    }).join("");
 
     pintarStockEnPantalla();
     updateSummary();
@@ -233,7 +288,10 @@ function changeQuantity(id, amount) {
     /* Bajar la cantidad nunca borra el producto: el 1 es el piso;
        para sacarlo esta la papelera. */
     item.cantidad = Math.max(1, item.cantidad + amount);
-    confirmarCarrito();
+    guardarCarrito(cart);
+    actualizarFilaCarrito(item);
+    updateSummary();
+    actualizarContador(false);
 }
 
 function removeProduct(id) {

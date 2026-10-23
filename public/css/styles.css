@@ -187,7 +187,6 @@ section>* {
   border: 0;
 }
 
-
 header {
   position: sticky;
   top: 0;
@@ -211,7 +210,7 @@ header::before {
   border-bottom: 1px solid var(--borde);
 }
 
-header h4 {
+header .logo-nombre {
   font-family: var(--serif);
   font-size: 1.6rem;
   font-weight: 700;
@@ -276,6 +275,35 @@ header img {
 .nav-toggle:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 3px;
+}
+
+.header-admin {
+  order: 2;
+  position: relative;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  background: none;
+  border: 1px solid rgba(31, 58, 46, .12);
+  border-radius: 10px;
+  flex-shrink: 0;
+  color: var(--forest);
+  text-decoration: none;
+  font-size: 1.25rem;
+}
+
+.header-admin:hover {
+  background: rgba(74, 124, 89, .12);
+}
+
+.header-admin:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: 10px;
 }
 
 /* Acceso directo al carrito para la barra movil: hamburguesa a la
@@ -434,6 +462,10 @@ header.menu-abierto::before {
   border-radius: 50%;
 }
 
+.header-search-limpiar[hidden] {
+  display: none;
+}
+
 .header-search-limpiar:hover {
   color: var(--forest);
   background: var(--sand);
@@ -494,6 +526,354 @@ header.menu-abierto::before {
   opacity: 1;
 }
 
+/* ==========================================================================
+   Hoja inferior (bottom sheet) — solo pantallas < 1024px
+   ========================================================================== */
+
+.bottom-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+  z-index: 230;
+  background: var(--cream);
+  border-radius: 28px 28px 0 0;
+  padding-top: 10px;
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  max-height: 85dvh;
+  max-height: 85vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  overflow-x: hidden;
+  transform: translateY(100%);
+  transition: transform 250ms ease;
+  will-change: transform;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.bottom-sheet.esta-abierto {
+  transform: translateY(0);
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bottom-sheet {
+    left: 50%;
+    right: auto;
+    width: auto;
+    max-width: 560px;
+    transform: translate(50%, 100%);
+  }
+  .bottom-sheet.esta-abierto {
+    transform: translate(50%, 0);
+  }
+}
+
+@media (min-width: 1024px) {
+  .bottom-sheet {
+    display: none !important;
+  }
+}
+
+.bottom-sheet[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-sheet {
+    transition: none;
+  }
+}
+
+.bottom-sheet-manija {
+  width: 44px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--moss);
+  margin: 0 auto 10px;
+}
+
+.bottom-sheet-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.bottom-sheet-titulo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+}
+
+.bottom-sheet-cerrar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1px solid var(--borde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.bottom-sheet-cerrar:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.bottom-sheet-cerrar .material-symbols-outlined {
+  font-size: 24px;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.bottom-sheet-grilla {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bottom-sheet-grilla {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.bottom-sheet-tarjeta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 100px;
+  padding: 14px;
+  background: var(--white);
+  border: 1px solid var(--borde);
+  border-radius: 18px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.bottom-sheet-tarjeta:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: 18px;
+}
+
+.bottom-sheet-icono {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--menta);
+  color: var(--forest);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bottom-sheet-icono .material-symbols-outlined {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.bottom-sheet-etiq {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.bottom-sheet-tarjeta[aria-current="page"] {
+  background: var(--menta);
+  border-color: var(--menta);
+}
+
+.bottom-sheet-tarjeta[aria-current="page"] .bottom-sheet-icono {
+  background: var(--white);
+  color: var(--forest);
+}
+
+.bottom-sheet-tarjeta .cart-count {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--error);
+  border-radius: 999px;
+  display: none;
+}
+
+.bottom-sheet-tarjeta .cart-count.con-productos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Bloque de cuenta de la hoja */
+.bottom-sheet-cuenta {
+  margin-top: auto;
+}
+
+.bottom-sheet-fila-cuenta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--white);
+  border: 1px solid var(--borde);
+  border-radius: 18px;
+}
+
+.bottom-sheet-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.bottom-sheet-hola {
+  font-weight: 700;
+  color: var(--ink);
+  flex: 1;
+  min-width: 0;
+}
+
+.bottom-sheet-pedidos {
+  color: var(--leaf-texto);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.bottom-sheet-pedidos:hover {
+  text-decoration: underline;
+}
+
+.bottom-sheet-salir {
+  width: 100%;
+  text-align: center;
+  padding: 0 16px;
+  height: 44px;
+  background: none;
+  border: none;
+  color: var(--muted-texto);
+  font-weight: 600;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.bottom-sheet-salir:hover {
+  color: var(--forest);
+}
+
+.bottom-sheet-salir:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.bottom-sheet-ingresar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--forest);
+  color: var(--cream);
+  font-weight: 600;
+  font-family: var(--sans);
+  font-size: 1rem;
+  text-decoration: none;
+}
+
+.bottom-sheet-ingresar:hover {
+  background: var(--moss);
+}
+
+/* Bloque de cuenta vs Ingresar de la hoja, controlado por estado de auth */
+.bottom-sheet-fila-cuenta,
+.bottom-sheet-salir {
+  display: none;
+}
+.bottom-sheet-ingresar {
+  display: none;
+}
+
+html[data-cuentas="si"] .bottom-sheet-fila-cuenta {
+  display: flex !important;
+}
+html[data-cuentas="si"] .bottom-sheet-salir {
+  display: block !important;
+}
+html[data-cuentas="no"] .bottom-sheet-ingresar {
+  display: flex !important;
+}
+
+html[data-cuentas="off"] .bottom-sheet-fila-cuenta,
+html[data-cuentas="off"] .bottom-sheet-salir,
+html[data-cuentas="off"] .bottom-sheet-ingresar {
+  display: none !important;
+}
+html[data-cuentas="off"] .bottom-sheet-fila-pedidos {
+  display: flex !important;
+}
+
+/* En móvil y tablet el drawer lateral queda desactivado: la navegación
+   vive en la hoja inferior. En escritorio (.nav-bar) se comporta como
+   siempre. */
+@media (max-width: 1023px) {
+  .nav-bar.esta-abierto {
+    visibility: hidden;
+    transform: translateX(100%);
+  }
+
+  /* Ocultar elementos del drawer que ya no existen en móvil */
+  .nav-bar .nav-usuario,
+  .nav-bar .nav-cuenta {
+    display: none !important;
+  }
+}
+
+/* Bloqueo de scroll: html y body para que afecte al viewport */
+html.menu-abierto {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+body.no-scroll {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
 .nav-bar ul {
   display: flex;
   flex-direction: column;
@@ -543,53 +923,6 @@ header.menu-abierto::before {
 .nav-bar li .nav-link:hover::after,
 .nav-bar li .nav-link.active::after {
   width: 100%;
-}
-
-/* CTA "Ver carrito" del drawer movil. Vive agrupado dentro del bloque de
-   cuenta, nunca suelto al pie del menu. */
-.nav-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .6rem;
-  margin-top: .6rem;
-  min-height: 48px;
-  padding: .9rem 1.25rem;
-  font-family: var(--sans);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--white);
-  background: var(--forest);
-  border-radius: 999px;
-  text-decoration: none;
-  transition: background .25s ease;
-}
-
-.nav-cta:hover {
-  background: var(--moss);
-}
-
-.nav-cta:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-}
-
-.nav-cta .material-symbols-outlined {
-  font-size: 1.25rem;
-}
-
-.nav-cta .cart-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.4rem;
-  height: 1.4rem;
-  padding: 0 .35rem;
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--forest);
-  background: var(--sand);
-  border-radius: 999px;
 }
 
 .nav-bar li .nav-link:focus-visible {
@@ -686,271 +1019,6 @@ header.menu-abierto::before {
   outline-offset: 2px;
 }
 
-/* ==========================================================================
-   Drawer de navegacion en mobile y tablet (<1024px). El bloque de
-   usuario/administrador ("Hola Administrador", Carrito, Mis pedidos y
-   Salir) va arriba, como contenedor destacado; la navegacion general
-   queda debajo. Todo con areas tactiles de al menos 44x44 px.
-   ========================================================================== */
-@media (max-width: 1023px) {
-
-  /* Drawer al ras del borde superior: sin franja blanca arriba.
-     El top:0 y la altura completa ya vienen del bloque base; aqui se
-     fija el padding-top compacto para que la tarjeta superior arranque
-     justo debajo del boton de cierre. */
-  .nav-bar {
-    top: 0;
-    height: 100vh;
-    height: 100dvh;
-    padding-top: 2rem;
-  }
-
-  .nav-bar ul {
-    gap: 0;
-  }
-
-  /* En movil y tablet el carrito vive dentro del drawer (fila Carrito +
-     contador); el boton flotante inferior no aporta nada y solo suma un
-     elemento sobrepuesto, asi que se oculta en estos anchos. */
-  .cart-link-float,
-  .floating-cart-btn,
-  #cartLinkFloat,
-  #floating-cart,
-  #cartCountFloat {
-    display: none !important;
-  }
-
-  /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
-     muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
-        .nav-cuenta {
-          position: relative;
-          display: block;
-          margin: 1rem 0 0;
-          padding: .4rem .5rem;
-          background: var(--sand);
-          border: 1px solid rgba(61, 107, 79, .16);
-          border-radius: 14px;
-        }
-
-  /* Linea divisoria sutil entre el bloque de cuenta y la navegacion. */
-  .nav-cuenta::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -.8rem;
-    height: 1px;
-    background: rgba(61, 107, 79, .22);
-  }
-
-  .nav-usuario {
-    gap: 0;
-  }
-
-  /* Cabecera "Hola Administrador": encabeza el bloque sin caja propia */
-  .nav-usuario-boton {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    width: 100%;
-    min-height: 44px;
-    padding: .5rem .35rem .7rem;
-    border: 0;
-    border-radius: 0;
-    border-bottom: 1px solid rgba(61, 107, 79, .2);
-    background: none;
-    color: var(--forest);
-    text-align: left;
-  }
-
-  .nav-usuario-boton:hover {
-    color: var(--moss);
-  }
-
-  .nav-usuario-nombre {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 700;
-  }
-
-  /* El contador vive en la fila de Carrito, no en la cabecera */
-  .nav-bar .nav-usuario-boton .cart-count.cart-count-header {
-    display: none;
-  }
-
-  .nav-usuario-menu {
-    gap: 0;
-    padding: 0;
-  }
-
-  /* Carrito / Mis pedidos / Salir: filas tactiles con icono, separadas
-     por lineas sutiles dentro del bloque unificado. */
-  .nav-bar .nav-usuario-item {
-    justify-content: flex-start;
-    min-height: 48px;
-    padding: .75rem .35rem;
-    border-radius: 0;
-    border-bottom: 1px solid rgba(61, 107, 79, .14);
-    background: none;
-  }
-
-  .nav-bar .nav-usuario-item:last-child {
-    border-bottom: 0;
-  }
-
-  .nav-bar .nav-usuario-item:hover {
-    background: rgba(74, 124, 89, .12);
-  }
-
-  .nav-bar .nav-usuario-item::before {
-    content: "";
-    font-family: 'Material Symbols Outlined';
-    font-weight: normal;
-    font-style: normal;
-    font-size: 1.3rem;
-    line-height: 1;
-    letter-spacing: normal;
-    text-transform: none;
-    white-space: nowrap;
-    direction: ltr;
-    font-feature-settings: 'liga';
-    -webkit-font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-    color: var(--leaf);
-    flex: 0 0 auto;
-  }
-
-  .nav-bar .nav-link-carrito::before {
-    content: "shopping_bag";
-  }
-
-  .nav-bar .nav-usuario-item[href*="pedidos"]::before {
-    content: "receipt_long";
-  }
-
-  .nav-bar #navSalir::before {
-    content: "logout";
-  }
-
-  .nav-bar .nav-usuario-item .cart-count {
-    margin-left: auto;
-  }
-
-  /* Ingresar (sin sesion): boton tactil principal del bloque */
-  .nav-bar .nav-ingresar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 48px;
-    padding: .7rem .85rem;
-    border-radius: 10px;
-    background: var(--forest);
-    color: var(--white);
-    font-weight: 600;
-    text-align: center;
-  }
-
-  .nav-bar .nav-ingresar:hover {
-    background: var(--moss);
-    color: var(--white);
-  }
-
-  .nav-bar .nav-ingresar::after {
-    display: none;
-  }
-
-  /* Salir en carrito/pedidos (fuera del menu de cuenta) */
-  .nav-bar .nav-salir {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 48px;
-    padding: .7rem .85rem;
-    border-radius: 10px;
-    background: var(--white);
-    text-decoration: none;
-  }
-
-  /* Bloque inferior de navegacion general: tarjeta unificada simetrica
-     al bloque superior de administrador. Cada li aporta un tramo de la
-     tarjeta (fondo + laterales) y el primero/ultimo cierran los radios;
-     las filas se separan con la misma linea sutil del bloque de cuenta.
-     Todos los enlaces superan el area tactil minima de 44x44 px. */
-  .nav-bar ul > li:not(.nav-cuenta) {
-    margin: 0;
-    padding: 0 .5rem;
-    background: var(--white);
-    border-left: 1px solid rgba(61, 107, 79, .16);
-    border-right: 1px solid rgba(61, 107, 79, .16);
-  }
-
-  .nav-bar ul > .nav-cuenta + li {
-    border-top: 1px solid rgba(61, 107, 79, .16);
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-    padding-top: .4rem;
-  }
-
-  .nav-bar ul > li:last-child {
-    border-bottom: 1px solid rgba(61, 107, 79, .16);
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-    padding-bottom: .4rem;
-  }
-
-  .nav-bar ul > li:not(.nav-cuenta) > a,
-  .nav-bar ul > li:not(.nav-cuenta) > .nav-link {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    min-height: 44px;
-    padding: .75rem .35rem;
-    border-radius: 0;
-    border-bottom: 1px solid rgba(61, 107, 79, .14);
-  }
-
-  .nav-bar ul > li:last-child > a,
-  .nav-bar ul > li:last-child > .nav-link {
-    border-bottom: 0;
-  }
-
-  .nav-bar ul > li:not(.nav-cuenta) > a:hover,
-  .nav-bar ul > li:not(.nav-cuenta) > .nav-link:hover {
-    background: rgba(74, 124, 89, .12);
-  }
-
-  .nav-bar ul > li:not(.nav-cuenta) > a.active,
-  .nav-bar ul > li:not(.nav-cuenta) > .nav-link.active {
-    color: var(--forest);
-    background: rgba(74, 124, 89, .12);
-  }
-
-  .nav-bar ul > li:not(.nav-cuenta) > a::after,
-  .nav-bar ul > li:not(.nav-cuenta) > .nav-link::after {
-    left: .35rem;
-    bottom: .45rem;
-    height: 2px;
-    background: var(--leaf);
-    border-radius: 2px;
-  }
-
-  .nav-bar ul > li:not(.nav-cuenta) > a:hover::after,
-  .nav-bar ul > li:not(.nav-cuenta) > .nav-link:hover::after,
-  .nav-bar ul > li:not(.nav-cuenta) > a.active::after,
-  .nav-bar ul > li:not(.nav-cuenta) > .nav-link.active::after {
-    width: calc(100% - .7rem);
-  }
-
-  /* CTA "Ver carrito" del drawer */
-  .nav-cta {
-    min-height: 48px;
-  }
-}
-
 /* Header completo y persistente en tablet y desktop: flex pegajoso al
    tope, sin espacios vacios. El buscador, la navegacion y los accesos
    de cuenta/carrito no se ocultan ni colapsan en estos anchos. */
@@ -1007,8 +1075,12 @@ header.menu-abierto::before {
 
 .nav-toggle .cart-count.cart-count-toggle.con-productos {
   display: inline-flex;
-  background: #c14a3c;
+  background: var(--error);
   color: var(--white);
+}
+
+.nav-toggle[aria-expanded="true"] .cart-count.cart-count-toggle {
+  display: none;
 }
 
 .nav-salir {
@@ -1034,16 +1106,30 @@ header.menu-abierto::before {
   border-radius: 4px;
 }
 
-html[data-auth="si"] .nav-ingresar {
-  display: none;
-}
-
-html:not([data-auth="si"]) .nav-usuario {
+html[data-cuentas="si"] .nav-ingresar {
   display: none !important;
 }
+html[data-cuentas="no"] .nav-usuario {
+  display: none !important;
+}
+html[data-cuentas="si"] .nav-usuario {
+  display: inline-flex !important;
+}
 
-html[data-auth="si"] .nav-cta {
-  display: none;
+html[data-cuentas="off"] .nav-bar .nav-usuario,
+html[data-cuentas="off"] .nav-bar .nav-cta,
+html[data-cuentas="off"] .nav-bar .nav-ingresar {
+  display: none !important;
+}
+html[data-cuentas="off"] .nav-bar .nav-suelto-carrito,
+html[data-cuentas="off"] .nav-bar .nav-suelto-pedidos {
+  display: flex !important;
+}
+html[data-cuentas="si"] .nav-bar .nav-suelto-carrito,
+html[data-cuentas="si"] .nav-bar .nav-suelto-pedidos,
+html[data-cuentas="no"] .nav-bar .nav-suelto-carrito,
+html[data-cuentas="no"] .nav-bar .nav-suelto-pedidos {
+  display: none !important;
 }
 
 /* En tablet y escritorio el carrito vive en la barra superior: ocultamos
@@ -1256,15 +1342,26 @@ body.no-scroll {
 }
 
 #inicio .carousel-track .product-card {
-  flex: 0 0 min(280px, 100%);
-  max-width: 280px;
+  flex: 0 0 100%;
+  max-width: none;
   scroll-snap-align: start;
 }
 
 @media (min-width: 768px) {
   #inicio .carousel-track .product-card {
+    flex-basis: calc(50% - .75rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  #inicio .carousel-track .product-card {
+    flex-basis: calc(33.333% - 1rem);
+  }
+}
+
+@media (min-width: 1440px) {
+  #inicio .carousel-track .product-card {
     flex-basis: calc(25% - 1.125rem);
-    max-width: none;
   }
 }
 
@@ -4207,7 +4304,7 @@ body.con-testimonio-abierto {
 }
 
 /* Footer base */
-footer {
+footer:not(.pedido-pie) {
   background: var(--forest);
   color: var(--cream);
   padding: 3rem var(--gutter);
@@ -4219,7 +4316,6 @@ footer {
    ========================================================================== */
 
 /* Botones base */
-.nav-bar .nav-cta,
 .nav-bar .nav-ingresar,
 .nav-bar .nav-salir,
 .nav-bar .nav-usuario-item,
@@ -4247,7 +4343,6 @@ footer {
 }
 
 .nav-bar .nav-cuenta .nav-ingresar,
-.nav-bar .nav-cuenta .nav-cta,
 .nav-bar .nav-usuario-item {
   background: var(--forest);
   color: var(--white);
@@ -4255,14 +4350,12 @@ footer {
 }
 
 .nav-bar .nav-cuenta .nav-ingresar:hover,
-.nav-bar .nav-cuenta .nav-cta:hover,
 .nav-bar .nav-usuario-item:hover {
   background: var(--moss);
   color: var(--white);
 }
 
 .nav-bar .nav-ingresar:focus-visible,
-.nav-bar .nav-cta:focus-visible,
 .nav-bar .nav-usuario-item:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 3px;
@@ -4270,7 +4363,6 @@ footer {
 }
 
 .nav-bar .nav-cuenta .nav-ingresar::after,
-.nav-bar .nav-cuenta .nav-cta::after,
 .nav-bar .nav-usuario-item::after {
   display: none;
 }
@@ -4288,7 +4380,6 @@ footer {
 }
 
 .nav-bar .nav-cuenta .nav-ingresar .cart-count,
-.nav-bar .nav-cuenta .nav-cta .cart-count,
 .nav-bar .nav-usuario-item .cart-count {
   margin-left: auto;
 }
@@ -4305,6 +4396,28 @@ footer {
 
 .nav-bar .nav-cuenta {
   margin: 1rem 0 0;
+}
+
+@media (max-width: 1023px) {
+  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item {
+    justify-content: flex-start;
+    min-height: 48px;
+    padding: .75rem .35rem;
+    border: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .14);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item:last-child {
+    border-bottom: 0;
+  }
+
+  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item:hover {
+    background: rgba(74, 124, 89, .12);
+    color: var(--forest);
+  }
 }
 
 /* Tarjeta base genérica */
@@ -4369,7 +4482,7 @@ header {
 }
 
 /* Footer base */
-footer {
+footer:not(.pedido-pie) {
   background: var(--forest);
   color: var(--cream);
   padding: 3rem var(--gutter);
