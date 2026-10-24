@@ -40,13 +40,29 @@ ZAPI-AppWeb/
 └── .editorconfig
 ```
 
-### CSS en `public/css/` (hoy)
+### CSS en `public/css/`
 
-- `tokens.css` — variables (aún no es la única fuente: `styles.css` tiene su propio `:root`)
-- `styles.css` — estilos globales (archivo largo; se parte en Fase 3)
-- `catalogo.css` — fuente de `extraer-modal-css.js` (no cargar directo en HTML)
-- `catalogo-catalogo.css` / `catalogo-modal.css` — GENERADOS
-- `estilos-producto.css`, `stylecarrito.css`, `pedidos.css`, `login.css`, `404.css`, `zapi-bot.css`
+`tokens.css` es la única fuente de variables y se carga primero en todas
+las páginas. El resto de la antigua `styles.css` quedó partido por
+responsabilidad, en recortes contiguos (no se reordenó ninguna regla):
+
+- `tokens.css` — variables (única fuente)
+- `base/reset.css` — reset y tipografía
+- `componentes/header.css` — header y navegación
+- `componentes/footer.css` — pie
+- `componentes/correctivo-movil.css` — correctivos de móvil
+- `componentes/base.css` — componentes reutilizables
+- `secciones/` — `inicio.css`, `servicios.css`, `nosotros.css`,
+  `testimonios.css`, `contacto.css`, `banners.css`
+- `catalogo-fuente.css` — fuente de `extraer-modal-css.js` (no cargar
+  directo en HTML)
+- `catalogo-grilla.css` / `catalogo-modal.css` — GENERADOS
+- `paginas/` — `carrito.css`, `pedidos.css`, `login.css`, `404.css`
+- `estilos-producto.css`, `zapi-bot.css`
+
+La comprobación de que el CSS efectivo no cambió es
+`node tools/verificar-css-equivalencia.js` (contra `HEAD` por defecto).
+
 
 ### JS en `public/js/` (hoy, planos)
 
@@ -64,7 +80,7 @@ npm start                   # http://localhost:5500
 npm run generar             # productos/*.html + public/data/productos.json
 npm run generar:testimonios # public/data/testimonios.json
 npm run sitemap             # sitemap.xml
-npm run css                 # catalogo-catalogo.css y catalogo-modal.css
+npm run css                 # catalogo-grilla.css y catalogo-modal.css
 npm run componer            # partials/header.html → los HTML (idempotente)
 npm run check               # lint + verificar
 npm run contraste           # WCAG AA
