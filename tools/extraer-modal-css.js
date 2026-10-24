@@ -1,4 +1,4 @@
-/* Divide catalogo.css en las dos partes que cada pagina necesita.
+/* Divide catalogo-fuente.css en las dos partes que cada pagina necesita.
    Usage: node tools/extraer-modal-css.js
 
    Por que: catalogo.html necesita la grilla del catalogo y la
@@ -7,9 +7,9 @@
    reglas de grilla que nunca se dibujan.
 
    La division es por un marcador de seccion, no por numero de
-   linea, asi que agregar reglas no rompe nada. catalogo.css queda
-   como fuente unica de la verdad y los dos archivos generados se
-   regeneran con este script. */
+   linea, asi que agregar reglas no rompe nada. catalogo-fuente.css
+   queda como fuente unica de la verdad y los dos archivos generados
+   se regeneran con este script. */
 
 'use strict';
 
@@ -18,7 +18,7 @@ const path = require('path');
 
 const raiz = path.join(__dirname, '..');
 const CSS = path.join(raiz, 'public', 'css');
-const origen = path.join(CSS, 'catalogo.css');
+const origen = path.join(CSS, 'catalogo-fuente.css');
 
 /* El separador tiene que ser el comentario que abre la seccion de
    la ventana flotante. */
@@ -74,13 +74,13 @@ function recortarCompartido(bloque) {
 
 }
 if (corte < 0) {
-    console.error('No se encontro el bloque "VENTANA FLOTANTE DE PRODUCTO" en catalogo.css.');
+    console.error('No se encontro el bloque "VENTANA FLOTANTE DE PRODUCTO" en catalogo-fuente.css.');
     console.error('Sin ese marcador no se puede partir la hoja. Revisa el comentario de seccion.');
     process.exit(1);
 }
 
 const AVISO = '/* Archivo generado. No editar a mano.\n' +
-    '   Fuente: catalogo.css   Generar: node tools/extraer-modal-css.js */\n\n';
+    '   Fuente: catalogo-fuente.css   Generar: node tools/extraer-modal-css.js */\n\n';
 
 /* El archivo original esta indentado porque cada bloque va dentro
    de una convencion de sangria; al partirlo se quita esa sangria
@@ -98,12 +98,12 @@ fs.writeFileSync(
 );
 
 fs.writeFileSync(
-    path.join(CSS, 'catalogo-catalogo.css'),
+    path.join(CSS, 'catalogo-grilla.css'),
     AVISO + sinSangria(catalogo) + '\n'
 );
 
-console.log('catalogo.css partido:');
-console.log('  catalogo-catalogo.css  ' + catalogo.length + ' lineas (lo usa catalogo.html)');
+console.log('catalogo-fuente.css partido:');
+console.log('  catalogo-grilla.css    ' + catalogo.length + ' lineas (lo usa catalogo.html)');
 console.log('  catalogo-modal.css     ' + modal.length + ' lineas (lo usan catalogo.html y carrito.html)');
 if (compartido) {
     console.log('  .add-cart copiado a las dos partes (' + compartido.split('\n').length + ' lineas)');

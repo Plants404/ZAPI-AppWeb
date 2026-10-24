@@ -231,7 +231,17 @@ function pagina(producto, otros) {
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
 
     <link rel="stylesheet" href="../public/css/tokens.css">
-    <link rel="stylesheet" href="../public/css/styles.css">
+    <link rel="stylesheet" href="../public/css/base/reset.css">
+    <link rel="stylesheet" href="../public/css/componentes/header.css">
+    <link rel="stylesheet" href="../public/css/secciones/inicio.css">
+    <link rel="stylesheet" href="../public/css/secciones/servicios.css">
+    <link rel="stylesheet" href="../public/css/secciones/nosotros.css">
+    <link rel="stylesheet" href="../public/css/secciones/testimonios.css">
+    <link rel="stylesheet" href="../public/css/secciones/contacto.css">
+    <link rel="stylesheet" href="../public/css/componentes/footer.css">
+    <link rel="stylesheet" href="../public/css/componentes/correctivo-movil.css">
+    <link rel="stylesheet" href="../public/css/componentes/base.css">
+    <link rel="stylesheet" href="../public/css/secciones/banners.css">
     <link rel="stylesheet" href="../public/css/estilos-producto.css">
 
     <script type="application/ld+json">

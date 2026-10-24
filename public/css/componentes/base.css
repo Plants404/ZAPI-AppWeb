@@ -1,0 +1,326 @@
+/* Bloque contiguo de la antigua styles.css (lineas 4021-4341).
+   Componentes base reutilizables: botones, chips, tarjetas, formularios, header y footer.
+   Reglas en el mismo orden que en styles.css: no se movio ninguna.
+   Ver PLAN-REFACTOR.md, paso 3d. */
+
+/* ==========================================================================
+   Componentes base (styles.css)
+   Reutilizables en todo el sitio. Sin !important.
+   ========================================================================== */
+
+/* Botones base */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.25rem;
+  min-height: 44px;
+  border-radius: var(--radius-pill);
+  border: none;
+  font-family: var(--sans);
+  font-size: .95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background: var(--forest);
+  color: var(--white);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--forest);
+  border: 1.5px solid var(--forest);
+}
+
+.btn-primary:hover {
+  background: var(--moss);
+}
+
+.btn-secondary:hover {
+  background: var(--cream);
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+/* Chips secundarios */
+.chip-category,
+.chip-stock {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  font-size: .75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.chip-category {
+  background: var(--forest-bg);
+  color: var(--leaf-texto);
+  border: 1px solid #e4dccb;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.chip-stock {
+  flex: none;
+  border: 1px solid transparent;
+}
+
+/* Estados de stock */
+.chip-stock.stock-ok {
+  background: var(--leaf-bg);
+  color: var(--forest);
+}
+
+.chip-stock.pocas {
+  background: rgba(255, 176, 91, .65);
+  color: #442000;
+}
+
+.chip-stock.agotado {
+  background: rgba(255, 103, 103, .65);
+  color: #270702;
+}
+
+/* Tarjeta base */
+.card {
+  background: var(--white);
+  border: 1px solid #e4dccb;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Formularios base */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: .25rem;
+}
+
+.campo-input {
+  width: 100%;
+  padding: .8rem 1rem;
+  border: 2px solid var(--borde);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+}
+
+/* Header base */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: .75rem var(--gutter);
+  background: var(--cream);
+  box-sizing: border-box;
+}
+
+/* Footer base */
+footer {
+  background: var(--forest);
+  color: var(--cream);
+  padding: 3rem var(--gutter);
+}
+
+/* ==========================================================================
+   Componentes base (styles.css)
+   Reutilizables en todo el sitio. Sin !important.
+   ========================================================================== */
+
+/* Botones base */
+.nav-bar .nav-cta,
+.nav-bar .nav-ingresar,
+.nav-bar .nav-salir,
+.nav-bar .nav-usuario-item,
+.nav-bar .nav-link,
+.nav-bar .nav-link.active,
+.nav-bar .nav-link:hover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  margin: 0;
+  min-height: 44px;
+  padding: .9rem 1.25rem;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  text-align: left;
+  cursor: pointer;
+  transition: background .25s ease, transform .2s ease, box-shadow .2s ease;
+  box-sizing: border-box;
+}
+
+.nav-bar .nav-cuenta .nav-ingresar,
+.nav-bar .nav-cuenta .nav-cta,
+.nav-bar .nav-usuario-item {
+  background: var(--forest);
+  color: var(--white);
+  border: none;
+}
+
+.nav-bar .nav-cuenta .nav-ingresar:hover,
+.nav-bar .nav-cuenta .nav-cta:hover,
+.nav-bar .nav-usuario-item:hover {
+  background: var(--moss);
+  color: var(--white);
+}
+
+.nav-bar .nav-ingresar:focus-visible,
+.nav-bar .nav-cta:focus-visible,
+.nav-bar .nav-usuario-item:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: var(--radius-pill);
+}
+
+.nav-bar .nav-cuenta .nav-ingresar::after,
+.nav-bar .nav-cuenta .nav-cta::after,
+.nav-bar .nav-usuario-item::after {
+  display: none;
+}
+
+/* Chips secundarios */
+.nav-bar .nav-usuario-item .cart-count {
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 .35rem;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--forest);
+  background: var(--sand);
+  border-radius: 999px;
+}
+
+.nav-bar .nav-cuenta .nav-ingresar .cart-count,
+.nav-bar .nav-cuenta .nav-cta .cart-count,
+.nav-bar .nav-usuario-item .cart-count {
+  margin-left: auto;
+}
+
+/* Tarjeta base */
+.nav-bar .nav-cuenta .nav-usuario-item {
+  min-height: 48px;
+  padding: .7rem .85rem;
+}
+
+.nav-bar .nav-usuario-item {
+  justify-content: flex-start;
+}
+
+.nav-bar .nav-cuenta {
+  margin: 1rem 0 0;
+}
+
+/* Tarjeta base genérica */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: clamp(1.5rem, 3.5vw, 2.1rem);
+  background: var(--white);
+  border: 1px solid #e4dccb;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(74, 124, 89, .35);
+}
+
+/* Formularios base */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: .25rem;
+}
+
+.campo-input {
+  width: 100%;
+  padding: .8rem 1rem;
+  border: 2px solid var(--borde);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+}
+
+/* Header base */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: .75rem var(--gutter);
+  background: var(--cream);
+  box-sizing: border-box;
+}
+
+/* Footer base */
+footer {
+  background: var(--forest);
+  color: var(--cream);
+  padding: 3rem var(--gutter);
+}
+

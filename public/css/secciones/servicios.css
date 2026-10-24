@@ -1,0 +1,721 @@
+/* Bloque contiguo de la antigua styles.css (lineas 1351-2066).
+   Banner de Servicios, tarjetas de carrito, botones, catalogo y tarjetas de servicio.
+   Reglas en el mismo orden que en styles.css: no se movio ninguna.
+   Ver PLAN-REFACTOR.md, paso 3d. */
+
+/* Override directo sobre el header de servicios */
+#servicios .service-header,
+.zapi-hero-banner {
+  background-color: #1E3A2B !important;
+  color: #F4F1EA !important;
+  padding: 40px 48px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 32px !important;
+  border-radius: 16px !important;
+  margin-bottom: 32px !important;
+}
+
+/* Columna Izquierda */
+.zapi-hero-content {
+  flex: 1 1 55% !important;
+  max-width: 600px !important;
+}
+
+.zapi-hero-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 20px !important;
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: #F4F1EA !important;
+  margin-bottom: 16px !important;
+  text-transform: uppercase !important;
+}
+
+.zapi-hero-title {
+  font-size: 38px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #F4F1EA !important;
+  margin: 0 0 12px 0 !important;
+  line-height: 1.1 !important;
+}
+
+.zapi-hero-description {
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  color: rgba(244, 241, 234, 0.9) !important;
+  margin: 0 !important;
+}
+
+/* Divisor Vertical */
+.zapi-hero-divider {
+  width: 1px !important;
+  height: 110px !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  flex-shrink: 0 !important;
+}
+
+/* Columna Derecha (Cómo Trabajamos) */
+.zapi-hero-trust {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  flex: 1 1 40% !important;
+}
+
+.zapi-hero-trust-heading {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  color: rgba(244, 241, 234, 0.7) !important;
+  margin-bottom: 4px !important;
+}
+
+.zapi-hero-trust-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  font-size: 14px !important;
+  color: #F4F1EA !important;
+}
+
+.zapi-hero-trust-icon {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
+}
+
+.zapi-hero-trust-icon .material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-size: 16px !important;
+  color: #F4F1EA !important;
+}
+
+.zapi-hero-trust-text strong {
+  color: var(--white) !important;
+}
+
+/* Responsivo para Móviles y Tabletas */
+@media (max-width: 850px) {
+  #servicios .service-header,
+  .zapi-hero-banner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 28px 20px !important;
+  }
+  .zapi-hero-divider {
+    display: none !important;
+  }
+}
+
+/* Carrito de compras: las tarjetas del carrito usan la misma
+   estructura visual que las tarjetas del catálogo para mantener
+   consistencia visual en todo el sitio. */
+.cart-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 20px !important;
+  background-color: var(--white) !important;
+  border: 1px solid #E2DECB !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin-bottom: 12px !important;
+}
+
+.cart-item:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md);
+}
+
+.cart-item-image {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--white);
+}
+
+.cart-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+}
+
+.cart-item-image:hover img {
+    transform: scale(1.06);
+}
+
+.cart-item-stock.agotado ~ .cart-item-image img {
+    opacity: .75;
+}
+
+.cart-item-info {
+    padding: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.cart-item-info h3 {
+    font-family: var(--serif);
+    font-size: 2rem;
+    letter-spacing: .02em;
+    color: var(--forest);
+    margin-bottom: .5rem;
+    text-transform: uppercase;
+}
+
+.cart-item-info .cart-item-category {
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    text-transform: inherit;
+    text-align: left;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.cart-item-info .cart-item-category:hover {
+    color: var(--moss);
+}
+
+.cart-item-info .cart-item-category:focus-visible {
+    outline: 2px solid var(--leaf-texto);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.cart-item-info .cart-item-desc {
+    font-size: .94rem;
+    color: var(--muted-texto);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.cart-item-info .cart-item-benefit {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .94rem;
+    color: var(--muted-texto);
+}
+
+.cart-item-info .cart-item-benefit .benefit-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: rgba(8, 255, 79, .2);
+    color: var(--leaf-texto);
+    font-size: .75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.cart-item-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem 1.4rem 1.5rem;
+    border-top: 1px solid #e4dccb;
+}
+
+.cart-item-precio-cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.cart-item-precio {
+    display: flex;
+    align-items: baseline;
+    gap: .6rem;
+}
+
+.cart-item-precio .current {
+    font-family: var(--serif);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    color: var(--forest);
+}
+
+.cart-item-precio .since {
+    font-size: .75rem;
+    color: var(--muted-texto);
+}
+
+.cart-item-cta {
+    font-size: .94rem;
+    font-weight: 600;
+    color: var(--forest);
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.cart-item-cta:hover {
+    color: var(--moss);
+}
+
+.cart-item-cta:focus-visible {
+    outline: 2px solid var(--leaf-texto);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.cart-add-cart {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .75rem 1.25rem;
+    min-height: 50px;
+    flex: 0 0 auto;
+    border-radius: 12px;
+    background: var(--forest);
+    color: var(--cream);
+    font-size: .94rem;
+    font-weight: 600;
+    text-align: center;
+    transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+    cursor: pointer;
+}
+
+.cart-add-cart:hover {
+    background: var(--moss);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.cart-add-cart.added {
+    background: var(--leaf);
+}
+
+.cart-add-cart:disabled {
+    background: var(--sand);
+    color: var(--muted-texto);
+    cursor: not-allowed;
+}
+
+.cart-add-cart:disabled:hover {
+    background: var(--sand);
+    transform: none;
+    box-shadow: none;
+}
+
+
+.hero button,
+.contacto-acciones button {
+  display: inline-block;
+  padding: .95rem 1.9rem;
+  margin: .35rem .5rem .35rem 0;
+  border-radius: 999px;
+  font-size: .95rem;
+  font-weight: 500;
+  letter-spacing: .02em;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.hero button:first-of-type,
+.contacto-acciones button:first-of-type {
+  background: var(--forest);
+  color: var(--cream);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero button:first-of-type:hover,
+.contacto-acciones button:first-of-type:hover {
+  background: var(--moss);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hero button:last-of-type,
+.contacto-acciones button:last-of-type {
+  background: transparent;
+  color: var(--forest);
+  border: 1.5px solid var(--forest);
+}
+
+.hero button:last-of-type:hover,
+.contacto-acciones button:last-of-type:hover {
+  background: var(--forest);
+  color: var(--cream);
+}
+
+.hero button:focus-visible,
+.contacto-acciones button:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.catalog {
+  background: var(--sand);
+}
+
+.catalog>h2,
+.catalog>p {
+  text-align: center;
+  max-width: 720px;
+}
+
+.catalog>p {
+  margin-bottom: 3rem;
+  color: var(--ink);
+}
+
+.service {
+  text-align: left;
+}
+
+/* Cabecera editorial: misma composicion que el "Catalogo vivo".
+   En mobile se apila; en pantallas grandes el lema respira a la
+   izquierda y la tarjeta de confianza lo acompana a la derecha,
+   alineada abajo. Todo apoyado sobre una tarjeta suave. */
+.service-header {
+  display: grid;
+  gap: 2rem;
+  background: var(--sand);
+  border-radius: 24px;
+  padding: clamp(1.75rem, 4vw, 3rem);
+  margin-bottom: 3rem;
+  text-align: left;
+}
+
+.service-intro {
+  min-width: 0;
+}
+
+/* Sello de garantia: pastilla con icono, no una etiqueta suelta. */
+.service-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .22em;
+  color: var(--leaf-texto);
+  background: rgba(74, 124, 89, .10);
+  border: 1px solid rgba(74, 124, 89, .35);
+  padding: .4rem .95rem;
+  border-radius: 999px;
+  margin-bottom: 1.35rem;
+}
+
+.service-eyebrow .material-symbols-outlined {
+  font-size: 1.05rem;
+}
+
+.service-title {
+  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  line-height: 1.1;
+  letter-spacing: .01em;
+  color: var(--forest);
+  margin: 0 0 .35rem;
+}
+
+.service-title-acento {
+  color: var(--leaf);
+}
+
+.service-lead {
+  font-size: clamp(1.02rem, 1.6vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--moss);
+  max-width: 54ch;
+  margin: 0;
+}
+
+/* Tarjeta flotante blanca: garantia y proceso. */
+.service-trust {
+  align-self: end;
+  min-width: 0;
+  background: var(--white);
+  border-radius: 20px;
+  border-top: 3px solid var(--leaf);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem 1.6rem;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.service-trust:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.service-trust-title {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  color: var(--moss);
+  margin: 0 0 1rem;
+}
+
+.service-trust ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: .85rem;
+}
+
+.service-trust li {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  font-size: .92rem;
+  line-height: 1.45;
+  color: var(--ink);
+  margin: 0;
+}
+
+.service-trust li strong {
+  color: var(--forest);
+}
+
+.service-trust .material-symbols-outlined {
+  font-size: 1.25rem;
+  color: var(--leaf);
+  flex-shrink: 0;
+  margin-top: .1rem;
+  transition: transform .25s ease, color .25s ease;
+}
+
+.service-trust li:hover .material-symbols-outlined {
+  transform: scale(1.1);
+  color: var(--moss);
+}
+
+/* Entrada escalonada, igual que el Catalogo: sello, luego titulo y
+   bajada, luego la tarjeta desde la derecha y por ultimo la grilla. */
+.service-eyebrow,
+.service-title,
+.service-lead,
+.service-trust,
+.service-items {
+  animation-duration: .6s;
+  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+  animation-fill-mode: backwards;
+}
+
+.service-eyebrow {
+  animation-name: fadeInUp;
+  animation-delay: 0s;
+}
+
+.service-title {
+  animation-name: fadeInUp;
+  animation-delay: .15s;
+}
+
+.service-lead {
+  animation-name: fadeInUp;
+  animation-delay: .15s;
+}
+
+.service-trust {
+  animation-name: fadeInRight;
+  animation-delay: .3s;
+}
+
+.service-items {
+  animation-name: fadeInUp;
+  animation-delay: .45s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 880px) {
+  .service-header {
+    grid-template-columns: minmax(0, 1.7fr) minmax(280px, .9fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: end;
+  }
+}
+
+.service-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+        .service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  padding: clamp(1.5rem, 3.5vw, 2.1rem);
+  background: var(--white);
+  border: 1px solid #e4dccb;
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(74, 124, 89, .35);
+}
+
+.service-card-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(143, 174, 145, .18);
+  color: var(--forest);
+  margin-bottom: 1.25rem;
+}
+
+.service-card-icono .material-symbols-outlined {
+  font-size: 26px;
+}
+
+.service-card-titulo {
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--forest);
+  margin: 0 0 .5rem;
+}
+
+.service-card-texto {
+  margin: 0 0 1.25rem;
+  font-size: .96rem;
+  line-height: 1.6;
+  color: var(--muted-texto);
+}
+
+/* Enlace secundario "Consultar": se pega al pie de la tarjeta. */
+.service-card-cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--sans);
+  font-size: .92rem;
+  font-weight: 600;
+  color: var(--leaf-texto);
+  cursor: pointer;
+  transition: color .2s ease, gap .2s ease;
+}
+
+.service-card-cta:hover {
+  color: var(--forest);
+  gap: .55rem;
+}
+
+.service-card-cta .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* Octava tarjeta: CTA destacada para completar la grilla 4x2. */
+.service-card--cta {
+  background: var(--forest);
+  border-color: var(--forest);
+}
+
+.service-card--cta .service-card-icono {
+  background: rgba(255, 255, 255, .15);
+  color: var(--white);
+}
+
+.service-card--cta .service-card-titulo {
+  color: var(--white);
+}
+
+.service-card--cta .service-card-texto {
+  color: #b6bcb3;
+}
+
+.service-card--cta .service-card-cta {
+  padding: .6rem 1.15rem;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--forest);
+}
+
+.service-card--cta .service-card-cta:hover {
+  background: var(--white);
+  color: var(--forest);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-eyebrow,
+  .service-title,
+  .service-lead,
+  .service-trust,
+  .service-items {
+    animation: none;
+  }
+
+  .service-card,
+  .service-trust,
+  .service-trust .material-symbols-outlined {
+    transition: none;
+  }
+
+  .service-card:hover,
+  .service-trust:hover {
+    transform: none;
+  }
+}
+

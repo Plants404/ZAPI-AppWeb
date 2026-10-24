@@ -1,0 +1,324 @@
+/* Bloque contiguo de la antigua styles.css (lineas 1032-1350).
+   Hero de Inicio y carrusel de destacados.
+   Reglas en el mismo orden que en styles.css: no se movio ninguna.
+   Ver PLAN-REFACTOR.md, paso 3d. */
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+
+.hero img {
+  grid-row: 2;
+  grid-column: 1;
+}
+
+.hero h1 {
+  font-size: clamp(2.6rem, 5.4vw, 4.4rem);
+  color: var(--forest);
+}
+
+.hero h3 {
+  font-family: var(--sans);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+  max-width: 55ch;
+}
+
+.hero h2 {
+  font-family: var(--sans);
+  font-size: .95rem;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 55ch;
+  margin-bottom: 2rem;
+}
+
+/* Jerarquia del bloque de texto del hero: todos los bloques comparten
+   el mismo eje izquierdo, sin sangrias ni margenes desiguales. */
+.hero-lead,
+.hero-description,
+.hero-features {
+  text-align: left;
+  margin-left: 0;
+  max-width: 55ch;
+}
+
+.hero-lead {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: 1rem;
+}
+
+.hero-lead strong {
+  color: var(--forest);
+}
+
+.hero-features {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 1.5rem;
+}
+
+.hero-features li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: .5rem;
+  font-size: .95rem;
+  line-height: 1.5;
+  color: var(--muted-texto);
+}
+
+.hero-features li strong {
+  color: var(--forest);
+}
+
+.hero-features li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--leaf-texto);
+  font-weight: 700;
+}
+
+.hero-description {
+  font-size: .95rem;
+  line-height: 1.7;
+  color: var(--muted-texto);
+  margin-bottom: 2rem;
+}
+
+/* Estructura de Inicio: la seccion apila en columna y el bloque hero
+   separa copia e imagen en su propia grilla (una columna en movil,
+   dos en pantallas medianas y grandes). Todo bajo #inicio para no
+   tocar otras vistas; ademas neutraliza el viejo pin grid-row de
+   .hero img, que solapaba texto e imagen al crecer los hijos. */
+#inicio {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#inicio .hero-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: center;
+  width: 100%;
+}
+
+#inicio .hero-grid img {
+  grid-row: auto;
+  grid-column: auto;
+  width: 100%;
+  /* La foto es 3:2; con aspect-ratio 4/5 y object-fit fill se
+     estiraba y salía deformada. Cover recorta sin deformar. */
+  object-fit: cover;
+}
+
+#inicio .hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
+
+#inicio .hero-ctas button {
+  margin: 0;
+}
+
+@media (min-width: 900px) {
+  #inicio .hero-grid {
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4rem;
+  }
+  #inicio .hero-grid img {
+    /* El 4/5 original recortaba demasiado una foto 3:2 (y con fill
+       salía deformada). Cuadrado: mismo alto que la columna de texto,
+       columnas parejadas; cover centra el recorte. El radio de 18px
+       coincide con el de las tarjetas del catálogo. */
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 18px;
+  }
+}
+
+/* Carrusel de destacados en Inicio: todo va estrictamente bajo #inicio
+   para aislarlo del catalogo y, a la vez, blindar sus botones y titulos
+   frente a las reglas .hero button / .hero h3 (la seccion #inicio es
+   .hero). Las tarjetas usan las .product-card originales sin tocar sus
+   estilos globales: la etiqueta de categoria (.product-badge) y los
+   textos ya vienen correctos del catalogo. */
+#inicio .home-products-carousel {
+  display: block;
+  margin: 2.5rem 0 0;
+  width: 100%;
+}
+
+#inicio .carousel-header h2 {
+  margin: 0 0 1rem;
+}
+
+#inicio .carousel-viewport {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  position: relative;
+}
+
+#inicio .carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 1rem .5rem;
+}
+
+#inicio .carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+#inicio .carousel-track .product-card {
+  flex: 0 0 min(280px, 100%);
+  max-width: 280px;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 768px) {
+  #inicio .carousel-track .product-card {
+    flex-basis: calc(25% - 1.125rem);
+    max-width: none;
+  }
+}
+
+/* Restaura los valores originales del catalogo dentro del carrusel,
+   que .hero button / .hero h3 pisan (nombres y CTA quedaban como
+   pastillas outline). Solo rige aqui; el catalogo no se toca. */
+#inicio .home-products-carousel .product-name {
+  font-family: var(--serif);
+  font-size: 1.125rem;
+  letter-spacing: .02em;
+  color: #1E3A2B;
+  margin: 0 0 .25rem;
+  text-transform: none;
+  font-weight: 700;
+}
+
+#inicio .home-products-carousel .product-link {
+  display: inline-block;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  text-transform: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+#inicio .home-products-carousel .product-link:hover {
+  color: var(--moss);
+  background: none;
+  transform: none;
+  box-shadow: none;
+}
+
+#inicio .home-products-carousel .add-cart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: 10px 16px;
+  margin: 0;
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: #1E3A2B;
+  color: var(--white);
+  font-size: .9rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  box-shadow: none;
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+#inicio .home-products-carousel .add-cart:hover {
+  background: #2D5A3F;
+  color: var(--white);
+  transform: none;
+  box-shadow: none;
+}
+
+#inicio .home-products-carousel .add-cart.added,
+#inicio .home-products-carousel .add-cart.added:hover {
+  background: var(--leaf);
+  color: var(--cream);
+  transform: none;
+  box-shadow: none;
+}
+
+#inicio .carousel-nav-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--white);
+  font-size: 1.5rem;
+  line-height: 1;
+  box-shadow: none;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color .2s ease;
+}
+
+#inicio .carousel-nav-btn:hover {
+  background: var(--moss);
+  color: var(--white);
+  transform: none;
+  box-shadow: none;
+}
+
+#inicio .carousel-nav-btn:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+#inicio .carousel-nav-btn:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #inicio .carousel-track {
+    scroll-behavior: auto;
+  }
+}
+
+

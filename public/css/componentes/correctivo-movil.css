@@ -1,0 +1,112 @@
+/* Bloque contiguo de la antigua styles.css (lineas 3913-4020).
+   Correctivos moviles de Servicios y Nosotros.
+   Reglas en el mismo orden que en styles.css: no se movio ninguna.
+   Ver PLAN-REFACTOR.md, paso 3d. */
+
+/* ==========================================================================
+   Correctivo movil (<768px) - Servicios
+   La cabecera editorial se apila en flujo vertical: el bloque de intro y la
+   tarjeta informativa de la derecha quedan uno debajo del otro, a ancho
+   completo y sin posicionamientos que se encimen. Se agrega aire al pie
+   (safe area) para que los accesos flotantes no tapen el cierre de la vista.
+   ========================================================================== */
+@media (max-width: 767px) {
+
+  .service-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: static !important;
+  }
+
+  .service-intro,
+  .service-trust {
+    width: 100%;
+    min-width: 0;
+    position: static !important;
+  }
+
+  .service-trust {
+    align-self: stretch;
+  }
+
+  .catalog,
+  .services-view,
+  .nosotros {
+    padding-bottom: 100px;
+  }
+}
+
+/* ==========================================================================
+   Correctivo movil (<768px) - Nosotros (grillas internas restantes)
+   Pilares, razones, equipo y ubicacion pasan a una sola columna. La cabecera,
+   el duelo y los contenedores generales los cubre el "FIX DEFINITIVO" de
+   mas abajo.
+   ========================================================================== */
+@media (max-width: 767px) {
+
+  .nosotros-pilares,
+  .nosotros-razones,
+  .nosotros-personas,
+  .nosotros-ubicacion {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.5rem;
+    position: static !important;
+  }
+
+  .nosotros-pilar,
+  .nosotros-razon,
+  .nosotros-persona,
+  .nosotros-ubicacion-info,
+  .nosotros-mapa {
+    position: static !important;
+    width: 100% !important;
+    transform: none !important;
+    box-sizing: border-box;
+  }
+}
+
+/* --- FIX DEFINITIVO PARA SECCION NOSOTROS EN MOVIL --- */
+@media (max-width: 767px) {
+
+  /* Contenedores generales (sin #nosotros: el section conserva su
+     display natural para que .hidden pueda ocultarlo al navegar) */
+  .nosotros-inner,
+  .nosotros-hero,
+  .nosotros-hero-grid,
+  .nosotros-duelo,
+  .nosotros-pilares-bloque,
+  .nosotros-equipo {
+    display: flex !important;
+    flex-direction: column !important;
+    position: static !important;
+    height: auto !important;
+  }
+
+  /* Tarjetas internas: fluyen una debajo de la otra sin superponerse */
+  .nosotros-hero-grid > *,
+  .nosotros-duelo > * {
+    position: static !important;
+    width: 100% !important;
+    margin-bottom: 1.5rem !important;
+    box-sizing: border-box;
+  }
+
+  /* Los pseudoelementos decorativos no desbordan ni encimen el texto */
+  .nosotros-hero::before,
+  .nosotros-hero::after,
+  .nosotros-inner::before,
+  .nosotros-inner::after {
+    position: absolute !important;
+    z-index: 0 !important;
+  }
+
+  /* El contenido textual queda por encima de cualquier fondo */
+  .nosotros-hero-grid,
+  .nosotros-duelo {
+    z-index: 1 !important;
+    position: relative !important;
+  }
+}
+

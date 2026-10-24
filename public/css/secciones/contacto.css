@@ -1,0 +1,464 @@
+/* Bloque contiguo de la antigua styles.css (lineas 2773-3231).
+   Seccion Contacto y formulario.
+   Reglas en el mismo orden que en styles.css: no se movio ninguna.
+   Ver PLAN-REFACTOR.md, paso 3d. */
+
+.contacto {
+  display: grid;
+  gap: 2.5rem;
+  max-width: 1040px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.contacto-eyebrow {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .25em;
+  color: var(--leaf-texto);
+  background: rgba(74, 124, 89, .10);
+  border: 1px solid rgba(74, 124, 89, .35);
+  padding: .4rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1.25rem;
+}
+
+.contacto-info h2 {
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+.contacto-info>p {
+  font-size: 1.02rem;
+  max-width: 45ch;
+}
+
+.contacto-nota {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 2rem 0 0;
+  padding: .85rem 1rem;
+  background: rgba(74, 124, 89, .08);
+  border: 1px solid rgba(74, 124, 89, .15);
+  border-radius: 12px;
+  font-size: .85rem;
+  color: var(--muted-texto);
+}
+
+.contacto-nota .material-symbols-outlined {
+  font-size: 1.2rem;
+  color: var(--leaf);
+  flex-shrink: 0;
+}
+
+.contacto-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: 1.75rem;
+}
+
+/* En fila, con aire entre botones: que no parezcan botones de prueba. */
+.contacto-acciones button {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+}
+
+.contacto-acciones button .material-symbols-outlined {
+  font-size: 1.15rem;
+}
+
+.contacto-panel {
+  padding: 2.5rem;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
+  border: 1px solid rgba(31, 58, 46, .06);
+}
+
+.contacto-panel-titulo {
+  margin-bottom: .35rem;
+}
+
+.contacto-panel-sub {
+  margin: 0 0 1.5rem;
+  font-family: var(--sans);
+  font-size: .95rem;
+  color: var(--muted-texto);
+}
+
+.formulario {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.campo-label {
+  font-family: var(--sans);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--forest);
+  letter-spacing: .01em;
+}
+
+.campo-label span {
+  color: var(--leaf);
+}
+
+.campo-label .campo-opcional {
+  font-weight: 400;
+  color: var(--muted-texto);
+}
+
+.campo-control {
+  position: relative;
+  display: flex;
+}
+
+.campo-control .campo-input {
+  padding-left: 2.75rem;
+}
+
+.campo-icono {
+  position: absolute;
+  left: .95rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.15rem;
+  color: var(--moss);
+  pointer-events: none;
+  transition: color .18s ease;
+}
+
+.campo-control:focus-within .campo-icono,
+.campo-control:hover .campo-icono {
+  color: var(--leaf);
+}
+
+.campo-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: .7rem .9rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--white);
+  border: 2px solid var(--borde-input);
+  border-radius: 10px;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.campo-input::placeholder {
+  color: var(--muted);
+}
+
+.campo-input:hover:not(:focus) {
+  border-color: var(--leaf);
+}
+
+.campo-input:focus {
+  border-color: var(--leaf);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, .22);
+  outline: none;
+}
+
+.campo-input:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+.campo-input.campo-con-error {
+  border-color: var(--error);
+  box-shadow: 0 0 0 3px rgba(163, 52, 31, .14);
+}
+
+.campo-area {
+  resize: vertical;
+  min-height: 140px;
+  line-height: 1.6;
+}
+
+.campo-error {
+  display: block;
+  min-height: 0;
+  font-family: var(--sans);
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--error);
+}
+
+.campo-ayuda {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.campo-contador {
+  font-family: var(--sans);
+  font-size: .78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.contador-cerca {
+  color: var(--error);
+  font-weight: 600;
+}
+
+.formulario[hidden],
+.formulario-ok[hidden] {
+  display: none;
+}
+
+.formulario-pie {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin-top: .25rem;
+}
+
+.formulario-enviar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 50px;
+  padding: .85rem 1.9rem;
+  border-radius: 999px;
+  background: var(--forest);
+  color: var(--cream);
+  font-size: .95rem;
+  font-weight: 500;
+  letter-spacing: .02em;
+  box-shadow: var(--shadow-sm);
+  transition: background .2s ease, transform .15s ease, box-shadow .2s ease;
+}
+
+.formulario-enviar:hover {
+  background: var(--moss);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.formulario-enviar:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.formulario-enviar:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.formulario-enviar:disabled {
+  background: var(--sage);
+  cursor: progress;
+  transform: none;
+  box-shadow: none;
+}
+
+.formulario-enviar .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+.formulario-obligatorio {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: .8rem;
+  color: var(--muted-texto);
+}
+
+.formulario-estado {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: .88rem;
+  font-weight: 500;
+}
+
+.formulario-estado:empty {
+  display: none;
+}
+
+.formulario-estado.estado-error {
+  color: var(--error);
+}
+
+.formulario-estado.estado-ok {
+  color: var(--leaf-texto);
+}
+
+@keyframes formularioAparicion {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.formulario-ok {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: .5rem;
+  padding: 1.5rem .5rem;
+  animation: formularioAparicion .45s ease both;
+}
+
+.formulario-ok-icono {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: rgba(74, 124, 89, .12);
+  font-size: 2.4rem;
+  color: var(--leaf);
+}
+
+.formulario-ok-titulo {
+  margin: .5rem 0 0;
+}
+
+.formulario-ok-titulo:focus {
+  outline: none;
+}
+
+.formulario-ok p {
+  max-width: 34ch;
+  margin: 0 0 1rem;
+  font-size: .95rem;
+}
+
+.formulario-ok-boton {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .7rem 1.4rem;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--forest);
+  border: 1.5px solid var(--forest);
+  font-size: .9rem;
+  font-weight: 500;
+}
+
+.formulario-ok-boton:hover {
+  background: var(--forest);
+  color: var(--cream);
+}
+
+.formulario-ok-boton:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.formulario-trampa {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.aviso-flotante {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 9000;
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  width: min(360px, calc(100vw - 2.5rem));
+  padding: 1rem 1rem 1rem 1.15rem;
+  background: var(--white);
+  color: var(--ink);
+  border: 1px solid rgba(163, 52, 31, .22);
+  border-left: 4px solid var(--error);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  animation: aviso-entra .25s ease-out;
+}
+
+.aviso-flotante[hidden] {
+  display: none;
+}
+
+.aviso-flotante-icono {
+  flex: none;
+  font-size: 1.4rem;
+  color: var(--error);
+}
+
+.aviso-flotante-texto {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  font-family: var(--sans);
+  font-size: .9rem;
+  line-height: 1.35;
+}
+
+.aviso-flotante-texto strong {
+  font-size: .95rem;
+  color: var(--forest);
+}
+
+.aviso-flotante-cerrar {
+  flex: none;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .15rem;
+  border: none;
+  background: transparent;
+  color: var(--muted-texto);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.aviso-flotante-cerrar:hover {
+  background: var(--sand);
+  color: var(--forest);
+}
+
+.aviso-flotante-cerrar:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+.aviso-flotante-cerrar .material-symbols-outlined {
+  font-size: 1.2rem;
+}
+
+@keyframes aviso-entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

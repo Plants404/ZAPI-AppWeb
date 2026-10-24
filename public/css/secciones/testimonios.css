@@ -1,0 +1,218 @@
+/* Bloque contiguo de la antigua styles.css (lineas 2560-2772).
+   Grilla de testimonios.
+   Reglas en el mismo orden que en styles.css: no se movio ninguna.
+   Ver PLAN-REFACTOR.md, paso 3d. */
+
+.testimonios-cabecera {
+  max-width: 720px;
+  margin: 0 auto 3rem;
+}
+
+.testimonios-grilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.testimonios-vacio {
+  font-family: var(--sans);
+  color: var(--muted-texto);
+  margin: 0;
+}
+
+.testimonios-accion {
+  display: flex;
+  justify-content: center;
+  margin: 2.5rem auto 0;
+}
+
+.btn-testimonio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 46px;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--forest);
+  background: transparent;
+  color: var(--forest);
+  font: inherit;
+  font-size: .95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-testimonio:hover {
+  background: var(--sand);
+}
+
+.btn-testimonio:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+.btn-testimonio-bloque {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .testimonios-grilla {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .testimonios-grilla {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.opinion-slide {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem 1.15rem;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  min-height: 260px;
+}
+
+@container (min-width: 320px) {
+  .opinion-slide {
+    gap: 1.25rem;
+    padding: 2rem 1.75rem;
+  }
+}
+
+.estrellas {
+  display: inline-flex;
+  gap: .15rem;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--leaf-texto);
+}
+
+.estrella-vacia {
+  color: var(--sage);
+}
+
+.estrella-media {
+  background: linear-gradient(90deg, var(--leaf-texto) 50%, var(--sage) 50%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.opinion-texto {
+  margin: 0;
+}
+
+.opinion-texto p {
+  font-family: var(--serif);
+  font-size: clamp(1rem, 6.5cqw, 1.55rem);
+  line-height: 1.5;
+  color: var(--forest);
+  margin: 0;
+}
+
+.opinion-texto p::before {
+  content: "\201C";
+}
+
+.opinion-texto p::after {
+  content: "\201D";
+}
+
+.opinion-firma {
+  display: flex;
+  align-items: center;
+  gap: .85rem;
+  text-align: left;
+}
+
+.opinion-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--cream);
+  font-family: var(--sans);
+  font-size: .95rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.opinion-autor {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.4;
+}
+
+.opinion-nombre {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 600;
+  color: var(--forest);
+}
+
+.opinion-meta {
+  font-family: var(--sans);
+  font-size: .85rem;
+  color: var(--muted-texto);
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.opinion-fecha::before {
+  content: "\00B7";
+  margin-right: .5rem;
+}
+
+.opinion-producto {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  margin-top: .25rem;
+  padding: .35rem .75rem;
+  font-family: var(--sans);
+  font-size: .8rem;
+  font-weight: 500;
+  color: var(--forest);
+  background: var(--cream);
+  border: 1px solid var(--sage);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+
+.opinion-producto:hover {
+  background: var(--sand);
+  border-color: var(--moss);
+}
+
+.opinion-producto:focus-visible {
+  outline: 3px solid var(--moss);
+  outline-offset: 2px;
+}
+
+.opinion-producto .material-symbols-outlined {
+  font-size: 1rem;
+}
+
+.call-to-actions-view {
+  padding-bottom: 100px;
+}
+

@@ -1,0 +1,882 @@
+/* Bloque contiguo de la antigua styles.css (lineas 155-1031).
+   Header, navegacion, drawer movil y boton flotante del carrito.
+   Reglas en el mismo orden que en styles.css: no se movio ninguna.
+   Ver PLAN-REFACTOR.md, paso 3d. */
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+  padding: 12px 24px;
+  background: rgba(247, 245, 237, .92);
+  border-bottom: 1px solid var(--borde);
+  backdrop-filter: blur(10px);
+}
+
+header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(247, 245, 237, .92);
+  border-bottom: 1px solid var(--borde);
+}
+
+header h4 {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--forest);
+  margin: 0;
+  letter-spacing: .04em;
+}
+
+header img {
+  height: 42px;
+  width: auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-right: auto;
+  order: 2;
+}
+
+
+.nav-toggle {
+  order: 1;
+  position: relative;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  background: none;
+  border: 1px solid rgba(31, 58, 46, .12);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.nav-toggle-barra {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--forest);
+  transition: transform .3s ease, opacity .2s ease;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-barra:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-barra:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(.3);
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-barra:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+/* Acceso directo al carrito para la barra movil: hamburguesa a la
+   izquierda, logo al centro-izquierda y carrito a la derecha con su
+   contador siempre visible. En escritorio el badge vive en la cuenta. */
+.header-cart {
+  order: 3;
+  position: relative;
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  color: var(--forest);
+  text-decoration: none;
+  border: 1px solid rgba(31, 58, 46, .12);
+  border-radius: 10px;
+}
+
+/* En movil y tablet el carrito vive en el drawer (pill + fila de la
+   cuenta): se oculta el icono de la barra para afinar la cabecera. */
+@media (max-width: 1023px) {
+  .header-cart {
+    display: none;
+  }
+}
+
+.header-cart:hover,
+.header-cart:focus-visible {
+  background: var(--sand);
+}
+
+.header-cart:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.header-cart .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.header-cart .cart-count {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 .3rem;
+  font-size: .68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  background: var(--sand);
+  color: var(--forest);
+  border: 2px solid var(--cream);
+}
+
+.header-cart .cart-count.con-productos {
+  background: #c14a3c;
+  color: var(--white);
+}
+
+/* El contador del boton de cuenta solo existe si hay productos. Vive
+   aqui (carga en todas las paginas) y no en el CSS del catalogo: sin
+   esta regla, las paginas sin ese CSS mostraban el "0" junto al saludo
+   cuando el carrito estaba vacio. */
+.cart-count.cart-count-header {
+  display: none;
+}
+
+/* Insignia circular roja con texto blanco junto al saludo. Mismos
+   valores que el CSS del catalogo (que carga despues y gana los
+   empates alla): el diseno queda identico en todas las paginas. */
+.cart-count.cart-count-header.con-productos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -.15rem;
+  right: -.8rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 .3rem;
+  font-size: .68rem;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 2px solid var(--white);
+  background: #c14a3c;
+  color: var(--white);
+}
+
+header.menu-abierto {
+  z-index: 220;
+}
+
+header.menu-abierto::before {
+  opacity: 0;
+}
+
+
+.header-search {
+  order: 4;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.header-search-input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  padding: 0 2.75rem 0 2.5rem;
+  font-family: inherit;
+  font-size: .95rem;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--borde);
+  border-radius: 999px;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.header-search-input::-webkit-search-decoration,
+.header-search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.header-search-icono {
+  position: absolute;
+  left: .85rem;
+  font-size: 1.25rem;
+  color: var(--moss);
+  pointer-events: none;
+}
+
+.header-search-limpiar {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  font-size: 1.15rem;
+  color: var(--muted-texto);
+  background: none;
+  border-radius: 50%;
+}
+
+.header-search-limpiar:hover {
+  color: var(--forest);
+  background: var(--sand);
+}
+
+.header-search-limpiar:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 1px;
+}
+
+.header-search-input:focus {
+  animation: none;
+  border-color: var(--leaf);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, .22);
+  outline: none;
+}
+
+.header-search-input:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+
+
+.nav-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 210;
+  width: min(320px, 85vw);
+  height: 100vh;
+  height: 100dvh;
+
+  padding: 2rem 1.5rem 2rem;
+  overflow-y: auto;
+  background: var(--cream);
+  box-shadow: var(--shadow-lg);
+  visibility: hidden;
+  transform: translateX(100%);
+  transition: transform .3s ease, visibility .3s ease;
+}
+
+.nav-bar.esta-abierto {
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(31, 58, 46, .45);
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.nav-backdrop.esta-activo {
+  opacity: 1;
+}
+
+.nav-bar ul {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  align-items: stretch;
+}
+
+.nav-bar li a,
+.nav-bar li .nav-link {
+  position: relative;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: .8rem 0;
+  text-align: left;
+  text-transform: capitalize;
+  text-decoration: none;
+  display: inline-block;
+  line-height: 1.5;
+}
+
+.nav-bar li a::after,
+.nav-bar li .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: var(--leaf);
+  transition: width .3s ease;
+}
+
+.nav-bar li a:hover,
+.nav-bar li .nav-link:hover,
+.nav-bar li .nav-link.active {
+  color: var(--forest);
+  font-weight: 600;
+}
+
+.nav-bar li a:hover::after,
+.nav-bar li .nav-link:hover::after,
+.nav-bar li .nav-link.active::after {
+  width: 100%;
+}
+
+/* CTA "Ver carrito" del drawer movil. Vive agrupado dentro del bloque de
+   cuenta, nunca suelto al pie del menu. */
+.nav-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6rem;
+  margin-top: .6rem;
+  min-height: 48px;
+  padding: .9rem 1.25rem;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--forest);
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background .25s ease;
+}
+
+.nav-cta:hover {
+  background: var(--moss);
+}
+
+.nav-cta:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.nav-cta .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.nav-cta .cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 .35rem;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--forest);
+  background: var(--sand);
+  border-radius: 999px;
+}
+
+.nav-bar li .nav-link:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.nav-cuenta {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding: .8rem 0;
+}
+.nav-usuario {
+  position: relative;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem .5rem;
+  width: 100%;
+}
+
+.nav-usuario-boton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-family: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--forest);
+  background: none;
+  border: none;
+  padding: .8rem 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.nav-usuario-boton:hover {
+  color: var(--moss);
+}
+
+.nav-usuario-boton:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.nav-usuario-nombre {
+  font-weight: 600;
+  color: var(--forest);
+}
+
+.nav-usuario-menu {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: .25rem 0 0;
+}
+
+.nav-usuario-menu[hidden] {
+  display: none;
+}
+
+.nav-bar .nav-usuario-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--ink);
+  background: none;
+  border: none;
+  padding: .6rem;
+  border-radius: 8px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-bar .nav-usuario-item:hover {
+  background: var(--sand);
+  color: var(--forest);
+}
+
+.nav-bar .nav-usuario-item:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Drawer de navegacion en mobile y tablet (<1024px). El bloque de
+   usuario/administrador ("Hola Administrador", Carrito, Mis pedidos y
+   Salir) va arriba, como contenedor destacado; la navegacion general
+   queda debajo. Todo con areas tactiles de al menos 44x44 px.
+   ========================================================================== */
+@media (max-width: 1023px) {
+
+  /* Drawer al ras del borde superior: sin franja blanca arriba.
+     El top:0 y la altura completa ya vienen del bloque base; aqui se
+     fija el padding-top compacto para que la tarjeta superior arranque
+     justo debajo del boton de cierre. */
+  .nav-bar {
+    top: 0;
+    height: 100vh;
+    height: 100dvh;
+    padding-top: 2rem;
+  }
+
+  .nav-bar ul {
+    gap: 0;
+  }
+
+  /* En movil y tablet el carrito vive dentro del drawer (fila Carrito +
+     contador); el boton flotante inferior no aporta nada y solo suma un
+     elemento sobrepuesto, asi que se oculta en estos anchos. */
+  .cart-link-float,
+  .floating-cart-btn,
+  #cartLinkFloat,
+  #floating-cart,
+  #cartCountFloat {
+    display: none !important;
+  }
+
+  /* El bloque de cuenta ya viene primero en el HTML; en el drawer se
+     muestra arriba y agrupa Carrito, Mis pedidos y Salir. */
+        .nav-cuenta {
+          position: relative;
+          display: block;
+          margin: 1rem 0 0;
+          padding: .4rem .5rem;
+          background: var(--sand);
+          border: 1px solid rgba(61, 107, 79, .16);
+          border-radius: 14px;
+        }
+
+  /* Linea divisoria sutil entre el bloque de cuenta y la navegacion. */
+  .nav-cuenta::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -.8rem;
+    height: 1px;
+    background: rgba(61, 107, 79, .22);
+  }
+
+  .nav-usuario {
+    gap: 0;
+  }
+
+  /* Cabecera "Hola Administrador": encabeza el bloque sin caja propia */
+  .nav-usuario-boton {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    min-height: 44px;
+    padding: .5rem .35rem .7rem;
+    border: 0;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .2);
+    background: none;
+    color: var(--forest);
+    text-align: left;
+  }
+
+  .nav-usuario-boton:hover {
+    color: var(--moss);
+  }
+
+  .nav-usuario-nombre {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+  }
+
+  /* El contador vive en la fila de Carrito, no en la cabecera */
+  .nav-bar .nav-usuario-boton .cart-count.cart-count-header {
+    display: none;
+  }
+
+  .nav-usuario-menu {
+    gap: 0;
+    padding: 0;
+  }
+
+  /* Carrito / Mis pedidos / Salir: filas tactiles con icono, separadas
+     por lineas sutiles dentro del bloque unificado. */
+  .nav-bar .nav-usuario-item {
+    justify-content: flex-start;
+    min-height: 48px;
+    padding: .75rem .35rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .14);
+    background: none;
+  }
+
+  .nav-bar .nav-usuario-item:last-child {
+    border-bottom: 0;
+  }
+
+  .nav-bar .nav-usuario-item:hover {
+    background: rgba(74, 124, 89, .12);
+  }
+
+  .nav-bar .nav-usuario-item::before {
+    content: "";
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.3rem;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    color: var(--leaf);
+    flex: 0 0 auto;
+  }
+
+  .nav-bar .nav-link-carrito::before {
+    content: "shopping_bag";
+  }
+
+  .nav-bar .nav-usuario-item[href*="pedidos"]::before {
+    content: "receipt_long";
+  }
+
+  .nav-bar #navSalir::before {
+    content: "logout";
+  }
+
+  .nav-bar .nav-usuario-item .cart-count {
+    margin-left: auto;
+  }
+
+  /* Ingresar (sin sesion): boton tactil principal del bloque */
+  .nav-bar .nav-ingresar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: .7rem .85rem;
+    border-radius: 10px;
+    background: var(--forest);
+    color: var(--white);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .nav-bar .nav-ingresar:hover {
+    background: var(--moss);
+    color: var(--white);
+  }
+
+  .nav-bar .nav-ingresar::after {
+    display: none;
+  }
+
+  /* Salir en carrito/pedidos (fuera del menu de cuenta) */
+  .nav-bar .nav-salir {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: .7rem .85rem;
+    border-radius: 10px;
+    background: var(--white);
+    text-decoration: none;
+  }
+
+  /* Bloque inferior de navegacion general: tarjeta unificada simetrica
+     al bloque superior de administrador. Cada li aporta un tramo de la
+     tarjeta (fondo + laterales) y el primero/ultimo cierran los radios;
+     las filas se separan con la misma linea sutil del bloque de cuenta.
+     Todos los enlaces superan el area tactil minima de 44x44 px. */
+  .nav-bar ul > li:not(.nav-cuenta) {
+    margin: 0;
+    padding: 0 .5rem;
+    background: var(--white);
+    border-left: 1px solid rgba(61, 107, 79, .16);
+    border-right: 1px solid rgba(61, 107, 79, .16);
+  }
+
+  .nav-bar ul > .nav-cuenta + li {
+    border-top: 1px solid rgba(61, 107, 79, .16);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    padding-top: .4rem;
+  }
+
+  .nav-bar ul > li:last-child {
+    border-bottom: 1px solid rgba(61, 107, 79, .16);
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    padding-bottom: .4rem;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 44px;
+    padding: .75rem .35rem;
+    border-radius: 0;
+    border-bottom: 1px solid rgba(61, 107, 79, .14);
+  }
+
+  .nav-bar ul > li:last-child > a,
+  .nav-bar ul > li:last-child > .nav-link {
+    border-bottom: 0;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a:hover,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link:hover {
+    background: rgba(74, 124, 89, .12);
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a.active,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link.active {
+    color: var(--forest);
+    background: rgba(74, 124, 89, .12);
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link::after {
+    left: .35rem;
+    bottom: .45rem;
+    height: 2px;
+    background: var(--leaf);
+    border-radius: 2px;
+  }
+
+  .nav-bar ul > li:not(.nav-cuenta) > a:hover::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link:hover::after,
+  .nav-bar ul > li:not(.nav-cuenta) > a.active::after,
+  .nav-bar ul > li:not(.nav-cuenta) > .nav-link.active::after {
+    width: calc(100% - .7rem);
+  }
+
+  /* CTA "Ver carrito" del drawer */
+  .nav-cta {
+    min-height: 48px;
+  }
+}
+
+/* Header completo y persistente en tablet y desktop: flex pegajoso al
+   tope, sin espacios vacios. El buscador, la navegacion y los accesos
+   de cuenta/carrito no se ocultan ni colapsan en estos anchos. */
+@media (min-width: 768px) {
+
+  header {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+}
+
+/* En tablet el header se mantiene completo aun con el drawer abierto,
+   asi que el drawer baja y libera su altura (cabecera de dos filas).
+   En movil estricto, en cambio, solo queda la X y el drawer va al ras. */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  .nav-bar {
+    padding-top: 8.5rem;
+  }
+
+  .nav-cuenta {
+    margin: 0 0 1.4rem;
+  }
+}
+
+/* Solo en movil estricto queda visible unicamente el toggle (X) con el
+   menu abierto: se ocultan logo, buscador y carrito del header para que
+   no se monten sobre la tarjeta superior del drawer compacto. */
+@media (max-width: 767px) {
+
+  header.menu-abierto .logo,
+  header.menu-abierto .header-search,
+  header.menu-abierto .header-cart {
+    display: none;
+  }
+}
+
+.nav-toggle .cart-count.cart-count-toggle {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 .3rem;
+  font-size: .68rem;
+  font-weight: 700;
+  background: var(--white);
+  color: var(--leaf);
+  border: 2px solid var(--white);
+  display: none;
+}
+
+.nav-toggle .cart-count.cart-count-toggle.con-productos {
+  display: inline-flex;
+  background: #c14a3c;
+  color: var(--white);
+}
+
+.nav-salir {
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 500;
+  color: var(--muted-texto);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.nav-salir:hover {
+  color: var(--forest);
+}
+
+.nav-salir:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+html[data-auth="si"] .nav-ingresar {
+  display: none;
+}
+
+html:not([data-auth="si"]) .nav-usuario {
+  display: none !important;
+}
+
+html[data-auth="si"] .nav-cta {
+  display: none;
+}
+
+/* En tablet y escritorio el carrito vive en la barra superior: ocultamos
+   por completo el boton flotante inferior (y su contador) para que no se
+   duplique ni estorbe el contenido. Solo queda visible en movil estricto. */
+@media (min-width: 768px) {
+
+  .cart-link-float,
+  .floating-cart-btn,
+  #cartLinkFloat,
+  #floating-cart,
+  #cartCountFloat {
+    display: none !important;
+  }
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+

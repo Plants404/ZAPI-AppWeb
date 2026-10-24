@@ -12,10 +12,17 @@ const raiz = path.join(__dirname, '..');
    imagenes viven en public/. */
 const HTML = ['index.html', 'catalogo.html', 'carrito.html', 'pedidos.html',
     'login.html', '404.html'];
-const CSS = ['styles.css', 'catalogo.css', 'catalogo-modal.css',
-    'catalogo-catalogo.css', 'stylecarrito.css', 'pedidos.css', 'zapi-bot.css',
-    'login.css',
-    '404.css'];
+const CSS = [
+    /* Recortes de la antigua styles.css, en orden de carga. */
+    'base/reset.css', 'componentes/header.css', 'secciones/inicio.css',
+    'secciones/servicios.css', 'secciones/nosotros.css', 'secciones/testimonios.css',
+    'secciones/contacto.css', 'componentes/footer.css', 'componentes/correctivo-movil.css',
+    'componentes/base.css', 'secciones/banners.css',
+    /* Fuente del catalogo y sus recortes generados. */
+    'catalogo-fuente.css', 'catalogo-grilla.css', 'catalogo-modal.css',
+    /* Hojas por pagina. */
+    'paginas/carrito.css', 'paginas/pedidos.css', 'paginas/login.css', 'paginas/404.css',
+    'zapi-bot.css'];
 const JS = ['config.js', 'auth-ui.js', 'productos.js', 'modal.js', 'catalogo.js',
     'carrito.js', 'pedidos.js', 'testimonio-form.js', 'zapi-bot.js',
     'navigation.js', 'buscador.js',
@@ -257,7 +264,7 @@ function revisarBloqueHTML(archivo, bloque) {
 
 /* --- 6. Los CSS generados existen -------------------------- */
 console.log('\nCSS generado');
-for (const archivo of ['catalogo-modal.css', 'catalogo-catalogo.css']) {
+for (const archivo of ['catalogo-grilla.css', 'catalogo-modal.css']) {
     if (fs.existsSync(path.join(raiz, 'public', 'css', archivo))) {
         ok('public/css/' + archivo + ' existe');
     } else {
