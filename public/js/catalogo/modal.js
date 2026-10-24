@@ -1,3 +1,7 @@
+'use strict';
+
+(function () {
+
 const modalProducto = document.getElementById("modalProducto");
 
 if (modalProducto) {
@@ -104,7 +108,7 @@ if (modalProducto) {
         modalCategoria.textContent = producto.categoria;
         modalTitulo.textContent = producto.nombre;
         modalDescripcion.textContent = producto.descripcion;
-        modalPrecio.textContent = formatearPrecio(
+        modalPrecio.textContent = ZAPI.formatearPrecio(
             precios[producto.id] || producto.precioBase
         );
 
@@ -116,7 +120,7 @@ if (modalProducto) {
         modalInfo.innerHTML = producto.infoDeVenta.map(item => `
             <li>
                 <span class="material-symbols-outlined">check_circle</span>
-                <span>${escaparHTML(item)}</span>
+                <span>${ZAPI.escaparHTML(item)}</span>
             </li>
         `).join("");
 
@@ -138,7 +142,7 @@ if (modalProducto) {
             carruselMiniaturas.innerHTML = galeriaActual.map((src, i) => `
                 <button class="carrusel-miniatura" type="button" data-indice="${i}"
                     aria-label="Ver foto ${i + 1} de ${galeriaActual.length}">
-                    <img src="${escaparHTML(src)}" alt="" loading="lazy">
+                    <img src="${ZAPI.escaparHTML(src)}" alt="" loading="lazy">
                 </button>
             `).join("");
 
@@ -351,3 +355,5 @@ if (modalProducto) {
     window.cerrarModalProducto = cerrarModalProducto;
 
 }
+
+})();

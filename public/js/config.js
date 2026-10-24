@@ -49,6 +49,10 @@
    explicito. No se usan credenciales ni sesiones locales en el cliente.
    ------------------------------------------------------------ */
 
+'use strict';
+
+(function () {
+
 /* URL del backend en produccion (Render/Railway). Debe configurarse
    antes de publicar las funciones que requieren autenticacion. */
 const URL_API_PRODUCCION = "";
@@ -215,3 +219,5 @@ window.leerPedidosLocales = leerPedidosLocales;
 window.guardarPedidoLocal = guardarPedidoLocal;
 window.listarPedidosLocales = listarPedidosLocales;
 window.cancelarPedidoLocal = cancelarPedidoLocal;
+
+})();

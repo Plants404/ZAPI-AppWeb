@@ -254,8 +254,7 @@
 
         const enviar = raiz.querySelector(".testimonio-btn-primario");
         const general = raiz.querySelector('[data-error="general"]');
-        const hayApi = typeof window.hayApiConfigurada === "function"
-            && window.hayApiConfigurada();
+        const hayApi = ZAPI.hayBackend();
 
         enviar.disabled = !hayApi;
         if (!hayApi) {
@@ -446,8 +445,7 @@
         }
 
         /* Sin backend no hay donde guardar la opinion en el servidor. */
-        const fnHayApi = window.hayApiConfigurada;
-        if (typeof fnHayApi === "function" && !fnHayApi()) {
+        if (!ZAPI.hayBackend()) {
             marcarError("general", "Las opiniones necesitan el backend. Probá más tarde.");
             return;
         }

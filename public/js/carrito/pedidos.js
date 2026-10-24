@@ -7,36 +7,6 @@
 
     if (!lista || !vacio) return;
 
-    const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-    }[caracter]));
-
-    function formatearPrecio(valor) {
-        return new Intl.NumberFormat('es-UY', {
-            style: 'currency',
-            currency: 'UYU',
-            maximumFractionDigits: 0,
-        }).format(Number(valor) || 0);
-    }
-
-    function formatearFecha(iso) {
-        const fecha = new Date(iso);
-
-        if (Number.isNaN(fecha.getTime())) return '';
-
-        return new Intl.DateTimeFormat('es-UY', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(fecha);
-    }
-
     /* Miniatura real desde el catalogo por producto_id, con fallback
        si el producto ya no existe. Alt vacio: es decorativa, el nombre
        va como texto al lado. */
@@ -47,7 +17,7 @@
             : null;
         const fuente = (producto && producto.imagen) || IMAGEN_FALLBACK;
 
-        return `<img class="pedido-linea-foto" src="${escaparHTML(fuente)}" alt="" loading="lazy">`;
+        return `<img class="pedido-linea-foto" src="${ZAPI.escaparHTML(fuente)}" alt="" loading="lazy">`;
     }
 
     function lineaHTML(item) {
@@ -55,15 +25,10 @@
             <li class="pedido-linea">
                 <span class="pedido-linea-cantidad">${item.cantidad}×</span>
                 ${imagenDeLinea(item)}
-                <span class="pedido-linea-nombre">${escaparHTML(item.nombre)}</span>
-                <span class="pedido-linea-precio">${formatearPrecio(item.precio * item.cantidad)}</span>
+                <span class="pedido-linea-nombre">${ZAPI.escaparHTML(item.nombre)}</span>
+                <span class="pedido-linea-precio">${ZAPI.formatearPrecio(item.precio * item.cantidad)}</span>
             </li>
         `;
-    }
-
-    function hayBackend() {
-        const fn = window.hayApiConfigurada;
-        return typeof fn !== 'function' || fn();
     }
 
     function claseEstado(estado) {
@@ -75,11 +40,11 @@
     /* Solo los pedidos locales se pueden cancelar: con backend el
        servidor no ofrece todavia esa accion. */
     function botonCancelar(pedido) {
-        if (hayBackend() || pedido.estado === 'cancelado') return '';
+        if (ZAPI.hayBackend() || pedido.estado === 'cancelado') return '';
 
         return `
                 <div class="pedido-acciones">
-                    <button type="button" class="pedido-cancelar" data-cancelar="${escaparHTML(pedido.id)}">
+                    <button type="button" class="pedido-cancelar" data-cancelar="${ZAPI.escaparHTML(pedido.id)}">
                         <span class="material-symbols-outlined" aria-hidden="true">undo</span>
                         Cancelar pedido
                     </button>
@@ -94,17 +59,17 @@
             <article class="pedido-card">
                 <div class="pedido-cabecera">
                     <div>
-                        <span class="pedido-codigo">${escaparHTML(pedido.id)}</span>
-                        <span class="pedido-fecha">${escaparHTML(formatearFecha(pedido.creado))}</span>
+                        <span class="pedido-codigo">${ZAPI.escaparHTML(pedido.id)}</span>
+                        <span class="pedido-fecha">${ZAPI.escaparHTML(ZAPI.formatearFecha(pedido.creado))}</span>
                     </div>
-                    <span class="${claseEstado(pedido.estado)}">${escaparHTML(pedido.estado)}</span>
+                    <span class="${claseEstado(pedido.estado)}">${ZAPI.escaparHTML(pedido.estado)}</span>
                 </div>
                 <ul class="pedido-lineas">${items.map(lineaHTML).join('')}</ul>
                 <footer class="pedido-pie">
                     <span>${pedido.envio_pendiente ? "Subtotal" : "Total"}</span>
                     <strong>${pedido.envio_pendiente
-        ? `${formatearPrecio(pedido.total)} · envío a coordinar`
-        : formatearPrecio(pedido.total)}</strong>
+        ? `${ZAPI.formatearPrecio(pedido.total)} · envío a coordinar`
+        : ZAPI.formatearPrecio(pedido.total)}</strong>
                 </footer>
                 ${botonCancelar(pedido)}
             </article>
@@ -163,7 +128,7 @@
     async function cargar() {
         /* Sin backend el historial es local: los pedidos que se
            guardaron en el navegador al enviarlos. */
-        if (!hayBackend()) {
+        if (!ZAPI.hayBackend()) {
             const listar = window.listarPedidosLocales;
             const locales = typeof listar === 'function' ? listar() : [];
 

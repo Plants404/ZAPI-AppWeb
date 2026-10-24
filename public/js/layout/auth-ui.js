@@ -108,13 +108,8 @@
         return false;
     }
 
-    function hayBackend() {
-        const fn = window.hayApiConfigurada;
-        return typeof fn !== 'function' || fn();
-    }
-
     async function salir() {
-        if (hayBackend()) {
+        if (ZAPI.hayBackend()) {
             try {
                 await fetch(window.urlApi('/api/auth/logout'), { method: 'POST', credentials: 'include' });
             } catch (error) {
@@ -129,7 +124,7 @@
         window.location.href = window.urlDelSitio('index.html');
     }
 
-    const sesion = hayBackend()
+    const sesion = ZAPI.hayBackend()
         ? fetch(window.urlApi('/api/auth/yo'), { credentials: 'include' })
             .then(function (res) { return res.json(); })
             .then(function (datos) {

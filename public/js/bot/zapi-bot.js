@@ -1,3 +1,7 @@
+'use strict';
+
+(function () {
+
 const ZAPI_NOMBRE = "Brotecito";
 
 const ZAPI_API = window.urlApi("/api/asistente");
@@ -19,7 +23,7 @@ const ZAPI_FAQ = [
     {
         claves: ["envio", "envíos", "enviar", "delivery", "entrega", "entregar", "reparto", "llegan", "llega", "domicilio", "transportista"],
         respuesta:
-            `El envío es gratis en compras desde <strong>${formatearPrecio(window.ENVIO_GRATIS_MINIMO)}</strong>. 📦<br><br>` +
+            `El envío es gratis en compras desde <strong>${ZAPI.formatearPrecio(window.ENVIO_GRATIS_MINIMO)}</strong>. 📦<br><br>` +
             "Para compras menores, el costo se coordina por WhatsApp. " +
             "Consultanos también la disponibilidad y el plazo para tu zona."
     },
@@ -226,7 +230,7 @@ function respuestaCarrito() {
     if (subtotal < window.ENVIO_GRATIS_MINIMO) {
         const faltaParaEnvioGratis = window.ENVIO_GRATIS_MINIMO - subtotal;
         extra =
-            `<br><br>💡 Te faltan <strong>${formatearPrecio(faltaParaEnvioGratis)}</strong> ` +
+            `<br><br>💡 Te faltan <strong>${ZAPI.formatearPrecio(faltaParaEnvioGratis)}</strong> ` +
             "para alcanzar el envío gratis. El costo para pedidos menores se coordina por WhatsApp.";
     } else {
         extra = "<br><br>🎉 ¡Tu pedido ya califica para <strong>envío gratis</strong>!";
@@ -234,7 +238,7 @@ function respuestaCarrito() {
 
     return (
         `Tenés <strong>${unidades} producto${unidades > 1 ? "s" : ""}</strong> ` +
-        `en el carrito por <strong>${formatearPrecio(subtotal)}</strong>. 🛒${extra}<br><br>` +
+        `en el carrito por <strong>${ZAPI.formatearPrecio(subtotal)}</strong>. 🛒${extra}<br><br>` +
         "Cuando quieras, <strong>envialo por WhatsApp</strong> desde la " +
         "página del carrito y te confirmamos la disponibilidad al toque."
     );
@@ -520,8 +524,7 @@ function zapiEsperar(ms) {
 }
 
 function zapiTrack(tipo, datos = {}) {
-    const fnHayApi = window.hayApiConfigurada;
-    if (typeof fnHayApi === "function" && !fnHayApi()) return;
+    if (!ZAPI.hayBackend()) return;
 
     try {
         fetch(`${ZAPI_API}/tracking`, {
@@ -546,8 +549,7 @@ function zapiSlugProducto() {
 async function zapiCargarConfig() {
     /* Sin backend el bot no tiene configuracion: queda apagado (sus
        respuestas locales de FAQ siguen andando). */
-    const fnHayApi = window.hayApiConfigurada;
-    if (typeof fnHayApi === "function" && !fnHayApi()) {
+    if (!ZAPI.hayBackend()) {
         zapiAsistenteActivo = false;
         return;
     }
@@ -575,8 +577,7 @@ async function zapiCargarConfig() {
 }
 
 async function zapiConsultar(texto) {
-    const fnHayApi = window.hayApiConfigurada;
-    if (typeof fnHayApi === "function" && !fnHayApi()) return null;
+    if (!ZAPI.hayBackend()) return null;
 
     const control = new AbortController();
     const reloj = setTimeout(() => control.abort(), ZAPI_ESPERA_MS);
@@ -682,9 +683,9 @@ function initZapiBot() {
     function pintarChips() {
 
         chips.innerHTML = ZAPI_MENU.map(item =>
-            `<button class="zapi-chip" type="button" data-clave="${escaparHTML(item.clave)}">
-                <span class="material-symbols-outlined zapi-chip-icono" aria-hidden="true">${escaparHTML(item.icono)}</span>
-                ${escaparHTML(item.etiqueta)}
+            `<button class="zapi-chip" type="button" data-clave="${ZAPI.escaparHTML(item.clave)}">
+                <span class="material-symbols-outlined zapi-chip-icono" aria-hidden="true">${ZAPI.escaparHTML(item.icono)}</span>
+                ${ZAPI.escaparHTML(item.etiqueta)}
             </button>`
         ).join("");
 
@@ -714,34 +715,34 @@ function initZapiBot() {
             tarjeta.innerHTML =
                 `<div class="zapi-reco-visual">
                     ${producto.imagen
-                        ? `<img src="${escaparHTML(producto.imagen)}" alt="" loading="lazy">`
+                        ? `<img src="${ZAPI.escaparHTML(producto.imagen)}" alt="" loading="lazy">`
                         : ""}
                     <div class="zapi-reco-beneficios-hover">
                         ${beneficios.map(item => `
                             <span>
                                 <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                                ${escaparHTML(item)}
+                                ${ZAPI.escaparHTML(item)}
                             </span>
                         `).join("")}
                     </div>
                 </div>` +
                 `<div class="zapi-reco-info">
-                    <a class="zapi-reco-nombre" href="${escaparHTML(producto.url)}">${escaparHTML(producto.nombre)}</a>
+                    <a class="zapi-reco-nombre" href="${ZAPI.escaparHTML(producto.url)}">${ZAPI.escaparHTML(producto.nombre)}</a>
                     ${(typeof formatearPrecio === "function" && producto.precio !== null && producto.precio !== undefined)
-                        ? `<span class="zapi-reco-precio">${escaparHTML(formatearPrecio(producto.precio))}</span>`
+                        ? `<span class="zapi-reco-precio">${ZAPI.escaparHTML(ZAPI.formatearPrecio(producto.precio))}</span>`
                         : ""}
                     ${beneficios.length
                         ? `<ul class="zapi-reco-beneficios-tactil">
                             ${beneficios.map(item => `
                                 <li>
                                     <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                                    <span>${escaparHTML(item)}</span>
+                                    <span>${ZAPI.escaparHTML(item)}</span>
                                 </li>
                             `).join("")}
                         </ul>`
                         : ""}
                 </div>
-                <button type="button" class="zapi-reco-agregar" data-id="${escaparHTML(producto.id)}">Agregar</button>`;
+                <button type="button" class="zapi-reco-agregar" data-id="${ZAPI.escaparHTML(producto.id)}">Agregar</button>`;
 
             contenedor.appendChild(tarjeta);
 
@@ -813,7 +814,7 @@ function initZapiBot() {
         if (faq && faq.despedida) {
             setTimeout(() => {
                 agregarMensaje(
-                    `Recordá: el envío es gratis desde <strong>${formatearPrecio(window.ENVIO_GRATIS_MINIMO)}</strong>. ` +
+                    `Recordá: el envío es gratis desde <strong>${ZAPI.formatearPrecio(window.ENVIO_GRATIS_MINIMO)}</strong>. ` +
                     "Para pedidos menores, coordinamos el costo por WhatsApp. 🚚",
                     "bot"
                 );
@@ -957,3 +958,5 @@ if (document.readyState === "loading") {
 } else {
     initZapiBot();
 }
+
+})();

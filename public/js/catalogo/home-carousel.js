@@ -1,5 +1,7 @@
 'use strict';
 
+(function () {
+
 /* Carrusel de destacados en Inicio: inyecta las tarjetas originales del
    catalogo (window.tarjetaProducto, la misma que usa #productGrid) en
    #homeProductTrack. Diseno, modal y "Agregar al carrito" funcionan sin
@@ -117,5 +119,7 @@ document.addEventListener("click", function (evento) {
     }, true);
 
     window.addEventListener("resize", actualizarFlechasCarrusel);
+
+})();
 
 })();

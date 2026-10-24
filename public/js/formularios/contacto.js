@@ -1,3 +1,7 @@
+'use strict';
+
+(function () {
+
 document.addEventListener("DOMContentLoaded", () => {
 
     const formulario = document.getElementById("contactoForm");
@@ -223,8 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         /* Sin backend (Show Preview, hosting estatico) la consulta sale
            solo por correo (EmailJS); no se golpea /api/contacto. */
-        const fnHayApi = window.hayApiConfigurada;
-        const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
+        const hayBackend = ZAPI.hayBackend();
 
         try {
             if (hayBackend) {
@@ -331,3 +334,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+})();

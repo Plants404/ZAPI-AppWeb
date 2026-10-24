@@ -1,4 +1,8 @@
 
+'use strict';
+
+(function () {
+
 document.addEventListener('DOMContentLoaded', () => {
   inicializarNavegacion();
 });
@@ -115,3 +119,5 @@ function actualizarNavegacionActiva(idActivo) {
     }
   });
 }
+
+})();

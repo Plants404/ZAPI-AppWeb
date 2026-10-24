@@ -14,8 +14,6 @@ const g = require('globals');
 const DEL_CATALOGO = {
     PRODUCTOS: 'readonly',
     precios: 'readonly',
-    formatearPrecio: 'readonly',
-    escaparHTML: 'readonly',
     obtenerCarrito: 'readonly',
     guardarCarrito: 'readonly',
     actualizarContador: 'readonly',
@@ -30,6 +28,9 @@ const DEL_CATALOGO = {
 const COMUNES = {
     ...g.browser,
     ...DEL_CATALOGO,
+    /* El namespace del sitio. Lo crea core/utils.js y lo extiende
+       core/api.js; los demas scripts lo consumen. */
+    ZAPI: 'readonly',
 };
 
 /* Esos mismos nombres, como patron para no-unused-vars. productos.js

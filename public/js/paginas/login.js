@@ -205,8 +205,7 @@
 
         /* Sin backend configurado no se acepta una sesion local: la
            autenticacion siempre debe validarse en el servidor. */
-        const fnHayApi = window.hayApiConfigurada;
-        if (typeof fnHayApi !== 'function' || !fnHayApi()) {
+        if (!ZAPI.hayBackend()) {
             st('error', 'La autenticación no está configurada. Contactá al equipo.');
             sacudir();
             return;
@@ -242,7 +241,7 @@
         }
     });
 
-    if (typeof window.hayApiConfigurada !== 'function' || !window.hayApiConfigurada()) {
+    if (!ZAPI.hayBackend()) {
         u.disabled = true;
         p.disabled = true;
         t.disabled = true;

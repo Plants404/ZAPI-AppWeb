@@ -4,9 +4,13 @@
    Estado del carrito, render de la pagina, recomendaciones y
    envio. Cuando hay backend el pedido sale por la API; si no
    hay, o si la API falla, se cae a WhatsApp sin bloquear al
-   cliente. Los scripts comparten el ambito global (scripts
-   clasicos), por eso el carrito es un `let` de nivel superior.
+   cliente. Todo el estado del carrito queda dentro de esta IIFE:
+   hacia afuera solo sale el comportamiento de la pagina.
    ========================================================== */
+
+'use strict';
+
+(function () {
 
 // WhatsApp: 598 + numero sin el 0 inicial (098 268 560 -> 59898268560)
 const WHATSAPP_NUMBER = "59898268560";
@@ -15,7 +19,7 @@ const FREE_SHIPPING_THRESHOLD = window.ENVIO_GRATIS_MINIMO;
 let cart = [];
 
 document.querySelectorAll("[data-shipping-threshold]").forEach(elemento => {
-    elemento.textContent = formatearPrecio(FREE_SHIPPING_THRESHOLD);
+    elemento.textContent = ZAPI.formatearPrecio(FREE_SHIPPING_THRESHOLD);
 });
 
 /* --- Estado y persistencia --------------------------------- */
@@ -43,11 +47,11 @@ function calcularTotales(items = cart) {
 function updateSummary() {
     const { subtotal, shipping, total } = calcularTotales();
 
-    document.getElementById("subtotal").textContent = formatearPrecio(subtotal);
+    document.getElementById("subtotal").textContent = ZAPI.formatearPrecio(subtotal);
     document.getElementById("shipping").textContent =
-        shipping === null ? "A coordinar" : shipping === 0 && subtotal > 0 ? "Gratis" : formatearPrecio(shipping);
+        shipping === null ? "A coordinar" : shipping === 0 && subtotal > 0 ? "Gratis" : ZAPI.formatearPrecio(shipping);
     document.getElementById("total").textContent =
-        total === null ? "A coordinar" : formatearPrecio(total);
+        total === null ? "A coordinar" : ZAPI.formatearPrecio(total);
 }
 
 /* --- Recomendaciones --------------------------------------- */
@@ -119,36 +123,36 @@ function renderRecommendations() {
         return `
             <article class="recommendation-card" style="--i: ${indice}" data-id="${producto.id}">
                 <div class="recommendation-image">
-                    <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
+                    <img src="${ZAPI.escaparHTML(producto.imagen)}" alt="${ZAPI.escaparHTML(producto.nombre)}" loading="lazy">
                     <div class="recommendation-beneficios-lista">
                         ${beneficios.map(item => `
                             <span class="recommendation-beneficio-item">
                                 <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                                <span>${escaparHTML(item)}</span>
+                                <span>${ZAPI.escaparHTML(item)}</span>
                             </span>
                         `).join("")}
                     </div>
                 </div>
                 <div class="recommendation-info">
-                    <div class="recommendation-category">${escaparHTML(producto.categoria)}</div>
+                    <div class="recommendation-category">${ZAPI.escaparHTML(producto.categoria)}</div>
                     <h3>
                         <button class="recommendation-link" type="button" data-id="${producto.id}" aria-haspopup="dialog">
-                            ${escaparHTML(producto.nombre)}
+                            ${ZAPI.escaparHTML(producto.nombre)}
                         </button>
                     </h3>
-                    <p>${escaparHTML(producto.descripcion)}</p>
+                    <p>${ZAPI.escaparHTML(producto.descripcion)}</p>
                     <ul class="recommendation-beneficios-tactil" aria-label="Características">
                         ${beneficios.map(item => `
                             <li>
                                 <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                                <span>${escaparHTML(item)}</span>
+                                <span>${ZAPI.escaparHTML(item)}</span>
                             </li>
                         `).join("")}
                     </ul>
                     <div class="recommendation-footer">
-                        <strong>${formatearPrecio(precio)}</strong>
+                        <strong>${ZAPI.formatearPrecio(precio)}</strong>
                         <button class="recommendation-add" type="button" data-id="${producto.id}"
-                            aria-label="Agregar ${escaparHTML(producto.nombre)} al carrito">
+                            aria-label="Agregar ${ZAPI.escaparHTML(producto.nombre)} al carrito">
                             <span class="material-symbols-outlined">add_shopping_cart</span>
                             Agregar
                         </button>
@@ -183,12 +187,12 @@ function renderCart() {
     container.innerHTML = cart.map(item => `
         <article class="cart-item" data-id="${item.id}">
             <div class="cart-item-image">
-                <img src="${escaparHTML(item.imagen)}" alt="${escaparHTML(item.nombre)}" loading="lazy" decoding="async">
+                <img src="${ZAPI.escaparHTML(item.imagen)}" alt="${ZAPI.escaparHTML(item.nombre)}" loading="lazy" decoding="async">
             </div>
             <div class="cart-item-info">
-                <h3>${escaparHTML(item.nombre)}</h3>
-                <div class="cart-item-category">${escaparHTML(item.categoria) || "Producto ZAPI"}</div>
-                <div class="cart-item-price">${formatearPrecio(item.precio)}<span class="cart-item-unit"> c/u</span></div>
+                <h3>${ZAPI.escaparHTML(item.nombre)}</h3>
+                <div class="cart-item-category">${ZAPI.escaparHTML(item.categoria) || "Producto ZAPI"}</div>
+                <div class="cart-item-price">${ZAPI.formatearPrecio(item.precio)}<span class="cart-item-unit"> c/u</span></div>
                 <span class="cart-item-stock" data-stock="${item.id}"></span>
                 <div class="quantity-control">
                     <button class="quantity-minus" data-id="${item.id}" aria-label="Disminuir cantidad" type="button">
@@ -201,10 +205,10 @@ function renderCart() {
                 </div>
             </div>
             <div class="cart-item-total">
-                <strong>${formatearPrecio(item.precio * item.cantidad)}</strong>
-                <small>${item.cantidad} × ${formatearPrecio(item.precio)}</small>
+                <strong>${ZAPI.formatearPrecio(item.precio * item.cantidad)}</strong>
+                <small>${item.cantidad} × ${ZAPI.formatearPrecio(item.precio)}</small>
                 <button class="remove-item" data-id="${item.id}"
-                    aria-label="Eliminar ${escaparHTML(item.nombre)} del carrito" type="button">
+                    aria-label="Eliminar ${ZAPI.escaparHTML(item.nombre)} del carrito" type="button">
                     <span class="material-symbols-outlined">delete</span>
                 </button>
             </div>
@@ -308,7 +312,7 @@ function construirUrlWhatsapp(datos = {}) {
     const { subtotal, shipping, total } = calcularTotales(items);
 
     const productosTexto = items
-        .map(({ nombre, cantidad, precio }) => `• ${nombre} x${cantidad} — ${formatearPrecio(precio * cantidad)}`)
+        .map(({ nombre, cantidad, precio }) => `• ${nombre} x${cantidad} — ${ZAPI.formatearPrecio(precio * cantidad)}`)
         .join("\n");
 
     const contactoTexto = [
@@ -323,10 +327,10 @@ function construirUrlWhatsapp(datos = {}) {
         ? "A coordinar por WhatsApp"
         : shipping === 0 && subtotal > 0
             ? "Gratis"
-            : formatearPrecio(shipping);
+            : ZAPI.formatearPrecio(shipping);
     const totalTexto = total === null
-        ? `${formatearPrecio(subtotal)} + envío a coordinar`
-        : formatearPrecio(total);
+        ? `${ZAPI.formatearPrecio(subtotal)} + envío a coordinar`
+        : ZAPI.formatearPrecio(total);
 
     const mensaje = `Hola ZAPI
 
@@ -336,7 +340,7 @@ ${productosTexto}
 
 ━━━━━━━━━━━━━━━━━━
 
-Subtotal: ${formatearPrecio(subtotal)}
+Subtotal: ${ZAPI.formatearPrecio(subtotal)}
 Envío: ${envioTexto}
 
 TOTAL: ${totalTexto}
@@ -392,8 +396,7 @@ function registrarPedidoLocal(datos) {
     const guardar = window.guardarPedidoLocal;
     if (typeof guardar !== "function") return;
 
-    const fnHayApi = window.hayApiConfigurada;
-    if (typeof fnHayApi === "function" && fnHayApi()) return;
+    if (ZAPI.hayBackend()) return;
 
     if (cart.length === 0) return;
 
@@ -555,8 +558,7 @@ async function enviarPedido(evento) {
 
     /* Sin backend configurado (hosting estatico): se arma el pedido y
        se abre WhatsApp, sin intentar la API. */
-    const fnHayApi = window.hayApiConfigurada;
-    const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
+    const hayBackend = ZAPI.hayBackend();
 
     if (!hayBackend) {
         abrirWhatsappPedido(datos);
@@ -582,7 +584,7 @@ async function enviarPedido(evento) {
 
         if (estado === 201) {
             mostrarEstado(
-                `Pedido ${cuerpo.id} confirmado por ${formatearPrecio(cuerpo.total)}. ` +
+                `Pedido ${cuerpo.id} confirmado por ${ZAPI.formatearPrecio(cuerpo.total)}. ` +
                 "Te contactamos para coordinar la entrega.",
                 false
             );
@@ -682,3 +684,5 @@ alCargarElCatalogo(function () {
         actualizarContador(false);
     }
 });
+
+})();

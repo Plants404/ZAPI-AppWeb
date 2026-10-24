@@ -12,8 +12,7 @@ const TESTIMONIOS_LOCAL = (function () {
 /* Con backend se prueba primero la API; sin backend (Show Preview,
    hosting estatico) se lee directo del JSON local. */
 const FUENTES_OPINIONES = (function () {
-    const fnHayApi = window.hayApiConfigurada;
-    const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
+    const hayBackend = ZAPI.hayBackend();
 
     return hayBackend
         ? [window.urlApi("/api/testimonios"), TESTIMONIOS_LOCAL]
@@ -89,7 +88,7 @@ async function cargarOpiniones() {
         }
 
         return '<span class="estrellas" role="img" aria-label="' +
-            escaparHTML(valor + ' de 5 estrellas') + '">' + iconos + '</span>';
+            ZAPI.escaparHTML(valor + ' de 5 estrellas') + '">' + iconos + '</span>';
     }
 
     function pintarFecha(iso) {
@@ -102,14 +101,14 @@ async function cargarOpiniones() {
             year: "numeric"
         });
 
-        return '<span class="opinion-fecha">' + escaparHTML(texto) + '</span>';
+        return '<span class="opinion-fecha">' + ZAPI.escaparHTML(texto) + '</span>';
     }
 
     function productoBoton(opinion) {
         if (!opinion.producto_id) return "";
 
         return '<button class="opinion-producto" type="button" data-producto="' +
-            escaparHTML(opinion.producto_id) + '" hidden>' +
+            ZAPI.escaparHTML(opinion.producto_id) + '" hidden>' +
             '<span class="material-symbols-outlined" aria-hidden="true">eco</span>' +
             '<span data-producto-nombre></span>' +
             '</button>';
@@ -131,17 +130,17 @@ async function cargarOpiniones() {
                 ${pintarEstrellas(opinion.estrellas)}
 
                 <blockquote class="opinion-texto">
-                    <p>${escaparHTML(opinion.texto)}</p>
+                    <p>${ZAPI.escaparHTML(opinion.texto)}</p>
                 </blockquote>
 
                 <div class="opinion-firma">
-                    <span class="opinion-avatar" aria-hidden="true">${escaparHTML(iniciales(opinion.autor))}</span>
+                    <span class="opinion-avatar" aria-hidden="true">${ZAPI.escaparHTML(iniciales(opinion.autor))}</span>
 
                     <div class="opinion-autor">
-                        <cite class="opinion-nombre">${escaparHTML(opinion.autor)}</cite>
+                        <cite class="opinion-nombre">${ZAPI.escaparHTML(opinion.autor)}</cite>
 
                         <span class="opinion-meta">
-                            ${escaparHTML(opinion.lugar || "")}
+                            ${ZAPI.escaparHTML(opinion.lugar || "")}
                             ${pintarFecha(opinion.fecha)}
                         </span>
                     </div>

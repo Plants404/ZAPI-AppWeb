@@ -1,3 +1,7 @@
+'use strict';
+
+(function () {
+
 let categoriaActual = "";
 let busquedaActual = "";
 
@@ -104,9 +108,9 @@ function renderFiltros() {
     contenedor.insertAdjacentHTML("beforeend", botones.map(({ valor, texto }) => `
 
             <button class="catalog-filter${valor === categoriaActual ? " activo" : ""}"
-                type="button" data-categoria="${escaparHTML(valor)}"
+                type="button" data-categoria="${ZAPI.escaparHTML(valor)}"
                 aria-pressed="${valor === categoriaActual}">
-                ${escaparHTML(texto)}
+                ${ZAPI.escaparHTML(texto)}
             </button>
 
     `).join(""));
@@ -180,12 +184,12 @@ function tarjetaProducto(producto) {
             <article class="product-card" data-id="${producto.id}">
 
                 <div class="product-visual">
-                    <img src="${escaparHTML(producto.imagen)}" alt="${escaparHTML(producto.nombre)}" loading="lazy">
+                    <img src="${ZAPI.escaparHTML(producto.imagen)}" alt="${ZAPI.escaparHTML(producto.nombre)}" loading="lazy">
                     <div class="product-beneficios-lista">
                         ${producto.infoDeVenta.map(item => `
                             <div class="product-beneficio-item">
                                 <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                                <span>${escaparHTML(item)}</span>
+                                <span>${ZAPI.escaparHTML(item)}</span>
                             </div>
                         `).join("")}
                     </div>
@@ -195,27 +199,27 @@ function tarjetaProducto(producto) {
                     <h3 class="product-name">
                         <button class="product-link" type="button" data-id="${producto.id}"
                             aria-haspopup="dialog">
-                            ${escaparHTML(producto.nombre)}
+                            ${ZAPI.escaparHTML(producto.nombre)}
                         </button>
                     </h3>
 
                     <div class="product-tags">
-                        <span class="product-badge">${escaparHTML(producto.categoria)}</span>
+                        <span class="product-badge">${ZAPI.escaparHTML(producto.categoria)}</span>
                         <span class="product-stock-pill" data-stock="${producto.id}"></span>
                     </div>
 
-                    <p class="product-desc">${escaparHTML(producto.descripcion)}</p>
+                    <p class="product-desc">${ZAPI.escaparHTML(producto.descripcion)}</p>
 
                     <div class="product-benefit">
                         <span class="benefit-icon" aria-hidden="true">✓</span>
-                        <span>${escaparHTML(beneficio)}</span>
+                        <span>${ZAPI.escaparHTML(beneficio)}</span>
                     </div>
 
                     <ul class="product-beneficios-tactil" aria-label="Características">
                         ${producto.infoDeVenta.map(item => `
                             <li>
                                 <span class="benefit-icon" aria-hidden="true">✓</span>
-                                <span>${escaparHTML(item)}</span>
+                                <span>${ZAPI.escaparHTML(item)}</span>
                             </li>
                         `).join("")}
                     </ul>
@@ -223,7 +227,7 @@ function tarjetaProducto(producto) {
 
                 <div class="product-footer">
                     <div class="product-price">
-                        <span class="current">${formatearPrecio(precios[producto.id] ?? producto.precioBase)}</span>
+                        <span class="current">${ZAPI.formatearPrecio(precios[producto.id] ?? producto.precioBase)}</span>
                     </div>
                     <button class="add-cart" type="button" data-id="${producto.id}">
                         <span class="material-symbols-outlined">shopping_cart</span>
@@ -265,7 +269,7 @@ function renderCatalog() {
         grid.innerHTML = `
 
             <p class="catalog-empty">
-                ${escaparHTML(mensaje)}
+                ${ZAPI.escaparHTML(mensaje)}
                 <button class="catalog-empty-clear" type="button" data-limpiar-busqueda>
                     Limpiar busqueda
                 </button>
@@ -468,3 +472,5 @@ alCargarElCatalogo(function () {
     sincronizarAlturasSticky();
 
 });
+
+})();

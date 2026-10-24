@@ -1,14 +1,16 @@
 
 
-const escaparHTML = valor => String(valor ?? "").replace(/[&<>"']/g, caracter => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-}[caracter]));
+'use strict';
+
+(function () {
 
 let PRODUCTOS = [];
+
+/* PRODUCTOS se comparte con los demas scripts (esta en el contrato
+   de eslint.config.js): se publica en window y se vuelve a publicar
+   cada vez que el catalogo se recarga, para que los demas vean
+   siempre la lista vigente. */
+window.PRODUCTOS = PRODUCTOS;
 
 const esperandoElCatalogo = [];
 
@@ -64,6 +66,7 @@ function cargarCatalogo() {
             }
 
             PRODUCTOS = productos;
+            window.PRODUCTOS = PRODUCTOS;
 
             for (const producto of PRODUCTOS) {
                 precios[producto.id] = producto.precioBase;
@@ -118,14 +121,6 @@ function avisarCatalogoNoCargado() {
 }
 
 cargarCatalogo();
-
-function formatearPrecio(value) {
-    return new Intl.NumberFormat("es-UY", {
-        style: "currency",
-        currency: "UYU",
-        maximumFractionDigits: 0
-    }).format(value);
-}
 
 let STOCK = {};
 
@@ -308,8 +303,7 @@ function cargarStock() {
 
     /* Sin backend (Show Preview, hosting estatico): el stock es el de
        demostracion, no se llama a la API. */
-    const fnHayApi = window.hayApiConfigurada;
-    if (typeof fnHayApi === "function" && !fnHayApi()) {
+    if (!ZAPI.hayBackend()) {
         stockDesdeBackend = false;
         aplicarStockDeDemostracion();
         return Promise.resolve();
@@ -649,3 +643,19 @@ document.addEventListener("error", (evento) => {
     if (!imagen.alt) imagen.alt = "Imagen no disponible";
 
 }, true);
+
+/* Lo que este archivo comparte con los demas scripts. Es el mismo
+   contrato que declara eslint.config.js en DEL_CATALOGO: si se agrega
+   o se quita un nombre, se cambia en los dos lados. */
+window.precios = precios;
+window.IMAGEN_FALLBACK = IMAGEN_FALLBACK;
+window.alCargarElCatalogo = alCargarElCatalogo;
+window.pintarStockEnPantalla = pintarStockEnPantalla;
+window.pintarStockDe = pintarStockDe;
+window.obtenerCarrito = obtenerCarrito;
+window.guardarCarrito = guardarCarrito;
+window.actualizarContador = actualizarContador;
+window.agregarProductoAlCarrito = agregarProductoAlCarrito;
+window.suscribirAlCarrito = suscribirAlCarrito;
+
+})();
