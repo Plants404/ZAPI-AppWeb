@@ -38,85 +38,81 @@
 
 <body>
 
-  <header>
-    
+  <!-- @header activo="inicio" clase-header="" buscador="si" prefijo="./" logo="index" spa="si" -->
+<header>
     <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
-      aria-label="Abrir menu de navegacion">
-      <span class="nav-toggle-barra" aria-hidden="true"></span>
-      <span class="nav-toggle-barra" aria-hidden="true"></span>
-      <span class="nav-toggle-barra" aria-hidden="true"></span>
+        aria-label="Abrir menu de navegacion">
+        <span class="nav-toggle-barra" aria-hidden="true"></span>
+        <span class="nav-toggle-barra" aria-hidden="true"></span>
+        <span class="nav-toggle-barra" aria-hidden="true"></span>
     </button>
 
-    
     <a class="logo" href="./index.html" data-section="inicio" aria-label="ZAPI, ir al inicio">
-      <div class="logo-items-text">
-        <h4>ZAPI</h4>
-      </div>
-      <div class="logo-items-img">
-        <img src="././public/img/logo.svg" alt="">
-      </div>
+        <div class="logo-items-text">
+            <h4>ZAPI</h4>
+        </div>
+        <div class="logo-items-img">
+            <img src="./public/img/logo.svg" alt="">
+        </div>
     </a>
 
-    
     <form class="header-search" id="headerSearch" role="search" autocomplete="off">
-      <label class="visually-hidden" for="searchInput">Buscar productos</label>
-      <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
-      <input type="search" class="header-search-input" id="searchInput" name="q"
-        placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
-      <button type="button" class="header-search-limpiar" id="searchClear" aria-label="Limpiar busqueda" hidden>
-        <span class="material-symbols-outlined" aria-hidden="true">close</span>
-      </button>
+        <label class="visually-hidden" for="searchInput">Buscar productos</label>
+        <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
+        <input type="search" class="header-search-input" id="searchInput" name="q"
+            placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
+        <button type="button" class="header-search-limpiar" id="searchClear" aria-label="Limpiar busqueda" hidden>
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
     </form>
 
     <a class="header-cart" href="#carrito" data-section="carrito" aria-label="Ver carrito">
-      <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
-      <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+        <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+        <span class="cart-count" data-cart-count aria-hidden="true">0</span>
     </a>
 
-    
     <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
-      <ul>
-        <li class="nav-cuenta">
-          <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
-          <div class="nav-usuario">
-            <button type="button" class="nav-usuario-boton nav-usuario-alineado" id="navUsuarioBoton" aria-expanded="false"
-              aria-haspopup="true" aria-controls="navUsuarioMenu">
-              <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
-              
-              <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
-            </button>
-            <div class="nav-usuario-menu" id="navUsuarioMenu" hidden>
-              <button type="button" class="nav-usuario-item nav-link-carrito" data-section="carrito"
-                id="navLinkCarrito">
-                Carrito
-                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-              </button>
-              <a class="nav-usuario-item" href="./pedidos.html">Mis pedidos</a>
-              <button type="button" class="nav-usuario-item" id="navSalir">Salir</button>
-            </div>
-          </div>
+        <ul>
+            <li class="nav-cuenta">
+                <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
+                <div class="nav-usuario">
+                    <button type="button" class="nav-usuario-boton nav-usuario-alineado" id="navUsuarioBoton" aria-expanded="false"
+                        aria-haspopup="true" aria-controls="navUsuarioMenu">
+                        <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
+                        <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
+                    </button>
+                    <div class="nav-usuario-menu" id="navUsuarioMenu" hidden>
 
-          <a class="nav-cta" href="#carrito" data-section="carrito">
-            <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
-            Ver carrito
-            <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-          </a>
-        </li>
+                        <button type="button" class="nav-usuario-item nav-link-carrito" data-section="carrito"
+                            id="navLinkCarrito">
+                            Carrito
+                            <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+                        </button>
 
-        <li><button type="button" class="nav-link active" data-section="inicio" aria-current="page">Inicio</button></li>
-        <li><button type="button" class="nav-link" data-section="catalogo">Catálogo</button></li>
-        <li><button type="button" class="nav-link" data-section="servicios">Servicios</button></li>
-        <li><button type="button" class="nav-link" data-section="nosotros">Nosotros</button></li>
-        <li><button type="button" class="nav-link" data-section="contacto">Contacto</button></li>
-      </ul>
+                        <a class="nav-usuario-item" href="./pedidos.html">Mis pedidos</a>
+                        <button type="button" class="nav-usuario-item" id="navSalir">Salir</button>
+                    </div>
+                </div>
+
+                <a class="nav-cta" href="#carrito" data-section="carrito">
+                    <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+                    Ver carrito
+                    <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+                </a>
+            </li>
+            <li><button type="button" class="nav-link active" data-section="inicio" aria-current="page">Inicio</button></li>
+            <li><button type="button" class="nav-link" data-section="catalogo">Catálogo</button></li>
+            <li><button type="button" class="nav-link" data-section="servicios">Servicios</button></li>
+            <li><button type="button" class="nav-link" data-section="nosotros">Nosotros</button></li>
+            <li><button type="button" class="nav-link" data-section="contacto">Contacto</button></li>
+        </ul>
     </nav>
-  </header>
+</header>
 
-  
-  <div class="nav-backdrop" id="navBackdrop" hidden></div>
+<div class="nav-backdrop" id="navBackdrop" hidden></div>
 
-  
-  <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
+<p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
+<!-- /@header -->
 
   <main id="contenido" tabindex="-1">
     

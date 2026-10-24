@@ -26,6 +26,7 @@ ZAPI-AppWeb/
 │   ├── img/                Imágenes optimizadas (no cambiar rutas públicas)
 │   └── data/               JSON generados (versionados)
 ├── datos/                  Fuentes: catalogo.js, testimonios.js
+├── partials/               Fragmentos HTML compartidos (header.html)
 ├── personaje/              SVG de "Brotecito" usados por login.html
 ├── tools/                  Generadores y verificadores (no se despliegan)
 ├── docs/                   Documentación interna (no se sirve al navegador)
@@ -64,6 +65,7 @@ npm run generar             # productos/*.html + public/data/productos.json
 npm run generar:testimonios # public/data/testimonios.json
 npm run sitemap             # sitemap.xml
 npm run css                 # catalogo-catalogo.css y catalogo-modal.css
+npm run componer            # partials/header.html → los HTML (idempotente)
 npm run check               # lint + verificar
 npm run contraste           # WCAG AA
 ```
@@ -134,4 +136,4 @@ npm run css
 
 ---
 
-*Última actualización: Fase 0 — rama `refactor/orden-codigo`*
+*Última actualización: Fase 2 — rama `refactor/orden-codigo`*

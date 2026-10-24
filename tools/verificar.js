@@ -699,6 +699,48 @@ console.log('\nTestimonios');
 }
 
 
+/* --- 12. El header unificado esta al dia -----------------------
+   Las paginas con navegacion comparten partials/header.html, que
+   tools/componer-paginas.js inserta entre marcadores. Si alguien
+   edita el header a mano en una sola pagina, esa queda distinta de
+   las demas y no hay ningun error que lo delate. Por eso se arma el
+   bloque que corresponde a cada pagina y se lo compara con el que
+   esta en disco. */
+
+console.log('\nHeader unificado');
+
+{
+    const { PAGINAS, PARAMS_PRODUCTO, headerAlDia } =
+        require(path.join(__dirname, 'componer-paginas.js'));
+
+    for (const pagina of PAGINAS) {
+        const s = fs.readFileSync(path.join(raiz, pagina.archivo), 'utf8');
+
+        if (headerAlDia(s, pagina)) ok(pagina.archivo);
+        else avisar(pagina.archivo + ' tiene el header desactualizado: corré npm run componer');
+    }
+
+    const carpeta = path.join(raiz, 'productos');
+    const fichas = (fs.existsSync(carpeta) ? fs.readdirSync(carpeta) : [])
+        .filter(f => f.endsWith('.html'));
+    let alDia = 0;
+
+    for (const f of fichas) {
+        const s = fs.readFileSync(path.join(carpeta, f), 'utf8');
+
+        if (headerAlDia(s, PARAMS_PRODUCTO)) {
+            alDia++;
+        } else {
+            avisar('productos/' + f + ' tiene el header desactualizado: corré npm run generar');
+        }
+    }
+
+    if (fichas.length && alDia === fichas.length) {
+        ok(alDia + ' ficha(s) con el header al dia');
+    }
+}
+
+
 /* --- Fichas huerfanas -------------------------------------------
    La verificacion no poda archivos. Las fichas sin correspondencia con
    el catalogo se reportan para que la limpieza sea una accion explicita. */

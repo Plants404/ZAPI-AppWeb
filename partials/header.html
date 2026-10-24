@@ -6,23 +6,33 @@
         <span class="nav-toggle-barra" aria-hidden="true"></span>
     </button>
 
-{{#eq logo completo}}
+{{#eq logo index}}
     <a class="logo" href="{{logoHref}}" data-section="inicio" aria-label="ZAPI, ir al inicio">
         <div class="logo-items-text">
             <h4>ZAPI</h4>
         </div>
         <div class="logo-items-img">
-            <img src="{{prefijo}}public/img/logo.svg" alt="" width="40" height="40">
+            <img src="{{prefijo}}public/img/logo.svg" alt="">
+        </div>
+    </a>
+{{/eq}}
+{{#eq logo catalogo}}
+    <a class="logo" href="{{logoHref}}">
+        <div class="logo-items-img">
+            <img src="{{prefijo}}public/img/logo.svg" alt="" width="200" height="284">
+        </div>
+        <div class="logo-items-text">
+            <h4>ZAPI</h4>
         </div>
     </a>
 {{/eq}}
 {{#eq logo texto}}
-    <a class="logo" href="{{prefijo}}index.html" data-section="inicio" aria-label="ZAPI, ir al inicio">
+    <a class="logo" href="{{prefijo}}index.html">
         <h4>ZAPI</h4>
     </a>
 {{/eq}}
 {{#eq logo producto}}
-    <a class="logo" href="{{prefijo}}index.html" data-section="inicio" aria-label="ZAPI, ir al inicio">
+    <a class="logo" href="{{prefijo}}index.html" aria-label="ZAPI, ir al inicio">
         <img src="{{prefijo}}public/img/logo.svg" alt="" width="40" height="40">
         <span>ZAPI</span>
     </a>

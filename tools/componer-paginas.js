@@ -15,6 +15,11 @@ const rutaPartial = path.join(raiz, 'partials', 'header.html');
 const INICIO = '<!-- @header';
 const FIN = '<!-- /@header -->';
 
+/* Las cuatro formas del logo que hay hoy en el sitio, tal cual estan
+   en cada pagina. No se unifican: cambian el orden de la imagen y el
+   texto, el ancho y el alto, y si el enlace lleva aria-label y
+   data-section. */
+
 const PAGINAS = [
     {
         archivo: 'index.html',
@@ -22,7 +27,7 @@ const PAGINAS = [
         claseHeader: '',
         buscador: 'si',
         prefijo: './',
-        logo: 'completo',
+        logo: 'index',
         logoHref: './index.html',
         spa: 'si',
         extras: '',
@@ -37,7 +42,7 @@ const PAGINAS = [
         claseHeader: '',
         buscador: 'si',
         prefijo: './',
-        logo: 'completo',
+        logo: 'catalogo',
         logoHref: 'catalogo.html',
         spa: 'no',
         extras: '',
@@ -208,11 +213,16 @@ function envolverOReemplazar(html, params) {
         return { html: html.slice(0, html.indexOf(INICIO)) + nuevo + html.slice(html.indexOf(FIN) + FIN.length), cambio: true };
     }
 
-    const reHeader = /<header\b[\s\S]*?<\/header>\s*(?:<div class="nav-backdrop"[^>]*><\/div>\s*)?(?:<p class="visually-hidden" id="searchStatus"[^>]*>[\s\S]*?<\/p>\s*)?/;
+    /* Solo se come el header y, si estan pegados, el backdrop y el
+       parrafo de estado del buscador. La linea siguiente (el <main>)
+       queda intacta, con su sangria: si el ultimo grupo terminara en
+       \s*, se llevaria tambien los saltos y la sangria de esa linea
+       y el diff saldria lleno de cambios que no son. */
+    const reHeader = /<header\b[\s\S]*?<\/header>[ \t]*(?:\n\s*<div class="nav-backdrop"[^>]*><\/div>[ \t]*)?(?:\n\s*<p class="visually-hidden" id="searchStatus"[^>]*>[\s\S]*?<\/p>[ \t]*)?/;
     if (!reHeader.test(html)) {
         throw new Error('no se encontro <header> para envolver');
     }
-    return { html: html.replace(reHeader, nuevo + '\n\n'), cambio: true };
+    return { html: html.replace(reHeader, nuevo), cambio: true };
 }
 
 function componerArchivo(rutaRelativa, params) {
