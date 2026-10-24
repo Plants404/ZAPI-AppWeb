@@ -1,10 +1,11 @@
 /* La copia estatica del JSON, resuelta desde la ubicacion de este
    script (no desde la raiz del dominio): asi tambien funciona cuando
    el sitio cuelga de un subpath (GitHub Pages) y cuando no hay
-   backend. */
+   backend. Este archivo vive en public/js/formularios/, asi que
+   ../../data llega a public/data. */
 const TESTIMONIOS_LOCAL = (function () {
     const script = document.currentScript;
-    if (script && script.src) return new URL("../data/testimonios.json", script.src).href;
+    if (script && script.src) return new URL("../../data/testimonios.json", script.src).href;
     return "/public/data/testimonios.json";
 }());
 

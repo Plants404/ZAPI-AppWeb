@@ -27,17 +27,17 @@ function alCargarElCatalogo(fn) {
 }
 
 /* La ruta se calcula desde la ubicacion de este script, no desde la
-   pagina. Asi catalogo.html (en la raiz) y las fichas de productos/
-   resuelven el mismo public/data/productos.json, y sigue andando si el
-   sitio cuelga de un subpath, como en GitHub Pages. Una ruta relativa a
-   la pagina no sirve: ../data apunta a /data, que no existe y ademas
-   esta bloqueado en el servidor. */
+   pagina. Este archivo vive en public/js/catalogo/, asi que ../../data
+   resuelve a public/data/productos.json igual que antes, y sigue
+   andando si el sitio cuelga de un subpath, como en GitHub Pages. Una
+   ruta relativa a la pagina no sirve: apunta a la raiz de la pagina y
+   no al repo. */
 function urlDelCatalogo() {
 
     const script = document.currentScript;
 
     if (script && script.src) {
-        return new URL("../data/productos.json", script.src).href;
+        return new URL("../../data/productos.json", script.src).href;
     }
 
     return "public/data/productos.json";

@@ -23,10 +23,16 @@ const CSS = [
     /* Hojas por pagina. */
     'paginas/carrito.css', 'paginas/pedidos.css', 'paginas/login.css', 'paginas/404.css',
     'zapi-bot.css'];
-const JS = ['config.js', 'auth-ui.js', 'productos.js', 'modal.js', 'catalogo.js',
-    'carrito.js', 'pedidos.js', 'testimonio-form.js', 'zapi-bot.js',
-    'navigation.js', 'buscador.js',
-    'menu.js', 'testimonios.js', 'contacto.js', 'login.js', '404.js'];
+/* Los scripts de navegador viven en public/js/, repartidos en
+   subcarpetas. Se listan por ruta relativa a public/js/ porque rutaJs()
+   las resuelve asi. */
+const JS = ['config.js',
+    'layout/auth-ui.js', 'layout/menu.js', 'layout/navigation.js', 'layout/buscador.js',
+    'catalogo/productos.js', 'catalogo/catalogo.js', 'catalogo/modal.js',
+    'carrito/carrito.js', 'carrito/pedidos.js',
+    'formularios/contacto.js', 'formularios/testimonio-form.js', 'formularios/testimonios.js',
+    'bot/zapi-bot.js',
+    'paginas/404.js', 'paginas/login.js'];
 
 const rutaCss = nombre => path.join(raiz, 'public', 'css', nombre);
 const rutaJs = nombre => path.join(raiz, 'public', 'js', nombre);
@@ -520,17 +526,11 @@ if (!fs.existsSync(gen)) {
        cae en una pagina que no existe: se prueban las DOS
        implementaciones contra los nombres reales. */
     function extraerFuncion(archivo, nombre) {
-        /* Los scripts de navegador van en public/js/ y los generadores en
-           tools/. Se distinguen por la carpeta donde estan, no por el
-           nombre, porque ambos son .js y los dos se leen desde aca. */
-        const donde = archivo.includes('/')
-            ? path.join(raiz, archivo)
-            : [
-                path.join(raiz, 'tools', archivo),
-                rutaJs(archivo)
-            ].find(ruta => fs.existsSync(ruta));
+        /* Las dos rutas se pasan desde la raiz del repo (una en tools/,
+           otra en public/js/), asi que se resuelven igual. */
+        const donde = path.join(raiz, archivo);
 
-        if (!donde || !fs.existsSync(donde)) return null;
+        if (!fs.existsSync(donde)) return null;
 
         const s = fs.readFileSync(donde, 'utf8');
         const ini = s.indexOf('function ' + nombre + '(');
@@ -561,10 +561,9 @@ if (!fs.existsSync(gen)) {
         return null;
     }
 
-    /* generar-productos.js vive en tools/, no en public/js/, asi que no
-       pasa por rutaJs(): esa resuelve scripts de navegador. */
-    const cuerpoGen = extraerFuncion('generar-productos.js', 'slug');
-    const cuerpoModal = extraerFuncion('modal.js', 'slugDe');
+    /* Las dos rutas van relativas a la raiz del repo. */
+    const cuerpoGen = extraerFuncion('tools/generar-productos.js', 'slug');
+    const cuerpoModal = extraerFuncion('public/js/catalogo/modal.js', 'slugDe');
 
     if (!cuerpoGen || !cuerpoModal) {
         avisar('no se encontro slug() del generador o slugDe() de modal.js');

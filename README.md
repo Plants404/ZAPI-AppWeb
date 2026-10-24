@@ -87,7 +87,7 @@ Para conectar una API en local, configurá `URL_API_LOCAL` en
 | `npm run contraste` | Verifica el contraste de los pares de color. |
 | `npm run generar` | Regenera `productos/*.html` desde `datos/catalogo.js` (y poda fichas huérfanas). |
 | `npm run generar:testimonios` | Regenera `public/data/testimonios.json` desde `datos/testimonios.js`. |
-| `npm run css` | Regenera `catalogo-modal.css` y `catalogo-catalogo.css` desde `catalogo.css`. |
+| `npm run css` | Regenera `catalogo-grilla.css` y `catalogo-modal.css` desde `catalogo-fuente.css`. |
 | `npm run sitemap` | Regenera `sitemap.xml`. |
 
 ## Estructura
@@ -99,9 +99,12 @@ productos/                      Fichas estáticas, generadas.
 datos/                          Fuentes que se editan a mano
                                 (catalogo.js, testimonios.js).
 public/data/                    JSON que baja el navegador (generados).
-public/js/                      Scripts del navegador.
-public/css/                     Hojas de estilo (catalogo.css es la
-                                fuente; catalogo-*.css se generan).
+public/js/                      Scripts del navegador, por carpeta
+                                (layout, catalogo, carrito,
+                                formularios, bot, paginas).
+public/css/                     Hojas de estilo (catalogo-fuente.css es
+                                la fuente; catalogo-grilla.css y
+                                catalogo-modal.css se generan).
 public/img/                     Imágenes optimizadas.
 tools/                          Servidor estático, generadores y verificadores.
 ```
@@ -124,7 +127,7 @@ correspondiente (`npm run css`, `npm run generar` o
 
 ## Formulario de contacto
 
-`index.html` → `public/js/contacto.js` valida y dispara un aviso por
+`index.html` → `public/js/formularios/contacto.js` valida y dispara un aviso por
 correo con **EmailJS** (SDK desde jsdelivr). Sin backend no hay dónde
 guardar la consulta: el aviso por correo es el único envío.
 
@@ -134,7 +137,7 @@ acotados a los dominios que el sitio usa).
 
 ## Asistente
 
-`public/js/zapi-bot.js` responde por palabras clave con las reglas de
+`public/js/bot/zapi-bot.js` responde por palabras clave con las reglas de
 negocio y el catálogo real: las recomendaciones se filtran contra el
 catálogo, así que nunca sale un producto inventado. No depende de
 ningún servicio externo.

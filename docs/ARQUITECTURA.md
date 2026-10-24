@@ -40,10 +40,11 @@ se versionan.
 Carga típica:
 
 1. HTML de la raíz.
-2. CSS: hoy `styles.css` (y hojas de página). `tokens.css` todavía no
-   se carga en todas las páginas (Fase 3).
-3. Scripts en orden: `config.js` → `productos.js` / `auth-ui.js` → resto.
-4. `productos.js` hace `fetch` de `public/data/productos.json`.
+2. CSS: `tokens.css` + los recortes de `public/css/` que correspondan
+   (base, componentes, secciones y hojas por página).
+3. Scripts en orden: `config.js` → `catalogo/productos.js` /
+   `layout/auth-ui.js` → el resto.
+4. `catalogo/productos.js` hace `fetch` de `public/data/productos.json`.
 
 ### Modo sin backend (el de este árbol)
 
@@ -67,8 +68,8 @@ datos/catalogo.js
 ### `npm run css` → `tools/extraer-modal-css.js`
 
 ```
-public/css/catalogo.css
-       ├──► public/css/catalogo-catalogo.css
+public/css/catalogo-fuente.css
+       ├──► public/css/catalogo-grilla.css
        └──► public/css/catalogo-modal.css
 ```
 
@@ -115,4 +116,4 @@ en `personaje/`.
 
 ---
 
-*Última actualización: Fase 0 — rama `refactor/orden-codigo`*
+*Última actualización: Fase 4 — rama `refactor/orden-codigo`*

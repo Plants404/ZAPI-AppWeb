@@ -64,10 +64,19 @@ La comprobación de que el CSS efectivo no cambió es
 `node tools/verificar-css-equivalencia.js` (contra `HEAD` por defecto).
 
 
-### JS en `public/js/` (hoy, planos)
+### JS en `public/js/`
 
-`config.js` primero, después `productos.js`, `auth-ui.js` y el resto según la página.
-Sin `window.ZAPI` todavía (Fase 4).
+`config.js` queda en la raíz de `public/js/` porque es el primero en
+cargar. El resto se reparte por carpeta:
+
+- `layout/` — `auth-ui.js`, `menu.js`, `navigation.js`, `buscador.js`
+- `catalogo/` — `productos.js`, `catalogo.js`, `modal.js`, `home-carousel.js`
+- `carrito/` — `carrito.js`, `pedidos.js`
+- `formularios/` — `contacto.js`, `testimonio-form.js`, `testimonios.js`
+- `bot/` — `zapi-bot.js`
+- `paginas/` — `404.js`, `productos-pagina.js`, `login.js`
+
+Sin `window.ZAPI` todavía.
 
 No hay `admin.html` ni `netlify.toml` en este árbol.
 
@@ -104,9 +113,9 @@ Antes de cada commit de esta refactorización: `npm run check` y
 
 `npm run check` compara fuente y JSON. Si discrepan, falla y pide `npm run generar`.
 
-### CSS del catálogo: `catalogo.css` → dos salidas
+### CSS del catálogo: `catalogo-fuente.css` → dos salidas
 
-No cargar `catalogo.css` en ningún HTML. El corte es el comentario
+No cargar `catalogo-fuente.css` en ningún HTML. El corte es el comentario
 `VENTANA FLOTANTE DE PRODUCTO`.
 
 ```sh
@@ -152,4 +161,4 @@ npm run css
 
 ---
 
-*Última actualización: Fase 2 — rama `refactor/orden-codigo`*
+*Última actualización: Fase 4 — rama `refactor/orden-codigo`*

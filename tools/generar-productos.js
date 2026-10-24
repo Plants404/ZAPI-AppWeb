@@ -351,10 +351,10 @@ ${paraJsonLd(migas)}
     </footer>
 
     <script src="../public/js/config.js" defer></script>
-    <script src="../public/js/auth-ui.js" defer></script>
-    <script src="../public/js/productos.js" defer></script>
-    <script src="../public/js/menu.js" defer></script>
-    <script src="../public/js/productos-pagina.js" defer></script>
+    <script src="../public/js/layout/auth-ui.js" defer></script>
+    <script src="../public/js/catalogo/productos.js" defer></script>
+    <script src="../public/js/layout/menu.js" defer></script>
+    <script src="../public/js/paginas/productos-pagina.js" defer></script>
 </body>
 </html>
 `;
