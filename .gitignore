@@ -4,10 +4,11 @@
 # public/data/, que es el catalogo en JSON que si se versiona.
 /data/
 
-# Secretos. Cuando vuelva el backend leera .env. Nunca se versiona
-# ningun .env.
+# Secretos locales: nunca se versiona ningun archivo .env,
+# salvo .env.example que documenta las variables sin valores reales.
 .env
 .env.*
+!.env.example
 
 # Dependencias de desarrollo (eslint y globals).
 node_modules/

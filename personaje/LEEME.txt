@@ -16,5 +16,9 @@ Esta carpeta contiene el arte del personaje listo para integrar en el login.
   11-enojo.svg           sin uso por ahora
   12-apenado.svg         sin uso por ahora
 
-referencia-login.html: ejemplo funcional (HTML, CSS y JS) del comportamiento. Es solo una referencia: no se copia al proyecto.
-Para verlo, servir esta carpeta por HTTP (por ejemplo: python -m http.server) y abrir referencia-login.html.
+Los SVG de esta carpeta los usa login.html en produccion. Dejalos aca.
+
+referencia-login.html se movio a docs/referencia-login.html: es solo
+material de referencia interna, no forma parte del sitio publicado.
+Para verlo, servir la raiz del repo por HTTP (npm start) y abrir
+/docs/referencia-login.html.

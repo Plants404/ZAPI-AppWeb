@@ -1,7 +1,7 @@
 {
   "name": "zapi-appweb",
   "private": true,
-  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, catalogo en datos/ y herramientas en tools/. Sin backend: es un sitio estatico.",
+  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, catalogo en datos/ y herramientas en tools/. Frontend estatico; autenticacion y opiniones requieren una API opcional.",
   "scripts": {
     "start": "node tools/servir.js",
     "verificar": "node tools/verificar.js",
