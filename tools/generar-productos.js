@@ -31,6 +31,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { bloqueHeader, PARAMS_PRODUCTO } = require('./componer-paginas.js');
 
 const raiz = path.join(__dirname, '..');
 
