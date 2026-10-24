@@ -7,6 +7,7 @@
 :root {
   --forest: #1f3a2e;
   --moss: #3d6b4f;
+  --sage: #8fae91;
   --leaf: #4a7c59;
   --cream: #f7f4ec;
   --verde-secundario: #2e5240;
@@ -15,15 +16,15 @@
   --sand: #ece5d3;
   --earth: #6b5a44;
   --ink: #22261f;
-  --muted-texto: #6a6f65;
+  --muted: #6a6f65;
+  --muted-texto: #5b6058;
   --leaf-texto: #2f5c3c;
-  --borde: #e4dccb;
+  --borde-input: #6f8f75;
   --white: #ffffff;
 
-  /* Colores de estado y estados de stock */
+  /* Colores de estado */
   --error: #a3341f;
   --forest-bg: #f1ede2;
-  --leaf-bg: rgba(8, 255, 79, .65);
   --leaf-hover: rgba(74, 124, 89, .35);
   --leaf-texto-hover: #5b6058;
 
@@ -33,7 +34,6 @@
 
   /* Radios */
   --radius: 14px;
-  --radius-pill: 999px;
 
   /* Sombras */
   --shadow-sm: 0 2px 10px rgba(31, 58, 46, .06);
@@ -46,6 +46,11 @@
   --gutter-md: 1.5rem;
   --gutter-lg: 2rem;
 
+  /* Medidas de layout */
+  --container: 1180px;
+  --header-h: 124px;
+  --filterbar-h: 84px;
+
   /* Tamaños de fuente */
   --fs-xs: .72rem;
   --fs-sm: .75rem;
@@ -56,3 +61,25 @@
   --fs-3xl: 2rem;
   --fs-4xl: 2.6rem;
 }
+
+/* Tres variables que estaban acá quedaron afuera a propósito y no se
+   pueden volver a agregar sin decidir antes cómo se ven:
+
+   --leaf-bg  era rgba(8, 255, 79, .65), un verde neón. Lo usan
+              .chip-stock.stock-ok y .cart-item-stock.stock-ok, pero
+              como la variable no existía en ningún :root esas reglas
+              se descartaban y los chips quedaban sin fondo. El pill
+              equivalente del catálogo, .product-stock-pill.stock-ok,
+              usa rgba(74, 124, 89, .12). Si se define --leaf-bg, los
+              chips de stock cambian de color.
+
+   --radius-pill  era 999px. Lo usan .btn-primary, .btn-secondary,
+              .chip-stock y los :focus-visible de la barra de
+              navegación, que hoy no tienen radio. Si se define, esos
+              cuatro pasan a ser pastilla.
+
+   --borde    era #e4dccb. Lo usan el borde inferior del header y
+              tres reglas más de styles.css, pero no estaba definida
+              en ningún :root: el navegador descarta esas
+              declaraciones y hoy no se ve ningún borde. Definirla
+              haría aparecer bordes que hoy no están. */

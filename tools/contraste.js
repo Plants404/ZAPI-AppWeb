@@ -2,9 +2,10 @@
 /* Contraste WCAG de los pares de color que usa el sitio.
    Usage: node tools/contraste.js
 
-   Lee las variables de color de styles.css, resuelve los pares que
-   de verdad se usan en las hojas y calcula la razon de contraste.
-   El objetivo es no depender de que el ojo ">ve bien el verde".
+   Lee las variables de color de tokens.css (mas las de pagina que
+   hagan falta), resuelve los pares que de verdad se usan en las hojas
+   y calcula la razon de contraste. El objetivo es no depender de que
+   el ojo ">ve bien el verde".
 
    Reglas de WCAG 2.1 que se aplican aca:
      - texto normal: 4.5:1
@@ -49,7 +50,7 @@ const variables = {};
 /* Las hojas viven en public/css/, no en la raiz. */
 const HOJAS = path.join(raiz, 'public', 'css');
 
-for (const f of ['styles.css', 'catalogo.css', 'stylecarrito.css', 'zapi-bot.css']) {
+for (const f of ['tokens.css', 'styles.css', 'catalogo.css', 'stylecarrito.css', 'zapi-bot.css']) {
     const s = fs.readFileSync(path.join(HOJAS, f), 'utf8');
 
     for (const m of s.matchAll(/(--[a-z-]+)\s*:\s*(#[0-9a-fA-F]{3,8})\s*;/g)) {

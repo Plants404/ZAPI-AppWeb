@@ -1,39 +1,3 @@
-:root {
-  --forest: #1f3a2e;
-  --moss: #3d6b4f;
-  --sage: #8fae91;
-  --leaf: #4a7c59;
-  --cream: #f7f4ec;
-  --verde-secundario: #2e5240;
-  --menta: #e2ebdc;
-  --texto-verde-suave: #cfe0d3;
-  --sand: #ece5d3;
-  --earth: #6b5a44;
-  --ink: #22261f;
-  --muted: #6a6f65;
-  --white: #ffffff;
-
-  --leaf-texto: #2f5c3c;
-  --muted-texto: #5b6058;
-  --borde-input: #6f8f75;
-
-  --error: #a3341f;
-
-  --radius: 14px;
-  --shadow-sm: 0 2px 10px rgba(31, 58, 46, .06);
-  --shadow-md: 0 12px 30px rgba(31, 58, 46, .10);
-  --shadow-lg: 0 24px 60px rgba(31, 58, 46, .18);
-
-  --serif: 'Bebas Neue', Georgia, serif;
-  --sans: 'Inter', system-ui, -apple-system, sans-serif;
-
-  --container: 1180px;
-
-  --gutter: 1.25rem;
-  --header-h: 124px;
-  --filterbar-h: 84px;
-}
-
 * {
   box-sizing: border-box;
 }
@@ -1315,7 +1279,7 @@ body.no-scroll {
   border: 0;
   border-radius: 10px;
   background: #1E3A2B;
-  color: #FFFFFF;
+  color: var(--white);
   font-size: .9rem;
   font-weight: 600;
   letter-spacing: normal;
@@ -1326,7 +1290,7 @@ body.no-scroll {
 
 #inicio .home-products-carousel .add-cart:hover {
   background: #2D5A3F;
-  color: #FFFFFF;
+  color: var(--white);
   transform: none;
   box-shadow: none;
 }
@@ -1488,7 +1452,7 @@ body.no-scroll {
 }
 
 .zapi-hero-trust-text strong {
-  color: #FFFFFF !important;
+  color: var(--white) !important;
 }
 
 /* Responsivo para Móviles y Tabletas */
@@ -1513,7 +1477,7 @@ body.no-scroll {
   align-items: center !important;
   justify-content: space-between !important;
   gap: 20px !important;
-  background-color: #FFFFFF !important;
+  background-color: var(--white) !important;
   border: 1px solid #E2DECB !important;
   border-radius: 12px !important;
   padding: 16px !important;
@@ -2056,11 +2020,11 @@ body.no-scroll {
 
 .service-card--cta .service-card-icono {
   background: rgba(255, 255, 255, .15);
-  color: #ffffff;
+  color: var(--white);
 }
 
 .service-card--cta .service-card-titulo {
-  color: #ffffff;
+  color: var(--white);
 }
 
 .service-card--cta .service-card-texto {
@@ -4120,7 +4084,7 @@ body.con-testimonio-abierto {
 }
 
 .chip-category {
-  background: #f1ede2;
+  background: var(--forest-bg);
   color: var(--leaf-texto);
   border: 1px solid #e4dccb;
   text-transform: uppercase;
@@ -4886,7 +4850,7 @@ footer {
 }
 
 .contacto-card {
-  background-color: #FFFFFF !important;
+  background-color: var(--white) !important;
   border: 1px solid #E2DECB !important;
   border-radius: 16px !important;
   padding: 36px 40px !important;
@@ -4936,7 +4900,7 @@ footer {
   width: 100% !important;
   box-sizing: border-box !important;
   padding: 12px 14px !important;
-  background-color: #FFFFFF !important;
+  background-color: var(--white) !important;
   border: 1.5px solid #1f382b !important;
   border-radius: 10px !important;
   font-size: 14px !important;
@@ -4954,7 +4918,7 @@ footer {
 .contacto-form input:focus,
 .contacto-form textarea:focus {
   border-color: #1f382b !important;
-  background-color: #FFFFFF !important;
+  background-color: var(--white) !important;
   box-shadow: 0 0 0 3px rgba(74, 124, 89, .18) !important;
 }
 
