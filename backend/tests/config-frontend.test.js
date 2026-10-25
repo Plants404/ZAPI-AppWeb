@@ -7,7 +7,7 @@ const { runInNewContext } = require('node:vm');
 const { test } = require('node:test');
 
 const configSource = readFileSync(
-    path.join(__dirname, '../../public/js/config.js'),
+    path.join(__dirname, '../../frontend/public/js/config.js'),
     'utf8'
 );
 

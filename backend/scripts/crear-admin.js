@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
-const User = require('../backend/models/User');
+const User = require('../src/models/User');
 
 async function main() {
     const email = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();

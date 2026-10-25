@@ -77,7 +77,7 @@ module.exports = [
        apagada aca a proposito: que los scripts compartan el ambito
        global es justamente como funciona este sitio. */
     {
-        files: ['public/js/**/*.js'],
+        files: ['frontend/public/js/**/*.js'],
         languageOptions: {
             ecmaVersion: 2024,
             /* 'script' y no 'module': son scripts clasicos, se comparte
@@ -99,12 +99,11 @@ module.exports = [
        CommonJS. */
     {
         files: [
-            'tools/**/*.js',
-            'datos/**/*.js',
+            'frontend/tools/**/*.js',
+            'frontend/datos/**/*.js',
             'backend/**/*.js',
             'netlify/**/*.js',
             'scripts/**/*.js',
-            'tests/**/*.js',
             'eslint.config.js',
         ],
         languageOptions: {

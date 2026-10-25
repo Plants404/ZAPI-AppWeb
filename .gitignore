@@ -1,20 +1,30 @@
-# Estado de base de datos local, nunca código fuente. La barra inicial
-# evita ignorar public/data/, que contiene los JSON versionados del sitio.
-/data/
+# Dependencias instaladas
+node_modules/
+*/node_modules/
 
-# Secretos locales: nunca se versiona ningún archivo .env.
+# Entornos y secretos (excluyendo plantillas de ejemplo)
 .env
 .env.*
+*.env
+*.env.*
+!.env.example
+!*/.env.example
 
-# Dependencias de desarrollo (eslint y globals).
-node_modules/
+# Compilaciones y serverless
 .netlify/
+dist/
+build/
+
+# Datos temporales y logs
+/data/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Sistema operativo y editores
 .DS_Store
 Thumbs.db
 *.swp
-
-# Logs
-*.log
-npm-debug.log*
+.idea/
+.vscode/

@@ -7,6 +7,7 @@ const User = require('../models/User');
 const { createAuthenticate, cookieOptions } = require('../middleware/authenticate');
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const BCRYPT_ROUNDS = 12;
 const DUMMY_PASSWORD_HASH = '$2b$12$Lx4m.IEYSryqr24AhxIBcep/VlfhuI6HbvOFKmV.3R3tH7oV8x6Be';
 
 function userResponse(user) {
@@ -36,14 +37,43 @@ function createAuthRouter(config) {
     const router = express.Router();
     const authenticate = createAuthenticate(config);
 
-    router.post('/registro', async (request, response) => {
-        /* Registro publico desactivado: el sitio opera en modo
-           "solo administrador". Las cuentas de administrador se crean
-           directamente en la base de datos (variable ADMIN_EMAIL /
-           ADMIN_PASSWORD al iniciar). */
-        return response.status(403).json({
-            error: 'El registro de cuentas está desactivado. Este sitio solo admite acceso de administrador.',
-        });
+    router.post('/registro', async (request, response, next) => {
+        if (!config.registroPublico) {
+            /* Registro público desactivado por defecto en producción: el sitio opera en modo
+               "solo administrador". Se habilita con REGISTRO_PUBLICO=true o en entorno de tests. */
+            return response.status(403).json({
+                error: 'El registro de cuentas está desactivado. Este sitio solo admite acceso de administrador.',
+            });
+        }
+        try {
+            const body = request.body || {};
+            const nombre = typeof body.nombre === 'string' ? body.nombre.trim() : '';
+            const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+            const clave = typeof body.clave === 'string' ? body.clave : '';
+
+            if (nombre.length < 2 || nombre.length > 100) {
+                return response.status(400).json({ error: 'El nombre debe tener entre 2 y 100 caracteres.' });
+            }
+
+            if (email.length > 254 || !EMAIL_PATTERN.test(email)) {
+                return response.status(400).json({ error: 'Ingresá un correo válido.' });
+            }
+
+            if (clave.length < 12 || clave.length > 128) {
+                return response.status(400).json({ error: 'La contraseña debe tener entre 12 y 128 caracteres.' });
+            }
+
+            if (await User.exists({ email })) {
+                return response.status(409).json({ error: 'No se pudo crear la cuenta con esos datos.' });
+            }
+
+            const passwordHash = await bcrypt.hash(clave, BCRYPT_ROUNDS);
+            const user = await User.create({ nombre, email, passwordHash });
+            response.cookie(config.cookieName, signSession(user, config), cookieOptions(config));
+            return response.status(201).json({ usuario: userResponse(user) });
+        } catch (error) {
+            return next(error);
+        }
     });
 
     router.post('/login', async (request, response, next) => {

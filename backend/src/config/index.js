@@ -36,6 +36,7 @@ function loadConfig(environment = process.env) {
         cookieMaxAgeMs: 12 * 60 * 60 * 1000,
         trustProxy: Number(environment.TRUST_PROXY) || 0,
         requiereCuenta: parseBoolean(environment.REQUIERE_CUENTA, true),
+        registroPublico: parseBoolean(environment.REGISTRO_PUBLICO, nodeEnv === 'test'),
     };
 }
 

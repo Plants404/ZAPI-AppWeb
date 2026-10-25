@@ -3,7 +3,7 @@
 const assert = require('node:assert/strict');
 const { afterEach, test } = require('node:test');
 const mongoose = require('mongoose');
-const { ensureDatabaseConnected } = require('../../backend/database');
+const { ensureDatabaseConnected } = require('../src/database');
 
 const originalConnect = mongoose.connect;
 

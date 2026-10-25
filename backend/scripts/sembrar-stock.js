@@ -3,8 +3,8 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
-const productosData = require('../public/data/productos.json');
-const Stock = require('../backend/models/Stock');
+const productosData = require('../src/data/productos.json');
+const Stock = require('../src/models/Stock');
 
 async function main() {
     if (!process.env.MONGODB_URI) {
