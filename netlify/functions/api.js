@@ -1,9 +1,9 @@
 'use strict';
 
 const serverless = require('serverless-http');
-const { createApp } = require('../../backend/app');
-const { ensureDatabaseConnected } = require('../../backend/database');
-const { loadConfig, validateConfig } = require('../../backend/config');
+const { createApp } = require('../../backend/src/app');
+const { ensureDatabaseConnected } = require('../../backend/src/database');
+const { loadConfig, validateConfig } = require('../../backend/src/config');
 
 function createFunctionHandler(config = loadConfig(), connect = ensureDatabaseConnected) {
     validateConfig(config);
