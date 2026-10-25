@@ -6,12 +6,12 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const { MongoMemoryReplSet } = require('mongodb-memory-server');
 const request = require('supertest');
-const { createApp } = require('../../backend/app');
-const ContactForm = require('../../backend/models/ContactForm');
-const Order = require('../../backend/models/Order');
-const Stock = require('../../backend/models/Stock');
-const Testimonio = require('../../backend/models/Testimonio');
-const User = require('../../backend/models/User');
+const { createApp } = require('../src/app');
+const ContactForm = require('../src/models/ContactForm');
+const Order = require('../src/models/Order');
+const Stock = require('../src/models/Stock');
+const Testimonio = require('../src/models/Testimonio');
+const User = require('../src/models/User');
 
 const ORIGIN = 'http://localhost:5500';
 const config = {
@@ -26,6 +26,8 @@ const config = {
     cookieSecure: false,
     cookieMaxAgeMs: 12 * 60 * 60 * 1000,
     trustProxy: 0,
+    requiereCuenta: true,
+    registroPublico: true,
 };
 
 let mongoServer;

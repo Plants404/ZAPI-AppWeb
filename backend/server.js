@@ -1,9 +1,9 @@
 'use strict';
 
 const mongoose = require('mongoose');
-const { createApp } = require('./app');
-const { loadConfig, validateConfig } = require('./config');
-const { ensureDatabaseConnected } = require('./database');
+const { createApp } = require('./src/app');
+const { loadConfig, validateConfig } = require('./src/config');
+const { ensureDatabaseConnected } = require('./src/database');
 
 async function start() {
     const config = loadConfig();

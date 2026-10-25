@@ -12,8 +12,9 @@ function fieldError(response, campo, error) {
 function createTestimoniosRouter({ config, readLimiter, writeLimiter }) {
     const router = express.Router();
     const authenticate = createAuthenticate(config);
+    const authenticateForReview = createAuthenticate(config, 'Iniciá sesión para dejar tu opinión.');
     const authenticateOpcional = createAuthenticateOpcional(config);
-    const authMiddleware = config.requiereCuenta ? authenticate : authenticateOpcional;
+    const authMiddleware = config.requiereCuenta ? authenticateForReview : authenticateOpcional;
 
     router.get('/', readLimiter, async (request, response, next) => {
         try {
