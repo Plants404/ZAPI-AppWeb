@@ -8,9 +8,7 @@ const { createAuthenticate, createAuthenticateOpcional } = require('../middlewar
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const FREE_SHIPPING_THRESHOLD = 2500;
 
-function fieldError(response, campo, error) {
-    return response.status(400).json({ error, campo });
-}
+const { fieldError } = require('../utils/fieldError');
 
 function orderItemsFromBody(items, catalog) {
     if (!Array.isArray(items) || items.length === 0 || items.length > 100) {
