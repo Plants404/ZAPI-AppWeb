@@ -5,9 +5,7 @@ const mongoose = require('mongoose');
 const Testimonio = require('../models/Testimonio');
 const { createAuthenticate, createAuthenticateOpcional } = require('../middleware/authenticate');
 
-function fieldError(response, campo, error) {
-    return response.status(400).json({ error, campo });
-}
+const { fieldError } = require('../utils/fieldError');
 
 function createTestimoniosRouter({ config, readLimiter, writeLimiter }) {
     const router = express.Router();

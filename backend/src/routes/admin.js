@@ -10,9 +10,7 @@ const { createRequireAdmin } = require('../middleware/requireAdmin');
 
 const ESTADOS_VALIDOS = ['pendiente', 'confirmado', 'preparando', 'enviado', 'entregado', 'cancelado'];
 
-function fieldError(response, campo, error) {
-    return response.status(400).json({ error, campo });
-}
+const { fieldError } = require('../utils/fieldError');
 
 function createAdminRouter({ config, readLimiter, writeLimiter }) {
     const router = express.Router();
