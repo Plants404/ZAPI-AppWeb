@@ -12,9 +12,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const contador = document.getElementById("contactoContador");
     const consulta = document.getElementById("contactoConsulta");
     const avisoFlotante = document.getElementById("avisoFlotante");
-    const avisoTitulo = document.getElementById("avisoFlotanteTitulo");
-    const avisoMensaje = document.getElementById("avisoFlotanteMensaje");
     const avisoCerrar = document.getElementById("avisoFlotanteCerrar");
+
+    /* ------------------------------------------------------------------
+       Configuracion de EmailJS.
+       Pegá aquí tus valores reales del dashboard de EmailJS.
+       ------------------------------------------------------------------ */
+    const EMAILJS_PUBLIC_KEY = "PEGAR_PUBLIC_KEY_AQUI";
+    const EMAILJS_SERVICE_ID = "PEGAR_SERVICE_ID_AQUI";
+    const EMAILJS_TEMPLATE_ID = "PEGAR_TEMPLATE_ID_AQUI";
 
     const CAMPOS = [
         {
@@ -56,31 +62,26 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     const CORREO = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-
-    const EMAILJS = {
-        publicKey: "svGiYtyfrTzCv-GhG",
-        serviceId: "service_n6oyujo",
-        templateId: "template_35zqdvg"
-    };
+    const LIMITE_MENSAJE = 2000;
 
     const emailjs = window.emailjs;
 
-    if (emailjs && EMAILJS.publicKey && EMAILJS.serviceId && EMAILJS.templateId) {
-        emailjs.init({ publicKey: EMAILJS.publicKey });
+    if (emailjs && EMAILJS_PUBLIC_KEY && !EMAILJS_PUBLIC_KEY.startsWith("PEGAR_")) {
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     }
 
     async function avisarPorCorreo(datos) {
-        if (!emailjs || !EMAILJS.serviceId || !EMAILJS.templateId) {
-            throw new Error("EmailJS no disponible");
+        if (!emailjs || !EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID ||
+            EMAILJS_SERVICE_ID.startsWith("PEGAR_") || EMAILJS_TEMPLATE_ID.startsWith("PEGAR_")) {
+            throw new Error("EmailJS no configurado");
         }
 
-        await emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, {
-            nombre: datos.nombre,
-            correo: datos.correo,
-            asunto: datos.asunto,
-            telefono: datos.telefono || "No dejó teléfono",
-            mensaje: datos.consulta,
-            reply_to: datos.correo
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            name: datos.nombre,
+            email: datos.correo,
+            subject: datos.asunto,
+            phone: datos.telefono || "No dejó teléfono",
+            message: datos.consulta
         });
     }
 
@@ -134,14 +135,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         /* El teléfono se cuenta por dígitos: en Uruguay se escribe con +, guiones y espacios. */
-        if (campo.id === "contactoTelefono" && valor.replace(/\D/g, "").length < 6) {
+        if (campo.id === "contactoTelefono" && valor && valor.replace(/\D/g, "").length < 6) {
             marcarError(campo, campo.corto);
             return campo.corto;
         }
 
-        if (campo.id === "contactoConsulta" && valor.length < 10) {
-            marcarError(campo, campo.corto);
-            return campo.corto;
+        if (campo.id === "contactoConsulta") {
+            if (valor.length < 10) {
+                marcarError(campo, campo.corto);
+                return campo.corto;
+            }
+            if (valor.length > LIMITE_MENSAJE) {
+                marcarError(campo, "El mensaje no puede superar los " + LIMITE_MENSAJE + " caracteres");
+                return "El mensaje no puede superar los " + LIMITE_MENSAJE + " caracteres";
+            }
         }
 
         marcarError(campo, "");
@@ -165,18 +172,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (avisoFlotante) avisoFlotante.hidden = true;
-    }
-
-    function mostrarAviso(titulo, mensaje) {
-        if (!avisoFlotante) return;
-
-        if (avisoTitulo) avisoTitulo.textContent = titulo;
-        if (avisoMensaje) avisoMensaje.textContent = mensaje;
-
-        avisoFlotante.hidden = false;
-
-        if (avisoReloj) clearTimeout(avisoReloj);
-        avisoReloj = setTimeout(ocultarAviso, 9000);
     }
 
     if (avisoCerrar) avisoCerrar.addEventListener("click", ocultarAviso);
@@ -204,6 +199,12 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        /* Honeypot: si viene relleno, no enviar. */
+        const honeypot = document.getElementById("contactoSitio");
+        if (honeypot && honeypot.value.trim() !== "") {
+            return;
+        }
+
         boton.disabled = true;
 
         if (textoBoton) textoBoton.textContent = "Enviando...";
@@ -218,11 +219,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (input) datos[campo.name] = input.value.trim();
         }
 
-        /* El campo trampa (honeypot) viaja con el resto: si viene relleno, el servidor responde ok sin guardar nada. */
-        datos.sitio_web = (document.getElementById("contactoSitio") || {}).value || "";
-
-        /* Sin backend (Show Preview, hosting estatico) la consulta sale
-           solo por correo (EmailJS); no se golpea /api/contacto. */
         const fnHayApi = window.hayApiConfigurada;
         const hayBackend = typeof fnHayApi !== "function" || fnHayApi();
 
@@ -237,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const cuerpo = await respuesta.json().catch(() => ({}));
 
                 if (!respuesta.ok) {
-                    const fallido = CAMPOS.find(campo => campo.id.replace("contacto", "").toLowerCase() === cuerpo.campo);
+                    const fallido = CAMPOS.find(campo => campo.id.replace("contacto", "").toLowerCase() === (cuerpo.campo || "").toLowerCase());
 
                     if (fallido) {
                         marcarError(fallido, cuerpo.error || fallido.corto);
@@ -248,30 +244,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     return;
                 }
-
-                if (!datos.sitio_web) {
-                    try {
-                        await avisarPorCorreo(datos);
-                    } catch {
-                        mostrarAviso(
-                            "El aviso por correo no salió",
-                            "Tu mensaje quedó guardado igual y lo vamos a leer."
-                        );
-                    }
-                }
-            } else if (!datos.sitio_web) {
-                await avisarPorCorreo(datos);
             }
 
-            formulario.hidden = true;
+            /* Envío por EmailJS (sin depender del backend). */
+            try {
+                await avisarPorCorreo({
+                    nombre: datos.nombre,
+                    correo: datos.correo,
+                    asunto: datos.asunto,
+                    telefono: datos.telefono,
+                    consulta: datos.consulta
+                });
+            } catch (err) {
+                console.error("EmailJS error:", err?.status, err?.text);
+
+                if (!navigator.onLine || typeof err?.status === "undefined") {
+                    avisar("Revisá tu conexión", "error");
+                } else if (err.status === 400) {
+                    avisar("Configuración inválida", "error");
+                } else if (err.status === 403) {
+                    avisar("Dominio no autorizado", "error");
+                } else if (err.status === 412) {
+                    avisar("Servicio de correo desconectado", "error");
+                } else {
+                    avisar("Tuvimos un problema, escribinos por WhatsApp al 098 268 560", "error");
+                }
+
+                return;
+            }
+
+            formulario.reset();
+
+            for (const campo of CAMPOS) {
+                marcarError(campo, "");
+            }
 
             if (panelOk) {
                 panelOk.hidden = false;
             }
 
+            avisar("¡Mensaje enviado! Te respondemos a la brevedad.", "ok");
+
+            actualizarContador();
+
             document.getElementById("contactoOkTitulo")?.focus();
         } catch (error) {
-            avisar("No pudimos enviar la consulta. Revisá tu conexión y probá de nuevo.", "error");
+            console.error("Envío error:", error);
+            avisar("Revisá tu conexión", "error");
         } finally {
             boton.disabled = false;
 
@@ -300,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function actualizarContador() {
         if (!contador || !consulta) return;
 
-        const limite = Number(consulta.getAttribute("maxlength")) || 0;
+        const limite = Number(consulta.getAttribute("maxlength")) || LIMITE_MENSAJE;
         const quedan = limite - consulta.value.length;
 
         contador.textContent = Math.max(0, quedan) + "/" + limite;
