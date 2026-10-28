@@ -4,9 +4,7 @@ const express = require('express');
 const Stock = require('../models/Stock');
 const { createAuthenticate } = require('../middleware/authenticate');
 
-function fieldError(response, campo, error) {
-    return response.status(400).json({ error, campo });
-}
+const { fieldError } = require('../utils/fieldError');
 
 function createStockRouter({ config, readLimiter, writeLimiter, productos }) {
     const router = express.Router();

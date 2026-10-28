@@ -13,7 +13,7 @@ async function main() {
 
     const productos = productosData.productos;
     if (!Array.isArray(productos) || productos.length === 0) {
-        throw new Error('No hay productos válidos en public/data/productos.json.');
+        throw new Error('No hay productos válidos en src/data/productos.json.');
     }
 
     for (const producto of productos) {

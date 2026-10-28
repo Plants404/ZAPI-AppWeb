@@ -591,6 +591,17 @@ if (!fs.existsSync(gen)) {
                     malas++;
                 }
             }
+
+            /* Fichas huerfanas: archivos en productos/ que no corresponden
+               a ningun producto del catalogo. */
+            const esperadas = new Set(nombres.map(p => slugGen(p.nombre) + '.html'));
+            const huerfanas = paginas.filter(f => !esperadas.has(f));
+            if (huerfanas.length) {
+                avisar('fichas huerfanas en productos/: ' + huerfanas.join(', '));
+                malas++;
+            } else {
+                ok('sin fichas huerfanas en productos/');
+            }
         }
     }
 

@@ -5,9 +5,7 @@ const ContactForm = require('../models/ContactForm');
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-function fieldError(response, campo, error) {
-    return response.status(400).json({ error, campo });
-}
+const { fieldError } = require('../utils/fieldError');
 
 function createContactRouter({ writeLimiter }) {
     const router = express.Router();
