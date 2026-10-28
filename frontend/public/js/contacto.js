@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
             name: datos.nombre,
             email: datos.correo,
             subject: datos.asunto,
-            phone: datos.telefono || "No dejó teléfono",
+            phone: datos.telefono || "No indicado",
             message: datos.consulta
         });
     }
@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 panelOk.hidden = false;
             }
 
-            avisar("¡Mensaje enviado! Te respondemos a la brevedad.", "ok");
+            avisar("¡Mensaje enviado! Te enviamos una copia a tu correo y respondemos a la brevedad.", "ok");
 
             actualizarContador();
 
