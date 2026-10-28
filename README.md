@@ -1,156 +1,176 @@
-# ZAPI
+# ZAPI — Vivero Agroecológico
 
-Sitio del vivero ZAPI: una home de una sola página por secciones, un
-catálogo con fichas estáticas, un carrito con checkout, cuentas de
-usuario y un asistente por reglas.
+Plataforma web de e-commerce y catálogo para el vivero ZAPI: catálogo interactivo con fichas de producto optimizadas para SEO, carrito de compras con checkout por WhatsApp y API, gestión de inventario, panel de administración, autenticación con JWT en cookies HttpOnly y asistente interactivo por reglas.
 
-El front no usa framework ni build: HTML en la raíz, recursos en
-`public/`, catálogo y testimonios en `datos/`. El navegador carga los
-archivos tal cual.
+La arquitectura del proyecto está desacoplada en dos aplicaciones independientes organizadas en un monorepo modular: **Frontend** y **Backend**.
 
-> El frontend es estático, pero autenticación y envío de opiniones
-> requieren una API. Configurá `URL_API_PRODUCCION` o el meta `zapi-api`
-> antes de publicar esas funciones.
+---
 
-## Stack
+## 🏛️ Arquitectura del Proyecto
 
-- **Frontend:** HTML + CSS + JavaScript clásico (sin módulos ni bundler).
-- **Datos:** JSON generados en `public/data/` a partir de `datos/`.
-- **Herramientas:** Node (>= 24) para generar y verificar.
-- **Pruebas:** no hay (eran de la API).
+```
+ZAPI-AppWeb/
+├── frontend/                  # Aplicación de cliente (HTML5, CSS3, Vanilla JS)
+│   ├── public/                # Estilos, scripts, imágenes y datos estáticos
+│   ├── productos/             # Fichas estáticas de productos con JSON-LD
+│   ├── personaje/             # Recursos gráficos y SVGs del asistente ZAPI
+│   ├── datos/                 # Fuentes de autoría (catalogo.js, testimonios.js)
+│   ├── tools/                 # Servidor local de pruebas, generadores y linters
+│   ├── index.html             # Landing page y tienda principal
+│   ├── catalogo.html          # Catálogo con filtros y modal interactivo
+│   ├── carrito.html           # Carrito y pasarela de checkout
+│   ├── pedidos.html           # Historial de compras
+│   ├── login.html             # Acceso de usuarios y administradores
+│   ├── admin.html             # Panel de administración de e-commerce
+│   ├── 404.html               # Página de error personalizada
+│   ├── .env.example           # Configuración del frontend
+│   ├── package.json           # Scripts independientes del frontend
+│   └── README.md              # Documentación técnica del frontend
+│
+├── backend/                   # API REST modular (Node.js, Express, MongoDB)
+│   ├── src/
+│   │   ├── config/            # Carga y validación de variables de entorno y CORS
+│   │   ├── database/          # Gestor de conexión y reconexión Mongoose
+│   │   ├── middleware/        # Autenticación JWT por cookie y autorización admin
+│   │   ├── models/            # Modelos de datos (User, Order, Stock, etc.)
+│   │   ├── routes/            # Endpoints modulares (auth, pedidos, stock, admin)
+│   │   ├── data/              # Catálogo local para validación y cálculo de precios
+│   │   └── app.js             # Factoría y configuración de la aplicación Express
+│   ├── scripts/               # Scripts administrativos (crear-admin, sembrar-stock)
+│   ├── tests/                 # Suite de pruebas automatizadas con MongoDB en memoria
+│   ├── server.js              # Punto de entrada HTTP del backend
+│   ├── .env.example           # Variables de entorno requeridas
+│   ├── package.json           # Dependencias y scripts del backend
+│   └── README.md              # Documentación técnica del backend
+│
+├── docs/                      # Documentación detallada
+│   ├── architecture.md        # Arquitectura técnica y flujo de datos
+│   ├── api.md                 # Contrato completo de la API REST
+│   └── deployment.md          # Guía de despliegue (Netlify y servidores independientes)
+│
+├── netlify/                   # Adaptador serverless para Netlify Functions
+│   └── functions/api.js       # Handler serverless de la API Express
+│
+├── scripts/                   # Orquestación de desarrollo
+│   └── dev.js                 # Ejecución concurrente de frontend y backend
+│
+├── netlify.toml               # Configuración de despliegue en Netlify
+├── eslint.config.js           # Reglas de linting unificadas
+├── .gitignore                 # Exclusiones de Git y protección de secretos
+├── package.json               # Monorepo y orquestación de comandos
+└── README.md                  # Este documento
+```
 
-## Requisitos
+---
 
-- Node 24 o superior y npm.
+## 📋 Requisitos
 
-## Instalación
+- **Node.js**: versión `>= 24.0.0`
+- **npm**: versión `>= 10.0.0`
+- **MongoDB**: instancia local (configurada como Replica Set para transacciones de pedidos) o cluster en **MongoDB Atlas**.
 
-```sh
+---
+
+## ⚡ Instalación Rápida
+
+Instala las dependencias del monorepo y de cada aplicación:
+
+```bash
 npm install
 ```
 
-## Cómo correrlo
+Configura las variables de entorno del backend copiando la plantilla:
 
-El sitio se sirve **solo por HTTP**. Abrir `index.html` con doble clic
-no funciona: el navegador bloquea el `fetch` del catálogo y la grilla
-queda vacía.
+```bash
+# Windows PowerShell:
+Copy-Item backend/.env.example backend/.env
 
-Servidor estático incluido (sin dependencias):
-
-```sh
-npm start          # http://localhost:5500
+# Linux / macOS:
+cp backend/.env.example backend/.env
 ```
 
-También sirve cualquier otro servidor estático desde la raíz, o la
-extensión **Live Server / Live Preview** de VS Code (el puerto está
-configurado en `.vscode/settings.json`).
-
-Sin backend, solo se puede consultar el catálogo. La autenticación,
-agregar productos al carrito, pedidos y opiniones requieren la API.
-
-## Funcionalidad sin backend
-
-`public/js/config.js` decide si hay API. `URL_API_PRODUCCION` está vacía
-por defecto y no hay meta `zapi-api`; configurá una de esas opciones
-para habilitar autenticación y opiniones en producción.
-
-- **Catálogo:** se lee `public/data/productos.json`.
-- **Stock:** el valor de demostración no representa inventario real.
-- **Carrito / checkout:** requiere autenticación del servidor. El envío
-  es gratis desde $2.500; por debajo de ese monto el costo se coordina.
-- **Cuentas:** requieren una API configurada; no hay credenciales locales
-  ni contraseñas almacenadas en el código del navegador.
-- **Mis pedidos:** los pedidos enviados se guardan en `localStorage`
-  (`zapiPedidosLocal`) y se pueden cancelar (repone el stock local).
-- **Contacto:** el aviso va solo por EmailJS.
-- **Opiniones:** se leen de la API únicamente si cada registro incluye
-  `verificado: true` y `autorizado: true`; el archivo de datos está vacío.
-- **Asistente:** responde por reglas con el catálogo, sin servicio externo.
-
-El login usa autenticación de servidor. No configures contraseñas de demo
-ni sesiones locales como sustituto de la API.
-
-Para conectar una API en local, configurá `URL_API_LOCAL` en
-`config.js` (o inyectá `window.__ZAPI_API__` / un meta `zapi-api`).
-
-## Scripts
-
-| Comando | Qué hace |
-|---|---|
-| `npm start` | Sirve el sitio estático en `http://localhost:5500`. |
-| `npm run lint` | ESLint sobre todo el repo. |
-| `npm run verificar` | Verificación estática de CSS, ARIA, IDs, referencias, XSS, reduced motion y archivos generados. No modifica archivos. |
-| `npm run check` | `lint` + `verificar`. Correr antes de commitear. |
-| `npm run contraste` | Verifica el contraste de los pares de color. |
-| `npm run generar` | Regenera `productos/*.html` desde `datos/catalogo.js` (y poda fichas huérfanas). |
-| `npm run generar:testimonios` | Regenera `public/data/testimonios.json` desde `datos/testimonios.js`. |
-| `npm run css` | Regenera `catalogo-modal.css` y `catalogo-catalogo.css` desde `catalogo.css`. |
-| `npm run sitemap` | Regenera `sitemap.xml`. |
-
-## Estructura
-
-```
-index.html, catalogo.html, carrito.html, pedidos.html,
-login.html, 404.html            Páginas. Los HTML viven en la raíz.
-productos/                      Fichas estáticas, generadas.
-datos/                          Fuentes que se editan a mano
-                                (catalogo.js, testimonios.js).
-public/data/                    JSON que baja el navegador (generados).
-public/js/                      Scripts del navegador.
-public/css/                     Hojas de estilo (catalogo.css es la
-                                fuente; catalogo-*.css se generan).
-public/img/                     Imágenes optimizadas.
-tools/                          Servidor estático, generadores y verificadores.
+Edita `backend/.env` con tu cadena `MONGODB_URI` y genera un secreto para `JWT_SECRET`:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-## Datos: una sola fuente
+---
 
-- **Catálogo:** `datos/catalogo.js` es la fuente. De ahí salen las
-  tarjetas del navegador (`public/data/productos.json`), las fichas de
-  `productos/` (`npm run generar`) y `sitemap.xml`. Para cambiar un
-  precio se toca solo `datos/catalogo.js`, y después `npm run generar`
-  y `npm run verificar`.
-- **Testimonios:** `datos/testimonios.js` es la fuente para sembrar la
-  API. No se publican opiniones hasta contar con testimonios verificados
-  y autorizados.
+## 🚀 Ejecución en Desarrollo
 
-La verificación compara archivos sin regenerarlos ni podar fichas.
-Después de cambiar una fuente, ejecutá por separado el generador
-correspondiente (`npm run css`, `npm run generar` o
-`npm run generar:testimonios`) y revisá los cambios antes de commitear.
+Puedes ejecutar ambas aplicaciones simultáneamente o de forma individual:
 
-## Formulario de contacto
+### 1. Iniciar Frontend y Backend simultáneamente
+```bash
+npm run dev
+```
+Inicia el backend en `http://localhost:5501` y el frontend en `http://localhost:5500`.
 
-`index.html` → `public/js/contacto.js` valida y dispara un aviso por
-correo con **EmailJS** (SDK desde jsdelivr). Sin backend no hay dónde
-guardar la consulta: el aviso por correo es el único envío.
+### 2. Iniciar aplicaciones por separado
 
-El mapa de la sección "Nosotros" es un embed de Google Maps
-(`frame-src https://www.google.com`, `connect-src`/`script-src`
-acotados a los dominios que el sitio usa).
+**Solo Frontend:**
+```bash
+npm run start:frontend
+# O directamente dentro del directorio:
+cd frontend && npm start
+```
+Disponible en: `http://localhost:5500`
 
-## Asistente
+**Solo Backend:**
+```bash
+npm run start:backend
+# O directamente dentro del directorio:
+cd backend && npm start
+```
+Disponible en: `http://localhost:5501`
 
-`public/js/zapi-bot.js` responde por palabras clave con las reglas de
-negocio y el catálogo real: las recomendaciones se filtran contra el
-catálogo, así que nunca sale un producto inventado. No depende de
-ningún servicio externo.
+---
 
-## Convenciones
+## 🧪 Pruebas y Verificación de Calidad
 
-- Indentación de 4 espacios; sin formateador automático.
-- `.editorconfig` fija UTF-8, LF, 4 espacios y sin espacios al final
-  de línea.
-- Tras editar `catalogo.css` hay que correr `npm run css` (ese archivo es
-  la fuente de `catalogo-catalogo.css` y `catalogo-modal.css`).
+El proyecto cuenta con suites automatizadas de pruebas y comprobación estática:
 
-## Estado de verificación
+```bash
+# Ejecutar todas las pruebas unitarias y de integración de la API (32 tests):
+npm test
 
-| Qué | Estado |
-|---|---|
-| Verificación estática (`npm run verificar`) | OK |
-| Contraste de color (`npm run contraste`) | OK |
-| ESLint (`npm run lint`) | 0 errores |
-| Tests | no hay (eran de la API, retirada) |
-| Formateador automático | no hay, a propósito |
-| CI | no hay |
+# Ejecutar el linter en todo el proyecto:
+npm run lint
+
+# Ejecutar la verificación estática de accesibilidad, ARIA, CSS, XSS y enlaces:
+npm run verificar
+
+# Ejecutar linter + verificación estática de forma combinada:
+npm run check
+
+# Comprobar ratios de contraste WCAG en todos los estilos:
+npm run contraste
+```
+
+---
+
+## 🛠️ Tareas Administrativas y Generadores
+
+```bash
+# Crear o actualizar el usuario administrador inicial en MongoDB:
+npm run admin:crear
+
+# Poblar el inventario inicial de productos en la base de datos:
+npm run stock:sembrar
+
+# Regenerar fichas de productos HTML y catálogo JSON tras editar datos/catalogo.js:
+npm run generar
+
+# Regenerar sitemap.xml y robots.txt:
+npm run sitemap
+```
+
+---
+
+## 📚 Documentación Técnica Detallada
+
+- [Arquitectura del Sistema](docs/architecture.md)
+- [Referencia y Endpoints de la API REST](docs/api.md)
+- [Guía de Despliegue en Producción](docs/deployment.md)
+- [Documentación del Frontend](frontend/README.md)
+- [Documentación del Backend](backend/README.md)

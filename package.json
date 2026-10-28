@@ -1,17 +1,31 @@
 {
-  "name": "zapi-appweb",
+  "name": "zapi-monorepo",
   "private": true,
-  "description": "Sitio de ZAPI: HTML en la raiz, recursos en public/, catalogo en datos/ y herramientas en tools/. Sin backend: es un sitio estatico.",
+  "description": "Monorepo ZAPI con Frontend estático y Backend API REST en directorios independientes.",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
   "scripts": {
-    "start": "node tools/servir.js",
-    "verificar": "node tools/verificar.js",
+    "dev": "node scripts/dev.js",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "start": "npm run start --prefix frontend",
+    "start:frontend": "npm run start --prefix frontend",
+    "start:backend": "npm run start --prefix backend",
+    "start:api": "npm run start --prefix backend",
+    "test": "npm run test --prefix backend",
+    "test:api": "npm run test --prefix backend",
+    "verificar": "npm run verificar --prefix frontend",
     "lint": "eslint .",
     "check": "npm run lint && npm run verificar",
-    "contraste": "node tools/contraste.js",
-    "generar": "node tools/generar-productos.js",
-    "generar:testimonios": "node tools/generar-testimonios.js",
-    "sitemap": "node tools/generar-sitemap.js",
-    "css": "node tools/extraer-modal-css.js"
+    "contraste": "npm run contraste --prefix frontend",
+    "generar": "npm run generar --prefix frontend",
+    "generar:testimonios": "npm run generar:testimonios --prefix frontend",
+    "sitemap": "npm run sitemap --prefix frontend",
+    "css": "npm run css --prefix frontend",
+    "admin:crear": "npm run admin:crear --prefix backend",
+    "stock:sembrar": "npm run stock:sembrar --prefix backend"
   },
   "engines": {
     "node": ">=24"

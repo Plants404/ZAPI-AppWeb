@@ -1,22 +1,30 @@
-# Base de datos: estado, no codigo. Hoy no hay backend, pero la regla
-# queda para cuando se vuelva a armar (pedidos, telefonos, stock).
-# La barra inicial importa: sin ella, git ignoraria tambien
-# public/data/, que es el catalogo en JSON que si se versiona.
-/data/
+# Dependencias instaladas
+node_modules/
+*/node_modules/
 
-# Secretos. Cuando vuelva el backend leera .env. Nunca se versiona
-# ningun .env.
+# Entornos y secretos (excluyendo plantillas de ejemplo)
 .env
 .env.*
+*.env
+*.env.*
+!.env.example
+!*/.env.example
 
-# Dependencias de desarrollo (eslint y globals).
-node_modules/
+# Compilaciones y serverless
+.netlify/
+dist/
+build/
+
+# Datos temporales y logs
+/data/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Sistema operativo y editores
 .DS_Store
 Thumbs.db
 *.swp
-
-# Logs
-*.log
-npm-debug.log*
+.idea/
+.vscode/
