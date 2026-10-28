@@ -258,11 +258,10 @@ button.link:focus-visible{
     padding: .7rem 1.5rem;
     border-radius: 999px;
     border: 1.5px solid var(--forest);
-    background: transparent;
-    color: var(--forest);
+    background: var(--forest);
+    color: var(--cream);
     font: 600 14px var(--sans);
     text-decoration: none;
-    transition: background .2s, color .2s, transform .2s;
 }
 .volver:hover,
 .volver:focus-visible{
