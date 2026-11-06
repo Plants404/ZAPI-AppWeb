@@ -1,97 +1,88 @@
-(function () {
+'use strict';
 
-  const formulario = document.getElementById("headerSearch");
-  const input = document.getElementById("searchInput");
-  const botonLimpiar = document.getElementById("searchClear");
-  const aviso = document.getElementById("searchStatus");
-  const catalogo = document.getElementById("catalogo");
+/* Búsqueda del encabezado. En el catálogo filtra en vivo; en el resto de
+   las páginas el formulario navega a catalogo.html?q=… y el catálogo
+   aplica el término al cargar. */
 
-  if (!formulario || !input || !window.aplicarBusqueda) return;
+const formularioBusqueda = document.getElementById("headerSearch");
+const entradaBusqueda = document.getElementById("searchInput");
+const limpiarBusqueda = document.getElementById("searchClear");
+const estadoBusqueda = document.getElementById("searchStatus");
 
-  const escribir = texto => {
-    input.value = texto;
-    const hay = texto.length > 0;
-    if (botonLimpiar) botonLimpiar.hidden = !hay;
-  };
+function sincronizarBotonLimpiar() {
+    if (limpiarBusqueda) limpiarBusqueda.hidden = !entradaBusqueda.value;
+}
 
-  const anunciar = texto => {
-    if (!aviso) return;
-    if (aviso.textContent === texto) return;
-    aviso.textContent = texto;
-  };
+function anunciarResultados(termino, cantidad) {
+    if (!estadoBusqueda) return;
 
-  const plural = (n, singular, pluralForma) => n === 1 ? singular : pluralForma;
+    const mensaje = termino && cantidad > 0
+        ? cantidad + (cantidad === 1 ? " producto" : " productos") + ' para "' + termino + '".'
+        : "";
 
-  const anunciarResultados = (limpio, encontrados) => {
-    anunciar(limpio && encontrados > 0
-      ? `${encontrados} ${plural(encontrados, "producto", "productos")} para "${limpio}".`
-      : "");
-  };
+    if (estadoBusqueda.textContent !== mensaje) estadoBusqueda.textContent = mensaje;
+}
 
-  const buscar = texto => {
+function refrescarCampoBuscador(texto) {
+    entradaBusqueda.value = texto;
+    sincronizarBotonLimpiar();
+    anunciarResultados(texto.trim(), 0);
+}
+
+function buscarEnElCatalogo(texto) {
     const encontrados = window.aplicarBusqueda(texto);
 
-    escribir(texto);
+    entradaBusqueda.value = texto;
+    sincronizarBotonLimpiar();
     anunciarResultados(texto.trim(), encontrados);
+}
 
-    return encontrados;
-  };
+if (formularioBusqueda && entradaBusqueda) {
+    const hayCatalogo = typeof window.aplicarBusqueda === "function";
 
-  input.addEventListener("input", function () {
-    buscar(input.value);
-  });
+    formularioBusqueda.addEventListener("submit", evento => {
+        if (!hayCatalogo) return;
 
-  let yaSaltoAlCatalogo = false;
-
-  const irAlCatalogo = () => {
-    if (yaSaltoAlCatalogo || !catalogo) return;
-    if (!catalogo.classList.contains("hidden")) return;
-
-    yaSaltoAlCatalogo = true;
-
-    const botonCatalogo = document.querySelector('.nav-link[data-section="catalogo"]');
-    if (botonCatalogo) botonCatalogo.click();
-  };
-
-  input.addEventListener("focus", irAlCatalogo);
-  input.addEventListener("input", irAlCatalogo);
-
-  document.addEventListener("click", function (event) {
-    const boton = event.target.closest("[data-section]");
-    if (!boton) return;
-    yaSaltoAlCatalogo = boton.dataset.section === "catalogo";
-  });
-
-  if (botonLimpiar) {
-    botonLimpiar.addEventListener("click", function () {
-      buscar("");
-      input.focus();
+        evento.preventDefault();
+        buscarEnElCatalogo(entradaBusqueda.value);
     });
-  }
 
-  input.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && input.value.length > 0) {
-      event.stopPropagation();
-      event.preventDefault();
-      buscar("");
+    entradaBusqueda.addEventListener("input", () => {
+        sincronizarBotonLimpiar();
+
+        if (hayCatalogo) buscarEnElCatalogo(entradaBusqueda.value);
+        else anunciarResultados("", 0);
+    });
+
+    entradaBusqueda.addEventListener("keydown", evento => {
+        if (evento.key === "Escape" && entradaBusqueda.value) {
+            evento.preventDefault();
+
+            if (hayCatalogo) buscarEnElCatalogo("");
+            else {
+                entradaBusqueda.value = "";
+                sincronizarBotonLimpiar();
+            }
+        }
+    });
+
+    if (limpiarBusqueda) {
+        limpiarBusqueda.addEventListener("click", () => {
+            if (hayCatalogo) buscarEnElCatalogo("");
+            else {
+                entradaBusqueda.value = "";
+                sincronizarBotonLimpiar();
+            }
+
+            entradaBusqueda.focus();
+        });
     }
-  });
 
-  window.refrescarCampoBuscador = escribir;
+    if (hayCatalogo) {
+        const termino = new URLSearchParams(window.location.search).get("q");
 
-  window.enfocarBuscadorHeader = function () {
-    input.focus();
-  };
+        if (termino) buscarEnElCatalogo(termino);
+    }
 
-  window.refrescarContadorBuscador = function (encontrados) {
-    anunciarResultados(input.value.trim(), encontrados);
-  };
-
-  formulario.addEventListener("submit", function (event) {
-    event.preventDefault();
-  });
-
-  const terminoInicial = new URLSearchParams(window.location.search).get("q");
-  if (terminoInicial) buscar(terminoInicial);
-
-})();
+    sincronizarBotonLimpiar();
+}

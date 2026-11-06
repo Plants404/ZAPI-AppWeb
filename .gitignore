@@ -1,26 +1,16 @@
 # Dependencias instaladas
 node_modules/
-*/node_modules/
 
-# Entornos y secretos (excluyendo plantillas de ejemplo)
+# Entornos y secretos locales
 .env
 .env.*
 *.env
-*.env.*
-!.env.example
-!*/.env.example
 
-# Compilaciones y serverless
+# Salidas de herramientas y editor
 .netlify/
 dist/
 build/
-
-# Datos temporales y logs
-/data/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Sistema operativo y editores
 .DS_Store

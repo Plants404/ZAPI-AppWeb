@@ -1,0 +1,117 @@
+/* Servicios: grilla de propuestas y cierre con llamado a presupuesto. */
+
+.servicios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--espacio-md);
+}
+
+.servicio-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    padding: var(--espacio-md);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    box-shadow: var(--sombra-sm);
+}
+
+.servicio-icono {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 50%;
+    background: var(--sand);
+    color: var(--forest);
+}
+
+.servicio-numero {
+    position: absolute;
+    top: var(--espacio-md);
+    right: var(--espacio-md);
+    color: var(--borde);
+    font-family: var(--serif);
+    font-size: var(--fs-2xl);
+    line-height: 1;
+}
+
+.servicio-card h3 {
+    font-size: var(--fs-xl);
+}
+
+.servicio-card p {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+}
+
+.servicio-card .enlace-flecha {
+    margin-top: auto;
+    padding-top: var(--espacio-sm);
+}
+
+.servicios-cierre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-lg);
+    max-width: var(--ancho);
+    margin: 0 auto var(--espacio-xl);
+    padding: var(--espacio-lg);
+    border-radius: var(--radio);
+    background: var(--forest);
+    color: var(--cream);
+}
+
+.servicios-cierre h2 {
+    max-width: 24ch;
+    margin: .2rem 0 .4rem;
+    color: var(--white);
+}
+
+.servicios-cierre p {
+    max-width: 52ch;
+    color: rgb(247 244 236 / 78%);
+}
+
+.servicios-cierre .etiqueta {
+    color: var(--sand);
+}
+
+.servicios-cierre .boton-primario {
+    flex: 0 0 auto;
+    background: var(--white);
+    color: var(--forest);
+}
+
+.servicios-cierre .boton-primario:hover {
+    background: var(--sand);
+    color: var(--forest);
+}
+
+@media (max-width: 768px) {
+    .servicios-cierre {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-right: var(--espacio-md);
+        margin-left: var(--espacio-md);
+    }
+}
+
+@media (max-width: 600px) {
+    .servicios-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .servicios-cierre {
+        margin-right: var(--espacio-sm);
+        margin-left: var(--espacio-sm);
+        padding: var(--espacio-md);
+    }
+
+    .servicios-cierre .boton {
+        width: 100%;
+    }
+}

@@ -1,6 +1,6 @@
 ---
 name fullstack-architect
-description Agente Full Stack especializado en arquitectura, frontend, backend, bases de datos, seguridad, UXUI, pruebas y despliegue.
+description Agente Full Stack especializado en arquitectura, frontend estático, seguridad, UXUI, pruebas y despliegue.
 ---
 
 # Full Stack Architect

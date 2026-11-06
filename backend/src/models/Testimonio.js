@@ -33,29 +33,34 @@ const testimonioSchema = new mongoose.Schema({
             message: 'La calificación debe ser un número entero.',
         },
     },
-    verificado: {
-        type: Boolean,
+    estado: {
+        type: String,
         required: true,
-        default: false,
+        enum: ['pendiente', 'aprobado', 'rechazado'],
+        default: 'pendiente',
     },
-    autorizado: {
-        type: Boolean,
-        required: true,
-        default: false,
+    motivoRechazo: {
+        type: String,
+        trim: true,
+        maxlength: 300,
+        default: null,
     },
-    userId: {
+    usuario: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: false,
         default: null,
         index: true,
+    },
+    productoId: {
+        type: Number,
+        default: null,
     },
 }, {
     timestamps: true,
     versionKey: false,
 });
 
-testimonioSchema.index({ verificado: 1, autorizado: 1, createdAt: -1 });
+testimonioSchema.index({ estado: 1, createdAt: -1 });
 
 module.exports = mongoose.models.Testimonio
     || mongoose.model('Testimonio', testimonioSchema);
