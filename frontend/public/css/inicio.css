@@ -1,0 +1,210 @@
+/* Portada: hero, destacados y testimonios publicados. */
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: var(--espacio-xl);
+    align-items: center;
+    max-width: var(--ancho);
+    margin: 0 auto;
+    padding: var(--espacio-xl) var(--espacio-md);
+}
+
+.hero-copy h1 {
+    max-width: 13ch;
+    margin: .4rem 0 1rem;
+}
+
+.hero-lead {
+    max-width: 52ch;
+    color: var(--muted);
+    font-size: var(--fs-lg);
+}
+
+.hero-beneficios {
+    display: grid;
+    gap: .55rem;
+    margin: var(--espacio-md) 0;
+}
+
+.hero-beneficios li {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    color: var(--forest);
+    font-size: var(--fs-sm);
+}
+
+.hero-beneficios .material-symbols-outlined {
+    color: var(--leaf);
+}
+
+.hero-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espacio-sm);
+    margin-top: var(--espacio-md);
+}
+
+.hero-visual {
+    position: relative;
+}
+
+.hero-visual img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radio);
+    object-fit: cover;
+    box-shadow: var(--sombra-md);
+}
+
+.hero-sello {
+    position: absolute;
+    right: var(--espacio-md);
+    bottom: var(--espacio-md);
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    max-width: calc(100% - 2 * var(--espacio-md));
+    padding: .55rem .8rem;
+    border-radius: var(--radio-pill);
+    background: var(--white);
+    color: var(--forest);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    box-shadow: var(--sombra-sm);
+}
+
+.hero-sello .material-symbols-outlined {
+    color: var(--leaf);
+}
+
+.destacados {
+    padding-top: 0;
+}
+
+.testimonios {
+    padding-top: 0;
+}
+
+.testimonios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--espacio-md);
+}
+
+.opinion {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    padding: var(--espacio-md);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    box-shadow: var(--sombra-sm);
+}
+
+.opinion blockquote {
+    margin: 0;
+    color: var(--ink);
+}
+
+.opinion-firma {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-top: auto;
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+}
+
+.opinion-firma div {
+    display: grid;
+    line-height: 1.35;
+}
+
+.opinion-firma cite {
+    color: var(--forest);
+    font-style: normal;
+    font-weight: 600;
+}
+
+.opinion-firma span {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+.opinion-avatar {
+    display: grid;
+    flex: 0 0 2.4rem;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    background: var(--sand);
+    color: var(--forest);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+}
+
+.opinion-producto {
+    color: var(--moss);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.opinion-producto:hover {
+    text-decoration: underline;
+}
+
+.testimonios-vacio {
+    padding: var(--espacio-lg);
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    color: var(--muted);
+    text-align: center;
+}
+
+.testimonios-accion {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--espacio-lg);
+}
+
+@media (max-width: 1024px) {
+    .hero {
+        gap: var(--espacio-lg);
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        grid-template-columns: 1fr;
+        padding: var(--espacio-lg) var(--espacio-md);
+    }
+
+    .hero-copy h1 {
+        max-width: 18ch;
+    }
+
+    .hero-visual {
+        grid-row: 1;
+    }
+
+    .hero-visual img {
+        aspect-ratio: 16 / 10;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-acciones .boton {
+        width: 100%;
+    }
+
+    .hero-sello {
+        right: var(--espacio-sm);
+        bottom: var(--espacio-sm);
+    }
+}

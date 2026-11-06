@@ -1,37 +1,44 @@
 {
-  "name": "zapi-monorepo",
+  "name": "zapi-appweb",
+  "version": "3.0.0",
   "private": true,
-  "description": "Monorepo ZAPI con Frontend estático y Backend API REST en directorios independientes.",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "description": "Sitio, API y panel de administración del vivero agroecológico ZAPI.",
   "scripts": {
+    "start": "node scripts/dev.js",
     "dev": "node scripts/dev.js",
-    "dev:frontend": "npm run dev --prefix frontend",
-    "dev:backend": "npm run dev --prefix backend",
-    "start": "npm run start --prefix frontend",
-    "start:frontend": "npm run start --prefix frontend",
-    "start:backend": "npm run start --prefix backend",
-    "start:api": "npm run start --prefix backend",
-    "test": "npm run test --prefix backend",
-    "test:api": "npm run test --prefix backend",
-    "verificar": "npm run verificar --prefix frontend",
+    "api": "node backend/server.js",
+    "frontend": "node frontend/tools/servir.js",
+    "generar": "node frontend/tools/construir.js && node frontend/tools/generar-sitemap.js",
+    "verificar": "node frontend/tools/verificar.js",
     "lint": "eslint .",
     "check": "npm run lint && npm run verificar",
-    "contraste": "npm run contraste --prefix frontend",
-    "generar": "npm run generar --prefix frontend",
-    "generar:testimonios": "npm run generar:testimonios --prefix frontend",
-    "sitemap": "npm run sitemap --prefix frontend",
-    "css": "npm run css --prefix frontend",
-    "admin:crear": "npm run admin:crear --prefix backend",
-    "stock:sembrar": "npm run stock:sembrar --prefix backend"
+    "test": "node --test backend/tests/*.test.js",
+    "test:api": "node --test backend/tests/*.test.js",
+    "test:e2e": "node --test e2e/*.test.js",
+    "seed:catalogo": "node backend/scripts/sembrar-catalogo.js",
+    "seed:contenido": "node backend/scripts/sembrar-contenido.js",
+    "admin:crear": "node backend/scripts/crear-admin.js"
   },
   "engines": {
     "node": ">=24"
   },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.11.2",
+    "serverless-http": "^4.0.0"
+  },
   "devDependencies": {
     "eslint": "^10.12.0",
-    "globals": "^17.13.0"
+    "globals": "^17.13.0",
+    "mongodb-memory-server": "^11.3.0",
+    "puppeteer-core": "^25.16.0",
+    "supertest": "^7.3.1"
   }
 }

@@ -1,6 +1,7 @@
 [build]
   publish = "frontend"
   functions = "netlify/functions"
+  command = "npm run generar"
 
 [build.environment]
   NODE_VERSION = "24"
