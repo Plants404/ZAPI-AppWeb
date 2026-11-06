@@ -309,6 +309,9 @@ main:focus {
     display: flex;
     flex-wrap: wrap;
     gap: .35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
     color: var(--muted);
     font-size: var(--fs-sm);
 }
@@ -410,6 +413,10 @@ main:focus {
 }
 
 @media (max-width: 1024px) {
+    .site-header {
+        backdrop-filter: none;
+    }
+
     .menu-boton {
         display: inline-flex;
     }
