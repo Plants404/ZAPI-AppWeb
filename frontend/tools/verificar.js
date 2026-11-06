@@ -1,720 +1,598 @@
 'use strict';
-/* Verificacion estatica del sitio. Usage: node tools/verificar.js
-   No modifica archivos: los generadores se ejecutan por separado. */
+/* Verificación estática del sitio, la API y el panel.
+   Uso: node frontend/tools/verificar.js
+
+   No modifica archivos. Comprueba que el HTML publicado sea reproducible
+   desde las fuentes, que las páginas compartan cabecera, pie y orden de
+   carga, que el catálogo semilla sea válido, que no queden restos de la
+   versión estática y que el sitemap y robots.txt estén al día. */
 
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
 const raiz = path.join(__dirname, '..');
+const raizProyecto = path.join(raiz, '..');
+const css = path.join(raiz, 'public', 'css');
+const js = path.join(raiz, 'public', 'js');
 
-/* Los HTML siguen en la raiz para no cambiar las URLs publicas
-   (/catalogo.html, /productos/albahaca.html). Los estilos, scripts e
-   imagenes viven en public/. */
-const HTML = ['index.html', 'catalogo.html', 'carrito.html', 'pedidos.html',
-    'login.html', '404.html'];
-const CSS = ['styles.css', 'catalogo.css', 'catalogo-modal.css',
-    'catalogo-catalogo.css', 'stylecarrito.css', 'pedidos.css', 'zapi-bot.css',
-    'login.css', 'tokens.css', 'estilos-producto.css',
-    '404.css'];
-const JS = ['config.js', 'auth-ui.js', 'productos.js', 'modal.js', 'catalogo.js',
-    'carrito.js', 'pedidos.js', 'testimonio-form.js', 'zapi-bot.js',
-    'navigation.js', 'buscador.js', 'home-carousel.js', 'productos-pagina.js',
-    'menu.js', 'testimonios.js', 'contacto.js', 'login.js', '404.js'];
+let fallos = 0;
+let avisos = 0;
 
-const rutaCss = nombre => path.join(raiz, 'public', 'css', nombre);
-const rutaJs = nombre => path.join(raiz, 'public', 'js', nombre);
-const rutaCatalogo = nombre => path.join(raiz, 'datos', nombre);
-const rutaCatalogoJSON = () => path.join(raiz, 'public', 'data', 'productos.json');
-const rutaTestimoniosJSON = () => path.join(raiz, 'public', 'data', 'testimonios.json');
-
-/* El catalogo vive en datos/catalogo.js, que se importa con require() y
-   ya esta. Devuelve null si no se puede leer, para que el que llama
-   avise en vez de reventar. */
-function leerCatalogoFuente() {
-    try {
-        return require(rutaCatalogo('catalogo.js')).PRODUCTOS;
-    } catch (error) {
-        avisar('no se pudo importar datos/catalogo.js: ' + error.message);
-        return null;
-    }
+function ok(mensaje) {
+    console.log('  ok   ' + mensaje);
 }
 
-/* El JSON que baja el navegador. Devuelve la lista de
-   productos, o null si el archivo no esta o esta roto. */
-function leerCatalogoJSON() {
-    try {
-        const documento = JSON.parse(fs.readFileSync(rutaCatalogoJSON(), 'utf8'));
-        return Array.isArray(documento.productos) ? documento.productos : null;
-    } catch {
-        return null;
-    }
+function error(mensaje) {
+    fallos += 1;
+    console.log('  FALLA ' + mensaje);
 }
 
-/* Igual que el catalogo, pero para testimonios. La fuente es
-   datos/testimonios.js (requirable porque es un modulo de Node) y
-   el JSON que baja el carrusel es public/data/testimonios.json. */
-function leerTestimoniosFuente() {
-    try {
-        return require(rutaCatalogo('testimonios.js')).TESTIMONIOS;
-    } catch (error) {
-        avisar('no se pudo importar datos/testimonios.js: ' + error.message);
-        return null;
-    }
+function aviso(mensaje) {
+    avisos += 1;
+    console.log('  aviso ' + mensaje);
 }
 
-function leerTestimoniosJSON() {
-    try {
-        const documento = JSON.parse(fs.readFileSync(rutaTestimoniosJSON(), 'utf8'));
-        return Array.isArray(documento.testimonios) ? documento.testimonios : null;
-    } catch {
-        return null;
-    }
+function seccion(titulo) {
+    console.log('\n' + titulo);
 }
 
-let problemas = 0;
-const avisar = m => { problemas++; console.log('  FALLA  ' + m); };
-const ok = m => console.log('  ok     ' + m);
-
-/* --- 1. CSS: llaves balanceadas --- */
-console.log('\nCSS');
-for (const f of CSS) {
-    const s = fs.readFileSync(rutaCss(f), 'utf8');
-    let d = 0;
-    for (const c of s) { if (c === '{') d++; if (c === '}') d--; }
-    if (d === 0) ok(f); else avisar(f + ' llaves desbalanceadas: ' + d);
+function leer(archivo) {
+    return fs.readFileSync(archivo, 'utf8');
 }
 
-/* --- 2. ARIA apunta a algo que existe ---
-   aria-describedby y aria-labelledby aceptan una lista de ids
-   separados por espacio (el formulario de contacto describe el
-   campo con el mensaje de error y con la ayuda a la vez), asi que
-   la lista se parte antes de comparar. */
-console.log('\nARIA');
-for (const f of HTML) {
-    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
-    const ids = new Set(Array.from(s.matchAll(/id="([^"]+)"/g), m => m[1]));
-    let malos = 0;
-    for (const m of s.matchAll(/aria-(?:controls|describedby|labelledby)="([^"]+)"/g)) {
-        for (const destino of m[1].trim().split(/\s+/)) {
-            if (!ids.has(destino)) { avisar(f + ' aria apunta a #' + destino + ' que no existe'); malos++; }
-        }
-    }
-    if (!malos) ok(f);
+function existe(archivo) {
+    return fs.existsSync(archivo);
 }
 
-/* --- 3. IDs duplicados --- */
-console.log('\nIDs duplicados');
-for (const f of HTML) {
-    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
-    const ids = Array.from(s.matchAll(/id="([^"]+)"/g), m => m[1]);
-    const dup = ids.filter((v, i) => ids.indexOf(v) !== i);
-    if (dup.length) avisar(f + ' duplicados: ' + [...new Set(dup)].join(', '));
-    else ok(f);
+function ejecutar(script) {
+    return spawnSync(process.execPath, [path.join(__dirname, script), '--revisar'], {
+        encoding: 'utf8'
+    });
 }
 
-/* --- 4. Referencias locales que existen --- */
-console.log('\nReferencias locales');
-for (const f of HTML) {
-    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
-    let malas = 0;
-    for (const m of s.matchAll(/(?:href|src)="(\.\/[^"#]+)"/g)) {
-        if (!fs.existsSync(path.join(raiz, m[1].replace('./', '')))) {
-            avisar(f + ' referencia rota: ' + m[1]); malas++;
-        }
-    }
-    /* Sin rutas absolutas a la raiz del dominio ("/..."): en local
-       funcionan, pero en GitHub Pages bajo subpath escapan del sitio
-       y dan 404. Valen las relativas (./) y las URLs completas. */
-    for (const m of s.matchAll(/(?:href|src)="(\/[^"]*)"/g)) {
-        if (m[1].startsWith('//')) continue;
-        avisar(f + ' ruta absoluta a raiz: ' + m[1] + ' (usar relativa ./)'); malas++;
-    }
-    if (!malas) ok(f);
-}
+/* 1. Reproducibilidad del HTML, sitemap y robots. */
+seccion('Generación reproducible');
 
-/* --- 5. XSS: nada interpolado entra crudo a un innerHTML ---
-   Solo importan las interpolaciones ${algo.prop} que caen dentro
-   de una plantilla con HTML. Para no marcar de mas se siguen las
-   plantillas linea a linea: se entra en una cuando aparece un
-   acento grave, y se sale en el acento grave que la cierra. Si
-   el bloque tiene una etiqueta (<algo), se revisa; si es solo
-   texto (un mensaje de WhatsApp, por ejemplo) no, porque ahi el
-   escapado hasta estorbaria.
+for (const script of ['construir.js', 'generar-sitemap.js']) {
+    const resultado = ejecutar(script);
 
-   Ademas no se revisan las asignaciones a propiedades que no son
-   markup (alt, textContent, value, src): ahi el navegador
-   escribe texto. */
-console.log('\nXSS');
-const INTERP = /\$\{([a-zA-Z_$][\w$]*(?:\.[a-zA-Z_$][\w$]*)*)\}/g;
-const NUMERICO = /\.(id|cantidad|precio|precioBase|indice|total|subtotal|length)$/;
-const DATOS_FIJOS = /^(ZAPI_[A-Z_]+|p|c)(\.|$)/;
-
-/* Nombres sueltos que solo pueden ser un numero: indices de un
-   forEach o de un map, y cuentas que arma el bot. */
-const NUMEROS = /^(i|j|idx|indice|indiceActual|n|pos|total|cantidad|unidades|totalCarrito)$/;
-
-/* Variables que guardan HTML a proposito y se declaran o se
-   reasignan con una plantilla que tiene una etiqueta adentro
-   (sugerencia = `<button ...`). Es el caso de los botones que el
-   sitio se dibuja a si mismo. No es lo mismo que un texto que se
-   te escapo: se reconoce por como se arma la variable, no por una
-   lista escrita a mano. El lookbehind saltea "grid.innerHTML =",
-   que tambien es una asignacion pero no una variable. */
-const htmlPropias = new Set();
-
-for (const f of JS) {
-    const s = fs.readFileSync(rutaJs(f), 'utf8');
-    const re = /(?<![.\w$])([a-zA-Z_$][\w$]*)\s*=\s*`([\s\S]*?)`/g;
-
-    for (const m of s.matchAll(re)) {
-        if (/<[a-zA-Z/]/.test(m[2])) htmlPropias.add(m[1]);
-    }
-}
-const ETIQUETA = /<[a-zA-Z/]/;
-const ACENTO = /(?<!\\)`/g;
-
-const hallazgos = escanearXSS(JS.map(f => [f, fs.readFileSync(rutaJs(f), 'utf8')]));
-hallazgos.forEach(h => avisar(h));
-if (!hallazgos.length) ok('toda interpolacion dentro de HTML pasa por escaparHTML');
-
-/* Un chequeo que nunca falla no dice nada, asi que primero se le
-   pasa un archivo con un XSS a proposito y se exige que lo pille.
-   Si el detector se rompe, el self-test se entera antes que el
-   sitio. */
-console.log('\nSelf-test del detector de XSS');
-const trampa = [
-    'grid.innerHTML = lista.map(producto => {',
-    '    return `',
-    '        <span class="badge">${producto.categoria}</span>',
-    '    `;',
-    '});'
-].join('\n');
-
-if (escanearXSS([['trampa.js', trampa]]).length) ok('el detector encuentra un XSS de prueba');
-else avisar('el detector NO encuentra un XSS de prueba: no sirve de nada');
-
-const limpio = 'const t = `hola ${a.nombre}`;\nimg.alt = `x ${b.nombre}`;\n';
-const falsos = escanearXSS([['limpio.js', limpio]]);
-
-if (!falsos.length) ok('no marca texto plano ni propiedades sin markup');
-else avisar('falsos positivos: ' + falsos.join(' | '));
-
-function escanearXSS(archivos) {
-    const out = [];
-
-    for (const [f, contenido] of archivos) {
-        const lineas = contenido.split('\n');
-        let bloque = null;
-        let dentro = false;
-
-        for (let i = 0; i < lineas.length; i++) {
-            const linea = lineas[i];
-            const acentos = (linea.match(ACENTO) || []).length;
-
-            /* Se sigue el balance de acentos graves, no la posicion
-               del ultimo: un acento al final de la linea puede ser
-               el que ABRE la plantilla (return `), no el que la
-               cierra. Y una linea con dos acentos abre y cierra en
-               el mismo lugar, que tambien hay que cubrir. */
-
-            if (acentos && !dentro) bloque = [];
-
-            if (bloque) bloque.push({ n: i + 1, texto: linea });
-
-            dentro = dentro !== (acentos % 2 === 1);
-
-            if (!dentro && bloque) {
-                out.push(...revisarBloqueHTML(f, bloque));
-                bloque = null;
-            }
-        }
-    }
-
-    return out;
-}
-
-function revisarBloqueHTML(archivo, bloque) {
-    const fuera = [];
-    const unido = bloque.map(l => l.texto).join('\n');
-
-    if (!ETIQUETA.test(unido)) return fuera;
-
-    for (const { n, texto } of bloque) {
-        if (/^\s*[\w.]+\.(alt|textContent|value|src|title|placeholder)\s*=/.test(texto)) continue;
-
-        for (const m of texto.matchAll(INTERP)) {
-            const expr = m[1];
-            if (NUMERICO.test(expr) || NUMEROS.test(expr)) continue;
-            if (DATOS_FIJOS.test(expr) || htmlPropias.has(expr)) continue;
-            if (texto.includes('escaparHTML(' + expr)) continue;
-            if (texto.includes('formatearPrecio(' + expr)) continue;
-            fuera.push(archivo + ':' + n + '  ${' + expr + '} sin escapar: ' + texto.trim());
-        }
-    }
-
-    return fuera;
-}
-
-/* --- 6. Los CSS generados existen -------------------------- */
-console.log('\nCSS generado');
-for (const archivo of ['catalogo-modal.css', 'catalogo-catalogo.css']) {
-    if (fs.existsSync(path.join(raiz, 'public', 'css', archivo))) {
-        ok('public/css/' + archivo + ' existe');
+    if (resultado.status === 0) {
+        ok(script + ' --revisar');
     } else {
-        avisar('falta public/css/' + archivo + ': corré npm run css');
+        error(script + ' --revisar falló');
+        const salida = (resultado.stdout || '') + (resultado.stderr || '');
+        if (salida.trim()) console.log(salida.trim().split('\n').map(linea => '        ' + linea).join('\n'));
     }
 }
 
-/* --- 7. Scripts que faltan en cada pagina ---
-   Los tres HTML comparten el mismo header, pero cada uno carga un
-   subconjunto de los scripts. Ya paso dos veces que index.html
-   tenia el menu y el buscador dibujados sin cargar menu.js ni
-   buscador.js: nada fallaba en consola, solo que los controles no
-   respondian.
+/* 2. Archivos obligatorios. */
+seccion('Archivos obligatorios');
 
-   Se comprueba en los dos sentidos: que no falte un script cuyo
-   markup esta presente, y que un script que expone algo en window
-   este cargado en toda pagina que lo use. */
-console.log('\nScripts por pagina');
-
-const MARCADO_QUE_NECESITA_SCRIPT = [
-    { marca: 'id="navToggle"', script: 'menu.js' },
-    { marca: 'id="navBackdrop"', script: 'menu.js' },
-    { marca: 'id="headerSearch"', script: 'buscador.js' },
-    { marca: 'id="testimoniosCarrusel"', script: 'testimonios.js' },
-    { marca: 'id="contactoForm"', script: 'contacto.js' },
-    { marca: 'id="homeProductTrack"', script: 'home-carousel.js' }
+const PAGINAS_PUBLICAS = [
+    'index.html',
+    'catalogo.html',
+    'producto.html',
+    'servicios.html',
+    'nosotros.html',
+    'contacto.html',
+    'carrito.html',
+    'cuenta.html',
+    'login.html',
+    '404.html'
 ];
 
-/* Quien define cada window.algo y quien lo usa, para poder cruzar
-   "esta pagina carga al que usa" contra "y carga al que define". */
-const define = new Map();
-const usa = new Map();
-const globales = new Set();
+const PAGINAS_ADMIN = [
+    'index.html',
+    'pedidos.html',
+    'ventas.html',
+    'productos.html',
+    'testimonios.html',
+    'clientes.html',
+    'contenido.html',
+    'auditoria.html'
+];
 
-for (const f of JS) {
-    const s = fs.readFileSync(rutaJs(f), 'utf8');
-    for (const m of s.matchAll(/window\.([a-zA-Z_$][\w$]*)\s*=(?!=)/g)) {
-        define.set(m[1], f);
-        globales.add(m[1]);
-    }
-    for (const m of s.matchAll(/window\.([a-zA-Z_$][\w$]*)/g)) {
-        usa.set(m[1], (usa.get(m[1]) || new Set()).add(f));
-    }
+for (const pagina of PAGINAS_PUBLICAS) {
+    if (existe(path.join(raiz, pagina))) ok(pagina);
+    else error('falta ' + pagina);
 }
 
-for (const f of HTML) {
-    const s = fs.readFileSync(path.join(raiz, f), 'utf8');
-    /* El src ahora trae carpeta (./public/js/menu.js), pero las listas
-       de arriba nombran los scripts por archivo. Se queda solo con el
-       nombre para poder comparar. */
-    const cargados = new Set(Array.from(
-        s.matchAll(/<script src="[^"]*\/([^"/]+\.js)"/g), m => m[1]
-    ));
-    let fallos = 0;
+for (const pagina of PAGINAS_ADMIN) {
+    if (existe(path.join(raiz, 'admin', pagina))) ok('admin/' + pagina);
+    else error('falta admin/' + pagina);
+}
 
-    for (const { marca, script } of MARCADO_QUE_NECESITA_SCRIPT) {
-        if (s.includes(marca) && !cargados.has(script)) {
-            avisar(f + ' tiene ' + marca + ' pero no carga ' + script);
-            fallos++;
+const ARCHIVOS_BACKEND = [
+    'backend/server.js',
+    'backend/src/app.js',
+    'backend/src/routes/auth.js',
+    'backend/src/routes/config.js',
+    'backend/src/routes/catalogo.js',
+    'backend/src/routes/contenido.js',
+    'backend/src/routes/pedidos.js',
+    'backend/src/routes/testimonios.js',
+    'backend/src/routes/contacto.js',
+    'backend/src/routes/admin/index.js',
+    'backend/src/routes/admin/dashboard.js',
+    'backend/src/routes/admin/ordenes.js',
+    'backend/src/routes/admin/ventas.js',
+    'backend/src/routes/admin/productos.js',
+    'backend/src/routes/admin/testimonios.js',
+    'backend/src/routes/admin/clientes.js',
+    'backend/src/routes/admin/contenido.js',
+    'backend/src/routes/admin/auditoria.js',
+    'backend/scripts/crear-admin.js',
+    'backend/scripts/sembrar-catalogo.js',
+    'backend/scripts/sembrar-contenido.js'
+];
+
+for (const archivo of ARCHIVOS_BACKEND) {
+    if (existe(path.join(raizProyecto, archivo))) ok(archivo);
+    else error('falta ' + archivo);
+}
+
+/* 3. Catálogo semilla. */
+seccion('Catálogo semilla');
+
+const { PRODUCTOS } = require(path.join(raiz, 'datos', 'catalogo.js'));
+const { slug } = require(path.join(js, 'negocio.js'));
+
+if (!Array.isArray(PRODUCTOS) || !PRODUCTOS.length) {
+    error('PRODUCTOS debe ser un arreglo con al menos un producto');
+} else {
+    const ids = new Set();
+    const slugs = new Set();
+    let invalidos = 0;
+
+    for (const producto of PRODUCTOS) {
+        const etiqueta = producto && producto.nombre ? producto.nombre : '(sin nombre)';
+        const problemas = [];
+
+        if (!Number.isSafeInteger(producto.id) || producto.id < 1) problemas.push('id');
+        if (!producto.nombre || typeof producto.nombre !== 'string') problemas.push('nombre');
+        if (!producto.categoria || typeof producto.categoria !== 'string') problemas.push('categoria');
+        if (!producto.descripcion || typeof producto.descripcion !== 'string') problemas.push('descripcion');
+        if (!Number.isSafeInteger(producto.precioBase) || producto.precioBase < 0) problemas.push('precioBase');
+        if (!Number.isSafeInteger(producto.costo) || producto.costo < 0) problemas.push('costo');
+        if (!Number.isSafeInteger(producto.stock) || producto.stock < 0) problemas.push('stock');
+        if (!Array.isArray(producto.imagenes) || !producto.imagenes.length) problemas.push('imagenes');
+        if (!Array.isArray(producto.infoDeVenta) || !producto.infoDeVenta.length) problemas.push('infoDeVenta');
+
+        const nombreSlug = producto.slug || slug(producto.nombre || '');
+
+        if (!nombreSlug) problemas.push('slug');
+        if (ids.has(producto.id)) problemas.push('id repetido');
+        if (slugs.has(nombreSlug)) problemas.push('slug repetido');
+
+        ids.add(producto.id);
+        slugs.add(nombreSlug);
+
+        const fotos = Array.isArray(producto.imagenes) ? producto.imagenes : [producto.imagen];
+
+        for (const foto of fotos.filter(Boolean)) {
+            if (/^https?:\/\//i.test(foto)) continue;
+            if (!existe(path.join(raiz, foto))) problemas.push('imagen ' + foto);
+        }
+
+        if (producto.imagen && !fotos.includes(producto.imagen)) problemas.push('imagen fuera de imagenes');
+
+        if (problemas.length) {
+            invalidos += 1;
+            error(etiqueta + ': ' + problemas.join(', '));
         }
     }
 
-    for (const [nombre, quienes] of usa) {
-        if (!define.has(nombre)) continue;
-        for (const consumidor of quienes) {
-            if (cargados.has(consumidor) && !cargados.has(define.get(nombre))) {
-                avisar(f + ' carga ' + consumidor + ', que usa window.' + nombre +
-                    ', pero no carga ' + define.get(nombre) + ' que lo define');
-                fallos++;
+    if (!invalidos) ok(PRODUCTOS.length + ' productos válidos');
+    if (new Set(PRODUCTOS.map(producto => producto.categoria)).size < 2) {
+        aviso('el catálogo semilla tiene una sola categoría');
+    }
+}
+
+/* 4. Cabecera, pie y estructura de las páginas públicas. */
+seccion('Páginas públicas');
+
+function extraer(html, inicio, fin) {
+    const desde = html.indexOf(inicio);
+    if (desde === -1) return null;
+    const hasta = html.indexOf(fin, desde);
+    if (hasta === -1) return null;
+    return html.slice(desde, hasta + fin.length);
+}
+
+function normalizarCabecera(html) {
+    return html
+        .replace(/\s+activo/g, '')
+        .replace(/\s+aria-current="page"/g, '');
+}
+
+let cabeceraPatron = null;
+let piePatron = null;
+
+for (const pagina of PAGINAS_PUBLICAS) {
+    const archivo = path.join(raiz, pagina);
+    if (!existe(archivo)) continue;
+
+    const html = leer(archivo);
+    const problemas = [];
+
+    if (!html.startsWith('<!DOCTYPE html>')) problemas.push('DOCTYPE');
+    if (!/<html lang="es">/.test(html)) problemas.push('lang="es"');
+    if (!/<meta charset="UTF-8">/.test(html)) problemas.push('charset');
+    if (!/<meta name="viewport"/.test(html)) problemas.push('viewport');
+    if (!/<main id="contenido"/.test(html)) problemas.push('main#contenido');
+
+    const cabecera = extraer(html, '<header class="site-header"', '</header>');
+    const pie = extraer(html, '<footer class="site-footer">', '</footer>');
+
+    if (!cabecera) problemas.push('cabecera compartida');
+    if (!pie) problemas.push('pie compartido');
+    if (!/data-sesion/.test(cabecera || '')) problemas.push('slot data-sesion');
+    if (!/data-cart-count/.test(cabecera || '')) problemas.push('contador del carrito');
+
+    if (cabecera) {
+        const normalizada = normalizarCabecera(cabecera);
+        if (!cabeceraPatron) cabeceraPatron = normalizada;
+        else if (normalizada !== cabeceraPatron) problemas.push('cabecera distinta al resto');
+    }
+
+    if (pie) {
+        if (!piePatron) piePatron = pie;
+        else if (pie !== piePatron) problemas.push('pie distinto al resto');
+    }
+
+    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+    const repetidos = [...new Set(ids.filter((id, indice) => ids.indexOf(id) !== indice))];
+
+    if (repetidos.length) problemas.push('id repetido: ' + repetidos.join(', '));
+
+    if (problemas.length) error(pagina + ': ' + problemas.join(', '));
+    else ok(pagina);
+}
+
+/* 5. Orden de estilos y scripts de las páginas públicas. */
+seccion('Orden de estilos y scripts');
+
+const CSS_BASE = ['tokens.css', 'base.css', 'estructura.css'];
+const SCRIPTS_BASE = [
+    'negocio.js',
+    'utilidades.js',
+    'api.js',
+    'configuracion.js',
+    'sesion.js',
+    'catalogo-datos.js',
+    'carrito-estado.js',
+    'modal.js'
+];
+const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'asistente.js', 'contenido-publico.js'];
+
+function hojasDeEstilo(html) {
+    return [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)]
+        .map(match => /^https?:/i.test(match[1]) ? match[1] : path.basename(match[1]));
+}
+
+function scriptsDe(html) {
+    return [...html.matchAll(/<script src="([^"]+)"[^>]*>/g)]
+        .map(match => path.basename(match[1]));
+}
+
+function esSubsecuencia(lista, esperada) {
+    let indice = 0;
+    for (const elemento of lista) {
+        if (elemento === esperada[indice]) indice += 1;
+        if (indice === esperada.length) return true;
+    }
+    return indice === esperada.length;
+}
+
+for (const pagina of PAGINAS_PUBLICAS) {
+    const archivo = path.join(raiz, pagina);
+    if (!existe(archivo)) continue;
+
+    const html = leer(archivo);
+    const hojas = hojasDeEstilo(html);
+    const scripts = scriptsDe(html);
+    const problemas = [];
+
+    if (!esSubsecuencia(hojas, CSS_BASE)) problemas.push('orden de CSS base');
+    if (hojas.includes('admin.css')) problemas.push('admin.css en página pública');
+    if (!esSubsecuencia(scripts, SCRIPTS_BASE)) problemas.push('orden de scripts base');
+    if (!esSubsecuencia(scripts, SCRIPTS_FINALES)) problemas.push('orden de scripts finales');
+
+    const ultimo = scripts[scripts.length - 1];
+    if (ultimo !== 'contenido-publico.js') problemas.push('contenido-publico.js debe ir al final');
+
+    const repetidos = [...new Set(scripts.filter((nombre, indice) => scripts.indexOf(nombre) !== indice))];
+    if (repetidos.length) problemas.push('script repetido: ' + repetidos.join(', '));
+
+    for (const nombre of hojas) {
+        if (nombre.startsWith('http')) continue;
+        if (!existe(path.join(css, nombre))) problemas.push('falta CSS ' + nombre);
+    }
+
+    for (const nombre of scripts) {
+        if (!existe(path.join(js, nombre))) problemas.push('falta JS ' + nombre);
+    }
+
+    if (problemas.length) error(pagina + ': ' + problemas.join(', '));
+    else ok(pagina);
+}
+
+/* 6. Panel de administración. */
+seccion('Panel de administración');
+
+const SECCIONES_ADMIN = [
+    ['index.html', 'admin-dashboard.js'],
+    ['pedidos.html', 'admin-pedidos.js'],
+    ['ventas.html', 'admin-ventas.js'],
+    ['productos.html', 'admin-productos.js'],
+    ['testimonios.html', 'admin-testimonios.js'],
+    ['clientes.html', 'admin-clientes.js'],
+    ['contenido.html', 'admin-contenido.js'],
+    ['auditoria.html', 'admin-auditoria.js']
+];
+
+const ADMIN_BASE = ['negocio.js', 'utilidades.js', 'api.js', 'admin-comun.js'];
+
+for (const [pagina, scriptPagina] of SECCIONES_ADMIN) {
+    const archivo = path.join(raiz, 'admin', pagina);
+    if (!existe(archivo)) continue;
+
+    const html = leer(archivo);
+    const scripts = scriptsDe(html);
+    const problemas = [];
+
+    if (!/<meta name="robots" content="noindex, nofollow">/.test(html)) problemas.push('noindex');
+    if (!/<body class="admin" data-raiz="\.\.">/.test(html)) problemas.push('body.admin y data-raiz');
+    if (!/class="admin-shell"/.test(html)) problemas.push('admin-shell');
+    if (!/id="adminSidebar"/.test(html)) problemas.push('sidebar');
+    if (!/id="contenidoAdmin"/.test(html)) problemas.push('main del panel');
+    if (!/data-admin-salir/.test(html)) problemas.push('salir');
+    if (!esSubsecuencia(scripts, ADMIN_BASE)) problemas.push('orden de scripts base');
+    if (scripts[scripts.length - 1] !== scriptPagina) problemas.push('falta ' + scriptPagina);
+    if (!hojasDeEstilo(html).includes('admin.css')) problemas.push('falta admin.css');
+
+    const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+    const repetidos = [...new Set(ids.filter((id, indice) => ids.indexOf(id) !== indice))];
+
+    if (repetidos.length) problemas.push('id repetido: ' + repetidos.join(', '));
+
+    for (const enlace of SECCIONES_ADMIN.map(([nombre]) => './' + nombre)) {
+        if (!html.includes('href="' + enlace + '"')) problemas.push('sidebar sin ' + enlace);
+    }
+
+    if (problemas.length) error('admin/' + pagina + ': ' + problemas.join(', '));
+    else ok('admin/' + pagina);
+}
+
+/* 7. Referencias locales y anclas. */
+seccion('Referencias locales');
+
+for (const pagina of [...PAGINAS_PUBLICAS.map(nombre => path.join(raiz, nombre)), ...PAGINAS_ADMIN.map(nombre => path.join(raiz, 'admin', nombre))]) {
+    if (!existe(pagina)) continue;
+
+    const html = leer(pagina);
+    const carpeta = path.dirname(pagina);
+    const problemas = [];
+    const referencias = [...html.matchAll(/(?:href|src|action)="([^"]+)"/g)].map(match => match[1]);
+    const ids = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]));
+
+    for (const referencia of referencias) {
+        if (!referencia || referencia.startsWith('#')) {
+            if (referencia.startsWith('#') && referencia.length > 1 && !ids.has(referencia.slice(1))) {
+                problemas.push('ancla sin destino ' + referencia);
             }
-        }
-    }
-
-    if (!fallos) ok(f + ': ' + cargados.size + ' scripts, todos los que hacen falta');
-}
-
-/* --- 8. Animaciones infinitas sin respeta de reduced motion ---
-   Una animacion con "infinite" no se detiene nunca: es justo lo que
-   una persona con prefers-reduced-motion pide que no pase. Se
-   recorren los bloques de las hojas, se anotan las que repiten y se
-   cruzan con los selectores que, dentro de un
-   @media (prefers-reduced-motion: reduce), ponen animation: none. */
-console.log('\nReduced motion');
-
-const infinitas = [];
-const apagadas = new Set();
-
-/* Se recorre el CSS caracter a caracter apilando las llaves: hace
-   falta saber la profundidad para no cortar un bloque de @media en
-   su primer "}" y para separar el selector de las declaraciones
-   que lo preceden. */
-function recorrerBloques(css, archivo) {
-    const pila = [];
-    const reduced = [];
-    let profundidad = 0;
-    let desde = 0;
-    let i = 0;
-
-    while (i < css.length) {
-        if (css[i] === '{') {
-            const bruto = css.slice(desde, i);
-            const selector = bruto.slice(bruto.lastIndexOf(';') + 1)
-                .replace(/\s+/g, ' ').trim();
-            const abre = selector.replace(/\s+/g, ' ');
-
-            pila.push({ abre, cuerpo: desde + 1 });
-            if (/prefers-reduced-motion/.test(abre)) reduced.push(profundidad);
-
-            profundidad++;
-            desde = i + 1;
-            i++;
             continue;
         }
 
-        if (css[i] === '}') {
-            const bloque = pila.pop();
-            profundidad--;
+        if (/^(?:[a-z]+:)?\/\//i.test(referencia)) continue;
+        if (/^(?:mailto|tel|data|javascript):/i.test(referencia)) continue;
+        if (referencia.startsWith('/api/') || referencia.startsWith('../api/') || referencia.includes('/api/')) continue;
 
-            if (bloque) {
-                const cuerpo = css.slice(bloque.cuerpo, i);
-                const esKeyframes = /^@(-webkit-)?keyframes/.test(bloque.abre);
-                const dentroDeReduced = reduced.length > 0;
+        const limpia = referencia.split('?')[0].split('#')[0];
 
-                if (!esKeyframes && /animation\s*:[^;]*\binfinite\b/.test(cuerpo)) {
-                    infinitas.push({ archivo, selector: bloque.abre });
-                }
+        if (!limpia) continue;
 
-                if (!esKeyframes && dentroDeReduced && /animation(-name)?\s*:\s*none/.test(cuerpo)) {
-                    /* Un mismo bloque suele apagar varios selectores
-                       a la vez, separados por comas. */
-                    bloque.abre.split(',').forEach(sel => apagadas.add(sel.trim()));
-                }
-            }
+        const destino = path.resolve(carpeta, limpia);
 
-            while (reduced.length && reduced[reduced.length - 1] >= profundidad) reduced.pop();
+        if (!existe(destino)) problemas.push('enlace roto ' + referencia);
+    }
 
-            desde = i + 1;
-            i++;
-            continue;
-        }
+    if (problemas.length) error(path.relative(raiz, pagina) + ': ' + problemas.join(', '));
+    else ok(path.relative(raiz, pagina));
+}
 
-        i++;
+/* 8. Declaraciones globales duplicadas entre scripts compartidos. */
+seccion('Scripts compartidos');
+
+const SCRIPTS_COMPARTIDOS = new Set([
+    ...SCRIPTS_BASE,
+    ...SCRIPTS_FINALES,
+    'admin-comun.js'
+]);
+
+const declaraciones = new Map();
+
+for (const archivo of fs.readdirSync(js).filter(nombre => nombre.endsWith('.js'))) {
+    const contenido = leer(path.join(js, archivo));
+
+    for (const match of contenido.matchAll(/^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)/gm)) {
+        const nombre = match[1];
+        if (!declaraciones.has(nombre)) declaraciones.set(nombre, []);
+        declaraciones.get(nombre).push(archivo);
     }
 }
 
-for (const f of CSS) {
-    recorrerBloques(fs.readFileSync(rutaCss(f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, ''), f);
+let duplicados = 0;
+
+for (const [nombre, archivos] of declaraciones) {
+    const compartidos = archivos.filter(archivo => SCRIPTS_COMPARTIDOS.has(archivo));
+
+    if (compartidos.length > 1) {
+        duplicados += 1;
+        error('"' + nombre + '" declarado en ' + compartidos.join(' y '));
+    }
 }
 
-/* Un selector apagado cubre tambien a los que lo extienden:
-   ".nav-bar" apagado cubre ".nav-bar li .nav-link". */
-const cubre = sel => {
-    if (apagadas.has(sel) || apagadas.has('*')) return true;
+if (!duplicados) ok('sin declaraciones duplicadas entre scripts compartidos');
 
-    return [...apagadas].some(a =>
-        a !== sel &&
-        (sel.startsWith(a + ' ') || sel.startsWith(a + '>') || sel.startsWith(a + ':') || sel.startsWith(a + '.'))
-    );
-};
+/* 9. Restos de la versión estática. */
+seccion('Sin restos de la versión estática');
 
-const sinCubrir = infinitas.filter(a => !cubre(a.selector));
+const OBSOLETOS = [
+    [/REQUIERE_CUENTA/, 'la configuración de cuenta ahora viene de /api/config'],
+    [/enviarCorreoEmailJS/, 'el contacto y los testimonios van a la API'],
+    [/EmailJS/, 'el contacto y los testimonios van a la API'],
+    [/generar-productos/, 'las fichas son producto.html?slug=...'],
+    [/pedidos-estado/, 'el historial vive en la base de datos'],
+    [/productos\/[\w-]+\.html/, 'las fichas estáticas fueron reemplazadas']
+];
 
-if (sinCubrir.length === 0) {
-    ok(infinitas.length + ' animacion(es) infinite, todas apagadas con reduced motion');
+const EXTENSIONES = new Set(['.js', '.html', '.json', '.toml', '.md']);
+const IGNORAR = new Set(['node_modules', '.git', 'public', 'img']);
+
+function recorrer(carpeta, salida = []) {
+    for (const entrada of fs.readdirSync(carpeta, { withFileTypes: true })) {
+        if (IGNORAR.has(entrada.name)) continue;
+        const ruta = path.join(carpeta, entrada.name);
+
+        if (entrada.isDirectory()) recorrer(ruta, salida);
+        else if (EXTENSIONES.has(path.extname(entrada.name))) salida.push(ruta);
+    }
+
+    return salida;
+}
+
+const archivosRevisados = [
+    ...recorrer(path.join(raiz, 'public')),
+    ...recorrer(path.join(raiz, 'fuentes')),
+    ...recorrer(path.join(raiz, 'datos')),
+    ...recorrer(path.join(raiz, 'tools')),
+    ...recorrer(path.join(raizProyecto, 'backend')),
+    ...recorrer(path.join(raizProyecto, 'scripts')),
+    ...recorrer(path.join(raizProyecto, 'docs')),
+    path.join(raizProyecto, 'README.md'),
+    path.join(raizProyecto, 'netlify.toml')
+].filter(existe);
+
+let restos = 0;
+
+for (const archivo of archivosRevisados) {
+    if (archivo.endsWith('verificar.js') || archivo.endsWith('generar-sitemap.js')) continue;
+
+    const contenido = leer(archivo);
+
+    for (const [aguja, motivo] of OBSOLETOS) {
+        if (aguja.test(contenido)) {
+            restos += 1;
+            error(path.relative(raizProyecto, archivo) + ' todavía menciona "' + aguja.source + '" (' + motivo + ')');
+        }
+    }
+}
+
+if (!restos) ok('sin referencias obsoletas');
+
+if (existe(path.join(raiz, 'productos'))) {
+    const fichas = fs.readdirSync(path.join(raiz, 'productos')).filter(nombre => nombre.endsWith('.html'));
+    if (fichas.length) error('quedan fichas estáticas en frontend/productos');
+    else aviso('frontend/productos existe pero está vacío');
+}
+
+if (existe(path.join(raiz, 'datos', 'testimonios.js'))) {
+    error('frontend/datos/testimonios.js ya no se usa');
 } else {
-    for (const a of sinCubrir) {
-        avisar(a.archivo + ': "' + a.selector + '" se repite para siempre y no se apaga con prefers-reduced-motion');
+    ok('sin semilla de testimonios estática');
+}
+
+/* 10. Sitemap y robots. */
+seccion('Sitemap y robots');
+
+const sitemap = leer(path.join(raiz, 'sitemap.xml'));
+const robots = leer(path.join(raiz, 'robots.txt'));
+const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
+const problemasSitemap = [];
+
+for (const pagina of ['index.html', 'catalogo.html', 'servicios.html', 'nosotros.html', 'contacto.html']) {
+    if (!urls.some(url => url.endsWith('/' + pagina))) problemasSitemap.push('falta ' + pagina);
+}
+
+for (const producto of PRODUCTOS) {
+    const nombre = producto.slug || slug(producto.nombre);
+    const esperada = 'producto.html?slug=' + encodeURIComponent(nombre);
+
+    if (!urls.some(url => url.endsWith('/' + esperada))) {
+        problemasSitemap.push('falta ' + esperada);
     }
 }
 
-/* --- 9. Paginas de producto generadas ---
-   Se valida lo que hay en disco sin ejecutar el generador, porque
-   generar paginas y podar fichas son operaciones explicitas. */
-console.log('\nPaginas de producto');
-
-const gen = path.join(raiz, 'tools', 'generar-productos.js');
-
-if (!fs.existsSync(gen)) {
-    avisar('falta tools/generar-productos.js');
-} else {
-    const carpeta = path.join(raiz, 'productos');
-    const paginas = fs.existsSync(carpeta)
-        ? fs.readdirSync(carpeta).filter(f => f.endsWith('.html'))
-        : [];
-
-    if (!paginas.length) {
-        avisar('no hay paginas en productos/');
-    }
-
-    let malas = 0;
-
-    for (const f of paginas) {
-        const s = fs.readFileSync(path.join(carpeta, f), 'utf8');
-        const donde = 'productos/' + f;
-
-        /* JSON-LD: tiene que parsear, y si no se puede leer, el
-           buscador lo ignora en silencio. */
-        const bloques = Array.from(s.matchAll(
-            /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g
-        ), m => m[1]);
-
-        if (!bloques.length) {
-            avisar(donde + ': no tiene JSON-LD');
-            malas++;
-        }
-
-        for (const b of bloques) {
-            try {
-                const datos = JSON.parse(b);
-
-                if (datos['@context'] !== 'https://schema.org') {
-                    avisar(donde + ': el @context no es schema.org');
-                    malas++;
-                }
-            } catch (e) {
-                avisar(donde + ': JSON-LD que no parsea: ' + e.message);
-                malas++;
-            }
-        }
-
-        /* El canonical tiene que ser esta pagina, no la home. */
-        const canonical = s.match(/<link rel="canonical" href="([^"]+)"/);
-
-        if (!canonical) {
-            avisar(donde + ': sin canonical');
-            malas++;
-        } else if (!canonical[1].endsWith('/productos/' + f)) {
-            avisar(donde + ': el canonical no apunta a si misma (' + canonical[1] + ')');
-            malas++;
-        }
-
-        /* Imagenes y enlaces locales existen. La pagina vive en
-           productos/, asi que "../asset/..." se resuelve desde
-           esa carpeta y no desde la raiz del repo. */
-        for (const m of s.matchAll(/(?:src|href)="(\.\.\/[^"#?]+)"/g)) {
-            if (!fs.existsSync(path.resolve(carpeta, m[1]))) {
-                avisar(donde + ': no existe ' + m[1]);
-                malas++;
-            }
-        }
-
-        for (const m of s.matchAll(/href="(\.\/[a-z0-9-]+\.html)"/g)) {
-            if (!fs.existsSync(path.join(carpeta, m[1].replace('./', '')))) {
-                avisar(donde + ': link a otra pagina que no existe: ' + m[1]);
-                malas++;
-            }
-        }
-    }
-
-    /* El modal enlaza a productos/<slugDe(nombre)>.html con su propio
-       slugDe (modal.js) y el generador nombra los archivos con su
-       slug (herramienta aparte). Si alguno se toca distinto, el enlace
-       cae en una pagina que no existe: se prueban las DOS
-       implementaciones contra los nombres reales. */
-    function extraerFuncion(archivo, nombre) {
-        /* Los scripts de navegador van en public/js/ y los generadores en
-           tools/. Se distinguen por la carpeta donde estan, no por el
-           nombre, porque ambos son .js y los dos se leen desde aca. */
-        const donde = archivo.includes('/')
-            ? path.join(raiz, archivo)
-            : [
-                path.join(raiz, 'tools', archivo),
-                rutaJs(archivo)
-            ].find(ruta => fs.existsSync(ruta));
-
-        if (!donde || !fs.existsSync(donde)) return null;
-
-        const s = fs.readFileSync(donde, 'utf8');
-        const ini = s.indexOf('function ' + nombre + '(');
-        if (ini < 0) return null;
-
-        const abrio = s.indexOf('{', ini);
-        let prof = 0;
-        let entre = null; /* ', ", `, /, * o \n: saltar literales, regex y comentarios */
-        let i = abrio;
-
-        for (; i < s.length; i++) {
-            const c = s[i];
-
-            if (entre) {
-                if (c === '\\') { i++; continue; }
-                if (entre !== '*' && c === entre) entre = null;
-                if (entre === '*' && c === '/' && s[i - 1] === '*') entre = null;
-                if (entre === '\n') entre = null;
-                continue;
-            }
-            if (c === '"' || c === "'" || c === '`') { entre = c; continue; }
-            if (c === '/' && s[i + 1] === '/') { entre = '\n'; i++; continue; }
-            if (c === '/' && s[i + 1] === '*') { entre = '*'; i++; continue; }
-            if (c === '/' && s[i + 1] !== '=') { entre = '/'; continue; }
-            if (c === '{') prof++;
-            else if (c === '}') { prof--; if (prof === 0) return s.slice(abrio + 1, i); }
-        }
-        return null;
-    }
-
-    /* generar-productos.js vive en tools/, no en public/js/, asi que no
-       pasa por rutaJs(): esa resuelve scripts de navegador. */
-    const cuerpoGen = extraerFuncion('generar-productos.js', 'slug');
-    const cuerpoModal = extraerFuncion('modal.js', 'slugDe');
-
-    if (!cuerpoGen || !cuerpoModal) {
-        avisar('no se encontro slug() del generador o slugDe() de modal.js');
-        malas++;
-    } else {
-        const slugGen = new Function('texto', cuerpoGen);
-        const slugModal = new Function('texto', cuerpoModal);
-
-        /* Los nombres salen del JSON del catalogo, no de productos.js:
-           ese archivo ya no tiene el array, porque el catalogo viaja
-           aparte. */
-        const nombres = leerCatalogoJSON();
-
-        if (!nombres) {
-            avisar('no se pudo leer public/data/productos.json (corré npm run generar)');
-            malas++;
-        } else {
-            for (const p of nombres) {
-                if (!p || !p.nombre) continue;
-
-                const a = slugGen(p.nombre);
-                const b = slugModal(p.nombre);
-                const existe = fs.existsSync(path.join(carpeta, a + '.html'));
-
-                if (a !== b) {
-                    avisar('slug desincronizado para "' + p.nombre + '": generador=' + a + ' modal=' + b);
-                    malas++;
-                }
-                if (!existe) {
-                    avisar('no existe productos/' + a + '.html (el modal enlazara ahi)');
-                    malas++;
-                }
-            }
-
-            /* Fichas huerfanas: archivos en productos/ que no corresponden
-               a ningun producto del catalogo. */
-            const esperadas = new Set(nombres.map(p => slugGen(p.nombre) + '.html'));
-            const huerfanas = paginas.filter(f => !esperadas.has(f));
-            if (huerfanas.length) {
-                avisar('fichas huerfanas en productos/: ' + huerfanas.join(', '));
-                malas++;
-            } else {
-                ok('sin fichas huerfanas en productos/');
-            }
-        }
-    }
-
-    if (!malas) ok(paginas.length + ' paginas generadas, con JSON-LD, canonical e imagenes');
+if (urls.some(url => url.includes('/productos/'))) problemasSitemap.push('quedan URLs /productos/');
+if (urls.some(url => /\/admin\/|\/cuenta\.html|\/login\.html|\/carrito\.html/.test(url))) {
+    problemasSitemap.push('incluye páginas privadas');
 }
 
-/* --- 10. El JSON del catalogo esta al dia ----------------------
+for (const regla of ['Disallow: /admin/', 'Disallow: /api/', 'Sitemap: ']) {
+    if (!robots.includes(regla)) problemasSitemap.push('robots sin "' + regla + '"');
+}
 
-   El catalogo tiene una fuente, datos/catalogo.js, y de ahi salen dos
-   cosas: las fichas de productos/*.html y public/data/productos.json.
+if (problemasSitemap.length) error(problemasSitemap.join(', '));
+else ok(urls.length + ' URLs públicas y robots coherentes');
 
-   El JSON se versiona y lo lee el navegador, asi que puede quedar
-   viejo si alguien edito la fuente y se olvido de correr el
-   generador. El sintoma seria dificil de ver: el sitio andaria con
-   precios viejos, sin ningun error.
+/* 11. CSS: llaves balanceadas y variables declaradas. */
+seccion('CSS');
 
-   Por eso se comprueba que la fuente y el JSON coincidan producto
-   por producto. */
+const archivosCss = fs.readdirSync(css).filter(nombre => nombre.endsWith('.css'));
+const tokens = leer(path.join(css, 'tokens.css'));
+const variablesDeclaradas = new Set([...tokens.matchAll(/(--[a-z0-9-]+)\s*:/gi)].map(match => match[1]));
+const variablesUsadas = new Map();
 
-console.log('\nEl catalogo en JSON');
+for (const archivo of archivosCss) {
+    const contenido = leer(path.join(css, archivo));
+    const abre = (contenido.match(/{/g) || []).length;
+    const cierra = (contenido.match(/}/g) || []).length;
 
-{
-    let malas = 0;
-
-    const fuente = leerCatalogoFuente();
-    const delJson = leerCatalogoJSON();
-
-    if (!fuente) {
-        malas++;
+    if (abre !== cierra) {
+        error(archivo + ': llaves desbalanceadas (' + abre + '/' + cierra + ')');
     }
 
-    if (!delJson) {
-        avisar('falta public/data/productos.json o esta roto: corré npm run generar');
-        malas++;
-    }
+    if (/@import\b/.test(contenido)) error(archivo + ': usa @import en vez de <link>');
 
-    if (fuente && delJson) {
-        if (fuente.length !== delJson.length) {
-            avisar('el JSON tiene ' + delJson.length + ' productos y la fuente ' + fuente.length +
-                ': el JSON quedo viejo, corré npm run generar');
-            malas++;
-        } else {
-            for (let i = 0; i < fuente.length; i++) {
-                const a = fuente[i];
-                const b = delJson[i];
-
-                if (JSON.stringify(a) !== JSON.stringify(b)) {
-                    avisar('producto ' + i + ' (' + a.nombre + ') difiere entre datos/catalogo.js y ' +
-                        'el JSON: corré npm run generar');
-                    malas++;
-                }
-            }
-        }
-    }
-
-    /* El navegador lo baja con fetch. Si el path estuviera mal, el
-       catalogo no aparece nunca. */
-    if (delJson) {
-        const relativo = path.relative(path.join(raiz, 'public'), rutaCatalogoJSON());
-        if (fs.existsSync(path.join(raiz, 'public', relativo))) {
-            ok('public/data/productos.json al dia con datos/catalogo.js (' + delJson.length +
-                ' productos)');
-        }
-    }
-
-    if (!malas && delJson) {
-        ok('datos/catalogo.js y public/data/productos.json coinciden, sin Function() por el medio');
+    for (const match of contenido.matchAll(/var\((--[a-z0-9-]+)/gi)) {
+        if (!variablesUsadas.has(match[1])) variablesUsadas.set(match[1], new Set());
+        variablesUsadas.get(match[1]).add(archivo);
     }
 }
 
+const sinDefinir = [...variablesUsadas.keys()].filter(variable => !variablesDeclaradas.has(variable));
 
-/* --- 11. El JSON de testimonios esta al dia -------------------
-   Se comparan fuente y JSON sin ejecutar el generador. */
+if (sinDefinir.length) aviso('variables sin declarar en tokens.css: ' + sinDefinir.join(', '));
+else ok(archivosCss.length + ' hojas de estilo con llaves balanceadas');
 
-console.log('\nTestimonios');
+if (!/--[a-z0-9-]+\s*:/i.test(tokens)) error('tokens.css no declara variables');
 
-{
-    const fuente = leerTestimoniosFuente();
-    const delJson = leerTestimoniosJSON();
+/* 12. Contrato del panel y de la API. */
+seccion('Contrato del panel y la API');
 
-    if (fuente && delJson) {
-        let malas = 0;
+const adminComun = leer(path.join(js, 'admin-comun.js'));
+const productoJs = leer(path.join(js, 'producto.js'));
+const app = leer(path.join(raizProyecto, 'backend', 'src', 'app.js'));
 
-        if (fuente.length !== delJson.length) {
-            avisar('el JSON tiene ' + delJson.length + ' opiniones y la fuente ' + fuente.length +
-                ': el JSON quedo viejo, corré npm run generar:testimonios');
-            malas++;
-        } else {
-            for (let i = 0; i < fuente.length; i++) {
-                const a = fuente[i];
-                const b = delJson[i];
+const contratos = [
+    [adminComun.includes('superadmin'), 'admin-comun.js exige rol superadmin'],
+    [adminComun.includes('adminIrALogin'), 'admin-comun.js redirige al login'],
+    [productoJs.includes('application/ld+json'), 'producto.js inyecta JSON-LD'],
+    [productoJs.includes('/api/catalogo/'), 'producto.js lee la ficha desde la API'],
+    [app.includes('/api/admin'), 'app.js monta las rutas del panel'],
+    [app.includes('helmet'), 'app.js usa helmet'],
+    [app.includes('cookieParser'), 'app.js usa cookie-parser']
+];
 
-                if (JSON.stringify(a) !== JSON.stringify(b)) {
-                    avisar('opinion ' + i + ' (' + a.autor + ') difiere entre datos/testimonios.js y ' +
-                        'el JSON: corré npm run generar:testimonios');
-                    malas++;
-                }
-            }
-        }
-
-        if (malas === 0) {
-            ok('public/data/testimonios.json al dia con datos/testimonios.js (' + delJson.length +
-                ' opiniones)');
-        }
-    }
+for (const [cumple, mensaje] of contratos) {
+    if (cumple) ok(mensaje);
+    else error(mensaje);
 }
 
+/* Resumen. */
+console.log('\n' + (fallos ? 'Verificación con ' + fallos + ' falla(s).' : 'Verificación correcta.') +
+    (avisos ? ' ' + avisos + ' aviso(s).' : ''));
 
-/* --- Fichas huerfanas -------------------------------------------
-   La verificacion no poda archivos. Las fichas sin correspondencia con
-   el catalogo se reportan para que la limpieza sea una accion explicita. */
-
-console.log('\n' + (problemas ? problemas + ' problema(s)' : 'Sin problemas'));
-
-/* Suma de llaves: se deja fuera del conteo de "ok" porque es
-   informativo, no un error. */
+process.exit(fallos ? 1 : 0);

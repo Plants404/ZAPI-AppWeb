@@ -1,98 +1,126 @@
 'use strict';
 
 const express = require('express');
-const mongoose = require('mongoose');
 const Testimonio = require('../models/Testimonio');
-const { createAuthenticate, createAuthenticateOpcional } = require('../middleware/authenticate');
+const { createAuthenticate } = require('../middleware/autenticacion');
+const { texto } = require('../utils/validacion');
 
-const { fieldError } = require('../utils/fieldError');
+function testimonioPublico(testimonio) {
+    return {
+        id: String(testimonio._id),
+        autor: testimonio.autor,
+        lugar: testimonio.lugar,
+        texto: testimonio.texto,
+        estrellas: testimonio.estrellas,
+        fecha: testimonio.createdAt,
+        productoId: testimonio.productoId,
+    };
+}
 
-function createTestimoniosRouter({ config, readLimiter, writeLimiter }) {
+function createTestimoniosRouter(config) {
     const router = express.Router();
     const authenticate = createAuthenticate(config);
-    const authenticateForReview = createAuthenticate(config, 'Iniciá sesión para dejar tu opinión.');
-    const authenticateOpcional = createAuthenticateOpcional(config);
-    const authMiddleware = config.requiereCuenta ? authenticateForReview : authenticateOpcional;
 
-    router.get('/', readLimiter, async (request, response, next) => {
+    router.get('/', async (request, response, next) => {
         try {
-            const rows = await Testimonio.find({ verificado: true, autorizado: true })
+            const testimonios = await Testimonio.find({ estado: 'aprobado' })
                 .sort({ createdAt: -1 })
+                .limit(60)
                 .lean();
-            const testimonios = rows.map(row => ({
-                autor: row.autor,
-                lugar: row.lugar,
-                texto: row.texto,
-                estrellas: row.estrellas,
-                verificado: row.verificado,
-                autorizado: row.autorizado,
-                fecha: row.createdAt.toISOString(),
-            }));
-            return response.status(200).json({ testimonios });
+
+            return response.status(200).json({ testimonios: testimonios.map(testimonioPublico) });
         } catch (error) {
             return next(error);
         }
     });
 
-    router.post('/', writeLimiter, authMiddleware, async (request, response, next) => {
-        const body = request.body && typeof request.body === 'object' && !Array.isArray(request.body)
-            ? request.body
-            : {};
-        const autor = typeof body.autor === 'string' ? body.autor.trim() : '';
-        const lugar = typeof body.lugar === 'string' ? body.lugar.trim() : '';
-        const texto = typeof body.texto === 'string' ? body.texto.trim() : '';
-
-        if (autor.length < 2 || autor.length > 120) {
-            return fieldError(response, 'autor', 'El nombre debe tener entre 2 y 120 caracteres.');
-        }
-        if (body.lugar !== undefined && typeof body.lugar !== 'string') {
-            return fieldError(response, 'lugar', 'El lugar debe ser texto.');
-        }
-        if (lugar.length > 120) {
-            return fieldError(response, 'lugar', 'El lugar no puede superar los 120 caracteres.');
-        }
-        if (texto.length < 10 || texto.length > 600) {
-            return fieldError(response, 'texto', 'La opinión debe tener entre 10 y 600 caracteres.');
-        }
-        if (typeof body.estrellas !== 'number'
-            || !Number.isInteger(body.estrellas)
-            || body.estrellas < 1
-            || body.estrellas > 5) {
-            return fieldError(response, 'estrellas', 'La calificación debe ser un entero entre 1 y 5.');
-        }
-
+    router.get('/mios', authenticate, async (request, response, next) => {
         try {
-            await Testimonio.create({
+            const testimonios = await Testimonio.find({ usuario: request.user._id })
+                .sort({ createdAt: -1 })
+                .limit(30)
+                .lean();
+
+            return response.status(200).json({
+                testimonios: testimonios.map(testimonio => ({
+                    ...testimonioPublico(testimonio),
+                    estado: testimonio.estado,
+                    motivoRechazo: testimonio.motivoRechazo,
+                })),
+            });
+        } catch (error) {
+            return next(error);
+        }
+    });
+
+    router.post('/', authenticate, async (request, response, next) => {
+        try {
+            const body = request.body || {};
+            const autor = texto(body.autor) || request.user.nombre;
+            const lugar = texto(body.lugar);
+            const contenido = texto(body.texto);
+            const estrellas = Number(body.estrellas);
+            const productoId = body.productoId === undefined || body.productoId === null || body.productoId === ''
+                ? null
+                : Number(body.productoId);
+
+            if (autor.length < 2 || autor.length > 120) {
+                return response.status(400).json({
+                    error: 'El nombre debe tener entre 2 y 120 caracteres.',
+                    campo: 'autor',
+                });
+            }
+
+            if (lugar.length > 120) {
+                return response.status(400).json({ error: 'El lugar no puede superar 120 caracteres.', campo: 'lugar' });
+            }
+
+            if (contenido.length < 10 || contenido.length > 600) {
+                return response.status(400).json({
+                    error: 'La opinión debe tener entre 10 y 600 caracteres.',
+                    campo: 'texto',
+                });
+            }
+
+            if (!Number.isInteger(estrellas) || estrellas < 1 || estrellas > 5) {
+                return response.status(400).json({
+                    error: 'El puntaje debe ser un entero entre 1 y 5.',
+                    campo: 'estrellas',
+                });
+            }
+
+            if (productoId !== null && (!Number.isSafeInteger(productoId) || productoId < 1)) {
+                return response.status(400).json({ error: 'El producto indicado no es válido.', campo: 'productoId' });
+            }
+
+            const pendientes = await Testimonio.countDocuments({
+                usuario: request.user._id,
+                estado: 'pendiente',
+            });
+
+            if (pendientes >= 5) {
+                return response.status(429).json({
+                    error: 'Tenés varias opiniones pendientes de revisión. Esperá a que las moderemos.',
+                });
+            }
+
+            const testimonio = await Testimonio.create({
                 autor,
                 lugar,
-                texto,
-                estrellas: body.estrellas,
-                userId: request.user ? request.user._id : null,
-                verificado: false,
-                autorizado: false,
+                texto: contenido,
+                estrellas,
+                productoId,
+                usuario: request.user._id,
+                estado: 'pendiente',
             });
-            return response.status(201).json({ ok: true });
-        } catch (error) {
-            return next(error);
-        }
-    });
 
-    router.patch('/:id/aprobar', writeLimiter, authenticate, async (request, response, next) => {
-        if (request.user.role !== 'admin') {
-            return response.status(403).json({ error: 'No tenés permiso para aprobar opiniones.' });
-        }
-        if (!mongoose.isValidObjectId(request.params.id)) {
-            return response.status(400).json({ error: 'El ID de la opinión no es válido.', campo: 'id' });
-        }
-
-        try {
-            const testimonio = await Testimonio.findByIdAndUpdate(
-                request.params.id,
-                { $set: { verificado: true, autorizado: true } },
-                { returnDocument: 'after', runValidators: true }
-            );
-            if (!testimonio) return response.status(404).json({ error: 'No encontramos esa opinión.' });
-            return response.status(200).json({ ok: true });
+            return response.status(201).json({
+                testimonio: {
+                    ...testimonioPublico(testimonio),
+                    estado: testimonio.estado,
+                },
+                mensaje: '¡Gracias! Tu opinión queda pendiente de revisión.',
+            });
         } catch (error) {
             return next(error);
         }
@@ -101,4 +129,4 @@ function createTestimoniosRouter({ config, readLimiter, writeLimiter }) {
     return router;
 }
 
-module.exports = { createTestimoniosRouter };
+module.exports = { createTestimoniosRouter, testimonioPublico };

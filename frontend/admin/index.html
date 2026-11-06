@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    <meta name="description" content="Resumen de ventas online y presenciales de ZAPI.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/svg+xml" href="../public/img/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+    <link rel="stylesheet" href="../public/css/tokens.css">
+    <link rel="stylesheet" href="../public/css/base.css">
+    <link rel="stylesheet" href="../public/css/admin.css">
+</head>
+<body class="admin" data-raiz="..">
+<a class="salto-contenido" href="#contenidoAdmin">Saltar al contenido</a>
+<div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar" aria-label="Navegación del panel">
+        <a class="admin-marca" href="../index.html">
+            <img src="../public/img/logo.svg" alt="" width="38" height="54">
+            <span><strong>ZAPI</strong><small>Panel</small></span>
+        </a>
+        <nav class="admin-nav">
+            <a class="admin-enlace activo" href="./index.html" aria-current="page"><span class="material-symbols-outlined" aria-hidden="true">dashboard</span><span>Dashboard</span></a>
+            <a class="admin-enlace" href="./pedidos.html"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Pedidos online</span></a>
+            <a class="admin-enlace" href="./ventas.html"><span class="material-symbols-outlined" aria-hidden="true">point_of_sale</span><span>Ventas presenciales</span></a>
+            <a class="admin-enlace" href="./productos.html"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span><span>Productos y stock</span></a>
+            <a class="admin-enlace" href="./testimonios.html"><span class="material-symbols-outlined" aria-hidden="true">rate_review</span><span>Testimonios</span></a>
+            <a class="admin-enlace" href="./clientes.html"><span class="material-symbols-outlined" aria-hidden="true">group</span><span>Clientes</span></a>
+            <a class="admin-enlace" href="./contenido.html"><span class="material-symbols-outlined" aria-hidden="true">edit_document</span><span>Contenido</span></a>
+            <a class="admin-enlace" href="./auditoria.html"><span class="material-symbols-outlined" aria-hidden="true">history</span><span>Auditoría</span></a>
+        </nav>
+        <a class="admin-volver" href="../index.html"><span class="material-symbols-outlined" aria-hidden="true">storefront</span><span>Ver el sitio</span></a>
+    </aside>
+
+    <div class="admin-principal">
+        <header class="admin-topbar">
+            <button class="admin-menu" id="adminMenuBoton" type="button" aria-expanded="false" aria-controls="adminSidebar" aria-label="Abrir menú del panel"><span class="material-symbols-outlined" aria-hidden="true">menu</span></button>
+            <div>
+                <span class="admin-topbar-etiqueta">Panel de administración</span>
+                <h1>Dashboard</h1>
+            </div>
+            <div class="admin-sesion">
+                <span class="admin-usuario" data-admin-usuario>—</span>
+                <button class="boton-texto" type="button" data-admin-salir><span class="material-symbols-outlined" aria-hidden="true">logout</span> Salir</button>
+            </div>
+        </header>
+
+        <main class="admin-contenido" id="contenidoAdmin" tabindex="-1">
+
+<div class="admin-seccion-cabecera">
+    <div>
+        <span class="admin-etiqueta">Resumen general</span>
+        <p>Ventas, márgenes y pendientes del período seleccionado.</p>
+    </div>
+    <form class="admin-filtros" id="dashboardFiltros">
+        <label class="visually-hidden" for="dashboardDesde">Desde</label>
+        <input class="campo-input" id="dashboardDesde" name="desde" type="date">
+        <label class="visually-hidden" for="dashboardHasta">Hasta</label>
+        <input class="campo-input" id="dashboardHasta" name="hasta" type="date">
+        <button class="boton boton-primario" type="submit">Aplicar</button>
+        <button class="boton boton-secundario" type="button" data-rango="hoy">Hoy</button>
+        <button class="boton boton-secundario" type="button" data-rango="semana">Semana</button>
+        <button class="boton boton-secundario" type="button" data-rango="mes">Mes</button>
+        <a class="boton boton-secundario" id="dashboardExportar" href="../api/admin/dashboard/export.csv" download>Exportar CSV</a>
+    </form>
+</div>
+
+<p class="formulario-estado" id="dashboardEstado" role="status" aria-live="polite" hidden></p>
+
+<section class="admin-resumen" aria-label="Resumen por período">
+    <article class="admin-kpi"><span>Hoy</span><strong id="kpiHoyTotal">—</strong><small id="kpiHoyDetalle"></small></article>
+    <article class="admin-kpi"><span>Esta semana</span><strong id="kpiSemanaTotal">—</strong><small id="kpiSemanaDetalle"></small></article>
+    <article class="admin-kpi"><span>Este mes</span><strong id="kpiMesTotal">—</strong><small id="kpiMesDetalle"></small></article>
+    <article class="admin-kpi"><span>Ticket promedio</span><strong id="kpiTicket">—</strong><small id="kpiTicketDetalle"></small></article>
+</section>
+
+<section class="admin-grid-2" aria-label="Indicadores del período">
+    <article class="admin-card">
+        <header class="admin-card-cabecera">
+            <div><span class="admin-etiqueta">Período</span><h2>Ventas y margen</h2></div>
+            <span class="admin-rango" id="dashboardRango"></span>
+        </header>
+        <div class="admin-kpi-linea">
+            <div><span>Online</span><strong id="kpiOnline">—</strong><small id="kpiOnlineDetalle"></small></div>
+            <div><span>Presencial</span><strong id="kpiPresencial">—</strong><small id="kpiPresencialDetalle"></small></div>
+            <div><span>Total</span><strong id="kpiTotal">—</strong><small id="kpiTotalDetalle"></small></div>
+            <div><span>Margen bruto</span><strong id="kpiMargen">—</strong><small id="kpiMargenDetalle"></small></div>
+        </div>
+        <p class="admin-comparacion" id="dashboardComparacion"></p>
+    </article>
+
+    <article class="admin-card">
+        <header class="admin-card-cabecera">
+            <div><span class="admin-etiqueta">Evolución</span><h2>Ventas por día</h2></div>
+            <span class="admin-leyenda"><i class="leyenda-online"></i> Online <i class="leyenda-presencial"></i> Presencial</span>
+        </header>
+        <div class="admin-grafico" id="dashboardGrafico"></div>
+    </article>
+</section>
+
+<section class="admin-grid-2" aria-label="Detalle de ventas">
+    <article class="admin-card">
+        <header class="admin-card-cabecera"><div><span class="admin-etiqueta">Cobros</span><h2>Métodos de pago</h2></div></header>
+        <div class="admin-lista" id="dashboardMetodos"></div>
+    </article>
+    <article class="admin-card">
+        <header class="admin-card-cabecera"><div><span class="admin-etiqueta">Ranking</span><h2>Top 10 productos</h2></div></header>
+        <div class="admin-tabla-scroll">
+            <table class="admin-tabla">
+                <thead><tr><th>Producto</th><th>Cant.</th><th>Ingresos</th><th>Margen</th></tr></thead>
+                <tbody id="dashboardTop"></tbody>
+            </table>
+        </div>
+    </article>
+</section>
+
+<section class="admin-grid-3" aria-label="Pendientes">
+    <article class="admin-card">
+        <header class="admin-card-cabecera"><div><span class="admin-etiqueta">Stock</span><h2>Stock bajo</h2></div><span class="admin-contador" id="dashboardStockContador">0</span></header>
+        <div class="admin-lista" id="dashboardStock"></div>
+    </article>
+    <article class="admin-card">
+        <header class="admin-card-cabecera"><div><span class="admin-etiqueta">Online</span><h2>Pedidos pendientes</h2></div><span class="admin-contador" id="dashboardPendientesContador">0</span></header>
+        <div class="admin-lista" id="dashboardPendientes"></div>
+    </article>
+    <article class="admin-card">
+        <header class="admin-card-cabecera"><div><span class="admin-etiqueta">Comunidad</span><h2>Novedades</h2></div></header>
+        <div class="admin-lista">
+            <div class="admin-dato"><span>Clientes nuevos</span><strong id="dashboardClientesNuevos">0</strong></div>
+            <div class="admin-dato"><span>Testimonios pendientes</span><strong id="dashboardTestimoniosPendientes">0</strong></div>
+        </div>
+        <div class="admin-acciones">
+            <a class="boton boton-secundario" href="./pedidos.html">Ver pedidos</a>
+            <a class="boton boton-secundario" href="./testimonios.html">Moderar opiniones</a>
+        </div>
+    </article>
+</section>
+        </main>
+    </div>
+</div>
+    <script src="../public/js/negocio.js" defer></script>
+    <script src="../public/js/utilidades.js" defer></script>
+    <script src="../public/js/api.js" defer></script>
+    <script src="../public/js/admin-comun.js" defer></script>
+    <script src="../public/js/admin-dashboard.js" defer></script>
+</body>
+</html>

@@ -24,5 +24,5 @@ Zapi es un vivero que produce sosteniblemente y ofrece plantas e insumos con una
 - No afirmes resultados de posicionamiento o ventas sin datos que los respalden.
 - No añadas analítica o servicios de terceros sin evaluar privacidad y costos.
 - No cambies pagos, precios, stock o flujo de compra sin autorización.
-- Coordina los cambios de interfaz con `frontend-ux-ui` y los cambios de API con `backend-api`.
+- Coordina los cambios de interfaz con `frontend-ux-ui` y revisa los enlaces y metadatos con `testing-qa`.
 - Prioriza recomendaciones concretas, medibles y sostenibles.

@@ -1,34 +1,52 @@
 'use strict';
 
+/* Entorno de desarrollo: API Express + servidor estático con proxy.
+   Uso: npm start */
+
 const { spawn } = require('child_process');
 const path = require('path');
 
 const rootDir = path.resolve(__dirname, '..');
-const isWindows = process.platform === 'win32';
-const npmCmd = isWindows ? 'npm.cmd' : 'npm';
+const procesos = [];
 
-console.log('Iniciando entorno de desarrollo ZAPI (Frontend + Backend)...\n');
+function iniciar(nombre, script, env = {}) {
+    const proceso = spawn(process.execPath, [script], {
+        cwd: rootDir,
+        stdio: 'inherit',
+        env: { ...process.env, ...env },
+    });
 
-const backend = spawn(npmCmd, ['start'], {
-    cwd: path.join(rootDir, 'backend'),
-    stdio: 'inherit',
-    shell: true,
-});
+    proceso.on('exit', codigo => {
+        if (codigo && codigo !== 0) {
+            console.error(`${nombre} terminó con código ${codigo}.`);
+        }
+    });
 
-const frontend = spawn(npmCmd, ['start'], {
-    cwd: path.join(rootDir, 'frontend'),
-    stdio: 'inherit',
-    shell: true,
-});
+    procesos.push(proceso);
+    return proceso;
+}
+
+console.log('Iniciando ZAPI: API (5501) + web (5500)...\n');
+
+iniciar('API', path.join(rootDir, 'backend', 'server.js'));
+iniciar('Web', path.join(rootDir, 'frontend', 'tools', 'servir.js'));
+
+let cerrando = false;
 
 function cleanup() {
+    if (cerrando) return;
+    cerrando = true;
+
     console.log('\nDeteniendo servidores...');
-    try {
-        if (!backend.killed) backend.kill('SIGTERM');
-    } catch {}
-    try {
-        if (!frontend.killed) frontend.kill('SIGTERM');
-    } catch {}
+
+    for (const proceso of procesos) {
+        try {
+            if (!proceso.killed) proceso.kill('SIGTERM');
+        } catch {
+            /* El proceso ya terminó. */
+        }
+    }
+
     process.exit(0);
 }
 

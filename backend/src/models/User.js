@@ -1,8 +1,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const { EMAIL_PATTERN } = require('../utils/validacion');
 
 const userSchema = new mongoose.Schema({
     nombre: {
@@ -24,8 +23,7 @@ const userSchema = new mongoose.Schema({
     telefono: {
         type: String,
         trim: true,
-        maxlength: 30,
-        match: [/^\+?[0-9\s().-]{7,30}$/, 'Ingresá un teléfono válido.'],
+        maxlength: 40,
     },
     passwordHash: {
         type: String,
@@ -34,13 +32,21 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['user', 'admin'],
-        default: 'user',
+        enum: ['cliente', 'superadmin'],
+        default: 'cliente',
         required: true,
+        index: true,
+    },
+    activo: {
+        type: Boolean,
+        required: true,
+        default: true,
     },
 }, {
     timestamps: true,
     versionKey: false,
 });
+
+userSchema.index({ role: 1, createdAt: -1 });
 
 module.exports = mongoose.models.User || mongoose.model('User', userSchema);

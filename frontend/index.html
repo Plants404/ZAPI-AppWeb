@@ -1,1062 +1,242 @@
 <!DOCTYPE html>
-<html lang="es-UY">
-
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZAPI - Soluciones Agroecológicas</title>
-  <meta name="description"
-    content="Viveros, aromáticas, tuppers y servicios de jardinería agroecológica para hogares, empresas e instituciones. Catálogo con precios y envío a todo el país.">
-  <link rel="canonical" href="https://zapi.uy/">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ZAPI">
-  <meta property="og:locale" content="es_UY">
-  <meta property="og:title" content="ZAPI - Soluciones Agroecológicas">
-  <meta property="og:description"
-    content="Viveros, aromáticas, tuppers y servicios de jardinería agroecológica para hogares, empresas e instituciones.">
-  <meta property="og:url" content="https://zapi.uy/">
-  <meta property="og:image" content="https://zapi.uy/public/img/plants-hero.opt.jpg">
-  <meta property="og:image:alt" content="Plantas de interior verdes en un ambiente luminoso.">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="ZAPI - Soluciones Agroecológicas">
-  <meta name="twitter:description"
-    content="Viveros, aromáticas, tuppers y servicios de jardinería agroecológica para hogares, empresas e instituciones.">
-  <meta name="twitter:image" content="https://zapi.uy/public/img/plants-hero.opt.jpg">
-  <meta name="twitter:image:alt" content="Plantas de interior verdes en un ambiente luminoso.">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
-
-  <link rel="preload" as="image" href="./public/img/plants-hero.opt.jpg" fetchpriority="high">
-
-  <link rel="stylesheet" href="./public/css/styles.css">
-  <link rel="stylesheet" href="./public/css/stylecarrito.css">
-  <link rel="stylesheet" href="./public/css/catalogo-catalogo.css">
-  <link rel="stylesheet" href="./public/css/catalogo-modal.css">
-  <link rel="stylesheet" href="./public/css/zapi-bot.css">
-
-  <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ZAPI | Vivero agroecológico en Montevideo</title>
+    <meta name="description" content="Plantas, kits de huerta y acompañamiento para crear y mantener espacios verdes en Montevideo.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://zapi.uy/index.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ZAPI">
+    <meta property="og:locale" content="es_UY">
+    <meta property="og:title" content="ZAPI | Vivero agroecológico en Montevideo">
+    <meta property="og:description" content="Plantas, kits de huerta y acompañamiento para crear y mantener espacios verdes en Montevideo.">
+    <meta property="og:url" content="https://zapi.uy/index.html">
+    <meta property="og:image" content="https://zapi.uy/public/img/plants-hero.opt.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+    <link rel="stylesheet" href="./public/css/tokens.css">
+    <link rel="stylesheet" href="./public/css/base.css">
+    <link rel="stylesheet" href="./public/css/estructura.css">
+    <link rel="stylesheet" href="./public/css/inicio.css">
+    <link rel="stylesheet" href="./public/css/asistente.css">
 </head>
+<body class="pagina-inicio " data-raiz=".">
+<a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+<header class="site-header" data-header>
+    <div class="header-inner">
+        <button class="menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menú de navegación">
+            <span class="menu-linea" aria-hidden="true"></span>
+            <span class="menu-linea" aria-hidden="true"></span>
+            <span class="menu-linea" aria-hidden="true"></span>
+        </button>
 
-<body>
+        <a class="marca" href="./index.html" aria-label="ZAPI, ir al inicio">
+            <img src="./public/img/logo.svg" alt="" width="44" height="62">
+            <span class="marca-texto"><strong>ZAPI</strong><small>Vivero agroecológico</small></span>
+        </a>
 
-  <header>
-    
-    <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navPrincipal"
-      aria-label="Abrir menú de navegación">
-      <span class="nav-toggle-barra" aria-hidden="true"></span>
-      <span class="nav-toggle-barra" aria-hidden="true"></span>
-      <span class="nav-toggle-barra" aria-hidden="true"></span>
-      <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
-    </button>
+        <nav class="site-nav" id="navPrincipal" aria-label="Navegación principal">
+            <ul><li><a class="nav-enlace activo" href="./index.html" aria-current="page">Inicio</a></li><li><a class="nav-enlace" href="./catalogo.html">Catálogo</a></li><li><a class="nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-enlace" href="./contacto.html">Contacto</a></li></ul>
+        </nav>
 
-    
-    <a class="logo" href="./index.html" data-section="inicio" aria-label="ZAPI, ir al inicio">
-      <div class="logo-items-text">
-        <span class="logo-nombre">ZAPI</span>
-      </div>
-      <div class="logo-items-img">
-        <img src="./public/img/logo.svg" alt="">
-      </div>
-    </a>
+        <form class="header-search" id="headerSearch" role="search" action="./catalogo.html" autocomplete="off">
+            <label class="visually-hidden" for="searchInput">Buscar productos</label>
+            <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
+            <input id="searchInput" name="q" type="search" placeholder="Buscar productos…" aria-describedby="searchStatus" spellcheck="false">
+            <button class="search-limpiar" id="searchClear" type="button" aria-label="Limpiar búsqueda" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+        </form>
 
-    
-    <form class="header-search" id="headerSearch" role="search" autocomplete="off">
-      <label class="visually-hidden" for="searchInput">Buscar productos</label>
-      <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
-      <input type="search" class="header-search-input" id="searchInput" name="q"
-        placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
-      <button type="button" class="header-search-limpiar" id="searchClear" aria-label="Limpiar búsqueda" hidden>
-        <span class="material-symbols-outlined" aria-hidden="true">close</span>
-      </button>
-    </form>
-
-    <a class="header-cart" href="#carrito" data-section="carrito" aria-label="Ver carrito">
-      <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
-      <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-    </a>
-
-    
-    <nav class="nav-bar" id="navPrincipal" aria-label="Navegación principal">
-      <ul>
-        <li class="nav-cuenta">
-          <a class="nav-link nav-ingresar" href="./login.html">Ingresar</a>
-          <div class="nav-usuario">
-            <button type="button" class="nav-usuario-boton nav-usuario-alineado" id="navUsuarioBoton" aria-expanded="false"
-              aria-haspopup="true" aria-controls="navUsuarioMenu">
-              <span class="nav-usuario-nombre" id="navUsuarioNombre"></span>
-              
-              <span class="cart-count cart-count-header" data-cart-count aria-hidden="true">0</span>
-            </button>
-            <div class="nav-usuario-menu" id="navUsuarioMenu" hidden>
-              <button type="button" class="nav-usuario-item nav-link-carrito" data-section="carrito"
-                id="navLinkCarrito">
-                Carrito
-                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-              </button>
-              <a class="nav-usuario-item" href="./pedidos.html">Mis pedidos</a>
-              <button type="button" class="nav-usuario-item" id="navSalir">Salir</button>
-            </div>
-          </div>
-
-          <a class="nav-cta" href="#carrito" data-section="carrito">
+        <a class="header-carrito" href="./carrito.html" aria-label="Ver carrito">
             <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
-            Ver carrito
             <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-          </a>
-        </li>
+        </a>
 
-        <li class="nav-suelto-carrito" style="display:none">
-          <a class="nav-link" href="./carrito.html">
-            <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
-            Carrito
-            <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-          </a>
-        </li>
-        <li class="nav-suelto-pedidos" style="display:none">
-          <a class="nav-link" href="./pedidos.html">Mis pedidos</a>
-        </li>
-
-        <li><button type="button" class="nav-link active" data-section="inicio" aria-current="page">Inicio</button></li>
-        <li><button type="button" class="nav-link" data-section="catalogo">Catálogo</button></li>
-        <li><button type="button" class="nav-link" data-section="servicios">Servicios</button></li>
-        <li><button type="button" class="nav-link" data-section="nosotros">Nosotros</button></li>
-        <li><button type="button" class="nav-link" data-section="contacto">Contacto</button></li>
-      </ul>
-    </nav>
-  </header>
-
-  
-  <div class="nav-backdrop" id="navBackdrop" hidden></div>
-
-  <div class="bottom-sheet" id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden inert>
-    <div class="bottom-sheet-manija" aria-hidden="true"></div>
-    <header class="bottom-sheet-cabecera">
-      <h2 class="bottom-sheet-titulo">Menú</h2>
-      <button type="button" class="bottom-sheet-cerrar" aria-label="Cerrar menú">
-        <span class="material-symbols-outlined" aria-hidden="true">close</span>
-      </button>
-    </header>
-    <nav class="bottom-sheet-nav" aria-label="Opciones del menú">
-      <ul class="bottom-sheet-grilla">
-        <li>
-          <a class="bottom-sheet-tarjeta" href="./index.html" aria-current="page">
-            <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">home</span></div>
-            <span class="bottom-sheet-etiq">Inicio</span>
-          </a>
-        </li>
-        <li>
-          <a class="bottom-sheet-tarjeta" href="./catalogo.html">
-            <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">eco</span></div>
-            <span class="bottom-sheet-etiq">Catálogo</span>
-          </a>
-        </li>
-        <li>
-          <a class="bottom-sheet-tarjeta" href="./index.html#servicios">
-            <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span></div>
-            <span class="bottom-sheet-etiq">Servicios</span>
-          </a>
-        </li>
-        <li>
-          <a class="bottom-sheet-tarjeta" href="./index.html#nosotros">
-            <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">group</span></div>
-            <span class="bottom-sheet-etiq">Nosotros</span>
-          </a>
-        </li>
-        <li>
-          <a class="bottom-sheet-tarjeta" href="./index.html#contacto">
-            <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">mail</span></div>
-            <span class="bottom-sheet-etiq">Contacto</span>
-          </a>
-        </li>
-        <li>
-          <a class="bottom-sheet-tarjeta" href="#carrito" data-section="carrito">
-            <div class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span></div>
-            <span class="bottom-sheet-etiq">Carrito</span>
-            <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-    <div class="bottom-sheet-cuenta">
-      <div class="bottom-sheet-fila-pedidos" data-cuentas-off style="display:none">
-        <a href="./pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
-      </div>
-      <div class="bottom-sheet-fila-cuenta" data-auth-sesion>
-        <div class="bottom-sheet-avatar" aria-hidden="true">A</div>
-        <span class="bottom-sheet-hola" data-sheet-nombre>Hola</span>
-        <a href="./pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
-      </div>
-      <button type="button" class="bottom-sheet-salir" data-auth-salir>Cerrar sesión</button>
-      <a href="./login.html" class="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</a>
+        <div class="header-sesion" data-sesion></div>
     </div>
-  </div>
-
-  
-  <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
-
-  <main id="contenido" tabindex="-1">
-    
-    <section class="section hero" id="inicio">
-      <div class="hero-grid">
-        <div class="hero-copy">
-          <h1>Transformamos espacios con naturaleza.</h1>
-
-          <p class="hero-lead">
-            En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a través de soluciones agroecológicas integrales.
-          </p>
-
-          <ul class="hero-features">
-            <li><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</li>
-            <li><strong>Asesoramiento profesional:</strong> Guía técnica paso a paso.</li>
-            <li><strong>Cuidado inteligente:</strong> Herramientas diseñadas para facilitar su mantenimiento.</li>
-          </ul>
-
-          <p class="hero-description">
-            Ayudamos a hogares, empresas e instituciones a crear y mantener espacios verdes saludables con un acompañamiento continuo antes, durante y después de tu compra.
-          </p>
-
-          <div class="hero-ctas">
-            <button type="button" data-section="catalogo">Explorar Catálogo</button>
-            <button type="button" data-section="servicios">Conocer nuestros servicios</button>
-          </div>
-        </div>
-
-        <img src="./public/img/plants-hero.opt.jpg"
-          alt="Plantas de interior verdes en un ambiente luminoso."
-          width="1200" height="800"
-          fetchpriority="high"
-          decoding="async">
-      </div>
-
-      <div class="home-products-carousel" role="region" aria-label="Productos destacados">
-        <div class="carousel-header">
-          <h2>Productos Destacados</h2>
-        </div>
-        <div class="carousel-viewport">
-          <button type="button" class="carousel-nav-btn prev" aria-label="Ver productos anteriores">‹</button>
-          <div class="carousel-track" id="homeProductTrack"></div>
-          <button type="button" class="carousel-nav-btn next" aria-label="Ver productos siguientes">›</button>
-        </div>
-      </div>
-    </section>
-
-    
-    <section class="section testimonios" id="testimonios" data-parte-de="inicio">
-      <div class="testimonios-cabecera">
-        <span class="contacto-eyebrow">TESTIMONIOS</span>
-
-        <h2>Lo que dicen nuestros clientes</h2>
-
-        <p>Historias de quienes ya transformaron sus espacios con ZAPI.</p>
-      </div>
-
-      
-      <div class="testimonios-grilla" id="testimoniosCarrusel" role="list"
-        aria-label="Testimonios de clientes"></div>
-
-      
-
-      <div class="testimonios-accion">
-        <button type="button" class="btn-testimonio" data-abrir-testimonio>
-          <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
-
-          Dejar mi opinión
-        </button>
-      </div>
-    </section>
-
-    
-    <section class="section catalog hidden" id="catalogo">
-      <div class="catalog-header zapi-hero-banner">
-        <div class="zapi-hero-grid">
-
-          <div class="zapi-hero-content">
-            <h1 class="zapi-hero-title">CATÁLOGO VIVO</h1>
-            <p class="zapi-hero-description">
-              Elegí hoy tus plantas y tené tu rincón verde funcionando sin complicaciones. Nosotros preparamos todo; vos solo lo disfrutás.
-            </p>
-          </div>
-
-          <div class="zapi-hero-trust">
-            <div class="zapi-hero-trust-item">
-              <div class="zapi-hero-trust-icon">
-                <span class="material-symbols-outlined" aria-hidden="true">verified</span>
-              </div>
-              <div class="zapi-hero-trust-text">Precios visibles en el catálogo</div>
-            </div>
-            <div class="zapi-hero-trust-item">
-              <div class="zapi-hero-trust-icon">
-                <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
-              </div>
-              <div class="zapi-hero-trust-text">Consultá disponibilidad actual</div>
-            </div>
-            <div class="zapi-hero-trust-item">
-              <div class="zapi-hero-trust-icon">
-                <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
-              </div>
-              <div class="zapi-hero-trust-text">Envío gratis desde <span data-shipping-threshold></span></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-        <div class="catalog-filterbar">
-        <span class="catalog-filterbar-label" id="catalogFiltersLabel">Explorá por categoría</span>
-        <div class="catalog-filters" id="catalogFilters" role="group" aria-labelledby="catalogFiltersLabel">
-          <span class="catalog-filter-indicator" id="catalogFilterIndicator" aria-hidden="true"></span>
-        </div>
-      </div>
-
-      <div id="productGrid" class="catalog-grid">
-        
-      </div>
-    </section>
-
-    
-    <section class="section cart-page hidden" id="carrito">
-
-      <div class="cart-content">
-
-        <div class="cart-heading">
-
-          <div>
-            <span class="cart-eyebrow">
-              TU SELECCIÓN
-            </span>
-
-            <h2>Productos seleccionados</h2>
-          </div>
-
-          <button class="clear-cart" type="button" id="clearCart">
-            <span class="material-symbols-outlined">
-              delete_sweep
-            </span>
-
-            Vaciar carrito
-          </button>
-
-        </div>
-
-        
-        <div id="cartItems" class="cart-items">
-          
-        </div>
-
-        
-        <div id="emptyCart" class="empty-cart hidden">
-          <span class="material-symbols-outlined">
-            shopping_basket
-          </span>
-
-          <h3>Tu carrito está vacío</h3>
-
-          <p>
-            Todavía no agregaste ningún producto.
-            Explorá nuestro catálogo y encontrá
-            algo para tu jardín o huerta.
-          </p>
-
-          <button type="button" class="primary-button" data-section="catalogo">
-            <span class="material-symbols-outlined">
-              eco
-            </span>
-
-            Explorar catálogo
-          </button>
-
-        </div>
-
-        
-        <section class="recommendations" id="recommendations" hidden>
-
-          <div class="recommendations-header">
-            <span class="cart-eyebrow">
-              TE PUEDE INTERESAR
-            </span>
-
-            <h2>Recomendamos para tu compra</h2>
-          </div>
-
-          <div id="recommendationsList" class="recommendations-list">
-            
-          </div>
-
-        </section>
-
-      </div>
-
-      
-      <aside class="cart-summary">
-
-        <div class="summary-header">
-          <span class="cart-eyebrow">
-            RESUMEN
-          </span>
-
-          <h2>Tu pedido</h2>
-        </div>
-
-        <div class="summary-lines">
-
-          <div>
-            <span>Productos</span>
-            <strong id="subtotal">$0</strong>
-          </div>
-
-          <div>
-            <span>Envío</span>
-            <strong id="shipping">$0</strong>
-          </div>
-
-        </div>
-
-        <div class="summary-total">
-          <span>Total</span>
-
-          <strong id="total">
-            $0
-          </strong>
-        </div>
-
-        
-        <div class="delivery-box">
-          <span class="material-symbols-outlined">
-            local_shipping
-          </span>
-
-          <div>
-            <strong>Entrega</strong>
-
-            <p>
-              Envío gratis desde <span data-shipping-threshold></span>. Para pedidos menores,
-              coordinaremos el costo por WhatsApp.
-            </p>
-          </div>
-        </div>
-
-        
-        <div id="checkoutRoot" class="checkout-root"></div>
-
-        <button type="button" class="btn-whatsapp" id="whatsappButton">
-          <span class="material-symbols-outlined">
-            chat
-          </span>
-
-          Enviar pedido por WhatsApp
-        </button>
-
-        <p class="secure-message">
-          <span class="material-symbols-outlined">
-            verified_user
-          </span>
-
-          Tu pedido será confirmado
-          directamente con ZAPI.
-        </p>
-
-        
-
-        <button type="button" class="btn-testimonio btn-testimonio-bloque" data-abrir-testimonio>
-          <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
-
-          Dejar un testimonio
-        </button>
-
-      </aside>
-
-    </section>
-
-    
-    <section class="section services-view hidden" id="servicios">
-      
-      <div id="service" class="service">
-        <div class="service-header zapi-hero-banner">
-          <div class="zapi-hero-grid">
-
-            <div class="zapi-hero-content">
-              <h1 class="zapi-hero-title">SOLUCIONES PARA CADA PROYECTO</h1>
-              <p class="zapi-hero-description">
-                Además de ofrecer productos, brindamos servicios especializados que ayudan a nuestros clientes a planificar, desarrollar y mantener espacios verdes de forma eficiente.
-              </p>
-            </div>
-
-            <div class="zapi-hero-trust">
-              <div class="zapi-hero-trust-heading">CÓMO TRABAJAMOS</div>
-              <div class="zapi-hero-trust-item">
-                <div class="zapi-hero-trust-icon">
-                  <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
-                </div>
-                <div class="zapi-hero-trust-text">
-                  <strong>Presupuesto sin compromiso:</strong> cotización clara y ajustada a tu espacio.
-                </div>
-              </div>
-              <div class="zapi-hero-trust-item">
-                <div class="zapi-hero-trust-icon">
-                  <span class="material-symbols-outlined" aria-hidden="true">eco</span>
-                </div>
-                <div class="zapi-hero-trust-text">
-                  <strong>Enfoque 100% agroecológico:</strong> cuidado responsable de tu entorno y suelo.
-                </div>
-              </div>
-              <div class="zapi-hero-trust-item">
-                <div class="zapi-hero-trust-icon">
-                  <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
-                </div>
-                <div class="zapi-hero-trust-text">
-                  <strong>Atención en Montevideo:</strong> acompañamiento cercano antes y después del proyecto.
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        
-        <div class="service-items">
-          <article class="service-card">
-            <span class="service-card-icono" aria-hidden="true">
-              <span class="material-symbols-outlined">support_agent</span>
-            </span>
-            <h4 class="service-card-titulo">Asesoramiento personalizado</h4>
-            <p class="service-card-texto">Guía paso a paso adaptada a tu espacio y tiempo.</p>
-            <button type="button" class="service-card-cta" data-section="contacto">
-              Consultar
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            </button>
-          </article>
-
-          <article class="service-card">
-            <span class="service-card-icono" aria-hidden="true">
-              <span class="material-symbols-outlined">yard</span>
-            </span>
-            <h4 class="service-card-titulo">Diseño de jardines</h4>
-            <p class="service-card-texto">Planificación estética y funcional para patios y balcones.</p>
-            <button type="button" class="service-card-cta" data-section="contacto">
-              Consultar
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            </button>
-          </article>
-
-          <article class="service-card">
-            <span class="service-card-icono" aria-hidden="true">
-              <span class="material-symbols-outlined">agriculture</span>
-            </span>
-            <h4 class="service-card-titulo">Diseño de huertas familiares</h4>
-            <p class="service-card-texto">Proyectamos tu huerta urbana para cosechar alimentos en casa.</p>
-            <button type="button" class="service-card-cta" data-section="contacto">
-              Consultar
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            </button>
-          </article>
-
-          <article class="service-card">
-            <span class="service-card-icono" aria-hidden="true">
-              <span class="material-symbols-outlined">local_florist</span>
-            </span>
-            <h4 class="service-card-titulo">Selección de especies</h4>
-            <p class="service-card-texto">Elegimos las plantas ideales según luz y clima de tu espacio.</p>
-            <button type="button" class="service-card-cta" data-section="contacto">
-              Consultar
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            </button>
-          </article>
-
-          <article class="service-card">
-            <span class="service-card-icono" aria-hidden="true">
-              <span class="material-symbols-outlined">grass</span>
-            </span>
-            <h4 class="service-card-titulo">Mantenimiento de espacios verdes</h4>
-            <p class="service-card-texto">Podas, nutrición de suelo y control orgánico de plagas.</p>
-            <button type="button" class="service-card-cta" data-section="contacto">
-              Consultar
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            </button>
-          </article>
-
-          <article class="service-card">
-            <span class="service-card-icono" aria-hidden="true">
-              <span class="material-symbols-outlined">apartment</span>
-            </span>
-            <h4 class="service-card-titulo">Proyectos para empresas</h4>
-            <p class="service-card-texto">Ambientación verde para oficinas y comercios.</p>
-            <button type="button" class="service-card-cta" data-section="contacto">
-              Consultar
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            </button>
-          </article>
-
-          <article class="service-card">
-            <span class="service-card-icono" aria-hidden="true">
-              <span class="material-symbols-outlined">school</span>
-            </span>
-            <h4 class="service-card-titulo">Capacitaciones y talleres</h4>
-            <p class="service-card-texto">Aprendé siembra, compostaje y cuidados paso a paso.</p>
-            <button type="button" class="service-card-cta" data-section="contacto">
-              Consultar
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            </button>
-          </article>
-
-          <article class="service-card service-card--cta">
-            <span class="service-card-icono" aria-hidden="true">
-              <span class="material-symbols-outlined">request_quote</span>
-            </span>
-            <h4 class="service-card-titulo">¿Necesitás algo a medida?</h4>
-            <p class="service-card-texto">Contanos tu idea y creamos una propuesta personalizada.</p>
-            <button type="button" class="service-card-cta" data-section="contacto">
-              Cotizá con nosotros
-              <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-            </button>
-          </article>
-        </div>
-      </div>
-    </section>
-    
-    <section class="section nosotros hidden" id="nosotros" aria-labelledby="nosotrosTitulo">
-      <div class="nosotros-inner">
-
-        <!-- 1. Propuesta de valor -->
-        <div class="nosotros-header zapi-hero-banner full-bleed">
-          <div class="zapi-hero-grid">
-
-            <div class="zapi-hero-content">
-              <p class="zapi-hero-kicker">¿Quiénes somos?</p>
-              <h1 class="zapi-hero-title" id="nosotrosTitulo">
-                HACEMOS QUE EMPEZAR TU HUERTA O JARDÍN SEA TAN SIMPLE COMO ABRIR UNA CAJA.
-              </h1>
-              <p class="zapi-hero-description">
-                NO SOLO VENDEMOS PLANTAS: TE AYUDAMOS A CREAR TU PRIMER RINCÓN VERDE.
-              </p>
-            </div>
-
-            <div class="zapi-hero-trust">
-              <div class="zapi-hero-trust-item">
-                <div class="zapi-hero-trust-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 11 12 14 22 4"/></svg>
-                </div>
-                <div class="zapi-hero-trust-text">Pedido coordinado por WhatsApp</div>
-              </div>
-              <div class="zapi-hero-trust-item">
-                <div class="zapi-hero-trust-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="22" height="13" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                </div>
-                <div class="zapi-hero-trust-text">Envío gratis desde <span data-shipping-threshold></span></div>
-              </div>
-              <div class="zapi-hero-trust-item">
-                <div class="zapi-hero-trust-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 10a6 6 0 0 0-6-6H3v3a6 6 0 0 0 6 6h3"/><path d="M12 10a6 6 0 0 1 6-6h3v3a6 6 0 0 1-6 6h-3"/><path d="M12 10v10"/></svg>
-                </div>
-                <div class="zapi-hero-trust-text">Acompañamiento para tu espacio verde</div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- 2. El problema vs la solucion -->
-        <div class="nosotros-duelo">
-          <article class="nosotros-panel nosotros-panel-problema">
-            <span class="nosotros-panel-etiqueta">El problema</span>
-
-            <p>A casi todos nos gusta la idea de tener una huerta o un jardín y cuidarlo nosotros. Pero a la hora de
-              empezar, aparecen las dudas:</p>
-
-            <ul class="nosotros-dudas">
-              <li>¿Qué planto?</li>
-              <li>¿Cómo empiezo?</li>
-              <li>¿Va a funcionar?</li>
-            </ul>
-
-            <p>Y pasa lo de siempre: compramos una planta, no sabemos cómo cuidarla, se nos muere… y lo dejamos.</p>
-          </article>
-
-          <article class="nosotros-panel nosotros-panel-solucion">
-            <span class="nosotros-panel-etiqueta">La solución</span>
-
-            <p>En Zapi no te sumamos una planta más para dejarte solo. Te damos un punto de partida pensado para
-              principiantes: todo listo, explicado y con acompañamiento.</p>
-
-            <ul class="nosotros-solucion-lista">
-              <li>
-                <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                Todo listo y explicado, sin decisiones difíciles.
-              </li>
-              <li>
-                <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                Elegido para tu espacio: balcón, patio o jardín.
-              </li>
-              <li>
-                <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                Seguimos cerca después de la compra.
-              </li>
-            </ul>
-          </article>
-        </div>
-
-        <!-- 3. Pilares -->
-        <div class="nosotros-pilares-bloque">
-          <div class="nosotros-bloque-cabecera">
-            <span class="nosotros-rotulo">Nuestros pilares</span>
-            <h3 class="nosotros-bloque-titulo">Tres formas de empezar y de seguir</h3>
-          </div>
-
-          <div class="nosotros-pilares">
-            <article class="nosotros-pilar">
-              <span class="nosotros-pilar-icono" aria-hidden="true">
-                <span class="material-symbols-outlined">inventory_2</span>
-              </span>
-              <h4 class="nosotros-pilar-titulo">Kits para empezar</h4>
-              <p>Semillas orgánicas, sustrato, etiquetas y manual de cultivo. Abrís la caja y plantás.</p>
-            </article>
-
-            <article class="nosotros-pilar">
-              <span class="nosotros-pilar-icono" aria-hidden="true">
-                <span class="material-symbols-outlined">local_florist</span>
-              </span>
-              <h4 class="nosotros-pilar-titulo">Plantas para tu espacio</h4>
-              <p>Producidas con enfoque agroecológico para tu huerta o jardín.</p>
-            </article>
-
-            <article class="nosotros-pilar">
-              <span class="nosotros-pilar-icono" aria-hidden="true">
-                <span class="material-symbols-outlined">water_drop</span>
-              </span>
-              <h4 class="nosotros-pilar-titulo">Insumos para seguir</h4>
-              <p>Recargas y todo lo necesario para seguir creciendo.</p>
-            </article>
-          </div>
-        </div>
-
-        <!-- 4. Por qué elegirnos -->
-        <div class="nosotros-banda">
-          <div class="nosotros-banda-cabecera">
-            <span class="nosotros-rotulo">Nuestras razones</span>
-            <h3 class="nosotros-bloque-titulo">Por qué elegirnos</h3>
-            <p class="nosotros-banda-lead">Cuatro razones para empezar con Zapi.</p>
-          </div>
-
-          <div class="nosotros-razones">
-            <article class="nosotros-razon">
-              <span class="nosotros-razon-numero" aria-hidden="true">01</span>
-              <h4>Producción propia</h4>
-              <p>Producimos con enfoque agroecológico y elegimos el resto con criterio.</p>
-            </article>
-
-            <article class="nosotros-razon">
-              <span class="nosotros-razon-numero" aria-hidden="true">02</span>
-              <h4>Diseño de punta a punta</h4>
-              <p>Del logo a la maceta: cuidamos cada detalle del producto.</p>
-            </article>
-
-            <article class="nosotros-razon">
-              <span class="nosotros-razon-numero" aria-hidden="true">03</span>
-              <h4>Pensado para empezar de cero</h4>
-              <p>Sin dudas ni decisiones difíciles: todo llega listo y explicado.</p>
-            </article>
-
-            <article class="nosotros-razon">
-              <span class="nosotros-razon-numero" aria-hidden="true">04</span>
-              <h4>Seguimos cerca después</h4>
-              <p>Te acompañamos para que tu huerta o tu jardín prosperen.</p>
-            </article>
-          </div>
-        </div>
-
-        <!-- 5. El equipo -->
-        <div class="nosotros-equipo">
-          <div class="nosotros-bloque-cabecera">
-            <span class="nosotros-rotulo">Conócenos</span>
-            <h3 class="nosotros-bloque-titulo">El equipo</h3>
-          </div>
-
-          <div class="nosotros-personas">
-            <article class="nosotros-persona">
-              <span class="nosotros-avatar" aria-hidden="true">ML</span>
-
-              <div>
-                <h4 class="nosotros-persona-nombre">Marcio Lahouratate</h4>
-                <p class="nosotros-persona-rol">Producción y logística</p>
-                <p class="nosotros-persona-desc">Auxiliar técnico agrario y técnico en marketing. Estudia Ingeniería
-                  Agronómica y Desarrollo de Software.</p>
-              </div>
-            </article>
-
-            <article class="nosotros-persona">
-              <span class="nosotros-avatar" aria-hidden="true">PS</span>
-
-              <div>
-                <h4 class="nosotros-persona-nombre">Pablo Souza</h4>
-                <p class="nosotros-persona-rol">Administración y contabilidad</p>
-                <p class="nosotros-persona-desc">Auxiliar técnico administrativo. Estudia Contador Público y Técnico
-                  Administrativo.</p>
-              </div>
-            </article>
-          </div>
-        </div>
-
-        <!-- 6. Ubicación -->
-        <div class="nosotros-ubicacion">
-          <div class="nosotros-ubicacion-info">
-            <span class="nosotros-rotulo">Visítanos</span>
-            <h3 class="nosotros-bloque-titulo">Dónde encontrarnos</h3>
-
-            <p class="nosotros-ubicacion-direccion">
-              <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
-              Congreso de Abril, Montevideo, Uruguay
-            </p>
-
-            <a class="nosotros-ubicacion-boton"
-              href="https://www.google.com/maps/search/?api=1&amp;query=Congreso%20de%20Abril%2C%20Montevideo%2C%20Uruguay"
-              target="_blank" rel="noopener noreferrer">
-              <span class="material-symbols-outlined" aria-hidden="true">map</span>
-              Abrir en Maps
-            </a>
-          </div>
-
-          <div class="nosotros-mapa">
-            <iframe class="nosotros-mapa-frame"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2998.275360784418!2d-56.2904353244652!3d-34.81855576887559!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95a1d3ff57bd9c4d%3A0x1cf65c4ff11dbdd6!2sCongreso%20de%20Abril%2C%2012600%20Montevideo%2C%20Departamento%20de%20Montevideo!5e1!3m2!1ses-419!2suy!4v1791834277368!5m2!1ses-419!2suy"
-              title="Mapa de la ubicación de ZAPI en Montevideo" loading="lazy"
-              referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    
-        <section class="section call-to-actions-view hidden" id="contacto">
-  <div class="contacto-header zapi-hero-banner full-bleed">
-    <div class="zapi-hero-grid">
-
-      <div class="zapi-hero-content">
-        <p class="zapi-hero-kicker">Contacto</p>
-        <h1 class="zapi-hero-title">
-          EMPEZÁ HOY A TRANSFORMAR TUS ESPACIOS
-        </h1>
-        <p class="zapi-hero-description">
-          Descubrí una nueva forma de conectar con la naturaleza mediante soluciones diseñadas para acompañarte en cada etapa del proceso.
-        </p>
-      </div>
-
-      <div class="zapi-hero-trust">
-        <div class="zapi-hero-trust-heading">ATENCIÓN DIRECTA</div>
-        <div class="zapi-hero-trust-item">
-          <div class="zapi-hero-trust-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div class="zapi-hero-trust-text">Presupuesto claro y personalizado</div>
-        </div>
-        <div class="zapi-hero-trust-item">
-          <div class="zapi-hero-trust-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          </div>
-          <div class="zapi-hero-trust-text">Asesoramiento agroecológico dedicado</div>
-        </div>
-        <div class="zapi-hero-trust-item">
-          <div class="zapi-hero-trust-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          </div>
-          <div class="zapi-hero-trust-text">Atención cercana en Montevideo</div>
-        </div>
-      </div>
-
+</header>
+<div class="nav-backdrop" id="navBackdrop" hidden></div>
+<p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
+<aside class="promocion-banner" data-promocion hidden>
+    <div>
+        <strong data-promocion-titulo></strong>
+        <span data-promocion-texto></span>
     </div>
-  </div>
-  <div class="contacto-card-container">
-    <div class="contacto-card">
-      <div class="contacto-card-header">
-        <span class="contacto-card-subtitle">ESCRIBINOS</span>
-        <h2 class="contacto-card-title">Contanos qué necesitás y te respondemos a la brevedad.</h2>
-      </div>
-      <form id="contactoForm" class="contacto-form">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="contactoNombre">Nombre *</label>
-            <div class="campo-con-icono">
-              <svg class="campo-icono" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              <input type="text" id="contactoNombre" name="nombre" autocomplete="name" placeholder="Tu nombre y apellido"
-                aria-describedby="errorNombre" required />
-            </div>
-            <span id="errorNombre" class="campo-error" aria-live="polite"></span>
-          </div>
-          <div class="form-group">
-            <label for="contactoCorreo">Correo electrónico *</label>
-            <div class="campo-con-icono">
-              <svg class="campo-icono" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
-              <input type="email" id="contactoCorreo" name="correo" autocomplete="email" placeholder="tunombre@correo.com"
-                aria-describedby="errorCorreo" required />
-            </div>
-            <span id="errorCorreo" class="campo-error" aria-live="polite"></span>
-          </div>
+    <a class="enlace-flecha" data-promocion-enlace hidden>Ver más <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+</aside>
+<main id="contenido" tabindex="-1">
+
+<section class="hero">
+    <div class="hero-copy">
+        <span class="etiqueta" data-contenido="portada.etiqueta">Vivero agroecológico · Montevideo</span>
+        <h1 data-contenido="portada.titulo">Transformamos espacios con naturaleza.</h1>
+        <p class="hero-lead" data-contenido="portada.subtitulo">En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a través de soluciones agroecológicas integrales.</p>
+        <ul class="hero-beneficios" data-contenido-lista="portada.beneficios">
+            <li><span class="material-symbols-outlined" aria-hidden="true">verified</span> Plantas de calidad, cuidadosamente seleccionadas.</li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">support_agent</span> Asesoramiento profesional, paso a paso.</li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">water_drop</span> Cuidado simple para que tu espacio prospere.</li>
+        </ul>
+        <div class="hero-acciones">
+            <a class="boton boton-primario" href="./catalogo.html">Explorar catálogo</a>
+            <a class="boton boton-secundario" href="./servicios.html">Conocer nuestros servicios</a>
         </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="contactoAsunto">Asunto *</label>
-            <div class="campo-con-icono">
-              <svg class="campo-icono" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <input type="text" id="contactoAsunto" name="asunto" placeholder="¿Sobre qué querés escribirnos?"
-                aria-describedby="errorAsunto" required />
-            </div>
-            <span id="errorAsunto" class="campo-error" aria-live="polite"></span>
-          </div>
-          <div class="form-group">
-            <label for="contactoTelefono">Teléfono (opcional)</label>
-            <div class="campo-con-icono">
-              <svg class="campo-icono" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              <input type="tel" id="contactoTelefono" name="telefono" autocomplete="tel" placeholder="098 765 432"
-                aria-describedby="errorTelefono" />
-            </div>
-            <span id="errorTelefono" class="campo-error" aria-live="polite"></span>
-          </div>
-        </div>
-        <div class="form-group full-width">
-          <label for="contactoConsulta">Mensaje *</label>
-          <textarea id="contactoConsulta" name="consulta" rows="4" maxlength="2000"
-            placeholder="Contanos qué necesitás: una planta para un espacio, un proyecto de jardín, un presupuesto..."
-            aria-describedby="errorConsulta contactoContador" required></textarea>
-          <span id="errorConsulta" class="campo-error" aria-live="polite"></span>
-          <span class="contacto-contador" aria-live="polite"><span class="visually-hidden">Caracteres restantes: </span><span id="contactoContador">2000/2000</span></span>
-        </div>
-        <div class="visually-hidden" aria-hidden="true">
-          <label for="contactoSitio">Dejá este campo vacío</label>
-          <input type="text" id="contactoSitio" name="sitio_web" tabindex="-1" autocomplete="off" />
-        </div>
-        <p id="contactoEstado" class="formulario-estado" role="status" aria-live="polite"></p>
-        <div class="form-footer">
-          <p class="privacy-note">
-            Tus datos solo se usan para responderte esta consulta. Los campos con * son obligatorios.
-          </p>
-          <button type="submit" class="btn-submit" id="contactoEnviar">
-            <span id="contactoEnviarTexto">Enviar mensaje</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </form>
-      <div id="contactoOk" class="contacto-confirmacion" hidden>
-        <h3 id="contactoOkTitulo" tabindex="-1">¡Gracias por escribirnos!</h3>
-        <p>Recibimos tu consulta y te responderemos a la brevedad.</p>
-        <button type="button" id="contactoReiniciar" class="btn-submit">Enviar otra consulta</button>
-      </div>
     </div>
-  </div>
+    <div class="hero-visual">
+        <img src="./public/img/plants-hero.opt.jpg" alt="Plantas de interior verdes en un ambiente luminoso" width="1200" height="800" fetchpriority="high" data-contenido-imagen="portada.imagen">
+        <p class="hero-sello"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span> <span data-contenido="portada.sello">Envío gratis desde $2.500</span></p>
+    </div>
 </section>
 
-    
-    <div class="aviso-flotante" id="avisoFlotante" role="alert" hidden>
-      <span class="material-symbols-outlined aviso-flotante-icono" aria-hidden="true">report</span>
-
-      <div class="aviso-flotante-texto">
-        <strong id="avisoFlotanteTitulo"></strong>
-        <span id="avisoFlotanteMensaje"></span>
-      </div>
-
-      <button class="aviso-flotante-cerrar" type="button" id="avisoFlotanteCerrar" aria-label="Cerrar aviso">
-        <span class="material-symbols-outlined" aria-hidden="true">close</span>
-      </button>
+<section class="seccion destacados" aria-labelledby="tituloDestacados">
+    <div class="seccion-cabecera seccion-cabecera-fila">
+        <div>
+            <span class="etiqueta">Elegidos para empezar</span>
+            <h2 id="tituloDestacados">Productos destacados</h2>
+        </div>
+        <a class="enlace-flecha" href="./catalogo.html">Ver todo el catálogo <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
     </div>
-  </main>
+    <div class="productos-grid" id="productosDestacados"></div>
+</section>
 
-  
-  <div class="modal-producto" id="modalProducto" hidden>
-
-    <div class="modal-fondo" data-cerrar-modal></div>
-
-    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" tabindex="-1">
-
-      <button class="modal-cerrar" type="button" data-cerrar-modal aria-label="Cerrar detalle del producto">
-        <span class="material-symbols-outlined">close</span>
-      </button>
-
-      <div class="modal-carrusel" id="modalCarrusel">
-
-        <div class="carrusel-marco">
-          <img class="carrusel-img" id="carruselImg" src="" alt="">
-          <button class="carrusel-flecha carrusel-prev" type="button" aria-label="Foto anterior">
-            <span class="material-symbols-outlined">chevron_left</span>
-          </button>
-
-          <button class="carrusel-flecha carrusel-next" type="button" aria-label="Foto siguiente">
-            <span class="material-symbols-outlined">chevron_right</span>
-          </button>
-
-          <span class="carrusel-contador" id="carruselContador" aria-live="polite"></span>
-        </div>
-
-        <div class="carrusel-miniaturas" id="carruselMiniaturas" aria-label="Miniaturas del producto"></div>
-      </div>
-
-      <div class="modal-detalle">
-        <span class="modal-categoria" id="modalCategoria"></span>
-
-        <h3 class="modal-titulo" id="modalTitulo"></h3>
-
-        <p class="modal-descripcion" id="modalDescripcion"></p>
-
-        <ul class="modal-info" id="modalInfo"></ul>
-
-        <div class="modal-precio">
-          <span class="current" id="modalPrecio"></span>
-          <span class="since">precio por unidad</span>
-        </div>
-
-        <span class="modal-stock" id="modalStock" hidden></span>
-
-        <button class="add-cart modal-agregar" type="button" id="modalAgregar" data-id="">
-          <span class="material-symbols-outlined">add_shopping_cart</span>
-          Agregar al carrito
+<section class="seccion testimonios" aria-labelledby="tituloTestimonios">
+    <div class="seccion-cabecera">
+        <span class="etiqueta">Testimonios</span>
+        <h2 id="tituloTestimonios">Lo que dicen nuestros clientes</h2>
+        <p>Historias de quienes ya transformaron sus espacios con ZAPI.</p>
+    </div>
+    <div id="testimoniosLista"></div>
+    <div class="testimonios-accion">
+        <button class="boton boton-secundario" type="button" data-abrir-testimonio>
+            <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
+            Dejar mi opinión
         </button>
-
-        
-        <a class="modal-ficha" id="modalFicha" hidden></a>
-      </div>
     </div>
-  </div>
+</section>
+</main>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-marca">
+            <a href="./index.html" aria-label="ZAPI, ir al inicio">
+                <img src="./public/img/logo.svg" alt="" width="38" height="54">
+                <span>ZAPI</span>
+            </a>
+            <p>Plantas, kits y acompañamiento para empezar tu rincón verde.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Páginas del sitio">
+            <h2>Navegar</h2>
+            <a href="./index.html">Inicio</a><a href="./catalogo.html">Catálogo</a><a href="./servicios.html">Servicios</a><a href="./nosotros.html">Nosotros</a><a href="./contacto.html">Contacto</a>
+            <a href="./carrito.html">Carrito</a>
+            <a href="./cuenta.html">Mi cuenta</a>
+        </nav>
+        <div class="footer-contacto">
+            <h2>Contacto</h2>
+            <p>Congreso de Abril, Montevideo, Uruguay</p>
+            <a href="https://wa.me/59898268560" target="_blank" rel="noopener">WhatsApp 098 268 560</a>
+            <a href="./contacto.html">Escribinos por correo</a>
+        </div>
+    </div>
+    <p class="footer-legal">ZAPI · Vivero agroecológico · Precios sujetos a disponibilidad.</p>
+</footer>
+<dialog class="modal-producto" id="modalProducto" aria-labelledby="modalTitulo">
+    <div class="modal-caja">
+        <button class="icono-boton modal-cerrar" type="button" data-cerrar-modal aria-label="Cerrar detalle del producto"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+        <div class="modal-galeria">
+            <div class="modal-foto">
+                <img id="carruselImg" src="" alt="">
+                <button class="carrusel-flecha carrusel-prev" type="button" aria-label="Foto anterior"><span class="material-symbols-outlined" aria-hidden="true">chevron_left</span></button>
+                <button class="carrusel-flecha carrusel-next" type="button" aria-label="Foto siguiente"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></button>
+                <span class="carrusel-contador" id="carruselContador" aria-live="polite"></span>
+            </div>
+            <div class="carrusel-miniaturas" id="carruselMiniaturas" aria-label="Miniaturas del producto"></div>
+        </div>
+        <div class="modal-detalle">
+            <span class="etiqueta" id="modalCategoria"></span>
+            <h2 id="modalTitulo"></h2>
+            <p class="modal-descripcion" id="modalDescripcion"></p>
+            <ul class="lista-ventajas" id="modalInfo"></ul>
+            <p class="modal-precio" id="modalPrecio"></p>
+            <p class="stock" id="modalStock"></p>
+            <button class="boton boton-primario" type="button" id="modalAgregar" data-id=""><span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito</button>
+            <a class="enlace-flecha" id="modalFicha" hidden>Ver la ficha completa <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+        </div>
+    </div>
+</dialog>
+<dialog class="dialogo" id="dialogoTestimonio" aria-labelledby="testimonioTitulo">
+    <form class="dialogo-caja" id="testimonioForm" novalidate>
+        <button class="icono-boton dialogo-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar formulario de opinión"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+        <span class="etiqueta">Tu experiencia</span>
+        <h2 id="testimonioTitulo">Contanos cómo fue tu compra</h2>
+        <p>Leemos todas las opiniones. Publicamos solo las que están verificadas y autorizadas.</p>
 
-  <a class="cart-link-float" href="#carrito" data-section="carrito" id="cartLinkFloat">
-    <span class="material-symbols-outlined">shopping_bag</span>
-    <span class="cart-link-text">Ver carrito</span>
-    <span id="cartCountFloat" class="cart-count" data-cart-count>0</span>
-  </a>
+        <label class="campo-label" for="testimonioNombre">Nombre <span aria-hidden="true">*</span></label>
+        <input class="campo-input" id="testimonioNombre" name="autor" type="text" autocomplete="name" maxlength="120" aria-describedby="errorTestimonioNombre">
+        <span class="campo-error" id="errorTestimonioNombre"></span>
 
-  <footer>
-    <p>ZAPI © 2026. Todos los derechos reservados.</p>
+        <label class="campo-label" for="testimonioLugar">Lugar (opcional)</label>
+        <input class="campo-input" id="testimonioLugar" name="lugar" type="text" maxlength="120" aria-describedby="errorTestimonioLugar">
+        <span class="campo-error" id="errorTestimonioLugar"></span>
 
-    <p class="footer-direccion">Congreso de Abril, Montevideo, Uruguay</p>
+        <label class="campo-label" for="testimonioEstrellas">Puntaje</label>
+        <select class="campo-input" id="testimonioEstrellas" name="estrellas">
+            <option value="5">5 estrellas</option>
+            <option value="4">4 estrellas</option>
+            <option value="3">3 estrellas</option>
+            <option value="2">2 estrellas</option>
+            <option value="1">1 estrella</option>
+        </select>
 
-    
-    <nav aria-label="Páginas del sitio">
-      <a href="./index.html">Inicio</a>
-      <a href="./catalogo.html">Catálogo</a>
-      <a class="footer-carrito" href="./carrito.html">Carrito</a>
-    </nav>
-  </footer>
+        <label class="campo-label" for="testimonioTexto">Tu opinión <span aria-hidden="true">*</span></label>
+        <textarea class="campo-input" id="testimonioTexto" name="texto" rows="5" maxlength="600" aria-describedby="errorTestimonioTexto"></textarea>
+        <span class="campo-error" id="errorTestimonioTexto"></span>
 
-  
-  <script src="./public/js/config.js" defer></script>
-  <script src="./public/js/auth-ui.js" defer></script>
-  <script src="./public/js/productos.js" defer></script>
-  <script src="./public/js/modal.js" defer></script>
-<script src="./public/js/catalogo.js" defer></script>
-<script src="./public/js/home-carousel.js" defer></script>
-<script src="./public/js/carrito.js" defer></script>
-<script src="./public/js/testimonio-form.js" defer></script>
+        <div class="visually-hidden" aria-hidden="true">
+            <label for="testimonioSitio">Dejá este campo vacío</label>
+            <input id="testimonioSitio" name="sitio_web" type="text" tabindex="-1" autocomplete="off">
+        </div>
 
-<script src="./public/js/buscador.js" defer></script>
-<script src="./public/js/zapi-bot.js" defer></script>
-
-<script src="./public/js/testimonios.js" defer></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer></script>
-<script src="./public/js/contacto.js" defer></script>
-<script src="./public/js/navigation.js" defer></script>
-<script src="./public/js/menu.js" defer></script>
-
+        <p class="formulario-estado" id="testimonioEstado" role="status" aria-live="polite" hidden></p>
+        <button class="boton boton-primario boton-bloque" id="testimonioEnviar" type="submit"><span id="testimonioEnviarTexto">Enviar opinión</span></button>
+    </form>
+</dialog>
+<button class="asistente-boton" id="asistenteBoton" type="button" aria-expanded="false" aria-controls="asistentePanel">
+    <img src="./public/img/personaje/07-guino.svg" alt="">
+    <span class="visually-hidden">Abrir asistente ZAPI</span>
+</button>
+<section class="asistente-panel" id="asistentePanel" aria-labelledby="asistenteTitulo" hidden>
+    <header class="asistente-cabecera">
+        <img src="./public/img/personaje/01-feliz.svg" alt="">
+        <div><strong id="asistenteTitulo">Asistente ZAPI</strong><small>Respuestas rápidas del vivero</small></div>
+        <button class="icono-boton" id="asistenteCerrar" type="button" aria-label="Cerrar asistente"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </header>
+    <div class="asistente-mensajes" id="asistenteMensajes" aria-live="polite"></div>
+    <form class="asistente-form" id="asistenteForm">
+        <label class="visually-hidden" for="asistenteEntrada">Escribí tu consulta</label>
+        <input id="asistenteEntrada" name="consulta" type="text" autocomplete="off" placeholder="¿En qué te podemos ayudar?">
+        <button type="submit" aria-label="Enviar consulta"><span class="material-symbols-outlined" aria-hidden="true">send</span></button>
+    </form>
+</section>
+<div class="aviso-flotante" id="avisoFlotante" role="status" aria-live="polite" hidden>
+    <span class="material-symbols-outlined aviso-icono" aria-hidden="true">eco</span>
+    <div class="aviso-texto"><strong id="avisoFlotanteTitulo"></strong><span id="avisoFlotanteMensaje"></span></div>
+    <button class="icono-boton" id="avisoFlotanteCerrar" type="button" aria-label="Cerrar aviso"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+</div>
+    <script src="./public/js/negocio.js" defer></script>
+    <script src="./public/js/utilidades.js" defer></script>
+    <script src="./public/js/api.js" defer></script>
+    <script src="./public/js/configuracion.js" defer></script>
+    <script src="./public/js/sesion.js" defer></script>
+    <script src="./public/js/catalogo-datos.js" defer></script>
+    <script src="./public/js/carrito-estado.js" defer></script>
+    <script src="./public/js/modal.js" defer></script>
+    <script src="./public/js/inicio.js" defer></script>
+    <script src="./public/js/testimonios.js" defer></script>
+    <script src="./public/js/menu.js" defer></script>
+    <script src="./public/js/buscador.js" defer></script>
+    <script src="./public/js/asistente.js" defer></script>
+    <script src="./public/js/contenido-publico.js" defer></script>
 </body>
-
 </html>

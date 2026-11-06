@@ -1,16 +1,12 @@
 'use strict';
-/* Servidor estatico minimo, sin dependencias, para ver el sitio en
-   local. El proyecto no tiene backend: esto solo reparte los archivos
-   del repositorio (HTML, CSS, JS, imagenes).
 
-   Usage:
-       node tools/servir.js            -> http://localhost:5500
-       PORT=8080 node tools/servir.js
-       npm start
+/* Servidor estático local con proxy hacia la API.
+   Uso:
+       npm run frontend        -> http://localhost:5500
+       PORT=8080 npm run frontend
 
-   El front detecta que no hay API (ver public/js/config.js) y funciona
-   igual: catalogo, carrito, pedidos y cuentas se resuelven en el
-   navegador. */
+   Todo pedido a /api se reenvía a la API Express (por defecto en
+   http://localhost:5501), así el navegador siempre usa rutas relativas. */
 
 const http = require('http');
 const fs = require('fs');
@@ -18,6 +14,8 @@ const path = require('path');
 
 const raiz = path.join(__dirname, '..');
 const puerto = Number(process.env.PORT) || 5500;
+const apiUrl = new URL(process.env.API_URL || 'http://localhost:5501');
+const apiPuerto = Number(apiUrl.port) || (apiUrl.protocol === 'https:' ? 443 : 80);
 
 const TIPOS = {
     '.html': 'text/html; charset=utf-8',
@@ -40,22 +38,19 @@ const TIPOS = {
     '.map': 'application/json; charset=utf-8',
 };
 
-/* Nada que sea fuente o configuracion del repo se sirve por HTTP. */
-const BLOQUEADOS = ['node_modules', 'tools', '.git', '.vscode'];
+/* Nada que sea fuente, semilla o configuración del repo se sirve por HTTP. */
+const BLOQUEADOS = new Set(['node_modules', 'tools', 'fuentes', 'datos', '.git', '.vscode']);
 
-/* Traduce una URL a un archivo dentro de la raiz, o null si no existe
-   o si apunta a algo que no se debe servir. */
 function buscar(rutaUrl) {
     const limpia = decodeURIComponent(rutaUrl.split('?')[0]);
     let objetivo = path.join(raiz, limpia);
 
-    /* path.join ya normaliza los ".."; comprobar que no se escape. */
     if (objetivo !== raiz && !objetivo.startsWith(raiz + path.sep)) return null;
 
     const relativo = path.relative(raiz, objetivo);
     const primerSegmento = relativo.split(path.sep)[0];
 
-    if (BLOQUEADOS.includes(primerSegmento)) return null;
+    if (BLOQUEADOS.has(primerSegmento)) return null;
     if (relativo.startsWith('.')
         || relativo === 'package.json'
         || relativo === 'package-lock.json') return null;
@@ -69,7 +64,49 @@ function buscar(rutaUrl) {
     return objetivo;
 }
 
+function responder404(res) {
+    const pag404 = path.join(raiz, '404.html');
+    const cuerpo = fs.existsSync(pag404) ? fs.readFileSync(pag404) : 'No encontrado';
+
+    res.writeHead(404, { 'Content-Type': TIPOS['.html'] });
+    res.end(cuerpo);
+}
+
+function proxear(req, res) {
+    const destino = {
+        protocol: apiUrl.protocol,
+        hostname: apiUrl.hostname,
+        port: apiPuerto,
+        method: req.method,
+        path: req.url,
+        headers: {
+            ...req.headers,
+            host: apiUrl.host,
+        },
+    };
+
+    const peticion = http.request(destino, respuestaApi => {
+        res.writeHead(respuestaApi.statusCode || 502, respuestaApi.headers);
+        respuestaApi.pipe(res);
+    });
+
+    peticion.on('error', error => {
+        res.writeHead(502, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({
+            error: 'La API no está disponible. Iniciá el backend con "npm run api".',
+            detalle: error.message,
+        }));
+    });
+
+    req.pipe(peticion);
+}
+
 const servidor = http.createServer(function (req, res) {
+    if (req.url === '/api' || req.url.startsWith('/api/') || req.url.startsWith('/api?')) {
+        proxear(req, res);
+        return;
+    }
+
     let archivo = null;
 
     try {
@@ -79,11 +116,7 @@ const servidor = http.createServer(function (req, res) {
     }
 
     if (!archivo) {
-        const pag404 = path.join(raiz, '404.html');
-        const cuerpo = fs.existsSync(pag404) ? fs.readFileSync(pag404) : 'No encontrado';
-
-        res.writeHead(404, { 'Content-Type': TIPOS['.html'] });
-        res.end(cuerpo);
+        responder404(res);
         return;
     }
 
@@ -94,5 +127,6 @@ const servidor = http.createServer(function (req, res) {
 });
 
 servidor.listen(puerto, function () {
-    console.log('ZAPI (sin backend) en http://localhost:' + puerto);
+    console.log(`ZAPI web en http://localhost:${puerto}`);
+    console.log(`Proxy /api -> ${apiUrl.origin}`);
 });

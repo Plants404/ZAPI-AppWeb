@@ -1,176 +1,154 @@
-# ZAPI — Vivero Agroecológico
+# ZAPI
 
-Plataforma web de e-commerce y catálogo para el vivero ZAPI: catálogo interactivo con fichas de producto optimizadas para SEO, carrito de compras con checkout por WhatsApp y API, gestión de inventario, panel de administración, autenticación con JWT en cookies HttpOnly y asistente interactivo por reglas.
+Aplicación web del vivero agroecológico ZAPI: sitio público, cuentas de
+cliente, API y panel de administración. El catálogo, el stock, los pedidos,
+las ventas presenciales, los testimonios y el contenido editable viven en
+MongoDB; el navegador consume la API con rutas relativas `/api`.
 
-La arquitectura del proyecto está desacoplada en dos aplicaciones independientes organizadas en un monorepo modular: **Frontend** y **Backend**.
+## Requisitos
 
----
+- Node.js 24 o superior.
+- MongoDB con replica set (necesario para las transacciones de stock). En
+  local podés usar una instancia con `replicaSet=rs0`; en MongoDB Atlas el
+  replica set ya viene incluido.
+- Un archivo `.env` en la raíz, copiado de `.env.example`.
+- En Windows, las pruebas (`npm test`) usan un binario de MongoDB en memoria
+  que requiere el motor C++ de Microsoft. Si se informa
+  `STATUS_DLL_NOT_FOUND`, instalar **Microsoft Visual C++ 2015-2022
+  Redistributable (x64)** desde Microsoft.
 
-## 🏛️ Arquitectura del Proyecto
-
-```
-ZAPI-AppWeb/
-├── frontend/                  # Aplicación de cliente (HTML5, CSS3, Vanilla JS)
-│   ├── public/                # Estilos, scripts, imágenes y datos estáticos
-│   ├── productos/             # Fichas estáticas de productos con JSON-LD
-│   ├── personaje/             # Recursos gráficos y SVGs del asistente ZAPI
-│   ├── datos/                 # Fuentes de autoría (catalogo.js, testimonios.js)
-│   ├── tools/                 # Servidor local de pruebas, generadores y linters
-│   ├── index.html             # Landing page y tienda principal
-│   ├── catalogo.html          # Catálogo con filtros y modal interactivo
-│   ├── carrito.html           # Carrito y pasarela de checkout
-│   ├── pedidos.html           # Historial de compras
-│   ├── login.html             # Acceso de usuarios y administradores
-│   ├── admin.html             # Panel de administración de e-commerce
-│   ├── 404.html               # Página de error personalizada
-│   ├── .env.example           # Configuración del frontend
-│   ├── package.json           # Scripts independientes del frontend
-│   └── README.md              # Documentación técnica del frontend
-│
-├── backend/                   # API REST modular (Node.js, Express, MongoDB)
-│   ├── src/
-│   │   ├── config/            # Carga y validación de variables de entorno y CORS
-│   │   ├── database/          # Gestor de conexión y reconexión Mongoose
-│   │   ├── middleware/        # Autenticación JWT por cookie y autorización admin
-│   │   ├── models/            # Modelos de datos (User, Order, Stock, etc.)
-│   │   ├── routes/            # Endpoints modulares (auth, pedidos, stock, admin)
-│   │   ├── data/              # Catálogo local para validación y cálculo de precios
-│   │   └── app.js             # Factoría y configuración de la aplicación Express
-│   ├── scripts/               # Scripts administrativos (crear-admin, sembrar-stock)
-│   ├── tests/                 # Suite de pruebas automatizadas con MongoDB en memoria
-│   ├── server.js              # Punto de entrada HTTP del backend
-│   ├── .env.example           # Variables de entorno requeridas
-│   ├── package.json           # Dependencias y scripts del backend
-│   └── README.md              # Documentación técnica del backend
-│
-├── docs/                      # Documentación detallada
-│   ├── architecture.md        # Arquitectura técnica y flujo de datos
-│   ├── api.md                 # Contrato completo de la API REST
-│   └── deployment.md          # Guía de despliegue (Netlify y servidores independientes)
-│
-├── netlify/                   # Adaptador serverless para Netlify Functions
-│   └── functions/api.js       # Handler serverless de la API Express
-│
-├── scripts/                   # Orquestación de desarrollo
-│   └── dev.js                 # Ejecución concurrente de frontend y backend
-│
-├── netlify.toml               # Configuración de despliegue en Netlify
-├── eslint.config.js           # Reglas de linting unificadas
-├── .gitignore                 # Exclusiones de Git y protección de secretos
-├── package.json               # Monorepo y orquestación de comandos
-└── README.md                  # Este documento
-```
-
----
-
-## 📋 Requisitos
-
-- **Node.js**: versión `>= 24.0.0`
-- **npm**: versión `>= 10.0.0`
-- **MongoDB**: instancia local (configurada como Replica Set para transacciones de pedidos) o cluster en **MongoDB Atlas**.
-
----
-
-## ⚡ Instalación Rápida
-
-Instala las dependencias del monorepo y de cada aplicación:
+## Puesta en marcha
 
 ```bash
 npm install
+cp .env.example .env          # PowerShell: Copy-Item .env.example .env
+npm run seed:catalogo
+npm run seed:contenido
+npm run admin:crear           # requiere ADMIN_NOMBRE, ADMIN_EMAIL y ADMIN_CLAVE
+npm start
 ```
 
-Configura las variables de entorno del backend copiando la plantilla:
+`npm start` levanta la API en `http://localhost:5501` y el sitio en
+`http://localhost:5500`. El servidor estático hace de proxy de `/api` hacia
+la API, así que el navegador siempre usa el mismo origen.
 
-```bash
-# Windows PowerShell:
-Copy-Item backend/.env.example backend/.env
+El super administrador no se crea desde la web ni al conectar la base. Se
+crea una única vez con `npm run admin:crear`; el script exige una contraseña
+de al menos 12 caracteres y lee las credenciales del entorno:
 
-# Linux / macOS:
-cp backend/.env.example backend/.env
-```
-
-Edita `backend/.env` con tu cadena `MONGODB_URI` y genera un secreto para `JWT_SECRET`:
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
-
----
-
-## 🚀 Ejecución en Desarrollo
-
-Puedes ejecutar ambas aplicaciones simultáneamente o de forma individual:
-
-### 1. Iniciar Frontend y Backend simultáneamente
-```bash
-npm run dev
-```
-Inicia el backend en `http://localhost:5501` y el frontend en `http://localhost:5500`.
-
-### 2. Iniciar aplicaciones por separado
-
-**Solo Frontend:**
-```bash
-npm run start:frontend
-# O directamente dentro del directorio:
-cd frontend && npm start
-```
-Disponible en: `http://localhost:5500`
-
-**Solo Backend:**
-```bash
-npm run start:backend
-# O directamente dentro del directorio:
-cd backend && npm start
-```
-Disponible en: `http://localhost:5501`
-
----
-
-## 🧪 Pruebas y Verificación de Calidad
-
-El proyecto cuenta con suites automatizadas de pruebas y comprobación estática:
-
-```bash
-# Ejecutar todas las pruebas unitarias y de integración de la API (32 tests):
-npm test
-
-# Ejecutar el linter en todo el proyecto:
-npm run lint
-
-# Ejecutar la verificación estática de accesibilidad, ARIA, CSS, XSS y enlaces:
-npm run verificar
-
-# Ejecutar linter + verificación estática de forma combinada:
-npm run check
-
-# Comprobar ratios de contraste WCAG en todos los estilos:
-npm run contraste
-```
-
----
-
-## 🛠️ Tareas Administrativas y Generadores
-
-```bash
-# Crear o actualizar el usuario administrador inicial en MongoDB:
+```powershell
+$env:ADMIN_NOMBRE="Administrador"
+$env:ADMIN_EMAIL="admin@zapi.uy"
+$env:ADMIN_CLAVE="una-clave-de-12-caracteres-o-mas"
 npm run admin:crear
-
-# Poblar el inventario inicial de productos en la base de datos:
-npm run stock:sembrar
-
-# Regenerar fichas de productos HTML y catálogo JSON tras editar datos/catalogo.js:
-npm run generar
-
-# Regenerar sitemap.xml y robots.txt:
-npm run sitemap
 ```
 
----
+El registro público siempre crea cuentas con rol `cliente`.
 
-## 📚 Documentación Técnica Detallada
+## Estructura
 
-- [Arquitectura del Sistema](docs/architecture.md)
-- [Referencia y Endpoints de la API REST](docs/api.md)
-- [Guía de Despliegue en Producción](docs/deployment.md)
-- [Documentación del Frontend](frontend/README.md)
-- [Documentación del Backend](backend/README.md)
+```text
+backend/
+  src/
+    config/          lectura y validación de variables de entorno
+    data/            contenido por defecto
+    database/        conexión a MongoDB
+    middleware/      sesión, roles y errores
+    models/          User, Producto, Orden, Testimonio, Contenido, ...
+    routes/          API pública y routers del panel
+    utils/           precios, stock, catálogo, contenido, auditoría
+  scripts/           semillas y creación del super admin
+  tests/             pruebas de API con mongodb-memory-server
+frontend/
+  fuentes/           fuentes de las páginas públicas y del panel
+  tools/             construcción, sitemap y verificación
+  datos/catalogo.js  semilla del catálogo
+  public/            CSS, JS e imágenes publicadas
+  admin/             HTML generado del panel
+  *.html             HTML generado del sitio público
+e2e/                 prueba de navegador con Chrome
+scripts/dev.js       API + servidor estático en desarrollo
+netlify/functions/   adaptador serverless de la API
+docs/                API, arquitectura y despliegue
+```
+
+Las páginas públicas y las del panel se generan desde `frontend/fuentes/`
+con `frontend/tools/construir.js`. No se editan los HTML generados a mano:
+se cambia la fuente y se ejecuta `npm run generar`.
+
+## Roles y sesión
+
+- `cliente`: se registra desde `login.html`, compra online, consulta su
+  historial en `cuenta.html`, cancela pedidos pendientes y envía
+  testimonios para moderación.
+- `superadmin`: entra por el mismo `login.html` y es redirigido a
+  `admin/index.html`. Gestiona pedidos, ventas presenciales, productos,
+  stock, testimonios, clientes, contenido y auditoría.
+
+La sesión viaja en una cookie HttpOnly `SameSite`; el rol se decide en el
+servidor. El panel valida la sesión y el rol en cada petición y en el
+arranque de cada página.
+
+## Compra online
+
+El carrito se guarda en el navegador, pero el pedido se crea en el servidor:
+la API recalcula precios y totales, valida stock y descuenta unidades dentro
+de una transacción. Al confirmar, el sitio abre WhatsApp con el código del
+pedido. El stock se repone si el pedido se cancela.
+
+## Panel de administración
+
+- **Dashboard**: ventas online y presenciales del día, semana y mes, ticket
+  promedio, comparación con el período anterior, gráfico SVG, medios de pago,
+  top de productos, stock bajo, pedidos pendientes, clientes nuevos,
+  testimonios pendientes y margen bruto. Exporta CSV.
+- **Pedidos online**: detalle, cambio de estado y notas internas.
+- **Ventas presenciales**: punto de venta, medios de pago, descuento
+  opcional, anulación con motivo y cierre de caja diario.
+- **Productos y stock**: alta, edición, desactivación, fotos, precios,
+  costos y movimientos (entradas, ajustes y mermas).
+- **Testimonios**: aprobación, rechazo con motivo y edición.
+- **Clientes**: ficha, historial de compras y bloqueo de cuenta.
+- **Contenido**: campos fijos por sección con vista previa; nunca guarda
+  HTML libre.
+- **Auditoría**: historial de acciones del panel con filtros.
+
+## Comandos
+
+| Comando | Qué hace |
+| --- | --- |
+| `npm start` / `npm run dev` | API y sitio en desarrollo |
+| `npm run api` | Solo la API |
+| `npm run frontend` | Solo el servidor estático |
+| `npm run generar` | Genera HTML, sitemap y robots |
+| `npm run verificar` | Verificación estática del sitio y la API |
+| `npm run lint` | ESLint |
+| `npm run check` | Lint + verificación |
+| `npm test` / `npm run test:api` | Pruebas de API |
+| `npm run test:e2e` | Prueba de navegador con Chrome |
+| `npm run seed:catalogo` | Siembra el catálogo (`--forzar` para reemplazar) |
+| `npm run seed:contenido` | Siembra el contenido (`--forzar` para reemplazar) |
+| `npm run admin:crear` | Crea el super administrador |
+
+## Seguridad
+
+- Validación y normalización de todos los datos en el servidor.
+- Precios, costos, descuentos y totales se recalculan en la API.
+- Cookies HttpOnly, `SameSite` y `Secure` en producción.
+- Helmet, CORS restringido por origen y límites de tasa para login,
+  registro, lecturas, escrituras y panel.
+- Contraseñas con bcrypt (12 rondas); el super admin exige 12 caracteres.
+- El contenido editable rechaza `<` y `>` para evitar HTML libre.
+- Los errores de stock responden `409` con el detalle de faltantes.
+
+## Despliegue
+
+La publicación prevista es Netlify para el sitio y la función serverless, y
+MongoDB Atlas para la base. Ver `docs/deployment.md` para las variables de
+entorno, el build y las tareas posteriores al despliegue.
+
+## Documentación
+
+- `docs/api.md`: endpoints, cuerpos y respuestas.
+- `docs/architecture.md`: capas, modelos y decisiones.
+- `docs/deployment.md`: puesta en producción.

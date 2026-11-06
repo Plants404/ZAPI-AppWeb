@@ -1,55 +1,114 @@
 const g = require('globals');
 
-/* Los scripts de public/js se cargan con <script> clasicos, uno detras
-   de otro, sin modulos. Por eso todo lo que productos.js declara con
-   "const" o "function" al nivel superior queda disponible en todos los
-   que se cargan despues. ESLint, que analiza archivo por archivo, ve
-   esos nombres como no definidos y los marca.
+/* Los scripts de public/js se cargan como scripts clásicos, uno detrás de
+   otro, sin módulos. Todo lo que declaran con const, let o function al
+   nivel superior comparte el ámbito global entre los archivos que una
+   misma página carga. Esta lista es el contrato de esos nombres. */
 
-   La lista de abajo es el contrato entre los scripts: si se cambia,
-   hay que cambiarla aca. No es una lista de globals de navegador, son
-   los nombres que produce productos.js y consume el resto. */
+const GLOBALES = {
+    ADMIN: 'readonly',
+    API: 'readonly',
+    CONFIG: 'readonly',
+    CONTENIDO: 'readonly',
+    SESION: 'readonly',
+    NEGOCIO: 'readonly',
+    slug: 'readonly',
 
-/* Todo esto nace en productos.js. */
-const DEL_CATALOGO = {
     PRODUCTOS: 'readonly',
-    precios: 'readonly',
-    formatearPrecio: 'readonly',
+    CATEGORIAS: 'readonly',
+    obtenerProducto: 'readonly',
+    unidadesDe: 'readonly',
+    textoDeStock: 'readonly',
+    claseDeStock: 'readonly',
+    rutaImagen: 'readonly',
+    rutaFicha: 'readonly',
+    htmlTarjetaProducto: 'readonly',
+    cuandoCatalogoListo: 'readonly',
+    cargarCatalogo: 'readonly',
+
+    cuandoConfigLista: 'readonly',
+    aplicarTextosDeConfiguracion: 'readonly',
+    cuandoSesionLista: 'readonly',
+    pintarSesion: 'readonly',
+    volverALogin: 'readonly',
+
+    IMAGEN_FALLBACK: 'readonly',
+    ETIQUETAS_ESTADO: 'readonly',
+    ETIQUETAS_METODO_PAGO: 'readonly',
+    raizDelSitio: 'readonly',
+    rutaConRaiz: 'readonly',
     escaparHTML: 'readonly',
+    formatearPrecio: 'readonly',
+    formatearFecha: 'readonly',
+    formatearFechaCorta: 'readonly',
+    etiquetaEstado: 'readonly',
+    claseEstado: 'readonly',
+    etiquetaMetodoPago: 'readonly',
+    normalizarTexto: 'readonly',
+    limpiarValor: 'readonly',
+    validarCorreo: 'readonly',
+    validarTelefono: 'readonly',
+    bloquearScroll: 'readonly',
+    marcarErrorCampo: 'readonly',
+    limpiarErrores: 'readonly',
+    mostrarEstadoFormulario: 'readonly',
+    mostrarAviso: 'readonly',
+    cerrarAviso: 'readonly',
+    abrirWhatsApp: 'readonly',
+
     obtenerCarrito: 'readonly',
     guardarCarrito: 'readonly',
-    actualizarContador: 'readonly',
-    agregarProductoAlCarrito: 'readonly',
     suscribirAlCarrito: 'readonly',
-    IMAGEN_FALLBACK: 'readonly',
-    alCargarElCatalogo: 'readonly',
-    pintarStockEnPantalla: 'readonly',
-    pintarStockDe: 'readonly',
+    calcularTotales: 'readonly',
+    agregarProductoAlCarrito: 'readonly',
+    cambiarCantidadCarrito: 'readonly',
+    quitarDelCarrito: 'readonly',
+    vaciarCarrito: 'readonly',
+    actualizarContador: 'readonly',
+
+    aplicarBusqueda: 'readonly',
+    refrescarCampoBuscador: 'readonly',
+    buscarEnElCatalogo: 'readonly',
+
+    cuandoContenidoListo: 'readonly',
+    obtenerContenido: 'readonly',
+    aplicarContenido: 'readonly',
+
+    mensajeDeError: 'readonly',
+    apiPedir: 'readonly',
+
+    adminPedir: 'readonly',
+    cuandoAdminListo: 'readonly',
+    adminEstado: 'readonly',
+    adminPaginar: 'readonly',
+    adminAbrirDialogo: 'readonly',
+    adminCerrarDialogo: 'readonly',
+    adminCerrarDialogoDesde: 'readonly',
+    adminHtmlEstado: 'readonly',
+    adminEtiquetaEstado: 'readonly',
+    adminFecha: 'readonly',
+    adminFechaCorta: 'readonly',
+    adminFechaISO: 'readonly',
+    adminUrlImagen: 'readonly',
+    adminMoneda: 'readonly',
+    adminNumero: 'readonly',
+    adminPorcentaje: 'readonly',
+    adminLeerFormulario: 'readonly',
+    adminBloquearBoton: 'readonly',
+    adminRellenarSelect: 'readonly'
 };
 
-const COMUNES = {
-    ...g.browser,
-    ...DEL_CATALOGO,
-};
+/* Nombres que un archivo declara para que los use otro. No son código
+   muerto: se declaran acá para que no-unused-vars no los marque en su
+   archivo de origen. */
+const EXPORTADOS = Object.keys(GLOBALES);
 
-/* Esos mismos nombres, como patron para no-unused-vars. productos.js
-   los DECLARA pero no los USA: los usan los otros scripts. Sin esto el
-   linter los daria por muertos ahi, que es un falso positivo. El
-   patron se arma desde la lista de arriba para no mantenerla dos
-   veces: si se agrega un nombre al contrato, queda covered solo. */
-const API_DEL_CATALOGO = '^(' + Object.keys(DEL_CATALOGO).join('|') + ')$';
+const API_COMPARTIDA = '^(' + EXPORTADOS.join('|') + ')$';
 
-/* El mismo set para el sitio y para las herramientas. */
-const REGLAS_SITIO = {
-    /* El motivo de tener ESLint: un nombre mal escrito que nadie
-       declara rompe la pagina en silencio, porque el error sale solo
-       cuando se ejecuta ese camino. */
+const REGLAS = {
     'no-undef': 'error',
     'no-unused-vars': ['error', { args: 'after-used', caughtErrors: 'none' }],
-    /* No hay var en todo el repo, asi que no cuesta nada. */
     'no-var': 'error',
-    /* Codigo inalcanzable siempre es un error de tipeo: un return
-       antes de un console.log, un break que no hace falta. */
     'no-unreachable': 'error',
     'no-dupe-keys': 'error',
     'no-dupe-args': 'error',
@@ -57,64 +116,60 @@ const REGLAS_SITIO = {
     'no-self-compare': 'error',
     'no-unsafe-negation': 'error',
     'no-constant-condition': ['error', { checkLoops: false }],
-    /* Guarda contra comparaciones sueltas: los ids del carrito se
-       normalizan a Number en los bordes, asi que no queda ninguna;
-       esto avisa si aparece una nueva. */
-    'eqeqeq': 'warn',
-    /* Todo lo que escriben estas herramientas es para que lo lea una
-       persona por consola. En el sitio tampoco hay console, asi que la
-       regla no aporta nada aca. */
-    'no-console': 'off',
+    eqeqeq: 'warn',
+    'no-console': 'off'
 };
 
 module.exports = [
-    /* Los que se sirven al navegador.
-
-       Un solo bloque para todos, sin excepciones por archivo: los
-       nombres de DEL_CATALOGO estan declarados como globales de solo
-       lectura y productos.js los define. Eso antes lo reportaba
-       no-implicit-globals como redeclaracion, pero esa regla esta
-       apagada aca a proposito: que los scripts compartan el ambito
-       global es justamente como funciona este sitio. */
+    {
+        ignores: [
+            'node_modules/**',
+            'frontend/admin/**',
+            'frontend/**/*.html',
+            'frontend/public/img/**'
+        ]
+    },
     {
         files: ['frontend/public/js/**/*.js'],
         languageOptions: {
             ecmaVersion: 2024,
-            /* 'script' y no 'module': son scripts clasicos, se comparte
-               el ambito global entre ellos. */
             sourceType: 'script',
-            globals: COMUNES,
+            globals: { ...g.browser, ...GLOBALES }
         },
         rules: {
-            ...REGLAS_SITIO,
+            ...REGLAS,
             'no-unused-vars': ['error', {
                 args: 'after-used',
                 caughtErrors: 'none',
-                varsIgnorePattern: API_DEL_CATALOGO,
-            }],
-        },
+                varsIgnorePattern: API_COMPARTIDA
+            }]
+        }
     },
-
-    /* Las herramientas, el catalogo y esta misma config:
-       CommonJS. */
+    {
+        files: ['frontend/public/js/negocio.js'],
+        languageOptions: {
+            globals: { module: 'readonly' }
+        }
+    },
     {
         files: [
             'frontend/tools/**/*.js',
             'frontend/datos/**/*.js',
+            'frontend/fuentes/**/*.js',
             'backend/**/*.js',
-            'netlify/**/*.js',
             'scripts/**/*.js',
-            'eslint.config.js',
+            'netlify/**/*.js',
+            'e2e/**/*.js',
+            'eslint.config.js'
         ],
         languageOptions: {
             ecmaVersion: 2024,
             sourceType: 'commonjs',
-            globals: { ...g.node },
+            globals: { ...g.node }
         },
         rules: {
-            ...REGLAS_SITIO,
-            /* Aca si aplica: nada de esto comparte ambito con nadie. */
-            'no-implicit-globals': 'error',
-        },
-    },
+            ...REGLAS,
+            'no-implicit-globals': 'error'
+        }
+    }
 ];

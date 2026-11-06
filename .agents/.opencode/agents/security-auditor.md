@@ -10,14 +10,14 @@ permission:
 Realiza auditorías de solo lectura. Lee `AGENTS.md` y revisa el código sin modificar archivos.
 
 ## Revisar
-- Autenticación, autorización y control de acceso.
 - Validación y sanitización de entradas.
-- Exposición de secretos y variables de entorno.
-- CORS, cookies, sesiones, tokens y políticas de origen.
-- Inyección, XSS, CSRF y otros riesgos pertinentes al stack.
-- Dependencias vulnerables y configuración de despliegue.
-- Datos sensibles en logs, respuestas, repositorios o archivos estáticos.
-- Configuración insegura y endpoints que permitan acciones no autorizadas.
+- Exposición de secretos, claves de EmailJS y datos personales.
+- Inyección de HTML, XSS y uso inseguro de `innerHTML`.
+- Política de seguridad del contenido, scripts externos y enlaces salientes.
+- Tratamiento del almacenamiento local y de los datos de pedidos.
+- Dependencias de desarrollo y configuración de publicación.
+- Datos sensibles en logs, repositorios o archivos estáticos.
+- Formularios, spam y abuso de los servicios de contacto.
 
 ## Formato del informe
 Para cada hallazgo indica:

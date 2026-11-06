@@ -1,0 +1,310 @@
+/* Carrito: líneas del pedido, resumen, progreso de envío y formulario
+   de contacto. El pedido se confirma por WhatsApp. */
+
+.carrito-pagina {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(300px, .9fr);
+    gap: var(--espacio-lg);
+    align-items: start;
+    max-width: var(--ancho);
+    margin: 0 auto;
+    padding: var(--espacio-lg) var(--espacio-md) var(--espacio-xl);
+}
+
+.carrito-contenido {
+    display: grid;
+    gap: var(--espacio-md);
+    min-width: 0;
+}
+
+.carrito-cabecera {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--espacio-md);
+}
+
+.carrito-cabecera h1 {
+    margin-top: .2rem;
+}
+
+.carrito-items {
+    display: grid;
+    gap: var(--espacio-sm);
+}
+
+.linea-carrito {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    gap: var(--espacio-sm);
+    align-items: center;
+    padding: var(--espacio-sm);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    box-shadow: var(--sombra-sm);
+}
+
+.linea-foto {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    border-radius: 8px;
+    background: var(--sand);
+}
+
+.linea-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.linea-datos {
+    display: grid;
+    gap: .15rem;
+    min-width: 0;
+}
+
+.linea-datos h2 {
+    font-size: var(--fs-xl);
+}
+
+.linea-acciones {
+    display: grid;
+    justify-items: end;
+    gap: .35rem;
+}
+
+.control-cantidad {
+    display: inline-flex;
+    align-items: center;
+    gap: .15rem;
+    padding: .15rem;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-pill);
+    background: var(--cream);
+}
+
+.boton-cantidad {
+    display: grid;
+    place-items: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--forest);
+    cursor: pointer;
+}
+
+.boton-cantidad:hover:not([disabled]) {
+    background: var(--sand);
+}
+
+.boton-cantidad[disabled] {
+    cursor: not-allowed;
+    opacity: .45;
+}
+
+.cantidad-valor {
+    min-width: 1.6rem;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    text-align: center;
+}
+
+.linea-total {
+    display: grid;
+    justify-items: end;
+    color: var(--forest);
+}
+
+.linea-total small {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+.linea-quitar {
+    color: var(--error);
+}
+
+.carrito-vacio {
+    display: grid;
+    justify-items: center;
+    gap: .6rem;
+    padding: var(--espacio-xl) var(--espacio-md);
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    text-align: center;
+}
+
+.carrito-vacio > .material-symbols-outlined {
+    color: var(--leaf);
+    font-size: 3rem;
+}
+
+.carrito-vacio p {
+    max-width: 42ch;
+    color: var(--muted);
+}
+
+.recomendaciones {
+    padding-top: var(--espacio-md);
+}
+
+.carrito-resumen {
+    position: sticky;
+    top: calc(var(--header-alto) + var(--espacio-md));
+    display: grid;
+    gap: var(--espacio-sm);
+    padding: var(--espacio-md);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    box-shadow: var(--sombra-sm);
+}
+
+.resumen-cabecera h2 {
+    margin-top: .2rem;
+}
+
+.envio-progreso {
+    display: grid;
+    gap: .3rem;
+}
+
+.envio-progreso p {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+.envio-barra {
+    overflow: hidden;
+    height: .55rem;
+    border-radius: var(--radio-pill);
+    background: var(--sand);
+}
+
+.envio-barra span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--leaf);
+    transition: width .25s ease;
+}
+
+.envio-nota {
+    font-size: var(--fs-xs);
+}
+
+.resumen-lineas {
+    display: grid;
+    gap: .3rem;
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+    font-size: var(--fs-sm);
+}
+
+.resumen-lineas div,
+.resumen-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--espacio-sm);
+}
+
+.resumen-lineas span {
+    color: var(--muted);
+}
+
+.resumen-total {
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+    color: var(--forest);
+    font-weight: 700;
+}
+
+.resumen-total strong {
+    font-size: var(--fs-xl);
+}
+
+.resumen-total small {
+    display: block;
+    color: var(--muted);
+    font-size: var(--fs-xs);
+    font-weight: 400;
+    text-align: right;
+}
+
+.checkout-form {
+    display: grid;
+    gap: .15rem;
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+}
+
+.checkout-form h2 {
+    margin-bottom: .3rem;
+    font-family: var(--sans);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.checkout-form .boton {
+    margin-top: var(--espacio-sm);
+}
+
+.resumen-nota {
+    display: flex;
+    align-items: flex-start;
+    gap: .4rem;
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+.resumen-nota .material-symbols-outlined {
+    flex: 0 0 auto;
+    color: var(--leaf);
+}
+
+@media (max-width: 1024px) {
+    .carrito-pagina {
+        grid-template-columns: 1fr;
+    }
+
+    .carrito-resumen {
+        position: static;
+    }
+}
+
+@media (max-width: 600px) {
+    .carrito-pagina {
+        padding: var(--espacio-md) var(--espacio-sm) var(--espacio-lg);
+    }
+
+    .carrito-cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: var(--espacio-xs);
+    }
+
+    .linea-carrito {
+        grid-template-columns: 64px minmax(0, 1fr);
+    }
+
+    .linea-acciones {
+        grid-column: 1 / -1;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        justify-items: start;
+    }
+
+    .linea-total {
+        justify-items: end;
+    }
+}

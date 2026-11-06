@@ -22,8 +22,8 @@ Mejorar la experiencia visual y de uso de Zapi sin romper el comportamiento exis
 
 ## Reglas
 - No elimines efectos, animaciones ni interacciones existentes sin autorización.
-- No cambies la API ni la lógica del servidor salvo que sea imprescindible; coordina con el agente backend.
+- No cambies la estructura de datos ni el orden de los scripts sin coordinar con el agente principal.
 - No añadas librerías si CSS o las herramientas existentes resuelven el problema.
 - No inventes datos de productos ni afirmes haber comprobado visualmente una página si no la ejecutaste.
-- Ejecuta las pruebas o compilación frontend disponibles y comunica sus resultados.
+- Ejecuta `npm run verificar` y `npm run lint`, y comunica sus resultados.
 - Al finalizar, enumera los archivos modificados y explica los cambios en español.

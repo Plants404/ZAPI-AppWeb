@@ -1,0 +1,10 @@
+PERSONAJE "BROTECITO" - ZAPI-AppWeb
+
+Esta carpeta conserva las dos expresiones que usa el asistente del sitio:
+
+  01-feliz.svg    cabecera del panel del asistente
+  07-guino.svg    botón flotante que abre el asistente
+
+Ambas comparten el mismo encuadre (235.3 x 257.4), así que se pueden intercambiar sin saltos.
+
+Las expresiones que no tenían uso se retiraron para no dejar imágenes muertas en el proyecto.

@@ -4,7 +4,7 @@ require('dotenv').config();
 
 function parseBoolean(value, fallback) {
     if (value === undefined || value === '') return fallback;
-    return value.toLowerCase() === 'true';
+    return String(value).toLowerCase() === 'true';
 }
 
 function loadConfig(environment = process.env) {
@@ -35,8 +35,12 @@ function loadConfig(environment = process.env) {
         cookieSecure: secureCookie,
         cookieMaxAgeMs: 12 * 60 * 60 * 1000,
         trustProxy: Number(environment.TRUST_PROXY) || 0,
-        requiereCuenta: parseBoolean(environment.REQUIERE_CUENTA, true),
-        registroPublico: parseBoolean(environment.REGISTRO_PUBLICO, nodeEnv === 'test'),
+        envioGratis: Number(environment.ENVIO_GRATIS) || 2500,
+        moneda: 'UYU',
+        maxItemsPorPedido: 100,
+        registroPublico: environment.REGISTRO_PUBLICO === undefined
+            ? true
+            : parseBoolean(environment.REGISTRO_PUBLICO, true),
     };
 }
 
