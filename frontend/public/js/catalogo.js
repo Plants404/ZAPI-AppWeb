@@ -1,8 +1,9 @@
 'use strict';
 
-/* Catálogo: filtros por categoría, búsqueda y grilla de tarjetas. La
-   búsqueda del encabezado llama a aplicarBusqueda() desde buscador.js,
-   así el mismo estado alimenta las dos entradas. */
+/* Catalogo: filtros por categoria, busqueda y grilla de tarjetas. La
+   busqueda del encabezado llama a aplicarBusqueda() desde buscador.js, así
+   el mismo estado alimenta las dos entradas. Los datos ya estan cargados
+   sincronamente en catalogo-datos.js. */
 
 let categoriaActual = '';
 let busquedaActual = '';
@@ -83,10 +84,10 @@ function renderCatalogo() {
     if (!visibles.length) {
         const mensaje = busquedaActual
             ? 'No encontramos productos para "' + escaparHTML(busquedaActual) + '".'
-            : 'No hay productos en esta categoría por ahora.';
+            : 'No hay productos en esta categoria por ahora.';
 
-        grilla.innerHTML = `<p class="catalogo-vacio">${mensaje}
-            <button class="boton-texto" type="button" data-limpiar-busqueda>Limpiar búsqueda</button>
+        grilla.innerHTML = `<p class="estado-vacio">${mensaje}
+            <button class="boton-texto" type="button" data-limpiar-busqueda>Limpiar busqueda</button>
         </p>`;
         return;
     }
@@ -121,23 +122,5 @@ document.addEventListener('click', evento => {
     }
 });
 
-cuandoCatalogoListo(estado => {
-    renderFiltros();
-
-    if (estado.error) {
-        const grilla = document.getElementById('productGrid');
-
-        if (grilla) {
-            grilla.innerHTML = '<p class="catalogo-vacio">No pudimos cargar el catálogo. Revisá tu conexión y recargá la página.</p>';
-        }
-
-        return;
-    }
-
-    if (busquedaActual && typeof window.buscarEnElCatalogo === 'function') {
-        window.buscarEnElCatalogo(busquedaActual);
-        return;
-    }
-
-    renderCatalogo();
-});
+renderFiltros();
+renderCatalogo();

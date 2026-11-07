@@ -4,7 +4,7 @@ const { NEGOCIO, slug } = require('../../public/js/negocio.js');
 
 const ENLACES = [
     { seccion: 'inicio', texto: 'Inicio', archivo: 'index.html' },
-    { seccion: 'catalogo', texto: 'Catálogo', archivo: 'catalogo.html' },
+    { seccion: 'catalogo', texto: 'Catalogo', archivo: 'catalogo.html' },
     { seccion: 'servicios', texto: 'Servicios', archivo: 'servicios.html' },
     { seccion: 'nosotros', texto: 'Nosotros', archivo: 'nosotros.html' },
     { seccion: 'contacto', texto: 'Contacto', archivo: 'contacto.html' }
@@ -33,7 +33,7 @@ function cabecera(seccion, raiz) {
     return `<a class="salto-contenido" href="#contenido">Saltar al contenido</a>
 <header class="site-header" data-header>
     <div class="header-inner">
-        <button class="menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menú de navegación">
+        <button class="menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
             <span class="menu-linea" aria-hidden="true"></span>
             <span class="menu-linea" aria-hidden="true"></span>
             <span class="menu-linea" aria-hidden="true"></span>
@@ -41,10 +41,10 @@ function cabecera(seccion, raiz) {
 
         <a class="marca" href="${raiz}/index.html" aria-label="ZAPI, ir al inicio">
             <img src="${raiz}/public/img/logo.svg" alt="" width="44" height="62">
-            <span class="marca-texto"><strong>ZAPI</strong><small>Vivero agroecológico</small></span>
+            <span class="marca-texto"><strong>ZAPI</strong><small>Vivero agroecologico</small></span>
         </a>
 
-        <nav class="site-nav" id="navPrincipal" aria-label="Navegación principal">
+        <nav class="site-nav" id="navPrincipal" aria-label="Navegacion principal">
             <ul>${ENLACES.map(enlace => enlaceNavegacion(enlace, seccion, raiz)).join('')}</ul>
         </nav>
 
@@ -52,15 +52,13 @@ function cabecera(seccion, raiz) {
             <label class="visually-hidden" for="searchInput">Buscar productos</label>
             ${icono('search', 'header-search-icono')}
             <input id="searchInput" name="q" type="search" placeholder="Buscar productos…" aria-describedby="searchStatus" spellcheck="false">
-            <button class="search-limpiar" id="searchClear" type="button" aria-label="Limpiar búsqueda" hidden>${icono('close')}</button>
+            <button class="search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden>${icono('close')}</button>
         </form>
 
         <a class="header-carrito" href="${raiz}/carrito.html" aria-label="Ver carrito">
             ${icono('shopping_bag')}
             <span class="cart-count" data-cart-count aria-hidden="true">0</span>
         </a>
-
-        <div class="header-sesion" data-sesion></div>
     </div>
 </header>
 <div class="nav-backdrop" id="navBackdrop" hidden></div>
@@ -77,11 +75,11 @@ function pie(raiz) {
             </a>
             <p>Plantas, kits y acompañamiento para empezar tu rincón verde.</p>
         </div>
-        <nav class="footer-nav" aria-label="Páginas del sitio">
+        <nav class="footer-nav" aria-label="Paginas del sitio">
             <h2>Navegar</h2>
             ${ENLACES.map(enlace => `<a href="${raiz}/${enlace.archivo}">${enlace.texto}</a>`).join('')}
             <a href="${raiz}/carrito.html">Carrito</a>
-            <a href="${raiz}/cuenta.html">Mi cuenta</a>
+            <a href="${raiz}/pedidos.html">Mis pedidos</a>
         </nav>
         <div class="footer-contacto">
             <h2>Contacto</h2>
@@ -90,7 +88,7 @@ function pie(raiz) {
             <a href="${raiz}/contacto.html">Escribinos por correo</a>
         </div>
     </div>
-    <p class="footer-legal">ZAPI · Vivero agroecológico · Precios sujetos a disponibilidad.</p>
+    <p class="footer-legal">ZAPI · Vivero agroecologico · Precios sujetos a disponibilidad.</p>
 </footer>`;
 }
 
@@ -124,10 +122,10 @@ function modalProducto() {
 function dialogoTestimonio() {
     return `<dialog class="dialogo" id="dialogoTestimonio" aria-labelledby="testimonioTitulo">
     <form class="dialogo-caja" id="testimonioForm" novalidate>
-        <button class="icono-boton dialogo-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar formulario de opinión">${icono('close')}</button>
+        <button class="icono-boton dialogo-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar formulario de opinion">${icono('close')}</button>
         <span class="etiqueta">Tu experiencia</span>
         <h2 id="testimonioTitulo">Contanos cómo fue tu compra</h2>
-        <p>Leemos todas las opiniones. Publicamos solo las que están verificadas y autorizadas.</p>
+        <p>Leemos todas las opiniones. Publicamos solo las que estan verificadas y autorizadas.</p>
 
         <label class="campo-label" for="testimonioNombre">Nombre <span aria-hidden="true">*</span></label>
         <input class="campo-input" id="testimonioNombre" name="autor" type="text" autocomplete="name" maxlength="120" aria-describedby="errorTestimonioNombre">
@@ -146,7 +144,7 @@ function dialogoTestimonio() {
             <option value="1">1 estrella</option>
         </select>
 
-        <label class="campo-label" for="testimonioTexto">Tu opinión <span aria-hidden="true">*</span></label>
+        <label class="campo-label" for="testimonioTexto">Tu opinion <span aria-hidden="true">*</span></label>
         <textarea class="campo-input" id="testimonioTexto" name="texto" rows="5" maxlength="600" aria-describedby="errorTestimonioTexto"></textarea>
         <span class="campo-error" id="errorTestimonioTexto"></span>
 
@@ -156,7 +154,7 @@ function dialogoTestimonio() {
         </div>
 
         <p class="formulario-estado" id="testimonioEstado" role="status" aria-live="polite" hidden></p>
-        <button class="boton boton-primario boton-bloque" id="testimonioEnviar" type="submit"><span id="testimonioEnviarTexto">Enviar opinión</span></button>
+        <button class="boton boton-primario boton-bloque" id="testimonioEnviar" type="submit"><span id="testimonioEnviarTexto">Enviar opinion</span></button>
     </form>
 </dialog>`;
 }
@@ -189,15 +187,16 @@ function avisoFlotante() {
 </div>`;
 }
 
-function promocion() {
-    return `<aside class="promocion-banner" data-promocion hidden>
-    <div>
-        <strong data-promocion-titulo></strong>
-        <span data-promocion-texto></span>
-    </div>
-    <a class="enlace-flecha" data-promocion-enlace hidden>Ver más ${icono('arrow_forward')}</a>
-</aside>`;
-}
+const SCRIPTS_BASE = [
+    'negocio.js',
+    'utilidades.js',
+    'catalogo-datos.js',
+    'carrito-estado.js',
+    'pedidos-estado.js',
+    'modal.js'
+];
+
+const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'asistente.js'];
 
 function pagina(opciones) {
     const {
@@ -211,23 +210,17 @@ function pagina(opciones) {
         scripts = [],
         jsonLd = '',
         contenido,
-        canonical = `${NEGOCIO.sitio}/${archivo}`
+        canonical = `${NEGOCIO.sitio}/${archivo}`,
+        opiniones = false,
+        productos = false,
+        bodyAttrs = ''
     } = opciones;
 
     const rutaJs = nombre => `${raiz}/public/js/${nombre}`;
-    const scriptsBase = [
-        'negocio.js',
-        'utilidades.js',
-        'api.js',
-        'configuracion.js',
-        'sesion.js',
-        'catalogo-datos.js',
-        'carrito-estado.js',
-        'modal.js'
-    ];
-    const scriptsFinales = ['menu.js', 'buscador.js', 'asistente.js', 'contenido-publico.js'];
-    const todosLosScripts = [...scriptsBase, ...scripts, ...scriptsFinales];
+    const todosLosScripts = [...SCRIPTS_BASE, ...scripts, ...SCRIPTS_FINALES];
     const ogImagen = `${NEGOCIO.sitio}/public/img/plants-hero.opt.jpg`;
+
+    const cssPagina = `${raiz}/public/css/${seccion}.css`;
 
     return `<!DOCTYPE html>
 <html lang="es">
@@ -253,18 +246,17 @@ function pagina(opciones) {
     <link rel="stylesheet" href="${raiz}/public/css/tokens.css">
     <link rel="stylesheet" href="${raiz}/public/css/base.css">
     <link rel="stylesheet" href="${raiz}/public/css/estructura.css">
-    <link rel="stylesheet" href="${raiz}/public/css/${seccion === 'inicio' ? 'inicio' : seccion}.css">
+    <link rel="stylesheet" href="${cssPagina}">
     <link rel="stylesheet" href="${raiz}/public/css/asistente.css">
 ${jsonLd ? `    ${jsonLd}\n` : ''}</head>
-<body class="pagina-${seccion} ${claseBody}" data-raiz="${raiz}">
+<body class="pagina-${seccion} ${claseBody}" data-raiz="${raiz}"${bodyAttrs ? ' ' + bodyAttrs : ''}>
 ${cabecera(seccion, raiz)}
-${promocion()}
 <main id="contenido" tabindex="-1">
 ${contenido}
 </main>
 ${pie(raiz)}
-${modalProducto()}
-${dialogoTestimonio()}
+${productos ? modalProducto() : ''}
+${opiniones ? dialogoTestimonio() : ''}
 ${asistente(raiz)}
 ${avisoFlotante()}
 ${todosLosScripts.map(nombre => `    <script src="${rutaJs(nombre)}" defer></script>`).join('\n')}
@@ -273,95 +265,4 @@ ${todosLosScripts.map(nombre => `    <script src="${rutaJs(nombre)}" defer></scr
 `;
 }
 
-const ENLACES_ADMIN = [
-    { seccion: 'dashboard', texto: 'Dashboard', archivo: 'index.html', icono: 'dashboard' },
-    { seccion: 'pedidos', texto: 'Pedidos online', archivo: 'pedidos.html', icono: 'receipt_long' },
-    { seccion: 'ventas', texto: 'Ventas presenciales', archivo: 'ventas.html', icono: 'point_of_sale' },
-    { seccion: 'productos', texto: 'Productos y stock', archivo: 'productos.html', icono: 'inventory_2' },
-    { seccion: 'testimonios', texto: 'Testimonios', archivo: 'testimonios.html', icono: 'rate_review' },
-    { seccion: 'clientes', texto: 'Clientes', archivo: 'clientes.html', icono: 'group' },
-    { seccion: 'contenido', texto: 'Contenido', archivo: 'contenido.html', icono: 'edit_document' },
-    { seccion: 'auditoria', texto: 'Auditoría', archivo: 'auditoria.html', icono: 'history' }
-];
-
-function paginaAdmin(opciones) {
-    const {
-        seccion,
-        titulo,
-        descripcion,
-        contenido,
-        scripts = []
-    } = opciones;
-
-    const raiz = '..';
-    const scriptsBase = ['negocio.js', 'utilidades.js', 'api.js', 'admin-comun.js'];
-    const todosLosScripts = [...scriptsBase, ...scripts];
-
-    return `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>${escapar(titulo)}</title>
-    <meta name="description" content="${escapar(descripcion)}">
-    <meta name="robots" content="noindex, nofollow">
-    <link rel="icon" type="image/svg+xml" href="${raiz}/public/img/logo.svg">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
-    <link rel="stylesheet" href="${raiz}/public/css/tokens.css">
-    <link rel="stylesheet" href="${raiz}/public/css/base.css">
-    <link rel="stylesheet" href="${raiz}/public/css/admin.css">
-</head>
-<body class="admin" data-raiz="${raiz}">
-<a class="salto-contenido" href="#contenidoAdmin">Saltar al contenido</a>
-<div class="admin-shell">
-    <aside class="admin-sidebar" id="adminSidebar" aria-label="Navegación del panel">
-        <a class="admin-marca" href="${raiz}/index.html">
-            <img src="${raiz}/public/img/logo.svg" alt="" width="38" height="54">
-            <span><strong>ZAPI</strong><small>Panel</small></span>
-        </a>
-        <nav class="admin-nav">
-            ${ENLACES_ADMIN.map(enlace => `<a class="admin-enlace${enlace.seccion === seccion ? ' activo' : ''}" href="./${enlace.archivo}"${enlace.seccion === seccion ? ' aria-current="page"' : ''}>${icono(enlace.icono)}<span>${enlace.texto}</span></a>`).join('\n            ')}
-        </nav>
-        <a class="admin-volver" href="${raiz}/index.html">${icono('storefront')}<span>Ver el sitio</span></a>
-    </aside>
-
-    <div class="admin-principal">
-        <header class="admin-topbar">
-            <button class="admin-menu" id="adminMenuBoton" type="button" aria-expanded="false" aria-controls="adminSidebar" aria-label="Abrir menú del panel">${icono('menu')}</button>
-            <div>
-                <span class="admin-topbar-etiqueta">Panel de administración</span>
-                <h1>${escapar(titulo)}</h1>
-            </div>
-            <div class="admin-sesion">
-                <span class="admin-usuario" data-admin-usuario>—</span>
-                <button class="boton-texto" type="button" data-admin-salir>${icono('logout')} Salir</button>
-            </div>
-        </header>
-
-        <main class="admin-contenido" id="contenidoAdmin" tabindex="-1">
-${contenido}
-        </main>
-    </div>
-</div>
-${todosLosScripts.map(nombre => `    <script src="${raiz}/public/js/${nombre}" defer></script>`).join('\n')}
-</body>
-</html>
-`;
-}
-
-function estrellas(valor) {
-    const nota = Math.min(5, Math.max(0, Number(valor) || 0));
-    const llenas = Math.floor(nota);
-    const media = nota - llenas >= 0.5;
-    let salida = '';
-
-    for (let i = 0; i < llenas; i++) salida += '★';
-    if (media) salida += '½';
-    for (let i = llenas + (media ? 1 : 0); i < 5; i++) salida += '☆';
-
-    return `<span class="estrellas" role="img" aria-label="${nota} de 5 estrellas">${salida}</span>`;
-}
-
-module.exports = { escapar, icono, pagina, paginaAdmin, estrellas, slug };
+module.exports = { escapar, icono, pagina, slug };
