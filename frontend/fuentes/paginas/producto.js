@@ -50,25 +50,26 @@ function relacionadosHtml(producto) {
 
     if (!relacionados.length) return '';
 
-    return `<section class="relacionados" id="productoRelacionados">
+    return `<section class="producto-relacionados relacionados" id="productoRelacionados">
         <h2>También te puede gustar</h2>
-        <div class="relacionados-grid" id="productoRelacionadosGrid">
+        <ul class="relacionados-grid" id="productoRelacionadosGrid">
             ${relacionados.map(p => {
                 const unidades = unidadesDe(p);
-                return `<a class="relacionado" href="producto-${slug(p.nombre)}.html">
+                return `<li><a class="relacionado" href="producto-${slug(p.nombre)}.html">
                     <img src="${escapar(p.imagen)}" alt="${escapar(p.nombre)}" loading="lazy" width="798" height="1200">
-                    <span>${escapar(p.nombre)}</span>
-                    <strong>${formatearPrecio(p.precioBase)}</strong>
+                    <span class="relacionado-nombre">${escapar(p.nombre)}</span>
+                    <span class="relacionado-precio">${formatearPrecio(p.precioBase)}</span>
                     <span class="stock ${claseDeStock(unidades)}">${textoDeStock(unidades)}</span>
-                </a>`;
+                </a></li>`;
             }).join('')}
-        </div>
+        </ul>
     </section>`;
 }
 
 function generarFicha(producto) {
     const unidades = unidadesDe(producto);
     const agotado = unidades === 0;
+    const stockVisual = agotado ? 'agotado' : unidades <= 3 ? 'pocas' : '';
     const imagenes = imagenesDe(producto);
     const principal = imagenes[0] || '';
     const whatsappUrl = 'https://wa.me/' + NEGOCIO.whatsapp + '?text=' + encodeURIComponent(
@@ -86,37 +87,40 @@ function generarFicha(producto) {
         scripts: ['producto.js'],
         bodyAttrs: 'data-producto-id="' + producto.id + '"',
         contenido: `
-<section class="producto-pagina" aria-labelledby="productoTitulo">
-    <div class="producto-detalle">
-        <div class="producto-galeria">
-            <div class="producto-principal">
-                <img id="productoImagen" src="${escapar(principal)}" alt="${escapar(producto.nombre)}" loading="lazy" width="798" height="1200">
-            </div>
-            ${miniaturasHtml(producto)}
-        </div>
-        <div class="producto-datos">
-            <span class="etiqueta" id="productoCategoria">${escapar(producto.categoria)}</span>
-            <h1 id="productoTitulo">${escapar(producto.nombre)}</h1>
-            <p id="productoDescripcion">${escapar(producto.descripcion)}</p>
-            <p class="producto-precio" id="productoPrecio">${formatearPrecio(producto.precioBase)}</p>
-            <p class="stock ${claseDeStock(unidades)}" id="productoStock">${textoDeStock(unidades)}</p>
-            <ul id="productoInfo">${infoHtml(producto)}</ul>
-            <div class="producto-acciones">
-                <button id="productoAgregar" data-agregar-producto="${producto.id}" type="button"${agotado ? ' disabled' : ''}>
-                    ${agotado
-                        ? '<span class="material-symbols-outlined" aria-hidden="true">block</span> Sin stock'
-                        : '<span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito'
-                    }
-                </button>
-                <a class="boton boton-whatsapp boton-bloque" id="productoWhatsapp" href="${whatsappUrl}" target="_blank" rel="noopener">
-                    <span class="material-symbols-outlined" aria-hidden="true">chat</span> Consultar por WhatsApp
-                </a>
-            </div>
-            <p class="producto-aviso"><span class="material-symbols-outlined" aria-hidden="true">info</span> El stock se publica manualmente; consultá disponibilidad antes de comprar.</p>
-        </div>
+<nav class="migas" aria-label="Ruta de navegacion">
+    <ol>
+        <li><a href="./index.html">Inicio</a></li>
+        <li><a href="./catalogo.html">Catalogo</a></li>
+        <li aria-current="page">${escapar(producto.nombre)}</li>
+    </ol>
+</nav>
+<article class="producto">
+    <div class="producto-galeria">
+        <img class="producto-principal" id="productoImagen" src="${escapar(principal)}" alt="${escapar(producto.nombre)}" loading="lazy" width="798" height="1200">
+        ${miniaturasHtml(producto)}
     </div>
-    ${relacionadosHtml(producto)}
-</section>`
+    <div class="producto-datos">
+        <span class="producto-categoria" id="productoCategoria">${escapar(producto.categoria)}</span>
+        <h1 id="productoTitulo">${escapar(producto.nombre)}</h1>
+        <p class="producto-descripcion" id="productoDescripcion">${escapar(producto.descripcion)}</p>
+        <p class="producto-precio" id="productoPrecio">${formatearPrecio(producto.precioBase)}</p>
+        <p class="producto-stock stock ${claseDeStock(unidades)} ${stockVisual}" id="productoStock">${textoDeStock(unidades)}</p>
+        <ul class="producto-info" id="productoInfo">${infoHtml(producto)}</ul>
+        <div class="producto-acciones">
+            <button class="agregar" id="productoAgregar" data-agregar-producto="${producto.id}" type="button"${agotado ? ' disabled' : ''}>
+                ${agotado
+                    ? '<span class="material-symbols-outlined" aria-hidden="true">block</span> Sin stock'
+                    : '<span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito'
+                }
+            </button>
+            <a class="whatsapp boton boton-whatsapp boton-bloque" id="productoWhatsapp" href="${whatsappUrl}" target="_blank" rel="noopener">
+                <span class="material-symbols-outlined" aria-hidden="true">chat</span> Consultar por WhatsApp
+            </a>
+        </div>
+        <p class="producto-aviso"><span class="material-symbols-outlined" aria-hidden="true">info</span> El stock se publica manualmente; consultá disponibilidad antes de comprar.</p>
+    </div>
+</article>
+${relacionadosHtml(producto)}`
     };
 }
 

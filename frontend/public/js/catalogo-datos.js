@@ -209,31 +209,42 @@ function rutaFicha(producto, raiz) {
     return base + "/producto-" + encodeURIComponent(producto.slug) + ".html";
 }
 
-function htmlTarjetaProducto(producto, raiz) {
+function htmlTarjetaProducto(producto, raiz, recomendacion = false) {
     const unidades = unidadesDe(producto);
     const agotado = unidades === 0;
+    const stockVisual = agotado ? "agotado" : unidades <= 3 ? "pocas" : "";
     const imagenes = fotosDeProducto(producto);
     const ficha = rutaFicha(producto, raiz);
+    const tarjeta = recomendacion ? "recommendation-card" : "product-card";
+    const visual = recomendacion ? "recommendation-image" : "product-visual";
+    const cuerpo = recomendacion ? "recommendation-info" : "product-body";
+    const categoria = recomendacion ? "recommendation-category" : "product-badge";
+    const pie = recomendacion ? "recommendation-footer" : "product-footer";
+    const botonClase = recomendacion ? "recommendation-add" : "add-cart";
     const boton = agotado
         ? '<span class="material-symbols-outlined" aria-hidden="true">block</span> <span>Sin stock</span>'
         : '<span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> <span>Agregar</span>';
 
     return `
-        <article class="tarjeta-producto${agotado ? " tarjeta-agotada" : ""}">
-            <a class="tarjeta-imagen" href="${escaparHTML(ficha)}" data-abrir-producto="${escaparHTML(producto.id)}" aria-label="Ver ${escaparHTML(producto.nombre)}">
+        <article class="${tarjeta} tarjeta-producto${agotado ? " tarjeta-agotada" : ""}" data-id="${escaparHTML(producto.id)}">
+            <a class="${visual} tarjeta-imagen" href="${escaparHTML(ficha)}" data-abrir-producto="${escaparHTML(producto.id)}" aria-label="Ver ${escaparHTML(producto.nombre)}">
                 <img src="${rutaConRaiz(escaparHTML(imagenes[0] || ""))}" alt="${escaparHTML(producto.nombre)}" loading="lazy" width="798" height="1200">
-                <span class="stock ${claseDeStock(unidades)}">${escaparHTML(textoDeStock(unidades))}</span>
+                <span class="product-stock-pill stock ${claseDeStock(unidades)} ${stockVisual}">${escaparHTML(textoDeStock(unidades))}</span>
+                <span class="${recomendacion ? "recommendation-beneficios-lista" : "product-beneficios-lista"}">
+                    ${(producto.infoDeVenta || []).map(item => `<span class="product-beneficio-item"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>${escaparHTML(item)}</span></span>`).join("")}
+                </span>
             </a>
-            <div class="tarjeta-cuerpo">
-                <span class="etiqueta">${escaparHTML(producto.categoria)}</span>
-                <h3><a href="${escaparHTML(ficha)}" data-abrir-producto="${escaparHTML(producto.id)}">${escaparHTML(producto.nombre)}</a></h3>
-                <p>${escaparHTML(producto.descripcion)}</p>
-                <div class="tarjeta-pie">
-                    <strong>${formatearPrecio(producto.precioBase)}</strong>
-                    <button class="boton-agregar" type="button" data-agregar-producto="${escaparHTML(producto.id)}"${agotado ? " disabled" : ""}>
+            <div class="${cuerpo} tarjeta-cuerpo">
+                <h3 class="product-name"><a class="product-link recommendation-link" href="${escaparHTML(ficha)}" data-abrir-producto="${escaparHTML(producto.id)}">${escaparHTML(producto.nombre)}</a></h3>
+                <div class="product-tags"><span class="${categoria}">${escaparHTML(producto.categoria)}</span></div>
+                <p class="product-desc">${escaparHTML(producto.descripcion)}</p>
+                <div class="product-benefit"><span class="benefit-icon" aria-hidden="true">✓</span><span>${escaparHTML((producto.infoDeVenta || [])[0] || "")}</span></div>
+            </div>
+            <div class="${pie} tarjeta-pie">
+                    <div class="product-price"><span class="current">${formatearPrecio(producto.precioBase)}</span></div>
+                    <button class="${botonClase} add-cart boton-agregar" type="button" data-agregar-producto="${escaparHTML(producto.id)}"${agotado ? " disabled" : ""}>
                         ${boton}
                     </button>
-                </div>
             </div>
         </article>`;
 }

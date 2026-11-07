@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+    <html lang="es" data-cuentas="off">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,76 +18,126 @@
     <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
-    <link rel="stylesheet" href="./public/css/tokens.css">
-    <link rel="stylesheet" href="./public/css/base.css">
-    <link rel="stylesheet" href="./public/css/estructura.css">
-    <link rel="stylesheet" href="./public/css/catalogo.css">
-    <link rel="stylesheet" href="./public/css/asistente.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="./public/css/styles.css">
+    <link rel="stylesheet" href="./public/css/catalogo-catalogo.css">
+    <link rel="stylesheet" href="./public/css/catalogo-modal.css">
     <link rel="stylesheet" href="./public/css/zapi-bot.css">
+    <link rel="stylesheet" href="./public/css/asistente.css">
     <link rel="stylesheet" href="./public/css/restauracion.css">
+    <link rel="stylesheet" href="./public/css/ajustes-estilo.css">
 </head>
 <body class="pagina-catalogo " data-raiz=".">
-<a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+    <a class="saltar-contenido salto-contenido" href="#contenido">Saltar al contenido</a>
 <header class="site-header" data-header>
-    <div class="header-inner">
-        <button class="menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
-            <span class="menu-linea" aria-hidden="true"></span>
-            <span class="menu-linea" aria-hidden="true"></span>
-            <span class="menu-linea" aria-hidden="true"></span>
+        <button class="nav-toggle menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
         </button>
 
-        <a class="logo" href="./index.html" aria-label="ZAPI, ir al inicio">
-            <div class="logo-items-text">
-                <span class="logo-nombre">ZAPI</span>
-            </div>
-            <div class="logo-items-img">
-                <img src="./public/img/logo.svg" alt="">
-            </div>
+        <a class="logo marca" href="./index.html" aria-label="ZAPI, ir al inicio">
+            <div class="logo-items-text"><span class="logo-nombre">ZAPI</span></div><div class="logo-items-img"><img src="./public/img/logo.svg" alt=""></div>
         </a>
-
-        <nav class="site-nav" id="navPrincipal" aria-label="Navegacion principal">
-            <ul><li><a class="nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-enlace activo" href="./catalogo.html" aria-current="page">Catalogo</a></li><li><a class="nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-enlace" href="./contacto.html">Contacto</a></li><li><a class="nav-enlace" href="./login.html">Ingresar</a></li></ul>
-        </nav>
 
         <form class="header-search" id="headerSearch" role="search" action="./catalogo.html" autocomplete="off">
             <label class="visually-hidden" for="searchInput">Buscar productos</label>
             <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
-            <input id="searchInput" name="q" type="search" placeholder="Buscar productos…" aria-describedby="searchStatus" spellcheck="false">
-            <button class="search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+            <input class="header-search-input" id="searchInput" name="q" type="search" placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
+
+            <button class="header-search-limpiar search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
         </form>
 
-        <a class="header-carrito" href="./carrito.html" aria-label="Ver carrito">
+        <a class="header-cart header-carrito" href="./carrito.html" aria-label="Ver carrito">
             <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
             <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+
         </a>
-    </div>
+
+        <nav class="nav-bar site-nav" id="navPrincipal" aria-label="Navegacion principal">
+            <ul><li><a class="nav-link nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-link nav-enlace active activo" href="./catalogo.html" aria-current="page">Catalogo</a></li><li><a class="nav-link nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-link nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-link nav-enlace" href="./contacto.html">Contacto</a></li><li><a class="nav-link nav-enlace" href="./login.html">Ingresar</a></li></ul>
+        </nav>
 </header>
 <div class="nav-backdrop" id="navBackdrop" hidden></div>
 <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
+<div class="bottom-sheet" id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden inert>
+    <div class="bottom-sheet-manija" aria-hidden="true"></div>
+    <header class="bottom-sheet-cabecera">
+        <h2 class="bottom-sheet-titulo">Menú</h2>
+        <button class="bottom-sheet-cerrar" type="button" aria-label="Cerrar menú"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </header>
+    <nav class="bottom-sheet-nav" aria-label="Opciones del menú">
+        <ul class="bottom-sheet-grilla"><li>
+            <a class="bottom-sheet-tarjeta" href="./index.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">home</span></span>
+                <span class="bottom-sheet-etiq">Inicio</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./catalogo.html" aria-current="page">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">eco</span></span>
+                <span class="bottom-sheet-etiq">Catálogo</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./servicios.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span></span>
+                <span class="bottom-sheet-etiq">Servicios</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./nosotros.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">group</span></span>
+                <span class="bottom-sheet-etiq">Nosotros</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./contacto.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">mail</span></span>
+                <span class="bottom-sheet-etiq">Contacto</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./carrito.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span></span>
+                <span class="bottom-sheet-etiq">Carrito</span>
+                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+            </a>
+        </li></ul>
+    </nav>
+    <div class="bottom-sheet-cuenta">
+    <div class="bottom-sheet-fila-pedidos" data-cuentas-off>
+        <a href="./pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
+    </div>
+    <a href="./login.html" class="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</a>
+    </div>
+</div>
 <main id="contenido" tabindex="-1">
 
-<section class="banner-pagina">
-    <div>
-        <span class="etiqueta">Catalogo vivo</span>
-        <h1>Elegí hoy tus plantas.</h1>
-        <p>Nosotros preparamos todo; vos solo disfrutás el proceso. Precios fijos y stock real de nuestro vivero en Montevideo.</p>
+<section class="section catalog" id="catalogo">
+    <div class="catalog-header zapi-hero-banner">
+        <div class="zapi-hero-grid">
+            <div class="zapi-hero-content">
+                <h1 class="zapi-hero-title">CATÁLOGO VIVO</h1>
+                <p class="zapi-hero-description">Elegí hoy tus plantas. Nosotros preparamos todo; vos solo disfrutás el proceso.</p>
+            </div>
+            <div class="zapi-hero-trust">
+                <div class="zapi-hero-trust-item"><div class="zapi-hero-trust-icon"><span class="material-symbols-outlined" aria-hidden="true">verified</span></div><div class="zapi-hero-trust-text">Precios fijos y garantizados</div></div>
+                <div class="zapi-hero-trust-item"><div class="zapi-hero-trust-icon"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span></div><div class="zapi-hero-trust-text">Stock actualizado</div></div>
+                <div class="zapi-hero-trust-item"><div class="zapi-hero-trust-icon"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span></div><div class="zapi-hero-trust-text">Envío gratis desde <span data-envio-gratis></span></div></div>
+            </div>
+        </div>
     </div>
-    <ul class="banner-ventajas">
-        <li><span class="material-symbols-outlined" aria-hidden="true">verified</span> Precios fijos, garantizados</li>
-        <li><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span> Stock actualizado</li>
-        <li><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span> Envio gratis desde <span data-envio-gratis></span></li>
-    </ul>
-</section>
 
-<section class="catalogo" aria-labelledby="tituloCatalogo">
-    <div class="seccion-cabecera">
-        <span class="etiqueta">Explorá por categoria</span>
-        <h2 id="tituloCatalogo">Nuestros productos</h2>
+    <div class="catalog-filterbar">
+        <span class="catalog-filterbar-label" id="catalogFiltersLabel">Explorá por categoría</span>
+        <div class="catalog-filters catalogo-filtros" id="catalogFilters" role="group" aria-labelledby="catalogFiltersLabel">
+            <span class="catalog-filter-indicator" id="catalogFilterIndicator" aria-hidden="true"></span>
+        </div>
     </div>
-    <div class="catalogo-filtros" id="catalogFilters" role="group" aria-label="Filtrar productos por categoria"></div>
-    <p class="catalogo-conteo" id="catalogCount" aria-live="polite"></p>
-    <div class="productos-grid" id="productGrid"></div>
+    <p class="catalog-count visually-hidden" id="catalogCount" aria-live="polite"></p>
+    <div class="catalog-grid productos-grid" id="productGrid"></div>
 </section>
 </main>
 <footer class="site-footer">
@@ -115,11 +165,12 @@
     <p class="footer-legal">ZAPI · Vivero agroecologico · Precios sujetos a disponibilidad.</p>
 </footer>
 <dialog class="modal-producto" id="modalProducto" aria-labelledby="modalTitulo">
-    <div class="modal-caja">
+    <div class="modal-fondo" data-cerrar-modal></div>
+    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" tabindex="-1">
         <button class="icono-boton modal-cerrar" type="button" data-cerrar-modal aria-label="Cerrar detalle del producto"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-        <div class="modal-galeria">
-            <div class="modal-foto">
-                <img id="carruselImg" src="" alt="">
+        <div class="modal-carrusel modal-galeria" id="modalCarrusel">
+            <div class="carrusel-marco modal-foto">
+                <img class="carrusel-img" id="carruselImg" src="" alt="">
                 <button class="carrusel-flecha carrusel-prev" type="button" aria-label="Foto anterior"><span class="material-symbols-outlined" aria-hidden="true">chevron_left</span></button>
                 <button class="carrusel-flecha carrusel-next" type="button" aria-label="Foto siguiente"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></button>
                 <span class="carrusel-contador" id="carruselContador" aria-live="polite"></span>
@@ -127,14 +178,14 @@
             <div class="carrusel-miniaturas" id="carruselMiniaturas" aria-label="Miniaturas del producto"></div>
         </div>
         <div class="modal-detalle">
-            <span class="etiqueta" id="modalCategoria"></span>
-            <h2 id="modalTitulo"></h2>
+            <span class="modal-categoria etiqueta" id="modalCategoria"></span>
+            <h2 class="modal-titulo" id="modalTitulo"></h2>
             <p class="modal-descripcion" id="modalDescripcion"></p>
-            <ul class="lista-ventajas" id="modalInfo"></ul>
-            <p class="modal-precio" id="modalPrecio"></p>
-            <p class="stock" id="modalStock"></p>
-            <button class="boton boton-primario" type="button" id="modalAgregar" data-id=""><span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito</button>
-            <a class="enlace-flecha" id="modalFicha" hidden>Ver la ficha completa <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+            <ul class="modal-info lista-ventajas" id="modalInfo"></ul>
+            <p class="modal-precio"><span class="current" id="modalPrecio"></span></p>
+            <p class="modal-stock stock" id="modalStock"></p>
+            <button class="modal-agregar add-cart boton boton-primario" type="button" id="modalAgregar" data-id=""><span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito</button>
+            <a class="modal-ficha enlace-flecha" id="modalFicha" hidden>Ver la ficha completa <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
         </div>
     </div>
 </dialog>

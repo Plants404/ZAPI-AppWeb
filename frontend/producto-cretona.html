@@ -1,6 +1,6 @@
 <!-- ZAPI producto generado: producto-cretona.html -->
 <!DOCTYPE html>
-<html lang="es">
+    <html lang="es" data-cuentas="off">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,146 +19,165 @@
     <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
-    <link rel="stylesheet" href="./public/css/tokens.css">
-    <link rel="stylesheet" href="./public/css/base.css">
-    <link rel="stylesheet" href="./public/css/estructura.css">
-    <link rel="stylesheet" href="./public/css/producto.css">
-    <link rel="stylesheet" href="./public/css/asistente.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+    <link rel="stylesheet" href="./public/css/styles.css">
+    <link rel="stylesheet" href="./public/css/estilos-producto.css">
+    <link rel="stylesheet" href="./public/css/ajustes-estilo.css">
 </head>
 <body class="pagina-producto " data-raiz="." data-producto-id="6">
-<a class="salto-contenido" href="#contenido">Saltar al contenido</a>
-<header class="site-header" data-header>
-    <div class="header-inner">
-        <button class="menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
-            <span class="menu-linea" aria-hidden="true"></span>
-            <span class="menu-linea" aria-hidden="true"></span>
-            <span class="menu-linea" aria-hidden="true"></span>
+    <a class="saltar-contenido salto-contenido" href="#contenido">Saltar al contenido</a>
+<header class="site-header header-producto" data-header>
+        <button class="nav-toggle menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
         </button>
 
-        <a class="marca" href="./index.html" aria-label="ZAPI, ir al inicio">
-            <img src="./public/img/logo.svg" alt="" width="44" height="62">
-            <span class="marca-texto"><strong>ZAPI</strong><small>Vivero agroecologico</small></span>
+        <a class="logo" href="./index.html" aria-label="ZAPI, ir al inicio">
+            <img src="./public/img/logo.svg" alt="" width="40" height="40"><span>ZAPI</span>
         </a>
 
-        <nav class="site-nav" id="navPrincipal" aria-label="Navegacion principal">
-            <ul><li><a class="nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-enlace" href="./catalogo.html">Catalogo</a></li><li><a class="nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-enlace" href="./contacto.html">Contacto</a></li></ul>
-        </nav>
-
-        <form class="header-search" id="headerSearch" role="search" action="./catalogo.html" autocomplete="off">
+        <form class="buscador-producto" id="headerSearch" role="search" action="./catalogo.html" autocomplete="off">
             <label class="visually-hidden" for="searchInput">Buscar productos</label>
-            <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
-            <input id="searchInput" name="q" type="search" placeholder="Buscar productos…" aria-describedby="searchStatus" spellcheck="false">
-            <button class="search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+
+            <input class="header-search-input" id="searchInput" name="q" type="search" placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
+            <button class="buscador-submit" type="submit" aria-label="Buscar"><span class="material-symbols-outlined" aria-hidden="true">search</span></button>
+            <button class="header-search-limpiar search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
         </form>
 
-        <a class="header-carrito" href="./carrito.html" aria-label="Ver carrito">
+        <a class="carrito-enlace" href="./carrito.html" aria-label="Ver carrito">
             <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
             <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+            <span>Carrito</span>
         </a>
-    </div>
+
+        <nav class="nav-bar site-nav" id="navPrincipal" aria-label="Navegacion principal">
+            <ul><li><a class="nav-link nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-link nav-enlace" href="./catalogo.html">Catalogo</a></li><li><a class="nav-link nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-link nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-link nav-enlace" href="./contacto.html">Contacto</a></li><li><a class="nav-link nav-enlace" href="./login.html">Ingresar</a></li></ul>
+        </nav>
 </header>
 <div class="nav-backdrop" id="navBackdrop" hidden></div>
 <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
+<div class="bottom-sheet" id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden inert>
+    <div class="bottom-sheet-manija" aria-hidden="true"></div>
+    <header class="bottom-sheet-cabecera">
+        <h2 class="bottom-sheet-titulo">Menú</h2>
+        <button class="bottom-sheet-cerrar" type="button" aria-label="Cerrar menú"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </header>
+    <nav class="bottom-sheet-nav" aria-label="Opciones del menú">
+        <ul class="bottom-sheet-grilla"><li>
+            <a class="bottom-sheet-tarjeta" href="./index.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">home</span></span>
+                <span class="bottom-sheet-etiq">Inicio</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./catalogo.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">eco</span></span>
+                <span class="bottom-sheet-etiq">Catálogo</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./servicios.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span></span>
+                <span class="bottom-sheet-etiq">Servicios</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./nosotros.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">group</span></span>
+                <span class="bottom-sheet-etiq">Nosotros</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./contacto.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">mail</span></span>
+                <span class="bottom-sheet-etiq">Contacto</span>
+
+            </a>
+        </li><li>
+            <a class="bottom-sheet-tarjeta" href="./carrito.html">
+                <span class="bottom-sheet-icono"><span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span></span>
+                <span class="bottom-sheet-etiq">Carrito</span>
+                <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+            </a>
+        </li></ul>
+    </nav>
+    <div class="bottom-sheet-cuenta">
+    <div class="bottom-sheet-fila-pedidos" data-cuentas-off>
+        <a href="./pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
+    </div>
+    <a href="./login.html" class="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</a>
+    </div>
+</div>
 <main id="contenido" tabindex="-1">
 
-<section class="producto-pagina" aria-labelledby="productoTitulo">
-    <div class="producto-detalle">
-        <div class="producto-galeria">
-            <div class="producto-principal">
-                <img id="productoImagen" src="public/img/cretona.opt.jpg" alt="Cretona" loading="lazy" width="798" height="1200">
-            </div>
-            
-        </div>
-        <div class="producto-datos">
-            <span class="etiqueta" id="productoCategoria">Plantas de interior</span>
-            <h1 id="productoTitulo">Cretona</h1>
-            <p id="productoDescripcion">Hojas coloridas para espacios con luz indirecta.</p>
-            <p class="producto-precio" id="productoPrecio">$ 320</p>
-            <p class="stock stock-ok" id="productoStock">4 disponibles</p>
-            <ul id="productoInfo"><li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Viene en maceta decorativa</span></li><li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Hojas rojas, crema y verde</span></li><li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Incluye guía de cuidados digital</span></li></ul>
-            <div class="producto-acciones">
-                <button id="productoAgregar" data-agregar-producto="6" type="button">
-                    <span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito
-                </button>
-                <a class="boton boton-whatsapp boton-bloque" id="productoWhatsapp" href="https://wa.me/59898268560?text=Hola%20ZAPI%2C%20me%20interesa%20Cretona%20(%24%C2%A0320).%20%C2%BFEst%C3%A1%20disponible%3F" target="_blank" rel="noopener">
-                    <span class="material-symbols-outlined" aria-hidden="true">chat</span> Consultar por WhatsApp
-                </a>
-            </div>
-            <p class="producto-aviso"><span class="material-symbols-outlined" aria-hidden="true">info</span> El stock se publica manualmente; consultá disponibilidad antes de comprar.</p>
-        </div>
+<nav class="migas" aria-label="Ruta de navegacion">
+    <ol>
+        <li><a href="./index.html">Inicio</a></li>
+        <li><a href="./catalogo.html">Catalogo</a></li>
+        <li aria-current="page">Cretona</li>
+    </ol>
+</nav>
+<article class="producto">
+    <div class="producto-galeria">
+        <img class="producto-principal" id="productoImagen" src="public/img/cretona.opt.jpg" alt="Cretona" loading="lazy" width="798" height="1200">
+
     </div>
-    <section class="relacionados" id="productoRelacionados">
-        <h2>También te puede gustar</h2>
-        <div class="relacionados-grid" id="productoRelacionadosGrid">
-            <a class="relacionado" href="producto-suculenta.html">
-                    <img src="public/img/suculenta1.opt.jpg" alt="Suculenta" loading="lazy" width="798" height="1200">
-                    <span>Suculenta</span>
-                    <strong>$ 180</strong>
-                    <span class="stock stock-ok">15 disponibles</span>
-                </a><a class="relacionado" href="producto-cactus.html">
-                    <img src="public/img/cactus1.opt.jpg" alt="Cactus" loading="lazy" width="798" height="1200">
-                    <span>Cactus</span>
-                    <strong>$ 220</strong>
-                    <span class="stock stock-ok">6 disponibles</span>
-                </a><a class="relacionado" href="producto-albahaca.html">
-                    <img src="public/img/albahaca.opt.jpg" alt="Albahaca" loading="lazy" width="798" height="1200">
-                    <span>Albahaca</span>
-                    <strong>$ 150</strong>
-                    <span class="stock stock-ok">12 disponibles</span>
-                </a>
-        </div>
-    </section>
-</section>
-</main>
-<footer class="site-footer">
-    <div class="footer-inner">
-        <div class="footer-marca">
-            <a href="./index.html" aria-label="ZAPI, ir al inicio">
-                <img src="./public/img/logo.svg" alt="" width="38" height="54">
-                <span>ZAPI</span>
+    <div class="producto-datos">
+        <span class="producto-categoria" id="productoCategoria">Plantas de interior</span>
+        <h1 id="productoTitulo">Cretona</h1>
+        <p class="producto-descripcion" id="productoDescripcion">Hojas coloridas para espacios con luz indirecta.</p>
+        <p class="producto-precio" id="productoPrecio">$ 320</p>
+        <p class="producto-stock stock stock-ok " id="productoStock">4 disponibles</p>
+        <ul class="producto-info" id="productoInfo"><li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Viene en maceta decorativa</span></li><li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Hojas rojas, crema y verde</span></li><li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Incluye guía de cuidados digital</span></li></ul>
+        <div class="producto-acciones">
+            <button class="agregar" id="productoAgregar" data-agregar-producto="6" type="button">
+                <span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito
+            </button>
+            <a class="whatsapp boton boton-whatsapp boton-bloque" id="productoWhatsapp" href="https://wa.me/59898268560?text=Hola%20ZAPI%2C%20me%20interesa%20Cretona%20(%24%C2%A0320).%20%C2%BFEst%C3%A1%20disponible%3F" target="_blank" rel="noopener">
+                <span class="material-symbols-outlined" aria-hidden="true">chat</span> Consultar por WhatsApp
             </a>
-            <p>Plantas, kits y acompañamiento para empezar tu rincón verde.</p>
         </div>
-        <nav class="footer-nav" aria-label="Paginas del sitio">
-            <h2>Navegar</h2>
-            <a href="./index.html">Inicio</a><a href="./catalogo.html">Catalogo</a><a href="./servicios.html">Servicios</a><a href="./nosotros.html">Nosotros</a><a href="./contacto.html">Contacto</a>
-            <a href="./carrito.html">Carrito</a>
-            <a href="./pedidos.html">Mis pedidos</a>
-        </nav>
-        <div class="footer-contacto">
-            <h2>Contacto</h2>
-            <p>Congreso de Abril, Montevideo, Uruguay</p>
-            <a href="https://wa.me/59898268560" target="_blank" rel="noopener">WhatsApp 098 268 560</a>
-            <a href="./contacto.html">Escribinos por correo</a>
-        </div>
+        <p class="producto-aviso"><span class="material-symbols-outlined" aria-hidden="true">info</span> El stock se publica manualmente; consultá disponibilidad antes de comprar.</p>
     </div>
-    <p class="footer-legal">ZAPI · Vivero agroecologico · Precios sujetos a disponibilidad.</p>
+</article>
+<section class="producto-relacionados relacionados" id="productoRelacionados">
+        <h2>También te puede gustar</h2>
+        <ul class="relacionados-grid" id="productoRelacionadosGrid">
+            <li><a class="relacionado" href="producto-suculenta.html">
+                    <img src="public/img/suculenta1.opt.jpg" alt="Suculenta" loading="lazy" width="798" height="1200">
+                    <span class="relacionado-nombre">Suculenta</span>
+                    <span class="relacionado-precio">$ 180</span>
+                    <span class="stock stock-ok">15 disponibles</span>
+                </a></li><li><a class="relacionado" href="producto-cactus.html">
+                    <img src="public/img/cactus1.opt.jpg" alt="Cactus" loading="lazy" width="798" height="1200">
+                    <span class="relacionado-nombre">Cactus</span>
+                    <span class="relacionado-precio">$ 220</span>
+                    <span class="stock stock-ok">6 disponibles</span>
+                </a></li><li><a class="relacionado" href="producto-albahaca.html">
+                    <img src="public/img/albahaca.opt.jpg" alt="Albahaca" loading="lazy" width="798" height="1200">
+                    <span class="relacionado-nombre">Albahaca</span>
+                    <span class="relacionado-precio">$ 150</span>
+                    <span class="stock stock-ok">12 disponibles</span>
+                </a></li>
+        </ul>
+    </section>
+</main>
+<a class="cart-link-float" href="./carrito.html" id="cartLinkFloat">
+    <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+    <span class="cart-link-text">Ver carrito</span>
+    <span id="cartCountFloat" class="cart-count" data-cart-count>0</span>
+</a>
+<footer class="footer-producto">
+    <p>ZAPI</p>
+    <nav aria-label="Enlaces del pie">
+        <a href="./index.html">Inicio</a>
+        <a href="./catalogo.html">Catalogo</a>
+        <a href="./carrito.html">Carrito</a>
+    </nav>
 </footer>
-<dialog class="modal-producto" id="modalProducto" aria-labelledby="modalTitulo">
-    <div class="modal-caja">
-        <button class="icono-boton modal-cerrar" type="button" data-cerrar-modal aria-label="Cerrar detalle del producto"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-        <div class="modal-galeria">
-            <div class="modal-foto">
-                <img id="carruselImg" src="" alt="">
-                <button class="carrusel-flecha carrusel-prev" type="button" aria-label="Foto anterior"><span class="material-symbols-outlined" aria-hidden="true">chevron_left</span></button>
-                <button class="carrusel-flecha carrusel-next" type="button" aria-label="Foto siguiente"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></button>
-                <span class="carrusel-contador" id="carruselContador" aria-live="polite"></span>
-            </div>
-            <div class="carrusel-miniaturas" id="carruselMiniaturas" aria-label="Miniaturas del producto"></div>
-        </div>
-        <div class="modal-detalle">
-            <span class="etiqueta" id="modalCategoria"></span>
-            <h2 id="modalTitulo"></h2>
-            <p class="modal-descripcion" id="modalDescripcion"></p>
-            <ul class="lista-ventajas" id="modalInfo"></ul>
-            <p class="modal-precio" id="modalPrecio"></p>
-            <p class="stock" id="modalStock"></p>
-            <button class="boton boton-primario" type="button" id="modalAgregar" data-id=""><span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito</button>
-            <a class="enlace-flecha" id="modalFicha" hidden>Ver la ficha completa <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
-        </div>
-    </div>
-</dialog>
+
 
 <button class="asistente-boton" id="asistenteBoton" type="button" aria-expanded="false" aria-controls="asistentePanel">
     <img src="./public/img/personaje/07-guino.svg" alt="">
@@ -188,9 +207,11 @@
     <script src="./public/js/carrito-estado.js" defer></script>
     <script src="./public/js/pedidos-estado.js" defer></script>
     <script src="./public/js/modal.js" defer></script>
+    <script src="./public/js/compat-restauracion.js" defer></script>
     <script src="./public/js/producto.js" defer></script>
     <script src="./public/js/menu.js" defer></script>
     <script src="./public/js/buscador.js" defer></script>
     <script src="./public/js/asistente.js" defer></script>
+    <script src="./public/js/zapi-bot.js" defer></script>
 </body>
 </html>

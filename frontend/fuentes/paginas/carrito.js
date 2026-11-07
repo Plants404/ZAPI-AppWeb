@@ -9,22 +9,22 @@ module.exports = {
     productos: true,
     opiniones: true,
     contenido: `
-<section class="carrito-pagina">
-    <div class="carrito-contenido">
-        <div class="carrito-cabecera">
+<section class="cart-page carrito-pagina">
+    <div class="cart-content carrito-contenido">
+        <div class="cart-heading carrito-cabecera">
             <div>
-                <span class="etiqueta">Tu selección</span>
+                <span class="cart-eyebrow etiqueta">Tu selección</span>
                 <h1>Tu carrito</h1>
             </div>
-            <button class="boton-texto" id="clearCart" type="button">
+            <button class="clear-cart boton-texto" id="clearCart" type="button">
                 <span class="material-symbols-outlined" aria-hidden="true">delete_sweep</span>
                 Vaciar carrito
             </button>
         </div>
 
-        <div class="carrito-items" id="cartItems"></div>
+        <div class="cart-items carrito-items" id="cartItems"></div>
 
-        <div class="estado-vacio" id="emptyCart" hidden>
+        <div class="empty-cart estado-vacio" id="emptyCart" hidden>
             <span class="material-symbols-outlined" aria-hidden="true">shopping_basket</span>
             <h2>Tu carrito está vacío</h2>
             <p>Todavía no agregaste ningún producto. Explorá el catálogo y encontrá algo para tu jardín o huerta.</p>
@@ -34,44 +34,44 @@ module.exports = {
             </a>
         </div>
 
-        <a class="enlace-flecha" href="./catalogo.html">
+        <a class="continue-shopping enlace-flecha" href="./catalogo.html">
             <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
             Seguir comprando
         </a>
 
-        <section class="seccion recomendaciones" id="recommendations" aria-labelledby="tituloRecomendaciones" hidden>
-            <div class="seccion-cabecera">
+        <section class="recommendations seccion recomendaciones" id="recommendations" aria-labelledby="tituloRecomendaciones" hidden>
+            <div class="recommendations-header seccion-cabecera">
                 <span class="etiqueta">Te puede interesar</span>
                 <h2 id="tituloRecomendaciones">Recomendamos para tu compra</h2>
             </div>
-            <div class="productos-grid" id="recommendationsList"></div>
+            <div class="recommendations-list productos-grid" id="recommendationsList"></div>
         </section>
     </div>
 
-    <aside class="carrito-resumen" aria-labelledby="tituloResumen">
-        <div class="resumen-cabecera">
+    <aside class="cart-summary carrito-resumen" aria-labelledby="tituloResumen">
+        <div class="summary-header resumen-cabecera">
             <span class="etiqueta">Resumen</span>
             <h2 id="tituloResumen">Tu pedido</h2>
         </div>
 
-        <div class="envio-progreso" id="shippingProgressSection">
-            <p id="shippingProgressMessage" aria-live="polite"></p>
-            <div class="envio-barra" id="shippingProgress" role="progressbar" aria-label="Progreso hacia el envío gratis" aria-valuemin="0" aria-valuemax="2500" aria-valuenow="0">
-                <span id="shippingProgressFill"></span>
+        <div class="shipping-progress-section envio-progreso" id="shippingProgressSection">
+            <p class="shipping-progress-message" id="shippingProgressMessage" aria-live="polite"></p>
+            <div class="shipping-progress-track envio-barra" id="shippingProgress" role="progressbar" aria-label="Progreso hacia el envío gratis" aria-valuemin="0" aria-valuemax="2500" aria-valuenow="0">
+                <span class="shipping-progress-fill" id="shippingProgressFill"></span>
             </div>
-            <p class="envio-nota">Envío gratis desde <span data-envio-gratis></span></p>
+            <p class="shipping-threshold-note envio-nota">Envío gratis desde <span data-envio-gratis></span></p>
         </div>
 
-        <div class="resumen-lineas">
+        <div class="summary-lines resumen-lineas">
             <div><span>Productos</span><strong id="subtotal">$ 0</strong></div>
             <div><span>Envío</span><strong id="shipping">$ 0</strong></div>
         </div>
-        <div class="resumen-total">
+        <div class="summary-total resumen-total">
             <span>Total</span>
             <div><strong id="total">$ 0</strong><small id="shippingPendingNote" hidden>+ envío a coordinar</small></div>
         </div>
 
-        <form class="checkout-form" id="checkoutForm" novalidate>
+        <form class="checkout-root checkout-form" id="checkoutForm" novalidate>
             <h2>Datos de contacto</h2>
             <label class="campo-label" for="pedNombre">Nombre <span aria-hidden="true">*</span></label>
             <input class="campo-input" id="pedNombre" name="nombre" type="text" autocomplete="name" maxlength="120" aria-describedby="pedErrorNombre">
@@ -91,13 +91,13 @@ module.exports = {
             <textarea class="campo-input" id="pedNotas" name="notas" rows="3" maxlength="500"></textarea>
 
             <p class="formulario-estado" id="pedEstado" role="status" aria-live="polite" hidden></p>
-            <button class="boton boton-primario boton-bloque" id="whatsappButton" type="submit">
+            <button class="btn-whatsapp boton boton-primario boton-bloque" id="whatsappButton" type="submit">
                 <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
                 Confirmar pedido
             </button>
         </form>
 
-        <p class="resumen-nota"><span class="material-symbols-outlined" aria-hidden="true">verified_user</span> Tu pedido queda guardado en "Mis pedidos" y se coordina con ZAPI.</p>
+        <p class="secure-message resumen-nota"><span class="material-symbols-outlined" aria-hidden="true">verified_user</span> Tu pedido queda guardado en "Mis pedidos" y se coordina con ZAPI.</p>
         <button class="boton boton-secundario boton-bloque" type="button" data-abrir-testimonio>
             <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
             Dejar un testimonio

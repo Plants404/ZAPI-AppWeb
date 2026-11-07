@@ -20,56 +20,103 @@ function escapar(texto) {
     }[caracter]));
 }
 
+function limpiarEspaciosFinales(html) {
+    return html.replace(/[ \t]+$/gm, '');
+}
+
 function icono(nombre, clase = '') {
     return `<span class="material-symbols-outlined${clase ? ' ' + clase : ''}" aria-hidden="true">${nombre}</span>`;
 }
 
 function enlaceNavegacion(enlace, seccion, raiz) {
     const activo = enlace.seccion === seccion;
-    return `<li><a class="nav-enlace${activo ? ' activo' : ''}" href="${raiz}/${enlace.archivo}"${activo ? ' aria-current="page"' : ''}>${enlace.texto}</a></li>`;
+    return `<li><a class="nav-link nav-enlace${activo ? ' active activo' : ''}" href="${raiz}/${enlace.archivo}"${activo ? ' aria-current="page"' : ''}>${enlace.texto}</a></li>`;
 }
 
-function cabecera(seccion, raiz) {
-    return `<a class="salto-contenido" href="#contenido">Saltar al contenido</a>
-<header class="site-header" data-header>
-    <div class="header-inner">
-        <button class="menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
-            <span class="menu-linea" aria-hidden="true"></span>
-            <span class="menu-linea" aria-hidden="true"></span>
-            <span class="menu-linea" aria-hidden="true"></span>
+function cabecera(seccion, raiz, fichaProducto) {
+    const headerClass = seccion === 'carrito' || seccion === 'pedidos' ? ' cart-header' : '';
+    const logoContenido = headerClass
+        ? '<h4>ZAPI</h4>'
+        : fichaProducto
+            ? '<img src="' + raiz + '/public/img/logo.svg" alt="" width="40" height="40"><span>ZAPI</span>'
+            : '<div class="logo-items-text"><span class="logo-nombre">ZAPI</span></div><div class="logo-items-img"><img src="' + raiz + '/public/img/logo.svg" alt=""></div>';
+
+    return `    <a class="saltar-contenido salto-contenido" href="#contenido">Saltar al contenido</a>
+<header class="site-header${fichaProducto ? ' header-producto' : ''}${headerClass}" data-header>
+        <button class="nav-toggle menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
+            <span class="cart-count cart-count-toggle" data-cart-count aria-hidden="true">0</span>
         </button>
 
-        <a class="logo" href="${raiz}/index.html" aria-label="ZAPI, ir al inicio">
-            <div class="logo-items-text">
-                <span class="logo-nombre">ZAPI</span>
-            </div>
-            <div class="logo-items-img">
-                <img src="${raiz}/public/img/logo.svg" alt="">
-            </div>
+        <a class="logo${fichaProducto ? '' : ' marca'}" href="${raiz}/index.html" aria-label="ZAPI, ir al inicio">
+            ${logoContenido}
         </a>
 
-        <nav class="site-nav" id="navPrincipal" aria-label="Navegacion principal">
-            <ul>${ENLACES.map(enlace => enlaceNavegacion(enlace, seccion, raiz)).join('')}<li><a class="nav-enlace" href="${raiz}/login.html">Ingresar</a></li></ul>
-        </nav>
-
-        <form class="header-search" id="headerSearch" role="search" action="${raiz}/catalogo.html" autocomplete="off">
+        <form class="${fichaProducto ? 'buscador-producto' : 'header-search'}" id="headerSearch" role="search" action="${raiz}/catalogo.html" autocomplete="off">
             <label class="visually-hidden" for="searchInput">Buscar productos</label>
-            ${icono('search', 'header-search-icono')}
-            <input id="searchInput" name="q" type="search" placeholder="Buscar productos…" aria-describedby="searchStatus" spellcheck="false">
-            <button class="search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden>${icono('close')}</button>
+            ${fichaProducto ? '' : icono('search', 'header-search-icono')}
+            <input class="header-search-input" id="searchInput" name="q" type="search" placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
+            ${fichaProducto ? `<button class="buscador-submit" type="submit" aria-label="Buscar">${icono('search')}</button>` : ''}
+            <button class="header-search-limpiar search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden>${icono('close')}</button>
         </form>
 
-        <a class="header-carrito" href="${raiz}/carrito.html" aria-label="Ver carrito">
+        <a class="${fichaProducto ? 'carrito-enlace' : 'header-cart header-carrito'}" href="${raiz}/carrito.html" aria-label="Ver carrito">
             ${icono('shopping_bag')}
             <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+            ${fichaProducto ? '<span>Carrito</span>' : ''}
         </a>
-    </div>
+
+        <nav class="nav-bar site-nav" id="navPrincipal" aria-label="Navegacion principal">
+            <ul>${ENLACES.map(enlace => enlaceNavegacion(enlace, seccion, raiz)).join('')}<li><a class="nav-link nav-enlace" href="${raiz}/login.html">Ingresar</a></li></ul>
+        </nav>
 </header>
 <div class="nav-backdrop" id="navBackdrop" hidden></div>
 <p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>`;
 }
 
-function pie(raiz) {
+function hojaMenu(raiz, seccion) {
+    const items = [
+        ['index.html', 'home', 'Inicio', 'inicio'],
+        ['catalogo.html', 'eco', 'Catálogo', 'catalogo'],
+        ['servicios.html', 'auto_awesome', 'Servicios', 'servicios'],
+        ['nosotros.html', 'group', 'Nosotros', 'nosotros'],
+        ['contacto.html', 'mail', 'Contacto', 'contacto'],
+        ['carrito.html', 'shopping_bag', 'Carrito', 'carrito']
+    ];
+
+    return `<div class="bottom-sheet" id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden inert>
+    <div class="bottom-sheet-manija" aria-hidden="true"></div>
+    <header class="bottom-sheet-cabecera">
+        <h2 class="bottom-sheet-titulo">Menú</h2>
+        <button class="bottom-sheet-cerrar" type="button" aria-label="Cerrar menú">${icono('close')}</button>
+    </header>
+    <nav class="bottom-sheet-nav" aria-label="Opciones del menú">
+        <ul class="bottom-sheet-grilla">${items.map(([archivo, simbolo, texto, clave]) => `<li>
+            <a class="bottom-sheet-tarjeta" href="${raiz}/${archivo}"${clave === seccion ? ' aria-current="page"' : ''}>
+                <span class="bottom-sheet-icono">${icono(simbolo)}</span>
+                <span class="bottom-sheet-etiq">${texto}</span>
+                ${clave === 'carrito' ? '<span class="cart-count" data-cart-count aria-hidden="true">0</span>' : ''}
+            </a>
+        </li>`).join('')}</ul>
+    </nav>
+    <div class="bottom-sheet-cuenta">
+    <div class="bottom-sheet-fila-pedidos" data-cuentas-off>
+        <a href="${raiz}/pedidos.html" class="bottom-sheet-pedidos">Mis pedidos ›</a>
+    </div>
+    <a href="${raiz}/login.html" class="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</a>
+    </div>
+</div>`;
+}
+
+function pie(raiz, archivo) {
+    if (archivo === 'carrito.html' || archivo === 'pedidos.html') {
+        return `<footer class="cart-footer">
+    <p>ZAPI · Vivero Agroecológico · Precios sujetos a disponibilidad</p>
+</footer>`;
+    }
+
     return `<footer class="site-footer">
     <div class="footer-inner">
         <div class="footer-marca">
@@ -98,11 +145,12 @@ function pie(raiz) {
 
 function modalProducto() {
     return `<dialog class="modal-producto" id="modalProducto" aria-labelledby="modalTitulo">
-    <div class="modal-caja">
+    <div class="modal-fondo" data-cerrar-modal></div>
+    <div class="modal-caja" role="dialog" aria-modal="true" aria-labelledby="modalTitulo" tabindex="-1">
         <button class="icono-boton modal-cerrar" type="button" data-cerrar-modal aria-label="Cerrar detalle del producto">${icono('close')}</button>
-        <div class="modal-galeria">
-            <div class="modal-foto">
-                <img id="carruselImg" src="" alt="">
+        <div class="modal-carrusel modal-galeria" id="modalCarrusel">
+            <div class="carrusel-marco modal-foto">
+                <img class="carrusel-img" id="carruselImg" src="" alt="">
                 <button class="carrusel-flecha carrusel-prev" type="button" aria-label="Foto anterior">${icono('chevron_left')}</button>
                 <button class="carrusel-flecha carrusel-next" type="button" aria-label="Foto siguiente">${icono('chevron_right')}</button>
                 <span class="carrusel-contador" id="carruselContador" aria-live="polite"></span>
@@ -110,55 +158,64 @@ function modalProducto() {
             <div class="carrusel-miniaturas" id="carruselMiniaturas" aria-label="Miniaturas del producto"></div>
         </div>
         <div class="modal-detalle">
-            <span class="etiqueta" id="modalCategoria"></span>
-            <h2 id="modalTitulo"></h2>
+            <span class="modal-categoria etiqueta" id="modalCategoria"></span>
+            <h2 class="modal-titulo" id="modalTitulo"></h2>
             <p class="modal-descripcion" id="modalDescripcion"></p>
-            <ul class="lista-ventajas" id="modalInfo"></ul>
-            <p class="modal-precio" id="modalPrecio"></p>
-            <p class="stock" id="modalStock"></p>
-            <button class="boton boton-primario" type="button" id="modalAgregar" data-id="">${icono('add_shopping_cart')} Agregar al carrito</button>
-            <a class="enlace-flecha" id="modalFicha" hidden>Ver la ficha completa ${icono('arrow_forward')}</a>
+            <ul class="modal-info lista-ventajas" id="modalInfo"></ul>
+            <p class="modal-precio"><span class="current" id="modalPrecio"></span></p>
+            <p class="modal-stock stock" id="modalStock"></p>
+            <button class="modal-agregar add-cart boton boton-primario" type="button" id="modalAgregar" data-id="">${icono('add_shopping_cart')} Agregar al carrito</button>
+            <a class="modal-ficha enlace-flecha" id="modalFicha" hidden>Ver la ficha completa ${icono('arrow_forward')}</a>
         </div>
     </div>
 </dialog>`;
 }
 
 function dialogoTestimonio() {
-    return `<dialog class="dialogo" id="dialogoTestimonio" aria-labelledby="testimonioTitulo">
-    <form class="dialogo-caja" id="testimonioForm" novalidate>
-        <button class="icono-boton dialogo-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar formulario de opinion">${icono('close')}</button>
+    return `<dialog class="testimonio-modal dialogo" id="dialogoTestimonio" aria-labelledby="testimonioTitulo">
+    <div class="testimonio-fondo" data-cerrar-dialogo></div>
+    <form class="testimonio-caja testimonio-form dialogo-caja" id="testimonioForm" novalidate>
+        <button class="testimonio-cerrar-x icono-boton dialogo-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar formulario de opinion">${icono('close')}</button>
         <span class="etiqueta">Tu experiencia</span>
-        <h2 id="testimonioTitulo">Contanos cómo fue tu compra</h2>
-        <p>Leemos todas las opiniones. Publicamos solo las que estan verificadas y autorizadas.</p>
+        <h2 class="testimonio-titulo" id="testimonioTitulo">Contanos cómo fue tu compra</h2>
+        <p class="testimonio-bajada">Leemos todas las opiniones. Publicamos solo las que estan verificadas y autorizadas.</p>
 
-        <label class="campo-label" for="testimonioNombre">Nombre <span aria-hidden="true">*</span></label>
-        <input class="campo-input" id="testimonioNombre" name="autor" type="text" autocomplete="name" maxlength="120" aria-describedby="errorTestimonioNombre">
-        <span class="campo-error" id="errorTestimonioNombre"></span>
-
-        <label class="campo-label" for="testimonioLugar">Lugar (opcional)</label>
-        <input class="campo-input" id="testimonioLugar" name="lugar" type="text" maxlength="120" aria-describedby="errorTestimonioLugar">
-        <span class="campo-error" id="errorTestimonioLugar"></span>
-
-        <label class="campo-label" for="testimonioEstrellas">Puntaje</label>
-        <select class="campo-input" id="testimonioEstrellas" name="estrellas">
-            <option value="5">5 estrellas</option>
-            <option value="4">4 estrellas</option>
-            <option value="3">3 estrellas</option>
-            <option value="2">2 estrellas</option>
-            <option value="1">1 estrella</option>
-        </select>
-
-        <label class="campo-label" for="testimonioTexto">Tu opinion <span aria-hidden="true">*</span></label>
-        <textarea class="campo-input" id="testimonioTexto" name="texto" rows="5" maxlength="600" aria-describedby="errorTestimonioTexto"></textarea>
-        <span class="campo-error" id="errorTestimonioTexto"></span>
+        <div class="testimonio-campo">
+            <label class="testimonio-etiqueta campo-label" for="testimonioNombre">Nombre <span aria-hidden="true">*</span></label>
+            <input class="testimonio-input campo-input" id="testimonioNombre" name="autor" type="text" autocomplete="name" maxlength="120" aria-describedby="errorTestimonioNombre">
+            <span class="testimonio-error campo-error" id="errorTestimonioNombre"></span>
+        </div>
+        <div class="testimonio-campo">
+            <label class="testimonio-etiqueta campo-label" for="testimonioLugar">Lugar (opcional)</label>
+            <input class="testimonio-input campo-input" id="testimonioLugar" name="lugar" type="text" maxlength="120" aria-describedby="errorTestimonioLugar">
+            <span class="testimonio-error campo-error" id="errorTestimonioLugar"></span>
+        </div>
+        <div class="testimonio-campo">
+            <label class="testimonio-etiqueta campo-label" for="testimonioEstrellas">Puntaje</label>
+            <select class="testimonio-input campo-input" id="testimonioEstrellas" name="estrellas">
+                <option value="5">5 estrellas</option>
+                <option value="4">4 estrellas</option>
+                <option value="3">3 estrellas</option>
+                <option value="2">2 estrellas</option>
+                <option value="1">1 estrella</option>
+            </select>
+        </div>
+        <div class="testimonio-campo">
+            <label class="testimonio-etiqueta campo-label" for="testimonioTexto">Tu opinion <span aria-hidden="true">*</span></label>
+            <textarea class="testimonio-texto campo-input" id="testimonioTexto" name="texto" rows="5" maxlength="600" aria-describedby="errorTestimonioTexto"></textarea>
+            <span class="testimonio-error campo-error" id="errorTestimonioTexto"></span>
+        </div>
 
         <div class="visually-hidden" aria-hidden="true">
             <label for="testimonioSitio">Dejá este campo vacío</label>
             <input id="testimonioSitio" name="sitio_web" type="text" tabindex="-1" autocomplete="off">
         </div>
 
-        <p class="formulario-estado" id="testimonioEstado" role="status" aria-live="polite" hidden></p>
-        <button class="boton boton-primario boton-bloque" id="testimonioEnviar" type="submit"><span id="testimonioEnviarTexto">Enviar opinion</span></button>
+        <p class="testimonio-error formulario-estado" id="testimonioEstado" role="status" aria-live="polite" hidden></p>
+        <div class="testimonio-acciones">
+            <button class="testimonio-btn-secundario" type="button" data-cerrar-dialogo>Cerrar</button>
+            <button class="testimonio-btn-primario boton boton-primario boton-bloque" id="testimonioEnviar" type="submit"><span id="testimonioEnviarTexto">Enviar opinion</span></button>
+        </div>
     </form>
 </dialog>`;
 }
@@ -224,11 +281,51 @@ function pagina(opciones) {
     const rutaJs = nombre => `${raiz}/public/js/${nombre}`;
     const todosLosScripts = [...SCRIPTS_BASE, ...scripts, ...SCRIPTS_FINALES];
     const ogImagen = `${NEGOCIO.sitio}/public/img/plants-hero.opt.jpg`;
+    const fichaProducto = archivo.startsWith('producto-');
 
-    const cssPagina = `${raiz}/public/css/${seccion}.css`;
+    const cssPropio = `${raiz}/public/css/${seccion}.css`;
+    const hojas = fichaProducto
+        ? ['styles.css', 'estilos-producto.css', 'ajustes-estilo.css']
+        : archivo === 'index.html'
+            ? ['styles.css', 'stylecarrito.css', 'catalogo-catalogo.css', 'catalogo-modal.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css', 'ajustes-estilo.css']
+            : archivo === 'catalogo.html'
+                ? ['styles.css', 'catalogo-catalogo.css', 'catalogo-modal.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css', 'ajustes-estilo.css']
+                : archivo === 'carrito.html'
+                    ? ['tokens.css', 'styles.css', 'stylecarrito.css', 'catalogo-modal.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css', 'ajustes-estilo.css']
+                    : archivo === 'pedidos.html'
+                        ? ['styles.css', 'stylecarrito.css', 'tokens.css', 'pedidos.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css']
+                        : ['tokens.css', 'styles.css', cssPropio, 'zapi-bot.css', 'asistente.css', 'restauracion.css'];
+    const fuentes = fichaProducto
+        ? 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap'
+        : 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap';
+    const preloadHero = archivo === 'index.html'
+        ? `    <link rel="preload" as="image" href="${raiz}/public/img/plants-hero.opt.jpg" fetchpriority="high">\n`
+        : '';
 
-    return `<!DOCTYPE html>
+    if (archivo === '404.html') {
+        return limpiarEspaciosFinales(`<!DOCTYPE html>
 <html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="robots" content="${escapar(robots)}">
+    <meta name="description" content="${escapar(descripcion)}">
+    <link rel="canonical" href="${escapar(canonical)}">
+    <title>${escapar(titulo)}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&display=swap">
+    <link rel="stylesheet" href="${raiz}/public/css/404.css">
+</head>
+<body>
+${contenido}
+</body>
+</html>
+`);
+    }
+
+    return limpiarEspaciosFinales(`<!DOCTYPE html>
+    <html lang="es" data-cuentas="off">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -247,29 +344,36 @@ function pagina(opciones) {
     <link rel="icon" type="image/svg+xml" href="${raiz}/public/img/logo.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
-    <link rel="stylesheet" href="${raiz}/public/css/tokens.css">
-    <link rel="stylesheet" href="${raiz}/public/css/base.css">
-    <link rel="stylesheet" href="${raiz}/public/css/estructura.css">
-    <link rel="stylesheet" href="${cssPagina}">
-    <link rel="stylesheet" href="${raiz}/public/css/asistente.css">
-    <link rel="stylesheet" href="${raiz}/public/css/zapi-bot.css">
-    <link rel="stylesheet" href="${raiz}/public/css/restauracion.css">
+    <link rel="stylesheet" href="${fuentes}">
+${preloadHero}${hojas.map(hoja => `    <link rel="stylesheet" href="${raiz}/public/css/${hoja}">`).join('\n')}
 ${jsonLd ? `    ${jsonLd}\n` : ''}</head>
 <body class="pagina-${seccion} ${claseBody}" data-raiz="${raiz}"${bodyAttrs ? ' ' + bodyAttrs : ''}>
-${cabecera(seccion, raiz)}
-<main id="contenido" tabindex="-1">
+${cabecera(seccion, raiz, fichaProducto)}
+${hojaMenu(raiz, seccion)}
+<main id="contenido" tabindex="-1"${archivo === 'pedidos.html' ? ' class="pedidos-page"' : ''}>
 ${contenido}
 </main>
-${pie(raiz)}
-${productos ? modalProducto() : ''}
+${fichaProducto ? `<a class="cart-link-float" href="${raiz}/carrito.html" id="cartLinkFloat">
+    ${icono('shopping_bag')}
+    <span class="cart-link-text">Ver carrito</span>
+    <span id="cartCountFloat" class="cart-count" data-cart-count>0</span>
+</a>
+<footer class="footer-producto">
+    <p>ZAPI</p>
+    <nav aria-label="Enlaces del pie">
+        <a href="${raiz}/index.html">Inicio</a>
+        <a href="${raiz}/catalogo.html">Catalogo</a>
+        <a href="${raiz}/carrito.html">Carrito</a>
+    </nav>
+</footer>` : pie(raiz, archivo)}
+${productos && !fichaProducto ? modalProducto() : ''}
 ${opiniones ? dialogoTestimonio() : ''}
 ${asistente(raiz)}
 ${avisoFlotante()}
 ${todosLosScripts.map(nombre => `    <script src="${rutaJs(nombre)}" defer></script>`).join('\n')}
 </body>
 </html>
-`;
+`);
 }
 
 module.exports = { escapar, icono, pagina, slug };

@@ -1,0 +1,43 @@
+/* Keep the reference modal styles on the current native dialog element. */
+dialog.modal-producto:not([open]) {
+    display: none;
+}
+
+dialog.modal-producto {
+    border: 0;
+    color: inherit;
+}
+
+dialog.modal-producto::backdrop {
+    background: transparent;
+}
+
+dialog.testimonio-modal:not([open]) {
+    display: none;
+}
+
+dialog.testimonio-modal {
+    border: 0;
+    background: transparent;
+    color: inherit;
+}
+
+dialog.testimonio-modal::backdrop {
+    background: transparent;
+}
+
+.cart-header .header-search {
+    display: none;
+}
+
+.producto-aviso {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    color: var(--muted-texto);
+    font-size: .875rem;
+}
+
+.producto-aviso .material-symbols-outlined {
+    color: var(--leaf);
+}

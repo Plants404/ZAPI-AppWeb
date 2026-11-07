@@ -8,49 +8,45 @@ module.exports = {
     productos: true,
     opiniones: true,
     contenido: `
-<section class="hero">
-    <div class="hero-copy">
-        <span class="etiqueta">Vivero agroecologico · Montevideo</span>
+<section class="section hero" id="inicio">
+    <div class="hero-grid">
+      <div class="hero-copy">
         <h1>Transformamos espacios con naturaleza.</h1>
         <p class="hero-lead">En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a traves de soluciones agroecologicas integrales.</p>
-        <ul class="hero-beneficios">
-            <li><span class="material-symbols-outlined" aria-hidden="true">verified</span> Plantas de calidad, cuidadosamente seleccionadas.</li>
-            <li><span class="material-symbols-outlined" aria-hidden="true">support_agent</span> Asesoramiento profesional, paso a paso.</li>
-            <li><span class="material-symbols-outlined" aria-hidden="true">water_drop</span> Cuidado simple para que tu espacio prospere.</li>
+        <ul class="hero-features hero-beneficios">
+            <li><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</li>
+            <li><strong>Asesoramiento profesional:</strong> Paso a paso.</li>
+            <li><strong>Cuidado simple:</strong> Para que tu espacio prospere.</li>
         </ul>
-        <div class="hero-acciones">
+        <div class="hero-ctas">
             <a class="boton boton-primario" href="./catalogo.html">Explorar catalogo</a>
             <a class="boton boton-secundario" href="./servicios.html">Conocer nuestros servicios</a>
         </div>
+      </div>
+      <img src="./public/img/plants-hero.opt.jpg" alt="Plantas de interior verdes en un ambiente luminoso" width="1200" height="800" fetchpriority="high">
     </div>
-    <div class="hero-visual">
-        <img src="./public/img/plants-hero.opt.jpg" alt="Plantas de interior verdes en un ambiente luminoso" width="1200" height="800" fetchpriority="high">
-        <p class="hero-sello"><span class="material-symbols-outlined" aria-hidden="true">local_shipping</span> Envio gratis desde <span data-envio-gratis></span></p>
-    </div>
-</section>
 
-<section class="seccion destacados" aria-labelledby="tituloDestacados">
-    <div class="seccion-cabecera seccion-cabecera-fila">
-        <div>
-            <span class="etiqueta">Elegidos para empezar</span>
-            <h2 id="tituloDestacados">Productos destacados</h2>
+    <div class="home-products-carousel" role="region" aria-label="Productos destacados">
+        <div class="carousel-header">
+            <h2>Productos destacados</h2>
         </div>
-        <a class="enlace-flecha" href="./catalogo.html">Ver todo el catalogo <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+        <div class="carousel-viewport">
+            <div class="carousel-track" id="productosDestacados"></div>
+        </div>
     </div>
-    <div class="productos-grid" id="productosDestacados"></div>
 </section>
 
-<section class="seccion testimonios" aria-labelledby="tituloTestimonios">
-    <div class="seccion-cabecera">
-        <span class="etiqueta">Testimonios</span>
-        <h2 id="tituloTestimonios">Lo que dicen nuestros clientes</h2>
+<section class="section testimonios" id="testimonios" data-parte-de="inicio">
+    <div class="testimonios-cabecera">
+        <span class="contacto-eyebrow">TESTIMONIOS</span>
+        <h2>Lo que dicen nuestros clientes</h2>
         <p>Historias de quienes ya transformaron sus espacios con ZAPI.</p>
     </div>
-    <div id="testimoniosLista">
+    <div class="testimonios-grilla" id="testimoniosLista" role="list" aria-label="Testimonios de clientes">
         <p class="estado-vacio">Todavía no publicamos opiniones. Si compraste con nosotros, nos encantara leer tu experiencia.</p>
     </div>
     <div class="testimonios-accion">
-        <button class="boton boton-secundario" type="button" data-abrir-testimonio>
+        <button class="btn-testimonio boton boton-secundario" type="button" data-abrir-testimonio>
             <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
             Dejar mi opinion
         </button>
