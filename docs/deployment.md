@@ -1,64 +1,131 @@
-# Guía de Despliegue de ZAPI
+# Despliegue de ZAPI en Vercel
 
-La arquitectura separada de ZAPI permite dos estrategias de despliegue principales:
-1. **Despliegue unificado en Netlify** (Frontend estático en CDN + Backend en Netlify Functions).
-2. **Despliegue independiente** (Frontend en CDN / Vercel / Cloudflare Pages + Backend en un servicio Node.js como Render, Railway, Fly.io o VPS con Nginx).
+La arquitectura de producción prevista es:
 
----
+- **Vercel** publica `frontend/` como sitio estático y ejecuta la API como función serverless en `api/index.js`.
+- **MongoDB Atlas** aloja la base con replica set.
+- El dominio propio apunta a Vercel (opcional; Vercel asigna una URL `.vercel.app`).
 
-## Opción 1: Despliegue en Netlify (Recomendado para la configuración actual)
+## 1. Base de datos
 
-Netlify aloja el frontend estático y ejecuta el backend Express a través de Netlify Functions bajo el mismo dominio (`https://tudominio.netlify.app`), eliminando complejidades de CORS en producción.
+1. Crear un cluster en MongoDB Atlas.
+2. Crear un usuario de aplicación con permisos de lectura y escritura sobre la base `zapi`.
+3. Permitir el acceso desde Vercel (rangos de IP o `0.0.0.0/0` con usuario y contraseña fuertes).
+4. Copiar la cadena de conexión. Debe incluir el replica set, por ejemplo:
 
-### 1. Configuración de `netlify.toml`
-El archivo `netlify.toml` en la raíz ya está configurado para publicar únicamente el frontend:
-```toml
-[build]
-  publish = "frontend"
-  functions = "netlify/functions"
-
-[build.environment]
-  NODE_VERSION = "24"
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/api/:splat"
-  status = 200
-  force = true
+```text
+mongodb+srv://usuario:clave@cluster.mongodb.net/zapi?retryWrites=true&w=majority
 ```
 
-### 2. Variables de entorno en Netlify
-Configura en **Netlify Dashboard → Site Configuration → Environment variables**:
-- `NODE_ENV=production`
-- `MONGODB_URI`: Cadena de conexión de MongoDB Atlas.
-- `JWT_SECRET`: Secreto criptográfico aleatorio de al menos 32 caracteres.
-- `FRONTEND_ORIGINS=https://tudominio.netlify.app`
-- `COOKIE_SAME_SITE=lax`
-- `COOKIE_SECURE=true`
-- `TRUST_PROXY=1`
-- `REQUIERE_CUENTA=true`
-- `REGISTRO_PUBLICO=false`
+Las transacciones de stock requieren replica set; Atlas lo provee por defecto.
 
-### 3. Configuración en MongoDB Atlas
-- En **Network Access**, permite el acceso saliente dinámico de Netlify agregando `0.0.0.0/0` o los rangos de IP de tu región de Netlify.
-- Asegúrate de que el cluster sea un **Replica Set** (Atlas lo habilita por defecto).
+## 2. Variables de entorno en Vercel
 
----
+Configurar en **Vercel → Settings → Environment Variables** (para Producción, Vista previa y Desarrollo):
 
-## Opción 2: Despliegue Independiente (Frontend y Backend Separados)
+| Variable | Valor de producción |
+| --- | --- |
+| `NODE_ENV` | `production` |
+| `MONGODB_URI` | cadena de Atlas |
+| `JWT_SECRET` | secreto aleatorio de al menos 32 bytes |
+| `JWT_EXPIRES_IN` | `12h` |
+| `FRONTEND_ORIGINS` | `https://tu-dominio.vercel.app,https://www.tu-dominio.com` |
+| `COOKIE_SAME_SITE` | `none` |
+| `COOKIE_SECURE` | `true` |
+| `TRUST_PROXY` | `1` |
+| `ENVIO_GRATIS` | monto en pesos, por ejemplo `2500` |
+| `REGISTRO_PUBLICO` | `true` o `false` |
 
-### Backend (Render, Railway, Fly.io o Docker)
-1. **Directorio raíz del servicio:** Apuntar al directorio `backend/`.
-2. **Comando de instalación:** `npm install`
-3. **Comando de inicio:** `npm start` (ejecuta `node server.js`).
-4. **Variables de entorno:** Configurar las variables del backend indicando en `FRONTEND_ORIGINS` la URL exacta de tu frontend (ej. `https://tienda.zapi.uy`).
-5. **Cookies entre dominios diferentes:** Si frontend y backend están en dominios completamente distintos, configura `COOKIE_SAME_SITE=none` y `COOKIE_SECURE=true`.
+`COOKIE_SAME_SITE=none` exige `COOKIE_SECURE=true`. La configuración falla al arrancar si la combinación es inválida.
 
-### Frontend (Cloudflare Pages, Vercel, S3/CloudFront)
-1. **Directorio raíz:** Apuntar a `frontend/`.
-2. **Punto de compilación / Publish directory:** `.` (la raíz de `frontend/`).
-3. **Configuración de API:** Inyectar la URL del backend remoto en el HTML o mediante la etiqueta:
-   ```html
-   <meta name="zapi-api" content="https://api.zapi.uy">
-   ```
-   o asignando `window.__ZAPI_API__ = "https://api.zapi.uy";`.
+Generar el secreto:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+No subir `.env` al repositorio. `.env.example` documenta las variables sin valores reales.
+
+## 3. Build y despliegue
+
+`vercel.json` ya define:
+
+- La función serverless en `api/index.js` que reutiliza `createApp` y conecta Mongoose antes de atender cada invocación.
+- Las rutas `/api/*` hacia la función.
+- Los archivos estáticos desde `frontend/`.
+
+Conectar el repositorio a Vercel. Vercel detecta `vercel.json` y despliega automáticamente en cada push.
+
+## 4. Primera puesta en marcha
+
+1. Conectar el repositorio a Vercel.
+2. Cargar las variables de entorno en Vercel.
+3. Hacer el primer deploy.
+4. Sembrar el catálogo y el contenido contra Atlas. Desde una máquina con las variables de producción en el entorno:
+
+```bash
+npm run seed:catalogo
+npm run seed:contenido
+```
+
+Ambos comandos son idempotentes: no pisan datos existentes salvo que se pase `--forzar`.
+
+5. Crear el super administrador una única vez:
+
+```bash
+npm run admin:crear
+```
+
+En PowerShell:
+
+```powershell
+$env:ADMIN_NOMBRE="Administrador"
+$env:ADMIN_EMAIL="admin@zapi.uy"
+$env:ADMIN_CLAVE="una-clave-de-12-caracteres-o-mas"
+npm run admin:crear
+```
+
+6. Entrar por `https://tu-dominio.vercel.app/login.html` con esa cuenta y verificar el panel en `https://tu-dominio.vercel.app/admin/index.html`.
+
+## 5. Verificación posterior
+
+- `GET https://tu-dominio.vercel.app/api/health` debe devolver `{ "estado": "ok" }`.
+- `GET https://tu-dominio.vercel.app/api/config` debe devolver `requiereCuenta: true`.
+- El catálogo debe mostrar los productos sembrados.
+- El login debe crear la cookie `zapi_session` con `Secure`, `HttpOnly` y `SameSite=None`.
+- Una compra de prueba debe descontar stock y abrir WhatsApp con el código.
+- El dashboard debe mostrar la venta y el cierre de caja del día.
+
+## 6. Actualizaciones
+
+Cada push a la rama de producción vuelve a desplegar el sitio y la función. Antes de desplegar conviene correr:
+
+```bash
+npm test
+npm run lint
+npm run verificar
+npm run generar
+```
+
+Si se agregan productos, se editan desde el panel; no hace falta volver a sembrar. La semilla solo se usa para la carga inicial.
+
+## 7. Respaldos y operación
+
+- Activar respaldos automáticos en Atlas.
+- Revisar el panel de auditoría para cambios sensibles.
+- Rotar `JWT_SECRET` invalida las sesiones activas: hacerlo en una ventana de mantenimiento.
+- Monitorear los límites de tasa y los errores `5xx` desde Vercel.
+- Las imágenes se sirven desde `frontend/public/img/`; si se externalizan, usar URLs `https` y mantener el respaldo local.
+
+## 8. Desarrollo local
+
+```bash
+npm install
+cp .env.example .env          # PowerShell: Copy-Item .env.example .env
+npm run seed:catalogo
+npm run seed:contenido
+npm run admin:crear
+npm start
+```
+
+El sitio queda en `http://localhost:5500` y la API en `http://localhost:5501`. `frontend/tools/servir.js` hace de proxy de `/api` y bloquea las carpetas de fuentes para que no se publiquen.

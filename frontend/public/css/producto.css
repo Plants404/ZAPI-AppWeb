@@ -1,0 +1,214 @@
+/* Ficha de producto: galería, datos de venta, acciones y relacionados. */
+
+.producto-detalle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--espacio-xl);
+    max-width: var(--ancho);
+    margin: 0 auto;
+    padding: var(--espacio-lg) var(--espacio-md) var(--espacio-xl);
+}
+
+.producto-galeria {
+    display: grid;
+    gap: var(--espacio-sm);
+    align-content: start;
+}
+
+.producto-principal {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radio);
+    background: var(--sand);
+    object-fit: cover;
+}
+
+.producto-miniaturas {
+    display: flex;
+    gap: .5rem;
+    overflow-x: auto;
+    padding-bottom: .25rem;
+}
+
+.producto-miniatura {
+    flex: 0 0 72px;
+    padding: 0;
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: var(--white);
+    cursor: pointer;
+}
+
+.producto-miniatura img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.producto-miniatura.activa {
+    border-color: var(--leaf);
+}
+
+.producto-datos {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .7rem;
+}
+
+.producto-datos h1 {
+    max-width: 18ch;
+}
+
+.producto-precio {
+    color: var(--forest);
+    font-size: var(--fs-2xl);
+    font-weight: 700;
+}
+
+.producto-descripcion {
+    max-width: 58ch;
+    color: var(--muted);
+}
+
+.producto-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espacio-sm);
+    width: 100%;
+    margin-top: var(--espacio-sm);
+}
+
+.producto-aviso {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+}
+
+.relacionados {
+    max-width: var(--ancho);
+    margin: 0 auto;
+    padding: 0 var(--espacio-md) var(--espacio-xl);
+}
+
+.relacionados-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--espacio-md);
+}
+
+.relacionado {
+    display: grid;
+    gap: .35rem;
+    padding: var(--espacio-sm);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    color: var(--forest);
+    text-decoration: none;
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+
+.relacionado:hover {
+    box-shadow: var(--sombra-md);
+    transform: translateY(-2px);
+}
+
+.relacionado img {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 10px;
+    background: var(--sand);
+    object-fit: cover;
+}
+
+.relacionado span {
+    font-family: var(--serif);
+    font-size: var(--fs-lg);
+    line-height: 1.1;
+}
+
+.relacionado strong {
+    color: var(--moss);
+    font-size: var(--fs-sm);
+}
+
+@media (max-width: 768px) {
+    .producto-detalle {
+        grid-template-columns: 1fr;
+        gap: var(--espacio-lg);
+        padding: var(--espacio-md) var(--espacio-md) var(--espacio-lg);
+    }
+
+    .producto-principal {
+        aspect-ratio: 4 / 3;
+    }
+
+    .relacionados-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .producto-acciones {
+        flex-direction: column;
+    }
+
+    .producto-acciones .boton {
+        width: 100%;
+    }
+
+    .relacionados-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.producto-pagina {
+    padding-top: var(--espacio-sm);
+}
+
+.producto-error {
+    display: grid;
+    justify-items: start;
+    gap: .6rem;
+    max-width: 52ch;
+    margin: var(--espacio-xl) auto;
+    padding: var(--espacio-lg);
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+}
+
+.producto-error[hidden] {
+    display: none;
+}
+
+.producto-error .material-symbols-outlined {
+    color: var(--leaf);
+    font-size: 2.5rem;
+}
+
+.producto-error h1 {
+    font-size: var(--fs-2xl);
+}
+
+.producto-error p {
+    color: var(--muted);
+}
+
+.producto-datos .boton-texto {
+    margin-top: .25rem;
+}
+
+.producto-aviso {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+}
+
+.producto-aviso .material-symbols-outlined {
+    color: var(--leaf);
+}

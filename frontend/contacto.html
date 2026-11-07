@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contacto | ZAPI Vivero Agroecológico</title>
+    <meta name="description" content="Escribinos por consultas, proyectos de jardín o pedidos especiales. ZAPI responde en Montevideo.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://zapi.uy/contacto.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ZAPI">
+    <meta property="og:locale" content="es_UY">
+    <meta property="og:title" content="Contacto | ZAPI Vivero Agroecológico">
+    <meta property="og:description" content="Escribinos por consultas, proyectos de jardín o pedidos especiales. ZAPI responde en Montevideo.">
+    <meta property="og:url" content="https://zapi.uy/contacto.html">
+    <meta property="og:image" content="https://zapi.uy/public/img/plants-hero.opt.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+    <link rel="stylesheet" href="./public/css/tokens.css">
+    <link rel="stylesheet" href="./public/css/base.css">
+    <link rel="stylesheet" href="./public/css/estructura.css">
+    <link rel="stylesheet" href="./public/css/contacto.css">
+    <link rel="stylesheet" href="./public/css/asistente.css">
+</head>
+<body class="pagina-contacto " data-raiz=".">
+<a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+<header class="site-header" data-header>
+    <div class="header-inner">
+        <button class="menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menú de navegación">
+            <span class="menu-linea" aria-hidden="true"></span>
+            <span class="menu-linea" aria-hidden="true"></span>
+            <span class="menu-linea" aria-hidden="true"></span>
+        </button>
+
+        <a class="marca" href="./index.html" aria-label="ZAPI, ir al inicio">
+            <img src="./public/img/logo.svg" alt="" width="44" height="62">
+            <span class="marca-texto"><strong>ZAPI</strong><small>Vivero agroecológico</small></span>
+        </a>
+
+        <nav class="site-nav" id="navPrincipal" aria-label="Navegación principal">
+            <ul><li><a class="nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-enlace" href="./catalogo.html">Catálogo</a></li><li><a class="nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-enlace activo" href="./contacto.html" aria-current="page">Contacto</a></li></ul>
+        </nav>
+
+        <form class="header-search" id="headerSearch" role="search" action="./catalogo.html" autocomplete="off">
+            <label class="visually-hidden" for="searchInput">Buscar productos</label>
+            <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
+            <input id="searchInput" name="q" type="search" placeholder="Buscar productos…" aria-describedby="searchStatus" spellcheck="false">
+            <button class="search-limpiar" id="searchClear" type="button" aria-label="Limpiar búsqueda" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+        </form>
+
+        <a class="header-carrito" href="./carrito.html" aria-label="Ver carrito">
+            <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+            <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+        </a>
+
+        <div class="header-sesion" data-sesion></div>
+    </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop" hidden></div>
+<p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
+<aside class="promocion-banner" data-promocion hidden>
+    <div>
+        <strong data-promocion-titulo></strong>
+        <span data-promocion-texto></span>
+    </div>
+    <a class="enlace-flecha" data-promocion-enlace hidden>Ver más <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+</aside>
+<main id="contenido" tabindex="-1">
+
+<section class="banner-pagina">
+    <div>
+        <span class="etiqueta" data-contenido="contacto.etiqueta">Contacto</span>
+        <h1 data-contenido="contacto.titulo">Empezá hoy a transformar tus espacios.</h1>
+        <p data-contenido="contacto.descripcion">Contanos qué necesitás y te respondemos a la brevedad. También podés coordinar todo directamente por WhatsApp.</p>
+    </div>
+    <ul class="banner-ventajas">
+        <li><span class="material-symbols-outlined" aria-hidden="true">verified_user</span> Presupuesto claro y personalizado</li>
+        <li><span class="material-symbols-outlined" aria-hidden="true">eco</span> Asesoramiento agroecológico</li>
+        <li><span class="material-symbols-outlined" aria-hidden="true">location_on</span> Atención cercana en Montevideo</li>
+    </ul>
+</section>
+
+<section class="contacto-pagina">
+    <aside class="contacto-info">
+        <span class="etiqueta">Atención directa</span>
+        <h2>Hablemos de tu espacio.</h2>
+        <p>Respondemos consultas de hogares, empresas e instituciones. Si preferís una respuesta más rápida, escribinos por WhatsApp.</p>
+        <ul class="contacto-datos">
+            <li><span class="material-symbols-outlined" aria-hidden="true">chat</span><div><strong>WhatsApp</strong><a href="https://wa.me/59898268560" target="_blank" rel="noopener">098 268 560</a></div></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">mail</span><div><strong>Correo</strong><a href="mailto:hola@zapi.uy" data-contenido="contacto.email">hola@zapi.uy</a></div></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">location_on</span><div><strong>Ubicación</strong><span data-contenido="contacto.direccion">Congreso de Abril, Montevideo, Uruguay</span></div></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">schedule</span><div><strong>Visitas</strong><span data-contenido="contacto.horario">Visitas coordinadas previamente por WhatsApp.</span></div></li>
+        </ul>
+        <a class="boton boton-primario boton-bloque" href="https://wa.me/59898268560" target="_blank" rel="noopener">
+            <span class="material-symbols-outlined" aria-hidden="true">chat</span> Escribir por WhatsApp
+        </a>
+    </aside>
+
+    <div class="contacto-card">
+        <div class="contacto-card-cabecera">
+            <span class="etiqueta">Escribinos</span>
+            <h2>Contanos qué necesitás.</h2>
+        </div>
+
+        <form class="contacto-form" id="contactoForm" novalidate>
+            <div class="form-fila">
+                <div>
+                    <label class="campo-label" for="contactoNombre">Nombre <span aria-hidden="true">*</span></label>
+                    <input class="campo-input" id="contactoNombre" name="nombre" type="text" autocomplete="name" maxlength="120" aria-describedby="errorNombre">
+                    <span class="campo-error" id="errorNombre"></span>
+                </div>
+                <div>
+                    <label class="campo-label" for="contactoCorreo">Correo electrónico <span aria-hidden="true">*</span></label>
+                    <input class="campo-input" id="contactoCorreo" name="correo" type="email" autocomplete="email" maxlength="160" aria-describedby="errorCorreo">
+                    <span class="campo-error" id="errorCorreo"></span>
+                </div>
+            </div>
+
+            <div class="form-fila">
+                <div>
+                    <label class="campo-label" for="contactoAsunto">Asunto <span aria-hidden="true">*</span></label>
+                    <input class="campo-input" id="contactoAsunto" name="asunto" type="text" maxlength="160" aria-describedby="errorAsunto">
+                    <span class="campo-error" id="errorAsunto"></span>
+                </div>
+                <div>
+                    <label class="campo-label" for="contactoTelefono">Teléfono (opcional)</label>
+                    <input class="campo-input" id="contactoTelefono" name="telefono" type="tel" autocomplete="tel" inputmode="tel" maxlength="40" aria-describedby="errorTelefono">
+                    <span class="campo-error" id="errorTelefono"></span>
+                </div>
+            </div>
+
+            <label class="campo-label" for="contactoConsulta">Mensaje <span aria-hidden="true">*</span></label>
+            <textarea class="campo-input" id="contactoConsulta" name="consulta" rows="6" maxlength="2000" aria-describedby="errorConsulta contactoContador"></textarea>
+            <span class="campo-error" id="errorConsulta"></span>
+            <span class="contacto-contador" id="contactoContador">2000/2000</span>
+
+            <div class="visually-hidden" aria-hidden="true">
+                <label for="contactoSitio">Dejá este campo vacío</label>
+                <input id="contactoSitio" name="sitio_web" type="text" tabindex="-1" autocomplete="off">
+            </div>
+
+            <p class="formulario-estado" id="contactoEstado" role="status" aria-live="polite" hidden></p>
+            <div class="contacto-pie">
+                <p class="privacy-note">Tus datos solo se usan para responderte esta consulta. Los campos con * son obligatorios.</p>
+                <button class="boton boton-primario" id="contactoEnviar" type="submit"><span id="contactoEnviarTexto">Enviar mensaje</span></button>
+            </div>
+        </form>
+
+        <div class="contacto-confirmacion" id="contactoOk" hidden>
+            <span class="material-symbols-outlined" aria-hidden="true">mark_email_read</span>
+            <h3 id="contactoOkTitulo" tabindex="-1">¡Gracias por escribirnos!</h3>
+            <p>Recibimos tu consulta y te responderemos a la brevedad.</p>
+            <button class="boton boton-secundario" id="contactoReiniciar" type="button">Enviar otra consulta</button>
+        </div>
+    </div>
+</section>
+</main>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-marca">
+            <a href="./index.html" aria-label="ZAPI, ir al inicio">
+                <img src="./public/img/logo.svg" alt="" width="38" height="54">
+                <span>ZAPI</span>
+            </a>
+            <p>Plantas, kits y acompañamiento para empezar tu rincón verde.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Páginas del sitio">
+            <h2>Navegar</h2>
+            <a href="./index.html">Inicio</a><a href="./catalogo.html">Catálogo</a><a href="./servicios.html">Servicios</a><a href="./nosotros.html">Nosotros</a><a href="./contacto.html">Contacto</a>
+            <a href="./carrito.html">Carrito</a>
+            <a href="./cuenta.html">Mi cuenta</a>
+        </nav>
+        <div class="footer-contacto">
+            <h2>Contacto</h2>
+            <p>Congreso de Abril, Montevideo, Uruguay</p>
+            <a href="https://wa.me/59898268560" target="_blank" rel="noopener">WhatsApp 098 268 560</a>
+            <a href="./contacto.html">Escribinos por correo</a>
+        </div>
+    </div>
+    <p class="footer-legal">ZAPI · Vivero agroecológico · Precios sujetos a disponibilidad.</p>
+</footer>
+<dialog class="modal-producto" id="modalProducto" aria-labelledby="modalTitulo">
+    <div class="modal-caja">
+        <button class="icono-boton modal-cerrar" type="button" data-cerrar-modal aria-label="Cerrar detalle del producto"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+        <div class="modal-galeria">
+            <div class="modal-foto">
+                <img id="carruselImg" src="" alt="">
+                <button class="carrusel-flecha carrusel-prev" type="button" aria-label="Foto anterior"><span class="material-symbols-outlined" aria-hidden="true">chevron_left</span></button>
+                <button class="carrusel-flecha carrusel-next" type="button" aria-label="Foto siguiente"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></button>
+                <span class="carrusel-contador" id="carruselContador" aria-live="polite"></span>
+            </div>
+            <div class="carrusel-miniaturas" id="carruselMiniaturas" aria-label="Miniaturas del producto"></div>
+        </div>
+        <div class="modal-detalle">
+            <span class="etiqueta" id="modalCategoria"></span>
+            <h2 id="modalTitulo"></h2>
+            <p class="modal-descripcion" id="modalDescripcion"></p>
+            <ul class="lista-ventajas" id="modalInfo"></ul>
+            <p class="modal-precio" id="modalPrecio"></p>
+            <p class="stock" id="modalStock"></p>
+            <button class="boton boton-primario" type="button" id="modalAgregar" data-id=""><span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito</button>
+            <a class="enlace-flecha" id="modalFicha" hidden>Ver la ficha completa <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+        </div>
+    </div>
+</dialog>
+<dialog class="dialogo" id="dialogoTestimonio" aria-labelledby="testimonioTitulo">
+    <form class="dialogo-caja" id="testimonioForm" novalidate>
+        <button class="icono-boton dialogo-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar formulario de opinión"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+        <span class="etiqueta">Tu experiencia</span>
+        <h2 id="testimonioTitulo">Contanos cómo fue tu compra</h2>
+        <p>Leemos todas las opiniones. Publicamos solo las que están verificadas y autorizadas.</p>
+
+        <label class="campo-label" for="testimonioNombre">Nombre <span aria-hidden="true">*</span></label>
+        <input class="campo-input" id="testimonioNombre" name="autor" type="text" autocomplete="name" maxlength="120" aria-describedby="errorTestimonioNombre">
+        <span class="campo-error" id="errorTestimonioNombre"></span>
+
+        <label class="campo-label" for="testimonioLugar">Lugar (opcional)</label>
+        <input class="campo-input" id="testimonioLugar" name="lugar" type="text" maxlength="120" aria-describedby="errorTestimonioLugar">
+        <span class="campo-error" id="errorTestimonioLugar"></span>
+
+        <label class="campo-label" for="testimonioEstrellas">Puntaje</label>
+        <select class="campo-input" id="testimonioEstrellas" name="estrellas">
+            <option value="5">5 estrellas</option>
+            <option value="4">4 estrellas</option>
+            <option value="3">3 estrellas</option>
+            <option value="2">2 estrellas</option>
+            <option value="1">1 estrella</option>
+        </select>
+
+        <label class="campo-label" for="testimonioTexto">Tu opinión <span aria-hidden="true">*</span></label>
+        <textarea class="campo-input" id="testimonioTexto" name="texto" rows="5" maxlength="600" aria-describedby="errorTestimonioTexto"></textarea>
+        <span class="campo-error" id="errorTestimonioTexto"></span>
+
+        <div class="visually-hidden" aria-hidden="true">
+            <label for="testimonioSitio">Dejá este campo vacío</label>
+            <input id="testimonioSitio" name="sitio_web" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <p class="formulario-estado" id="testimonioEstado" role="status" aria-live="polite" hidden></p>
+        <button class="boton boton-primario boton-bloque" id="testimonioEnviar" type="submit"><span id="testimonioEnviarTexto">Enviar opinión</span></button>
+    </form>
+</dialog>
+<button class="asistente-boton" id="asistenteBoton" type="button" aria-expanded="false" aria-controls="asistentePanel">
+    <img src="./public/img/personaje/07-guino.svg" alt="">
+    <span class="visually-hidden">Abrir asistente ZAPI</span>
+</button>
+<section class="asistente-panel" id="asistentePanel" aria-labelledby="asistenteTitulo" hidden>
+    <header class="asistente-cabecera">
+        <img src="./public/img/personaje/01-feliz.svg" alt="">
+        <div><strong id="asistenteTitulo">Asistente ZAPI</strong><small>Respuestas rápidas del vivero</small></div>
+        <button class="icono-boton" id="asistenteCerrar" type="button" aria-label="Cerrar asistente"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </header>
+    <div class="asistente-mensajes" id="asistenteMensajes" aria-live="polite"></div>
+    <form class="asistente-form" id="asistenteForm">
+        <label class="visually-hidden" for="asistenteEntrada">Escribí tu consulta</label>
+        <input id="asistenteEntrada" name="consulta" type="text" autocomplete="off" placeholder="¿En qué te podemos ayudar?">
+        <button type="submit" aria-label="Enviar consulta"><span class="material-symbols-outlined" aria-hidden="true">send</span></button>
+    </form>
+</section>
+<div class="aviso-flotante" id="avisoFlotante" role="status" aria-live="polite" hidden>
+    <span class="material-symbols-outlined aviso-icono" aria-hidden="true">eco</span>
+    <div class="aviso-texto"><strong id="avisoFlotanteTitulo"></strong><span id="avisoFlotanteMensaje"></span></div>
+    <button class="icono-boton" id="avisoFlotanteCerrar" type="button" aria-label="Cerrar aviso"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+</div>
+    <script src="./public/js/negocio.js" defer></script>
+    <script src="./public/js/utilidades.js" defer></script>
+    <script src="./public/js/api.js" defer></script>
+    <script src="./public/js/configuracion.js" defer></script>
+    <script src="./public/js/sesion.js" defer></script>
+    <script src="./public/js/catalogo-datos.js" defer></script>
+    <script src="./public/js/carrito-estado.js" defer></script>
+    <script src="./public/js/modal.js" defer></script>
+    <script src="./public/js/contacto.js" defer></script>
+    <script src="./public/js/menu.js" defer></script>
+    <script src="./public/js/buscador.js" defer></script>
+    <script src="./public/js/asistente.js" defer></script>
+    <script src="./public/js/contenido-publico.js" defer></script>
+</body>
+</html>

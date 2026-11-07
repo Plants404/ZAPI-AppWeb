@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Auditoría</title>
+    <meta name="description" content="Registro de acciones del panel de administración de ZAPI.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/svg+xml" href="../public/img/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+    <link rel="stylesheet" href="../public/css/tokens.css">
+    <link rel="stylesheet" href="../public/css/base.css">
+    <link rel="stylesheet" href="../public/css/admin.css">
+</head>
+<body class="admin" data-raiz="..">
+<a class="salto-contenido" href="#contenidoAdmin">Saltar al contenido</a>
+<div class="admin-shell">
+    <aside class="admin-sidebar" id="adminSidebar" aria-label="Navegación del panel">
+        <a class="admin-marca" href="../index.html">
+            <img src="../public/img/logo.svg" alt="" width="38" height="54">
+            <span><strong>ZAPI</strong><small>Panel</small></span>
+        </a>
+        <nav class="admin-nav">
+            <a class="admin-enlace" href="./index.html"><span class="material-symbols-outlined" aria-hidden="true">dashboard</span><span>Dashboard</span></a>
+            <a class="admin-enlace" href="./pedidos.html"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span>Pedidos online</span></a>
+            <a class="admin-enlace" href="./ventas.html"><span class="material-symbols-outlined" aria-hidden="true">point_of_sale</span><span>Ventas presenciales</span></a>
+            <a class="admin-enlace" href="./productos.html"><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span><span>Productos y stock</span></a>
+            <a class="admin-enlace" href="./testimonios.html"><span class="material-symbols-outlined" aria-hidden="true">rate_review</span><span>Testimonios</span></a>
+            <a class="admin-enlace" href="./clientes.html"><span class="material-symbols-outlined" aria-hidden="true">group</span><span>Clientes</span></a>
+            <a class="admin-enlace" href="./contenido.html"><span class="material-symbols-outlined" aria-hidden="true">edit_document</span><span>Contenido</span></a>
+            <a class="admin-enlace activo" href="./auditoria.html" aria-current="page"><span class="material-symbols-outlined" aria-hidden="true">history</span><span>Auditoría</span></a>
+        </nav>
+        <a class="admin-volver" href="../index.html"><span class="material-symbols-outlined" aria-hidden="true">storefront</span><span>Ver el sitio</span></a>
+    </aside>
+
+    <div class="admin-principal">
+        <header class="admin-topbar">
+            <button class="admin-menu" id="adminMenuBoton" type="button" aria-expanded="false" aria-controls="adminSidebar" aria-label="Abrir menú del panel"><span class="material-symbols-outlined" aria-hidden="true">menu</span></button>
+            <div>
+                <span class="admin-topbar-etiqueta">Panel de administración</span>
+                <h1>Auditoría</h1>
+            </div>
+            <div class="admin-sesion">
+                <span class="admin-usuario" data-admin-usuario>—</span>
+                <button class="boton-texto" type="button" data-admin-salir><span class="material-symbols-outlined" aria-hidden="true">logout</span> Salir</button>
+            </div>
+        </header>
+
+        <main class="admin-contenido" id="contenidoAdmin" tabindex="-1">
+
+<div class="admin-seccion-cabecera">
+    <div>
+        <span class="admin-etiqueta">Trazabilidad</span>
+        <p>Quién hizo qué y cuándo sobre pedidos, ventas, productos, clientes y contenido.</p>
+    </div>
+</div>
+
+<form class="admin-filtros" id="auditoriaFiltros">
+    <label class="visually-hidden" for="auditoriaBuscar">Buscar</label>
+    <input class="campo-input" id="auditoriaBuscar" name="q" type="search" placeholder="Actor, acción o identificador">
+    <select class="campo-input" id="auditoriaEntidad" name="entidad" aria-label="Entidad"><option value="">Todas las entidades</option></select>
+    <label class="visually-hidden" for="auditoriaAccion">Acción</label>
+    <input class="campo-input" id="auditoriaAccion" name="accion" type="text" placeholder="Acción" maxlength="60">
+    <input class="campo-input" name="desde" type="date" aria-label="Desde">
+    <input class="campo-input" name="hasta" type="date" aria-label="Hasta">
+    <button class="boton boton-primario" type="submit">Filtrar</button>
+    <button class="boton boton-secundario" type="reset">Limpiar</button>
+</form>
+
+<p class="formulario-estado" id="auditoriaEstado" role="status" aria-live="polite" hidden></p>
+
+<div class="admin-card">
+    <div class="admin-tabla-scroll">
+        <table class="admin-tabla">
+            <thead><tr><th>Fecha</th><th>Actor</th><th>Acción</th><th>Entidad</th><th>Detalle</th></tr></thead>
+            <tbody id="auditoriaTabla"></tbody>
+        </table>
+    </div>
+    <nav class="admin-paginacion" id="auditoriaPaginacion" aria-label="Paginación de auditoría"></nav>
+</div>
+        </main>
+    </div>
+</div>
+    <script src="../public/js/negocio.js" defer></script>
+    <script src="../public/js/utilidades.js" defer></script>
+    <script src="../public/js/api.js" defer></script>
+    <script src="../public/js/admin-comun.js" defer></script>
+    <script src="../public/js/admin-auditoria.js" defer></script>
+</body>
+</html>
