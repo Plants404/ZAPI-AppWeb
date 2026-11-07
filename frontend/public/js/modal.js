@@ -94,6 +94,8 @@ function abrirModalProducto(id, disparador) {
 
     if (!modalProducto.open) {
         modalProducto.showModal();
+        modalProducto.classList.add("abierto");
+        document.body.classList.add("modal-abierto");
         bloquearScroll(true);
     }
 
@@ -123,12 +125,14 @@ function avisarAgregado(boton, producto) {
     const contenidoOriginal = boton.innerHTML;
 
     boton.classList.add("agregado");
+    boton.classList.add("added");
     boton.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">check</span> ¡Agregado!';
 
     window.clearTimeout(boton.dataset.reloj);
 
     const reloj = window.setTimeout(() => {
         boton.classList.remove("agregado");
+        boton.classList.remove("added");
         boton.innerHTML = contenidoOriginal;
         delete boton.dataset.reloj;
     }, 1400);
@@ -149,6 +153,8 @@ if (modalProducto) {
     });
 
     modalProducto.addEventListener("close", () => {
+        modalProducto.classList.remove("abierto", "cerrando");
+        document.body.classList.remove("modal-abierto");
         bloquearScroll(false);
         productoDelModal = null;
         galeriaDelModal = [];

@@ -40,10 +40,12 @@ function renderFiltros() {
     );
 
     contenedor.innerHTML = opciones.map(({ valor, texto }) => `
-        <button class="catalogo-filtro${valor === categoriaActual ? ' activo' : ''}" type="button"
+        <button class="catalog-filter catalogo-filtro${valor === categoriaActual ? ' activo' : ''}" type="button"
             data-categoria="${escaparHTML(valor)}" aria-pressed="${valor === categoriaActual}">
             ${escaparHTML(texto)}
         </button>`).join('');
+    contenedor.insertAdjacentHTML('beforeend', '<span class="catalog-filter-indicator" id="catalogFilterIndicator" aria-hidden="true"></span>');
+    actualizarIndicador();
 }
 
 function actualizarFiltros() {
@@ -53,6 +55,21 @@ function actualizarFiltros() {
         boton.classList.toggle('activo', activo);
         boton.setAttribute('aria-pressed', String(activo));
     });
+    actualizarIndicador();
+}
+
+function actualizarIndicador() {
+    const contenedor = document.getElementById('catalogFilters');
+    const activo = contenedor && contenedor.querySelector('.catalog-filter.activo');
+    const indicador = document.getElementById('catalogFilterIndicator');
+
+    if (!contenedor || !activo || !indicador) return;
+
+    indicador.style.width = activo.offsetWidth + 'px';
+    indicador.style.height = activo.offsetHeight + 'px';
+    indicador.style.transform = 'translateX(' + activo.offsetLeft + 'px)';
+    indicador.style.opacity = '1';
+    contenedor.classList.add('con-indicador');
 }
 
 function centrarFiltro(boton) {
@@ -124,3 +141,4 @@ document.addEventListener('click', evento => {
 
 renderFiltros();
 renderCatalogo();
+window.addEventListener('resize', actualizarIndicador);
