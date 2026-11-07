@@ -1,13 +1,14 @@
 'use strict';
-/* Semilla del catálogo. El sitio público y el panel leen el catálogo desde
-   la API; este archivo solo se usa para sembrar la base con
-   `npm run seed:catalogo`. Después de sembrar, los productos se editan
-   desde el panel de administración. */
+
+/* Catálogo publicado. Es la única fuente de productos, precios y stock.
+   El stock se mantiene a mano: el sitio nunca lo descuenta al vender, solo
+   lo usa para limitar cuántas unidades se pueden agregar al carrito. */
 
 const PRODUCTOS = [
     {
         id: 1,
         nombre: "Albahaca",
+        slug: "albahaca",
         categoria: "Aromáticas",
         imagen: "public/img/albahaca.opt.jpg",
         imagenes: [
@@ -15,8 +16,8 @@ const PRODUCTOS = [
         ],
         descripcion: "Fresca y perfumada, ideal para huertas en macetas.",
         precioBase: 150,
-        costo: 60,
         stock: 12,
+        destacado: true,
         infoDeVenta: [
             "Mata de 20 cm lista para plantar",
             "Rinde más de 8 semanas de cosecha continua",
@@ -26,6 +27,7 @@ const PRODUCTOS = [
     {
         id: 2,
         nombre: "Ruda",
+        slug: "ruda",
         categoria: "Plantas",
         imagen: "public/img/ruda.opt.jpg",
         imagenes: [
@@ -33,8 +35,8 @@ const PRODUCTOS = [
         ],
         descripcion: "Planta de ruda para cultivo. Consultá sus cuidados y usos antes de consumirla.",
         precioBase: 120,
-        costo: 45,
         stock: 8,
+        destacado: false,
         infoDeVenta: [
             "Resiembra: hasta 4 cortes por planta",
             "Cultivo 100% agroecológico",
@@ -44,6 +46,7 @@ const PRODUCTOS = [
     {
         id: 3,
         nombre: "Suculenta",
+        slug: "suculenta",
         categoria: "Plantas de interior",
         imagen: "public/img/suculenta1.opt.jpg",
         imagenes: [
@@ -59,8 +62,8 @@ const PRODUCTOS = [
         ],
         descripcion: "Resistente, ideal para interiores luminosos.",
         precioBase: 180,
-        costo: 90,
         stock: 15,
+        destacado: true,
         infoDeVenta: [
             "Viene en maceta cerámica",
             "Riego: 1 vez cada 15 días",
@@ -70,6 +73,7 @@ const PRODUCTOS = [
     {
         id: 4,
         nombre: "Cactus",
+        slug: "cactus",
         categoria: "Plantas de interior",
         imagen: "public/img/cactus1.opt.jpg",
         imagenes: [
@@ -81,8 +85,8 @@ const PRODUCTOS = [
         ],
         descripcion: "Decorativo y de fácil mantenimiento.",
         precioBase: 220,
-        costo: 110,
         stock: 6,
+        destacado: true,
         infoDeVenta: [
             "Viene en maceta cerámica",
             "Soporta largos períodos sin riego",
@@ -92,6 +96,7 @@ const PRODUCTOS = [
     {
         id: 5,
         nombre: "Suculentas mix",
+        slug: "suculentas-mix",
         categoria: "Combo",
         imagen: "public/img/almacigosuculentas.opt.jpg",
         imagenes: [
@@ -100,8 +105,8 @@ const PRODUCTOS = [
         ],
         descripcion: "Una selección de suculentas para tu hogar.",
         precioBase: 90,
-        costo: 40,
         stock: 10,
+        destacado: false,
         infoDeVenta: [
             "Pack de 6 variedades surtidas",
             "30% más económico que por unidad",
@@ -111,6 +116,7 @@ const PRODUCTOS = [
     {
         id: 6,
         nombre: "Cretona",
+        slug: "cretona",
         categoria: "Plantas de interior",
         imagen: "public/img/cretona.opt.jpg",
         imagenes: [
@@ -118,8 +124,8 @@ const PRODUCTOS = [
         ],
         descripcion: "Hojas coloridas para espacios con luz indirecta.",
         precioBase: 320,
-        costo: 160,
         stock: 4,
+        destacado: false,
         infoDeVenta: [
             "Viene en maceta decorativa",
             "Hojas rojas, crema y verde",
@@ -129,6 +135,7 @@ const PRODUCTOS = [
     {
         id: 7,
         nombre: "Kit de huerta sustentable",
+        slug: "kit-de-huerta-sustentable",
         categoria: "Kits",
         imagen: "public/img/kit_de_huerta_zapi.opt.jpg",
         imagenes: [
@@ -140,8 +147,8 @@ const PRODUCTOS = [
         ],
         descripcion: "Semillas, sustrato y guía para tu primera huerta.",
         precioBase: 650,
-        costo: 320,
         stock: 5,
+        destacado: true,
         infoDeVenta: [
             "Semillas, sustrato y macetas para empezar",
             "Guía de cultivo paso a paso",
@@ -150,4 +157,6 @@ const PRODUCTOS = [
     }
 ];
 
-module.exports = { PRODUCTOS };
+const CATEGORIAS = [...new Set(PRODUCTOS.map(producto => producto.categoria))];
+
+module.exports = { PRODUCTOS, CATEGORIAS };

@@ -1,27 +1,26 @@
 'use strict';
 
-/* Estado único del carrito. La página no guarda copias: siempre lee con
-   obtenerCarrito() y se entera de los cambios por suscribirAlCarrito().
-   Las líneas guardadas sobreviven hasta que la API entrega el catálogo;
-   ahí se revalidan contra el stock y los precios vigentes. */
+/* Estado único del carrito. La página lee con obtenerCarrito() y las
+   acciones de agregar, cambiar cantidad y quitar persisten en
+   localStorage. El stock se toma siempre del catálogo publicado. */
 
-const CLAVE_CARRITO = 'zapiCarrito';
-
-const suscriptoresDelCarrito = [];
+const CLAVE_CARRITO = "zapiCarrito";
 
 let carritoEnMemoria = null;
-let carritoRevalidado = false;
+const suscriptores = [];
 
-function envioGratisActual() {
-    if (typeof CONFIG !== 'undefined' && Number.isFinite(Number(CONFIG.envioGratis))) {
-        return Number(CONFIG.envioGratis);
-    }
+function suscribirAlCarrito(escucha) {
+    if (typeof escucha === "function") suscriptores.push(escucha);
+}
 
-    return NEGOCIO.envioGratis;
+function notificarCarrito() {
+    suscriptores.forEach(escucha => {
+        try { escuchar(); } catch { /* sin fallar la pagina por un escucha */ }
+    });
 }
 
 function lineaGuardadaValida(linea) {
-    if (!linea || typeof linea !== 'object') return null;
+    if (!linea || typeof linea !== "object") return null;
 
     const id = Number(linea.id);
     const cantidad = Math.max(1, Math.floor(Number(linea.cantidad) || 1));
@@ -30,24 +29,22 @@ function lineaGuardadaValida(linea) {
 
     return {
         id,
-        nombre: String(linea.nombre || 'Producto'),
-        categoria: String(linea.categoria || ''),
-        imagen: String(linea.imagen || ''),
+        nombre: String(linea.nombre || "Producto"),
+        categoria: String(linea.categoria || ""),
+        imagen: String(linea.imagen || ""),
         precio: Math.max(0, Number(linea.precio) || 0),
         cantidad
     };
 }
 
-function normalizarLinea(linea, conservarSinCatalogo) {
+function normalizarLinea(linea) {
     const guardada = lineaGuardadaValida(linea);
 
     if (!guardada) return null;
 
     const producto = obtenerProducto(guardada.id);
 
-    if (!producto) {
-        return conservarSinCatalogo && !carritoRevalidado ? guardada : null;
-    }
+    if (!producto) return null;
 
     const maximo = unidadesDe(producto.id);
 
@@ -66,6 +63,7 @@ function normalizarLinea(linea, conservarSinCatalogo) {
 function leerCarritoGuardado() {
     try {
         const crudo = JSON.parse(localStorage.getItem(CLAVE_CARRITO));
+
         return Array.isArray(crudo) ? crudo : [];
     } catch {
         return [];
@@ -81,55 +79,54 @@ function persistirCarrito(lineas) {
 }
 
 function guardarCarrito(lineas) {
-    const normalizadas = lineas
-        .map(linea => normalizarLinea(linea, !carritoRevalidado))
-        .filter(Boolean);
+    const normalizadas = lineas.map(normalizarLinea).filter(Boolean);
 
     carritoEnMemoria = normalizadas;
     persistirCarrito(normalizadas);
+    notificarCarrito();
 }
 
 function obtenerCarrito() {
     if (!carritoEnMemoria) {
-        carritoEnMemoria = leerCarritoGuardado()
-            .map(linea => normalizarLinea(linea, !carritoRevalidado))
-            .filter(Boolean);
+        carritoEnMemoria = leerCarritoGuardado().map(normalizarLinea).filter(Boolean);
     }
 
     return carritoEnMemoria.map(linea => ({ ...linea }));
 }
 
-function revalidarCarrito() {
-    carritoRevalidado = true;
-
-    const lineas = (carritoEnMemoria || leerCarritoGuardado())
-        .map(linea => normalizarLinea(linea, false))
-        .filter(Boolean);
-
-    carritoEnMemoria = lineas;
-    persistirCarrito(lineas);
-    actualizarContador(false);
-    avisarCambioDelCarrito();
-}
-
-function suscribirAlCarrito(escucha) {
-    if (typeof escucha === 'function') suscriptoresDelCarrito.push(escucha);
-}
-
-function avisarCambioDelCarrito() {
-    suscriptoresDelCarrito.forEach(escucha => escucha());
-}
-
 function calcularTotales(lineas = obtenerCarrito()) {
-    const envioGratis = envioGratisActual();
     const subtotal = lineas.reduce((suma, linea) => suma + linea.precio * linea.cantidad, 0);
-    const envio = lineas.length === 0 || subtotal >= envioGratis ? 0 : null;
+    const envio = lineas.length === 0 || subtotal >= NEGOCIO.envioGratis ? 0 : null;
 
     return {
         subtotal,
         envio,
-        total: envio === null ? null : subtotal + envio
+        total: envio === null ? subtotal : subtotal + envio
     };
+}
+
+function actualizarContador(animar) {
+    const total = obtenerCarrito().reduce((suma, linea) => suma + linea.cantidad, 0);
+
+    document.querySelectorAll("[data-cart-count]").forEach(insignia => {
+        insignia.textContent = String(total);
+        insignia.classList.toggle("con-productos", total > 0);
+
+        if (!animar) return;
+
+        insignia.classList.remove("pop");
+        void insignia.offsetWidth;
+        insignia.classList.add("pop");
+    });
+
+    const enlace = document.querySelector(".header-carrito");
+
+    if (enlace) {
+        enlace.setAttribute(
+            "aria-label",
+            total === 1 ? "Ver carrito, 1 producto" : "Ver carrito, " + total + " productos"
+        );
+    }
 }
 
 function agregarProductoAlCarrito(id) {
@@ -159,7 +156,6 @@ function agregarProductoAlCarrito(id) {
 
     guardarCarrito(lineas);
     actualizarContador(true);
-    avisarCambioDelCarrito();
     return true;
 }
 
@@ -177,52 +173,17 @@ function cambiarCantidadCarrito(id, delta) {
     linea.cantidad = nueva;
     guardarCarrito(lineas);
     actualizarContador(false);
-    avisarCambioDelCarrito();
     return true;
 }
 
 function quitarDelCarrito(id) {
-    const lineas = obtenerCarrito().filter(linea => linea.id !== Number(id));
-
-    guardarCarrito(lineas);
+    guardarCarrito(obtenerCarrito().filter(linea => linea.id !== Number(id)));
     actualizarContador(false);
-    avisarCambioDelCarrito();
 }
 
 function vaciarCarrito() {
     guardarCarrito([]);
     actualizarContador(false);
-    avisarCambioDelCarrito();
 }
 
-function actualizarContador(animar) {
-    const total = obtenerCarrito().reduce((suma, linea) => suma + linea.cantidad, 0);
-
-    document.querySelectorAll('[data-cart-count]').forEach(insignia => {
-        insignia.textContent = String(total);
-        insignia.classList.toggle('con-productos', total > 0);
-
-        if (!animar) return;
-
-        insignia.classList.remove('pop');
-        void insignia.offsetWidth;
-        insignia.classList.add('pop');
-    });
-
-    const enlace = document.querySelector('.header-carrito');
-
-    if (enlace) {
-        enlace.setAttribute(
-            'aria-label',
-            total === 1 ? 'Ver carrito, 1 producto' : 'Ver carrito, ' + total + ' productos'
-        );
-    }
-}
-
-document.addEventListener('catalogo-listo', evento => {
-    if (evento.detail && evento.detail.error) return;
-
-    revalidarCarrito();
-});
-
-document.addEventListener('DOMContentLoaded', () => actualizarContador(false));
+document.addEventListener("DOMContentLoaded", () => actualizarContador(false));
