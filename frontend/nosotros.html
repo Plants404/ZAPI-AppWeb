@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="./public/css/estructura.css">
     <link rel="stylesheet" href="./public/css/nosotros.css">
     <link rel="stylesheet" href="./public/css/asistente.css">
+    <link rel="stylesheet" href="./public/css/zapi-bot.css">
+    <link rel="stylesheet" href="./public/css/restauracion.css">
 </head>
 <body class="pagina-nosotros " data-raiz=".">
 <a class="salto-contenido" href="#contenido">Saltar al contenido</a>
@@ -35,13 +37,17 @@
             <span class="menu-linea" aria-hidden="true"></span>
         </button>
 
-        <a class="marca" href="./index.html" aria-label="ZAPI, ir al inicio">
-            <img src="./public/img/logo.svg" alt="" width="44" height="62">
-            <span class="marca-texto"><strong>ZAPI</strong><small>Vivero agroecologico</small></span>
+        <a class="logo" href="./index.html" aria-label="ZAPI, ir al inicio">
+            <div class="logo-items-text">
+                <span class="logo-nombre">ZAPI</span>
+            </div>
+            <div class="logo-items-img">
+                <img src="./public/img/logo.svg" alt="">
+            </div>
         </a>
 
         <nav class="site-nav" id="navPrincipal" aria-label="Navegacion principal">
-            <ul><li><a class="nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-enlace" href="./catalogo.html">Catalogo</a></li><li><a class="nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-enlace activo" href="./nosotros.html" aria-current="page">Nosotros</a></li><li><a class="nav-enlace" href="./contacto.html">Contacto</a></li></ul>
+            <ul><li><a class="nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-enlace" href="./catalogo.html">Catalogo</a></li><li><a class="nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-enlace activo" href="./nosotros.html" aria-current="page">Nosotros</a></li><li><a class="nav-enlace" href="./contacto.html">Contacto</a></li><li><a class="nav-enlace" href="./login.html">Ingresar</a></li></ul>
         </nav>
 
         <form class="header-search" id="headerSearch" role="search" action="./catalogo.html" autocomplete="off">
@@ -208,8 +214,10 @@
     <script src="./public/js/carrito-estado.js" defer></script>
     <script src="./public/js/pedidos-estado.js" defer></script>
     <script src="./public/js/modal.js" defer></script>
+    <script src="./public/js/compat-restauracion.js" defer></script>
     <script src="./public/js/menu.js" defer></script>
     <script src="./public/js/buscador.js" defer></script>
     <script src="./public/js/asistente.js" defer></script>
+    <script src="./public/js/zapi-bot.js" defer></script>
 </body>
 </html>

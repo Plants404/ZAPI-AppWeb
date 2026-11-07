@@ -39,13 +39,17 @@ function cabecera(seccion, raiz) {
             <span class="menu-linea" aria-hidden="true"></span>
         </button>
 
-        <a class="marca" href="${raiz}/index.html" aria-label="ZAPI, ir al inicio">
-            <img src="${raiz}/public/img/logo.svg" alt="" width="44" height="62">
-            <span class="marca-texto"><strong>ZAPI</strong><small>Vivero agroecologico</small></span>
+        <a class="logo" href="${raiz}/index.html" aria-label="ZAPI, ir al inicio">
+            <div class="logo-items-text">
+                <span class="logo-nombre">ZAPI</span>
+            </div>
+            <div class="logo-items-img">
+                <img src="${raiz}/public/img/logo.svg" alt="">
+            </div>
         </a>
 
         <nav class="site-nav" id="navPrincipal" aria-label="Navegacion principal">
-            <ul>${ENLACES.map(enlace => enlaceNavegacion(enlace, seccion, raiz)).join('')}</ul>
+            <ul>${ENLACES.map(enlace => enlaceNavegacion(enlace, seccion, raiz)).join('')}<li><a class="nav-enlace" href="${raiz}/login.html">Ingresar</a></li></ul>
         </nav>
 
         <form class="header-search" id="headerSearch" role="search" action="${raiz}/catalogo.html" autocomplete="off">
@@ -193,10 +197,11 @@ const SCRIPTS_BASE = [
     'catalogo-datos.js',
     'carrito-estado.js',
     'pedidos-estado.js',
-    'modal.js'
+    'modal.js',
+    'compat-restauracion.js'
 ];
 
-const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'asistente.js'];
+const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'asistente.js', 'zapi-bot.js'];
 
 function pagina(opciones) {
     const {
@@ -248,6 +253,8 @@ function pagina(opciones) {
     <link rel="stylesheet" href="${raiz}/public/css/estructura.css">
     <link rel="stylesheet" href="${cssPagina}">
     <link rel="stylesheet" href="${raiz}/public/css/asistente.css">
+    <link rel="stylesheet" href="${raiz}/public/css/zapi-bot.css">
+    <link rel="stylesheet" href="${raiz}/public/css/restauracion.css">
 ${jsonLd ? `    ${jsonLd}\n` : ''}</head>
 <body class="pagina-${seccion} ${claseBody}" data-raiz="${raiz}"${bodyAttrs ? ' ' + bodyAttrs : ''}>
 ${cabecera(seccion, raiz)}
