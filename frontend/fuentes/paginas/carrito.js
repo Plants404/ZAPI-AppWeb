@@ -3,9 +3,11 @@
 module.exports = {
     archivo: 'carrito.html',
     seccion: 'carrito',
-    titulo: 'Carrito | ZAPI Vivero Agroecológico',
+    titulo: 'Carrito | ZAPI Vivero Agroecologico',
     descripcion: 'Revisá tu pedido de ZAPI, completá tus datos y confirmá la entrega.',
     robots: 'noindex, follow',
+    productos: true,
+    opiniones: true,
     contenido: `
 <section class="carrito-pagina">
     <div class="carrito-contenido">
@@ -22,7 +24,7 @@ module.exports = {
 
         <div class="carrito-items" id="cartItems"></div>
 
-        <div class="carrito-vacio" id="emptyCart" hidden>
+        <div class="estado-vacio" id="emptyCart" hidden>
             <span class="material-symbols-outlined" aria-hidden="true">shopping_basket</span>
             <h2>Tu carrito está vacío</h2>
             <p>Todavía no agregaste ningún producto. Explorá el catálogo y encontrá algo para tu jardín o huerta.</p>
@@ -57,7 +59,7 @@ module.exports = {
             <div class="envio-barra" id="shippingProgress" role="progressbar" aria-label="Progreso hacia el envío gratis" aria-valuemin="0" aria-valuemax="2500" aria-valuenow="0">
                 <span id="shippingProgressFill"></span>
             </div>
-            <p class="envio-nota">Envío gratis desde <span data-shipping-threshold></span></p>
+            <p class="envio-nota">Envío gratis desde <span data-envio-gratis></span></p>
         </div>
 
         <div class="resumen-lineas">
@@ -80,7 +82,7 @@ module.exports = {
             <span class="campo-error" id="pedErrorTelefono"></span>
 
             <label class="campo-label" for="pedEmail">Correo electrónico (opcional)</label>
-            <input class="campo-input" id="pedEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="160">
+            <input class="campo-input" id="pedEmail" name="email" type="email" autocomplete="email" maxlength="160">
 
             <label class="campo-label" for="pedZona">Zona (opcional)</label>
             <input class="campo-input" id="pedZona" name="zona" type="text" autocomplete="address-level2" maxlength="120">
@@ -95,7 +97,7 @@ module.exports = {
             </button>
         </form>
 
-        <p class="resumen-nota"><span class="material-symbols-outlined" aria-hidden="true">verified_user</span> El pedido queda guardado en tu cuenta y se coordina con ZAPI.</p>
+        <p class="resumen-nota"><span class="material-symbols-outlined" aria-hidden="true">verified_user</span> Tu pedido queda guardado en "Mis pedidos" y se coordina con ZAPI.</p>
         <button class="boton boton-secundario boton-bloque" type="button" data-abrir-testimonio>
             <span class="material-symbols-outlined" aria-hidden="true">rate_review</span>
             Dejar un testimonio

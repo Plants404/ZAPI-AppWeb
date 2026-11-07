@@ -5,14 +5,14 @@ const { NEGOCIO } = require('../../public/js/negocio.js');
 module.exports = {
     archivo: 'nosotros.html',
     seccion: 'nosotros',
-    titulo: 'Nosotros | ZAPI Vivero Agroecológico',
+    titulo: 'Nosotros | ZAPI Vivero Agroecologico',
     descripcion: 'Conocé ZAPI: un vivero agroecológico que ayuda a empezar huertas y jardines con acompañamiento real.',
     contenido: `
 <section class="banner-pagina banner-nosotros">
     <div>
-        <span class="etiqueta" data-contenido="nosotros.etiqueta">Quiénes somos</span>
-        <h1 data-contenido="nosotros.titulo">Empezar tu huerta o jardín puede ser tan simple como abrir una caja.</h1>
-        <p data-contenido="nosotros.descripcion">No solo vendemos plantas: te ayudamos a crear tu primer rincón verde y a sostenerlo en el tiempo.</p>
+        <span class="etiqueta">Quiénes somos</span>
+        <h1>Empezar tu huerta o jardín puede ser tan simple como abrir una caja.</h1>
+        <p>No solo vendemos plantas: te ayudamos a crear tu primer rincón verde y a sostenerlo en el tiempo.</p>
     </div>
     <ul class="banner-ventajas">
         <li><span class="material-symbols-outlined" aria-hidden="true">chat</span> Pedido coordinado por WhatsApp</li>
@@ -24,8 +24,8 @@ module.exports = {
 <section class="seccion nosotros-duelo">
     <article class="panel panel-problema">
         <span class="etiqueta">El problema</span>
-        <h2 data-contenido="nosotros.problemaTitulo">La idea entusiasma. El comienzo confunde.</h2>
-        <p data-contenido="nosotros.problemaTexto">A casi todos nos gusta tener una huerta o un jardín y cuidarlo nosotros. Pero a la hora de empezar aparecen las dudas. Compramos una planta sin saber cómo cuidarla, se nos muere y lo dejamos.</p>
+        <h2>La idea entusiasma. El comienzo confunde.</h2>
+        <p>A casi todos nos gusta tener una huerta o un jardín y cuidarlo nosotros. Pero a la hora de empezar aparecen las dudas. Compramos una planta sin saber cómo cuidarla, se nos muere y lo dejamos.</p>
         <ul class="lista-preguntas">
             <li>¿Qué planto?</li>
             <li>¿Cómo empiezo?</li>
@@ -34,8 +34,8 @@ module.exports = {
     </article>
     <article class="panel panel-solucion">
         <span class="etiqueta">La solución</span>
-        <h2 data-contenido="nosotros.solucionTitulo">Un punto de partida pensado para principiantes.</h2>
-        <p data-contenido="nosotros.solucionTexto">En ZAPI no te sumamos una planta más para dejarte solo. Te damos todo listo, explicado y con acompañamiento.</p>
+        <h2>Un punto de partida pensado para principiantes.</h2>
+        <p>En ZAPI no te sumamos una planta más para dejarte solo. Te damos todo listo, explicado y con acompañamiento.</p>
         <ul class="lista-ventajas">
             <li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Todo listo y explicado, sin decisiones difíciles.</span></li>
             <li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Elegido para tu espacio: balcón, patio o jardín.</span></li>
@@ -49,7 +49,7 @@ module.exports = {
         <span class="etiqueta">Nuestros pilares</span>
         <h2 id="tituloPilares">Tres formas de empezar y de seguir</h2>
     </div>
-    <div class="pilares-grid" data-contenido-lista="nosotros.pilares">
+    <div class="pilares-grid">
         <article><span class="material-symbols-outlined" aria-hidden="true">inventory_2</span><h3>Kits para empezar</h3><p>Semillas orgánicas, sustrato, etiquetas y manual de cultivo. Abrís la caja y plantás.</p></article>
         <article><span class="material-symbols-outlined" aria-hidden="true">local_florist</span><h3>Plantas para tu espacio</h3><p>Producidas con enfoque agroecológico para tu huerta o jardín.</p></article>
         <article><span class="material-symbols-outlined" aria-hidden="true">water_drop</span><h3>Insumos para seguir</h3><p>Recargas y todo lo necesario para que tu espacio siga creciendo.</p></article>
@@ -61,7 +61,7 @@ module.exports = {
         <span class="etiqueta">Nuestras razones</span>
         <h2 id="tituloRazones">Por qué elegirnos</h2>
     </div>
-    <div class="razones-grid" data-contenido-lista="nosotros.razones">
+    <div class="razones-grid">
         <article><span aria-hidden="true">01</span><h3>Producción propia</h3><p>Producimos con enfoque agroecológico y elegimos el resto con criterio.</p></article>
         <article><span aria-hidden="true">02</span><h3>Diseño de punta a punta</h3><p>Del logo a la maceta: cuidamos cada detalle del producto.</p></article>
         <article><span aria-hidden="true">03</span><h3>Pensado para empezar de cero</h3><p>Sin dudas ni decisiones difíciles: todo llega listo y explicado.</p></article>
@@ -74,7 +74,7 @@ module.exports = {
         <span class="etiqueta">Conocenos</span>
         <h2 id="tituloEquipo">El equipo</h2>
     </div>
-    <div class="equipo-grid" data-contenido-lista="nosotros.equipo">
+    <div class="equipo-grid">
         <article class="persona">
             <span class="persona-avatar" aria-hidden="true">ML</span>
             <div><h3>Marcio Lahouratate</h3><p class="persona-rol">Producción y logística</p><p>Auxiliar técnico agrario y técnico en marketing. Estudia Ingeniería Agronómica y Desarrollo de Software.</p></div>
@@ -88,7 +88,7 @@ module.exports = {
 
 <section class="seccion nosotros-ubicacion" aria-labelledby="tituloUbicacion">
     <div class="ubicacion-info">
-        <span class="etiqueta">Visitanos</span>
+        <span class="etiqueta">Visítanos</span>
         <h2 id="tituloUbicacion">Dónde encontrarnos</h2>
         <p><span class="material-symbols-outlined" aria-hidden="true">location_on</span> ${NEGOCIO.direccion}</p>
         <a class="boton boton-secundario" href="https://www.google.com/maps/search/?api=1&amp;query=Congreso%20de%20Abril%2C%20Montevideo%2C%20Uruguay" target="_blank" rel="noopener noreferrer">

@@ -5,14 +5,14 @@ const { NEGOCIO } = require('../../public/js/negocio.js');
 module.exports = {
     archivo: 'contacto.html',
     seccion: 'contacto',
-    titulo: 'Contacto | ZAPI Vivero Agroecológico',
+    titulo: 'Contacto | ZAPI Vivero Agroecologico',
     descripcion: 'Escribinos por consultas, proyectos de jardín o pedidos especiales. ZAPI responde en Montevideo.',
     contenido: `
 <section class="banner-pagina">
     <div>
-        <span class="etiqueta" data-contenido="contacto.etiqueta">Contacto</span>
-        <h1 data-contenido="contacto.titulo">Empezá hoy a transformar tus espacios.</h1>
-        <p data-contenido="contacto.descripcion">Contanos qué necesitás y te respondemos a la brevedad. También podés coordinar todo directamente por WhatsApp.</p>
+        <span class="etiqueta">Contacto</span>
+        <h1>Empezá hoy a transformar tus espacios.</h1>
+        <p>Contanos qué necesitás y te respondemos a la brevedad. También podés coordinar todo directamente por WhatsApp.</p>
     </div>
     <ul class="banner-ventajas">
         <li><span class="material-symbols-outlined" aria-hidden="true">verified_user</span> Presupuesto claro y personalizado</li>
@@ -28,9 +28,9 @@ module.exports = {
         <p>Respondemos consultas de hogares, empresas e instituciones. Si preferís una respuesta más rápida, escribinos por WhatsApp.</p>
         <ul class="contacto-datos">
             <li><span class="material-symbols-outlined" aria-hidden="true">chat</span><div><strong>WhatsApp</strong><a href="https://wa.me/${NEGOCIO.whatsapp}" target="_blank" rel="noopener">${NEGOCIO.whatsappVisible}</a></div></li>
-            <li><span class="material-symbols-outlined" aria-hidden="true">mail</span><div><strong>Correo</strong><a href="mailto:${NEGOCIO.email}" data-contenido="contacto.email">${NEGOCIO.email}</a></div></li>
-            <li><span class="material-symbols-outlined" aria-hidden="true">location_on</span><div><strong>Ubicación</strong><span data-contenido="contacto.direccion">${NEGOCIO.direccion}</span></div></li>
-            <li><span class="material-symbols-outlined" aria-hidden="true">schedule</span><div><strong>Visitas</strong><span data-contenido="contacto.horario">Visitas coordinadas previamente por WhatsApp.</span></div></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">mail</span><div><strong>Correo</strong><a href="mailto:${NEGOCIO.email}">${NEGOCIO.email}</a></div></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">location_on</span><div><strong>Ubicación</strong><span>${NEGOCIO.direccion}</span></div></li>
+            <li><span class="material-symbols-outlined" aria-hidden="true">schedule</span><div><strong>Visitas</strong><span>Visitas coordinadas previamente por WhatsApp.</span></div></li>
         </ul>
         <a class="boton boton-primario boton-bloque" href="https://wa.me/${NEGOCIO.whatsapp}" target="_blank" rel="noopener">
             <span class="material-symbols-outlined" aria-hidden="true">chat</span> Escribir por WhatsApp

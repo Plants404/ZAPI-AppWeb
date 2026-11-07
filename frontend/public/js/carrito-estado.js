@@ -14,8 +14,8 @@ function suscribirAlCarrito(escucha) {
 }
 
 function notificarCarrito() {
-    suscriptores.forEach(escucha => {
-        try { escuchar(); } catch { /* sin fallar la pagina por un escucha */ }
+    suscriptores.forEach(cb => {
+        try { cb(); } catch { /* sin fallar la pagina por un escucha */ }
     });
 }
 

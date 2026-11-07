@@ -2,45 +2,20 @@
   "name": "zapi-appweb",
   "version": "3.0.0",
   "private": true,
-  "description": "Sitio, API y panel de administración del vivero agroecológico ZAPI.",
+  "description": "Sitio estático del vivero agroecológico ZAPI, sin backend ni autenticación.",
   "scripts": {
-    "start": "node scripts/dev.js",
-    "dev": "node scripts/dev.js",
-    "api": "node backend/server.js",
     "frontend": "node frontend/tools/servir.js",
-    "generar": "node frontend/tools/construir.js && node frontend/tools/generar-sitemap.js",
+    "generar": "node frontend/tools/construir.js && node frontend/tools/generar-productos.js && node frontend/tools/generar-sitemap.js",
     "verificar": "node frontend/tools/verificar.js",
     "lint": "eslint .",
     "check": "npm run lint && npm run verificar",
-    "test": "node --test backend/tests/*.test.js",
-    "test:api": "node --test backend/tests/*.test.js",
-    "test:e2e": "node --test e2e/*.test.js",
-    "vercel-build": "npm run generar",
-    "seed:catalogo": "node backend/scripts/sembrar-catalogo.js",
-    "seed:contenido": "node backend/scripts/sembrar-contenido.js",
-    "admin:crear": "node backend/scripts/crear-admin.js"
+    "vercel-build": "npm run generar"
   },
   "engines": {
     "node": ">=24"
   },
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^18.0.9",
-    "express": "^5.3.0",
-    "express-rate-limit": "^8.7.1",
-    "helmet": "^8.3.0",
-    "jsonwebtoken": "^9.0.3",
-    "mongodb": "^7.8.0",
-    "mongoose": "^9.11.2",
-    "serverless-http": "^4.0.0"
-  },
   "devDependencies": {
     "eslint": "^10.12.0",
-    "globals": "^17.13.0",
-    "mongodb-memory-server": "^11.3.0",
-    "puppeteer-core": "^25.16.0",
-    "supertest": "^7.3.1"
+    "globals": "^17.13.0"
   }
 }

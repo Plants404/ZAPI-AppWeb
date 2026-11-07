@@ -8,12 +8,6 @@ const formularioPedido = document.getElementById('checkoutForm');
 const botonWhatsApp = document.getElementById('whatsappButton');
 const estadoPedido = document.getElementById('pedEstado');
 
-const CAMPOS_PEDIDO = [
-    { id: 'pedNombre', error: 'pedErrorNombre', vacio: 'Escribí tu nombre', corto: 'Escribí tu nombre completo', minimo: 2 },
-    { id: 'pedTelefono', error: 'pedErrorTelefono', vacio: 'Falta un teléfono de contacto', corto: 'Revisá el teléfono de contacto', tipo: 'telefono' },
-    { id: 'pedEmail', error: 'pedErrorEmail', vacio: '', corto: 'Revisá el correo electrónico', tipo: 'correo', opcional: true }
-];
-
 function envioGratisActual() {
     return Number(NEGOCIO.envioGratis) || 0;
 }

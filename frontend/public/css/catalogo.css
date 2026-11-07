@@ -45,20 +45,6 @@
     font-size: var(--fs-sm);
 }
 
-.catalogo-vacio {
-    grid-column: 1 / -1;
-    padding: var(--espacio-lg);
-    border: 1px dashed var(--borde);
-    border-radius: var(--radio);
-    background: var(--white);
-    color: var(--muted);
-    text-align: center;
-}
-
-.catalogo-vacio .boton-texto {
-    margin-top: var(--espacio-sm);
-}
-
 @media (max-width: 600px) {
     .catalogo {
         padding: 0 var(--espacio-sm) var(--espacio-lg);
