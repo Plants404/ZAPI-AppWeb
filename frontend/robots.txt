@@ -1,9 +1,3 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /api/
-Disallow: /carrito.html
-Disallow: /cuenta.html
-Disallow: /login.html
-
 Sitemap: https://zapi.uy/sitemap.xml

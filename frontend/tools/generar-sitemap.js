@@ -1,19 +1,19 @@
 'use strict';
-/* Genera sitemap.xml y robots.txt a partir de las páginas públicas y de la
-   semilla del catálogo. Uso:
+/* Genera sitemap.xml y robots.txt a partir de las paginas estaticas y las
+   fichas de producto. Uso:
        node frontend/tools/generar-sitemap.js
        node frontend/tools/generar-sitemap.js --revisar
 
-   Las fichas de producto son dinámicas (`producto.html?slug=...`), así que
-   el sitemap usa la semilla para enumerar las URLs públicas. Las páginas
-   con <meta name="robots" content="noindex"> quedan fuera del sitemap. */
+   Las paginas con robots noindex (carrito, pedidos, 404) quedan fuera del
+   sitemap. El sitemap no incluye lastmod para evitar fallos de
+   reproducibilidad por mtime. */
 
 const fs = require('fs');
 const path = require('path');
 
 const raiz = path.join(__dirname, '..');
 const revisar = process.argv.includes('--revisar');
-const { NEGOCIO, slug } = require(path.join(raiz, 'public', 'js', 'negocio.js'));
+const { NEGOCIO } = require(path.join(raiz, 'public', 'js', 'negocio.js'));
 const { PRODUCTOS } = require(path.join(raiz, 'datos', 'catalogo.js'));
 
 const PAGINAS = [
@@ -30,89 +30,62 @@ function paraXml(texto) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
+        .replace(/'/g, '&#39;');
 }
 
-function ultimaModificacion(archivo) {
-    return fs.statSync(archivo).mtime.toISOString().slice(0, 10);
-}
+function generarSitemap() {
+    const urls = [];
 
-function entrada(ruta, prioridad, frecuencia, archivoBase) {
-    const archivo = path.join(raiz, archivoBase || ruta);
-
-    if (!fs.existsSync(archivo)) {
-        console.error('Aviso: no existe ' + (archivoBase || ruta) + ', se omite del sitemap.');
-        return null;
+    for (const [archivo, prioridad, frecuencia] of PAGINAS) {
+        urls.push('    <url>\n        <loc>' + paraXml(NEGOCIO.sitio + '/' + archivo) + '</loc>\n' +
+            '        <changefreq>' + paraXml(frecuencia) + '</changefreq>\n' +
+            '        <priority>' + paraXml(prioridad) + '</priority>\n    </url>');
     }
 
-    return {
-        loc: NEGOCIO.sitio + '/' + ruta.replace(/\\/g, '/'),
-        lastmod: ultimaModificacion(archivo),
-        changefreq: frecuencia,
-        priority: prioridad
-    };
+    for (const producto of PRODUCTOS) {
+        urls.push('    <url>\n        <loc>' + paraXml(NEGOCIO.sitio + '/producto-' + producto.slug + '.html') + '</loc>\n' +
+            '        <changefreq>monthly</changefreq>\n' +
+            '        <priority>0.7</priority>\n    </url>');
+    }
+
+    return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+        urls.join('\n') + '\n</urlset>\n';
 }
 
-const entradas = PAGINAS.map(([ruta, prioridad, frecuencia]) => entrada(ruta, prioridad, frecuencia));
-
-for (const producto of PRODUCTOS) {
-    const nombre = producto.slug || slug(producto.nombre);
-    entradas.push(entrada(
-        'producto.html?slug=' + encodeURIComponent(nombre),
-        '0.8',
-        'monthly',
-        'producto.html'
-    ));
+function generarRobots() {
+    return 'User-agent: *\nAllow: /\nSitemap: ' + NEGOCIO.sitio + '/sitemap.xml\n';
 }
 
-const validas = entradas.filter(Boolean);
+let fallos = 0;
 
-const sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-    validas.map(item => [
-        '  <url>',
-        '    <loc>' + paraXml(item.loc) + '</loc>',
-        '    <lastmod>' + item.lastmod + '</lastmod>',
-        '    <changefreq>' + item.changefreq + '</changefreq>',
-        '    <priority>' + item.priority + '</priority>',
-        '  </url>'
-    ].join('\n')).join('\n') +
-    '\n</urlset>\n';
+function comparar(archivo, contenido) {
+    const destino = path.join(raiz, archivo);
+    let actual = null;
 
-const robots = 'User-agent: *\n' +
-    'Allow: /\n' +
-    'Disallow: /admin/\n' +
-    'Disallow: /api/\n' +
-    'Disallow: /carrito.html\n' +
-    'Disallow: /cuenta.html\n' +
-    'Disallow: /login.html\n' +
-    '\n' +
-    'Sitemap: ' + NEGOCIO.sitio + '/sitemap.xml\n';
+    try { actual = fs.readFileSync(destino, 'utf8'); } catch { /* no existe */ }
 
-const destinos = [
-    ['sitemap.xml', sitemap],
-    ['robots.txt', robots]
-];
+    if (revisar) {
+        if (actual !== contenido) {
+            console.log('  FALLA ' + archivo + ' esta desactualizado');
+            fallos += 1;
+        } else {
+            console.log('  ok   ' + archivo);
+        }
+    } else {
+        fs.writeFileSync(destino, contenido, 'utf8');
+        console.log('  ok   ' + archivo + ' generado');
+    }
+}
+
+console.log('Sitemap');
+comparar('sitemap.xml', generarSitemap());
+
+console.log('Robots');
+comparar('robots.txt', generarRobots());
 
 if (revisar) {
-    const desactualizados = destinos.filter(([archivo, contenido]) => {
-        const ruta = path.join(raiz, archivo);
-        return !fs.existsSync(ruta) || fs.readFileSync(ruta, 'utf8') !== contenido;
-    });
-
-    if (desactualizados.length) {
-        console.error('sitemap.xml/robots.txt desactualizados: ejecutá `npm run generar`.');
-        console.error('  ' + desactualizados.map(([archivo]) => archivo).join(', '));
-        process.exit(1);
-    }
-
-    console.log('sitemap.xml y robots.txt al día (' + validas.length + ' URLs públicas).');
-} else {
-    for (const [archivo, contenido] of destinos) {
-        fs.writeFileSync(path.join(raiz, archivo), contenido, 'utf8');
-    }
-
-    console.log('sitemap.xml y robots.txt actualizados.');
-    console.log('  ' + validas.length + ' URLs públicas.');
-    console.log('  carrito.html, cuenta.html, login.html, admin/ y api/ quedan fuera.');
+    console.log('\n' + (fallos === 0 ? 'Todo esta actualizado.' : fallos + ' archivo(s) desactualizado(s).'));
+    process.exit(fallos === 0 ? 0 : 1);
 }
+
+console.log('\nSitemap y robots generados en ' + raiz);

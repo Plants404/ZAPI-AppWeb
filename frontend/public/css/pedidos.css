@@ -1,0 +1,70 @@
+/* Mis pedidos: historial de pedidos guardados en el navegador. */
+
+.pedidos-lista {
+    padding-top: 0;
+}
+
+.pedido {
+    display: grid;
+    gap: var(--espacio-sm);
+    padding: var(--espacio-md);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    box-shadow: var(--sombra-sm);
+}
+
+.pedido-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espacio-sm);
+}
+
+.pedido-fecha {
+    color: var(--muted);
+    font-size: var(--fs-sm);
+}
+
+.pedido-lineas {
+    display: grid;
+    gap: .2rem;
+    margin: 0;
+    padding-left: 1.2rem;
+    color: var(--ink);
+    font-size: var(--fs-sm);
+}
+
+.pedido-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    color: var(--forest);
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+}
+
+.pedido-acciones {
+    display: flex;
+    gap: var(--espacio-sm);
+    margin-top: var(--espacio-sm);
+}
+
+.pedido-acciones .boton-texto {
+    color: var(--error);
+}
+
+.pedido-acciones .boton-texto:hover {
+    color: var(--forest);
+}
+
+@media (max-width: 600px) {
+    .pedido-acciones {
+        flex-direction: column;
+    }
+
+    .pedido-acciones .boton {
+        width: 100%;
+    }
+}

@@ -12,27 +12,10 @@ const IMAGEN_FALLBACK = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent
     '</svg>'
 );
 
+const URL_EMAILJS = "https://api.emailjs.com/api/v1.0/email/send";
+
 let avisoReloj = null;
 let capasConScrollBloqueado = 0;
-
-const ETIQUETAS_ESTADO = Object.freeze({
-    pendiente: "Pendiente",
-    confirmado: "Confirmado",
-    preparando: "Preparando",
-    enviado: "Enviado",
-    entregado: "Entregado",
-    cancelado: "Cancelado",
-    aprobado: "Aprobado",
-    rechazado: "Rechazado"
-});
-
-const ETIQUETAS_METODO_PAGO = Object.freeze({
-    efectivo: "Efectivo",
-    debito: "Débito",
-    credito: "Crédito",
-    transferencia: "Transferencia",
-    online: "Online"
-});
 
 function raizDelSitio() {
     return document.body && document.body.dataset.raiz ? document.body.dataset.raiz : ".";
@@ -52,14 +35,6 @@ function escaparHTML(valor) {
     }[caracter]));
 }
 
-function formatearPrecio(valor, moneda) {
-    return new Intl.NumberFormat("es-UY", {
-        style: "currency",
-        currency: moneda || (typeof CONFIG !== "undefined" && CONFIG.moneda) || "UYU",
-        maximumFractionDigits: 0
-    }).format(Number(valor) || 0);
-}
-
 function formatearFecha(iso) {
     const fecha = new Date(iso);
 
@@ -77,30 +52,6 @@ function formatearFecha(iso) {
     }).format(fecha);
 
     return dia + " · " + hora;
-}
-
-function formatearFechaCorta(iso) {
-    const fecha = new Date(iso);
-
-    if (Number.isNaN(fecha.getTime())) return "";
-
-    return new Intl.DateTimeFormat("es-UY", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric"
-    }).format(fecha);
-}
-
-function etiquetaEstado(estado) {
-    return ETIQUETAS_ESTADO[estado] || String(estado || "");
-}
-
-function claseEstado(estado) {
-    return "estado-" + String(estado || "pendiente").replace(/[^a-z]/g, "");
-}
-
-function etiquetaMetodoPago(metodo) {
-    return ETIQUETAS_METODO_PAGO[metodo] || String(metodo || "");
 }
 
 function normalizarTexto(texto) {
@@ -125,12 +76,12 @@ function validarTelefono(valor) {
 
 function bloquearScroll(activo) {
     capasConScrollBloqueado = Math.max(0, capasConScrollBloqueado + (activo ? 1 : -1));
-    document.documentElement.classList.toggle("sin-scroll", capasConScrollBloqueado > 0);
+    document.body.classList.toggle("sin-scroll", capasConScrollBloqueado > 0);
 }
 
 function marcarErrorCampo(inputId, errorId, mensaje) {
     const input = document.getElementById(inputId);
-    const error = document.getElementById(errorId);
+    const error = errorId ? document.getElementById(errorId) : null;
 
     if (error) error.textContent = mensaje || "";
 
@@ -191,8 +142,7 @@ function mostrarAviso(titulo, mensaje) {
 }
 
 function abrirWhatsApp(mensaje, nuevaPestana = false) {
-    const negocio = typeof CONFIG !== "undefined" ? CONFIG.negocio : NEGOCIO;
-    const url = "https://wa.me/" + negocio.whatsapp + "?text=" + encodeURIComponent(mensaje);
+    const url = "https://wa.me/" + NEGOCIO.whatsapp + "?text=" + encodeURIComponent(mensaje);
 
     if (nuevaPestana) {
         const ventana = window.open(url, "_blank", "noopener");
@@ -203,10 +153,44 @@ function abrirWhatsApp(mensaje, nuevaPestana = false) {
     return url;
 }
 
-function volverALogin(ruta) {
-    const destino = ruta || (window.location.pathname.split("/").pop() || "index.html")
-        + window.location.search;
-    window.location.href = rutaConRaiz("login.html?volver=" + encodeURIComponent(destino));
+function correoConfigurado(plantilla) {
+    const configuracion = NEGOCIO.emailjs;
+
+    return Boolean(configuracion.servicio && configuracion.clavePublica && plantilla)
+        && !String(configuracion.servicio).startsWith("PEGAR_")
+        && !String(configuracion.clavePublica).startsWith("PEGAR_")
+        && !String(plantilla).startsWith("PEGAR_");
+}
+
+async function enviarCorreoEmailJS(plantilla, parametros) {
+    if (!correoConfigurado(plantilla)) {
+        throw new Error("EmailJS sin configurar");
+    }
+
+    const respuesta = await fetch(URL_EMAILJS, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            service_id: NEGOCIO.emailjs.servicio,
+            template_id: plantilla,
+            user_id: NEGOCIO.emailjs.clavePublica,
+            template_params: parametros
+        })
+    });
+
+    if (!respuesta.ok) throw new Error("No se pudo enviar el correo");
+
+    return true;
+}
+
+function actualizarTextosDeEnvio() {
+    document.querySelectorAll("[data-envio-gratis]").forEach(elemento => {
+        elemento.textContent = formatearPrecio(NEGOCIO.envioGratis);
+    });
+
+    const barra = document.getElementById("shippingProgress");
+
+    if (barra) barra.setAttribute("aria-valuemax", String(NEGOCIO.envioGratis));
 }
 
 document.addEventListener("error", evento => {
@@ -223,5 +207,8 @@ document.addEventListener("error", evento => {
 
 document.addEventListener("DOMContentLoaded", () => {
     const cerrar = document.getElementById("avisoFlotanteCerrar");
+
     if (cerrar) cerrar.addEventListener("click", cerrarAviso);
+
+    actualizarTextosDeEnvio();
 });
