@@ -1,0 +1,29 @@
+/* Restauracion: reglas del logo original y variables que usa zapi-bot.css.
+   Se cargan despues de tokens.css para no sobresercribir nada existente. */
+
+/* Variables que zapi-bot.css referencia y no estaban en tokens.css actual */
+:root {
+    --muted-texto: #6a6f65;
+    --leaf-texto: #2f5c3c;
+}
+
+/* Logo original (bloque con <span class="logo-nombre">) */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+header .logo-nombre {
+    font: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--forest);
+    margin: 0;
+    letter-spacing: .04em;
+}
+
+header .logo-items-img img {
+    height: 42px;
+    width: auto;
+}
