@@ -129,27 +129,6 @@
     color: var(--error);
 }
 
-.carrito-vacio {
-    display: grid;
-    justify-items: center;
-    gap: .6rem;
-    padding: var(--espacio-xl) var(--espacio-md);
-    border: 1px dashed var(--borde);
-    border-radius: var(--radio);
-    background: var(--white);
-    text-align: center;
-}
-
-.carrito-vacio > .material-symbols-outlined {
-    color: var(--leaf);
-    font-size: 3rem;
-}
-
-.carrito-vacio p {
-    max-width: 42ch;
-    color: var(--muted);
-}
-
 .recomendaciones {
     padding-top: var(--espacio-md);
 }

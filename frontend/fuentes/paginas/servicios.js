@@ -14,14 +14,14 @@ const SERVICIOS = [
 module.exports = {
     archivo: 'servicios.html',
     seccion: 'servicios',
-    titulo: 'Servicios | ZAPI Vivero Agroecológico',
+    titulo: 'Servicios | ZAPI Vivero Agroecologico',
     descripcion: 'Asesoramiento, diseño de jardines y huertas, mantenimiento y proyectos verdes en Montevideo.',
     contenido: `
 <section class="banner-pagina">
     <div>
-        <span class="etiqueta" data-contenido="servicios.etiqueta">Servicios</span>
-        <h1 data-contenido="servicios.titulo">Soluciones para cada proyecto.</h1>
-        <p data-contenido="servicios.descripcion">Además de vender plantas, te ayudamos a planificar, desarrollar y mantener espacios verdes de forma eficiente.</p>
+        <span class="etiqueta">Servicios</span>
+        <h1>Soluciones para cada proyecto.</h1>
+        <p>Además de vender plantas, te ayudamos a planificar, desarrollar y mantener espacios verdes de forma eficiente.</p>
     </div>
     <ul class="banner-ventajas">
         <li><span class="material-symbols-outlined" aria-hidden="true">verified_user</span> Presupuesto claro y sin compromiso</li>
@@ -34,9 +34,9 @@ module.exports = {
     <div class="seccion-cabecera">
         <span class="etiqueta">Cómo trabajamos</span>
         <h2 id="tituloServicios">Del diagnóstico al cuidado cotidiano</h2>
-        <p>Cada propuesta parte de tu espacio, tu tiempo disponible y el uso que querés darle.</p>
+        <p>Cada propuesta parte de tu espacio, tu tiempo disponible y el uso que quieras darle.</p>
     </div>
-    <div class="servicios-grid" data-contenido-lista="servicios.items">
+    <div class="servicios-grid">
 ${SERVICIOS.map(([icono, titulo, texto], indice) => `
         <article class="servicio-card">
             <div class="servicio-icono"><span class="material-symbols-outlined" aria-hidden="true">${icono}</span></div>

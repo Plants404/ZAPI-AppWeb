@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mis pedidos | ZAPI Vivero Agroecologico</title>
+    <meta name="description" content="Historial de pedidos realizados con ZAPI, guardados en tu navegador.">
+    <meta name="robots" content="noindex, follow">
+    <link rel="canonical" href="https://zapi.uy/pedidos.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="ZAPI">
+    <meta property="og:locale" content="es_UY">
+    <meta property="og:title" content="Mis pedidos | ZAPI Vivero Agroecologico">
+    <meta property="og:description" content="Historial de pedidos realizados con ZAPI, guardados en tu navegador.">
+    <meta property="og:url" content="https://zapi.uy/pedidos.html">
+    <meta property="og:image" content="https://zapi.uy/public/img/plants-hero.opt.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/svg+xml" href="./public/img/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+    <link rel="stylesheet" href="./public/css/tokens.css">
+    <link rel="stylesheet" href="./public/css/base.css">
+    <link rel="stylesheet" href="./public/css/estructura.css">
+    <link rel="stylesheet" href="./public/css/pedidos.css">
+    <link rel="stylesheet" href="./public/css/asistente.css">
+</head>
+<body class="pagina-pedidos " data-raiz=".">
+<a class="salto-contenido" href="#contenido">Saltar al contenido</a>
+<header class="site-header" data-header>
+    <div class="header-inner">
+        <button class="menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
+            <span class="menu-linea" aria-hidden="true"></span>
+            <span class="menu-linea" aria-hidden="true"></span>
+            <span class="menu-linea" aria-hidden="true"></span>
+        </button>
+
+        <a class="marca" href="./index.html" aria-label="ZAPI, ir al inicio">
+            <img src="./public/img/logo.svg" alt="" width="44" height="62">
+            <span class="marca-texto"><strong>ZAPI</strong><small>Vivero agroecologico</small></span>
+        </a>
+
+        <nav class="site-nav" id="navPrincipal" aria-label="Navegacion principal">
+            <ul><li><a class="nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-enlace" href="./catalogo.html">Catalogo</a></li><li><a class="nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-enlace" href="./contacto.html">Contacto</a></li></ul>
+        </nav>
+
+        <form class="header-search" id="headerSearch" role="search" action="./catalogo.html" autocomplete="off">
+            <label class="visually-hidden" for="searchInput">Buscar productos</label>
+            <span class="material-symbols-outlined header-search-icono" aria-hidden="true">search</span>
+            <input id="searchInput" name="q" type="search" placeholder="Buscar productos…" aria-describedby="searchStatus" spellcheck="false">
+            <button class="search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+        </form>
+
+        <a class="header-carrito" href="./carrito.html" aria-label="Ver carrito">
+            <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
+            <span class="cart-count" data-cart-count aria-hidden="true">0</span>
+        </a>
+    </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop" hidden></div>
+<p class="visually-hidden" id="searchStatus" role="status" aria-live="polite"></p>
+<main id="contenido" tabindex="-1">
+
+<section class="banner-pagina">
+    <div>
+        <span class="etiqueta">Mis pedidos</span>
+        <h1>Tu historial de pedidos</h1>
+        <p>Cada pedido queda guardado en este navegador y se coordina con ZAPI por WhatsApp.</p>
+    </div>
+</section>
+
+<section class="seccion pedidos-lista" aria-labelledby="tituloPedidos">
+    <div class="seccion-cabecera">
+        <h2 id="tituloPedidos">Pedidos realizados</h2>
+    </div>
+    <div id="pedidosContenedor"></div>
+    <p id="pedidosVacio" class="estado-vacio" hidden>
+        <span class="material-symbols-outlined" aria-hidden="true">receipt_long</span>
+        <strong>No tienes pedidos todavía.</strong>
+        <br>Explora el catálogo y armá tu primer pedido.
+    </p>
+    <div class="pedidos-accion">
+        <a class="boton boton-primario" href="./catalogo.html">
+            <span class="material-symbols-outlined" aria-hidden="true">eco</span>
+            Ir al catálogo
+        </a>
+    </div>
+</section>
+</main>
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-marca">
+            <a href="./index.html" aria-label="ZAPI, ir al inicio">
+                <img src="./public/img/logo.svg" alt="" width="38" height="54">
+                <span>ZAPI</span>
+            </a>
+            <p>Plantas, kits y acompañamiento para empezar tu rincón verde.</p>
+        </div>
+        <nav class="footer-nav" aria-label="Paginas del sitio">
+            <h2>Navegar</h2>
+            <a href="./index.html">Inicio</a><a href="./catalogo.html">Catalogo</a><a href="./servicios.html">Servicios</a><a href="./nosotros.html">Nosotros</a><a href="./contacto.html">Contacto</a>
+            <a href="./carrito.html">Carrito</a>
+            <a href="./pedidos.html">Mis pedidos</a>
+        </nav>
+        <div class="footer-contacto">
+            <h2>Contacto</h2>
+            <p>Congreso de Abril, Montevideo, Uruguay</p>
+            <a href="https://wa.me/59898268560" target="_blank" rel="noopener">WhatsApp 098 268 560</a>
+            <a href="./contacto.html">Escribinos por correo</a>
+        </div>
+    </div>
+    <p class="footer-legal">ZAPI · Vivero agroecologico · Precios sujetos a disponibilidad.</p>
+</footer>
+
+
+<button class="asistente-boton" id="asistenteBoton" type="button" aria-expanded="false" aria-controls="asistentePanel">
+    <img src="./public/img/personaje/07-guino.svg" alt="">
+    <span class="visually-hidden">Abrir asistente ZAPI</span>
+</button>
+<section class="asistente-panel" id="asistentePanel" aria-labelledby="asistenteTitulo" hidden>
+    <header class="asistente-cabecera">
+        <img src="./public/img/personaje/01-feliz.svg" alt="">
+        <div><strong id="asistenteTitulo">Asistente ZAPI</strong><small>Respuestas rápidas del vivero</small></div>
+        <button class="icono-boton" id="asistenteCerrar" type="button" aria-label="Cerrar asistente"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+    </header>
+    <div class="asistente-mensajes" id="asistenteMensajes" aria-live="polite"></div>
+    <form class="asistente-form" id="asistenteForm">
+        <label class="visually-hidden" for="asistenteEntrada">Escribí tu consulta</label>
+        <input id="asistenteEntrada" name="consulta" type="text" autocomplete="off" placeholder="¿En qué te podemos ayudar?">
+        <button type="submit" aria-label="Enviar consulta"><span class="material-symbols-outlined" aria-hidden="true">send</span></button>
+    </form>
+</section>
+<div class="aviso-flotante" id="avisoFlotante" role="status" aria-live="polite" hidden>
+    <span class="material-symbols-outlined aviso-icono" aria-hidden="true">eco</span>
+    <div class="aviso-texto"><strong id="avisoFlotanteTitulo"></strong><span id="avisoFlotanteMensaje"></span></div>
+    <button class="icono-boton" id="avisoFlotanteCerrar" type="button" aria-label="Cerrar aviso"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+</div>
+    <script src="./public/js/negocio.js" defer></script>
+    <script src="./public/js/utilidades.js" defer></script>
+    <script src="./public/js/catalogo-datos.js" defer></script>
+    <script src="./public/js/carrito-estado.js" defer></script>
+    <script src="./public/js/pedidos-estado.js" defer></script>
+    <script src="./public/js/modal.js" defer></script>
+    <script src="./public/js/pedidos.js" defer></script>
+    <script src="./public/js/menu.js" defer></script>
+    <script src="./public/js/buscador.js" defer></script>
+    <script src="./public/js/asistente.js" defer></script>
+</body>
+</html>

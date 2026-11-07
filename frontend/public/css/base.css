@@ -351,6 +351,28 @@ ul {
     color: var(--error);
 }
 
+.estado-vacio {
+    display: grid;
+    justify-items: center;
+    gap: .6rem;
+    padding: var(--espacio-xl) var(--espacio-md);
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    color: var(--muted);
+    text-align: center;
+}
+
+.estado-vacio > .material-symbols-outlined {
+    color: var(--leaf);
+    font-size: 3rem;
+}
+
+.estado-vacio p {
+    max-width: 42ch;
+    color: var(--muted);
+}
+
 .lista-ventajas {
     display: grid;
     gap: .5rem;
