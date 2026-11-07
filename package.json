@@ -15,6 +15,7 @@
     "test": "node --test backend/tests/*.test.js",
     "test:api": "node --test backend/tests/*.test.js",
     "test:e2e": "node --test e2e/*.test.js",
+    "vercel-build": "npm run generar",
     "seed:catalogo": "node backend/scripts/sembrar-catalogo.js",
     "seed:contenido": "node backend/scripts/sembrar-contenido.js",
     "admin:crear": "node backend/scripts/crear-admin.js"
