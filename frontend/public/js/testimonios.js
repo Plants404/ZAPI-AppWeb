@@ -1,8 +1,8 @@
 'use strict';
 
-/* Formulario de opiniones. La API guarda la opinión como pendiente y el
-   panel de administración decide cuándo se publica. Hace falta sesión de
-   cliente: si no la hay, se vuelve al login. */
+/* Formulario de opinion. Si EmailJS esta configurado se envia por correo;
+   si no, se abre WhatsApp con el testimonio precargado. El dialogo solo
+   existe en las paginas que lo declaran (opiniones: true). */
 
 const dialogoTestimonio = document.getElementById('dialogoTestimonio');
 const formularioTestimonio = document.getElementById('testimonioForm');
@@ -31,10 +31,28 @@ function cerrarTestimonio() {
 
 function productoDelTestimonio() {
     const desdeDialogo = dialogoTestimonio && dialogoTestimonio.dataset.productoId;
-    const desdeUrl = new URLSearchParams(window.location.search).get('producto');
-    const id = Number(desdeDialogo || desdeUrl);
+    const id = Number(desdeDialogo);
 
     return Number.isSafeInteger(id) && id > 0 ? id : null;
+}
+
+function mensajeDeTestimonio(datos) {
+    const partes = [
+        'Hola ZAPI, me gustaría compartir una opinión:',
+        '',
+        'Autor: ' + datos.autor,
+        'Lugar: ' + (datos.lugar || '—'),
+        'Puntaje: ' + datos.estrellas + ' estrellas',
+        '',
+        'Opinión:',
+        datos.texto
+    ];
+
+    if (datos.productoId) {
+        partes.splice(3, 0, 'Producto: ' + datos.productoId);
+    }
+
+    return partes.filter(Boolean).join('\n');
 }
 
 async function enviarTestimonio(evento) {
@@ -84,49 +102,42 @@ async function enviarTestimonio(evento) {
 
     if (sitio && sitio.value.trim()) return;
 
-    if (!SESION.usuario) {
-        volverALogin();
-        return;
-    }
-
     if (boton) boton.disabled = true;
     if (textoBoton) textoBoton.textContent = 'Enviando…';
     mostrarEstadoFormulario(estado, '', '');
 
+    const datos = {
+        autor: valorNombre,
+        lugar: valorLugar,
+        texto: valorTexto,
+        estrellas: valorEstrellas,
+        productoId: productoDelTestimonio()
+    };
+
     try {
-        await API.post('/api/testimonios', {
-            autor: valorNombre,
-            lugar: valorLugar,
-            texto: valorTexto,
-            estrellas: valorEstrellas,
-            productoId: productoDelTestimonio()
+        const configurado = await enviarCorreoEmailJS(NEGOCIO.emailjs.plantillaTestimonio, {
+            autor: datos.autor,
+            lugar: datos.lugar,
+            estrellas: datos.estrellas,
+            texto: datos.texto,
+            productoId: datos.productoId || ''
         });
 
-        formularioTestimonio.reset();
-        mostrarEstadoFormulario(
-            estado,
-            '¡Gracias! Tu opinión queda pendiente de revisión.',
-            'ok'
-        );
-
-        window.setTimeout(cerrarTestimonio, 1800);
-    } catch (error) {
-        if (error.estado === 401) {
-            volverALogin();
+        if (configurado) {
+            formularioTestimonio.reset();
+            mostrarEstadoFormulario(estado, '¡Gracias! Tu opinión queda registrada.', 'ok');
+            window.setTimeout(cerrarTestimonio, 1800);
             return;
         }
-
-        if (error.datos && error.datos.campo === 'autor') {
-            marcarErrorCampo('testimonioNombre', 'errorTestimonioNombre', mensajeDeError(error));
-        } else if (error.datos && error.datos.campo === 'texto') {
-            marcarErrorCampo('testimonioTexto', 'errorTestimonioTexto', mensajeDeError(error));
-        } else {
-            mostrarEstadoFormulario(estado, mensajeDeError(error), 'error');
-        }
-    } finally {
-        if (boton) boton.disabled = false;
-        if (textoBoton) textoBoton.textContent = 'Enviar opinión';
+    } catch {
+        /* Si EmailJS falla o no está configurado, se abre WhatsApp. */
     }
+
+    abrirWhatsApp(mensajeDeTestimonio(datos), true);
+    mostrarEstadoFormulario(estado, 'Tu opinión se enviará por WhatsApp.');
+
+    if (boton) boton.disabled = false;
+    if (textoBoton) textoBoton.textContent = 'Enviar opinión';
 }
 
 if (dialogoTestimonio) {

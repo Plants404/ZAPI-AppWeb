@@ -1,8 +1,7 @@
 'use strict';
 
-/* Formulario de contacto. La consulta se guarda en la API; el panel de
-   administración puede revisarla después. Sin servicios externos ni
-   externas. */
+/* Formulario de contacto. Si EmailJS esta configurado se envia por correo;
+   si no, se abre WhatsApp con la consulta precargada. */
 
 const formularioContacto = document.getElementById('contactoForm');
 
@@ -13,14 +12,6 @@ const CAMPOS_CONTACTO = [
     { id: 'contactoTelefono', error: 'errorTelefono', vacio: '', corto: 'Revisá el teléfono de contacto', tipo: 'telefono', opcional: true },
     { id: 'contactoConsulta', error: 'errorConsulta', vacio: 'Contanos sobre tu consulta', corto: 'Contanos un poco más sobre tu consulta', minimo: 10 }
 ];
-
-const CAMPOS_DEL_SERVIDOR = {
-    nombre: 'contactoNombre',
-    email: 'contactoCorreo',
-    asunto: 'contactoAsunto',
-    telefono: 'contactoTelefono',
-    mensaje: 'contactoConsulta'
-};
 
 function revisarCampoContacto(campo) {
     const entrada = document.getElementById(campo.id);
@@ -110,16 +101,20 @@ function reiniciarContacto() {
     if (nombre) nombre.focus();
 }
 
-function marcarCampoDelServidor(campo, mensaje) {
-    const id = CAMPOS_DEL_SERVIDOR[campo];
+function mensajeDeContacto(datos) {
+    const partes = [
+        'Hola ZAPI, tengo una consulta:',
+        '',
+        'Nombre: ' + datos.nombre,
+        'Correo: ' + datos.email,
+        'Telefono: ' + datos.telefono,
+        'Asunto: ' + datos.asunto,
+        '',
+        'Mensaje:',
+        datos.mensaje
+    ];
 
-    if (!id) return false;
-
-    const definicion = CAMPOS_CONTACTO.find(item => item.id === id);
-
-    marcarErrorCampo(id, definicion ? definicion.error : 'errorConsulta', mensaje);
-    document.getElementById(id).focus();
-    return true;
+    return partes.filter(Boolean).join('\n');
 }
 
 async function enviarContacto(evento) {
@@ -155,26 +150,29 @@ async function enviarContacto(evento) {
     mostrarEstadoFormulario(estado, '', '');
 
     try {
-        await API.post('/api/contacto', {
-            ...datos,
-            sitio_web: sitio ? sitio.value : ''
+        const configurado = await enviarCorreoEmailJS(NEGOCIO.emailjs.plantillaContacto, {
+            nombre: datos.nombre,
+            email: datos.email,
+            telefono: datos.telefono,
+            asunto: datos.asunto,
+            mensaje: datos.mensaje
         });
 
-        formularioContacto.reset();
-        actualizarContadorContacto();
-        mostrarConfirmacionContacto();
-    } catch (error) {
-        const campo = error.datos && error.datos.campo;
-
-        if (!campo || !marcarCampoDelServidor(campo, mensajeDeError(error))) {
-            mostrarEstadoFormulario(estado, mensajeDeError(error), 'error');
-        } else {
-            mostrarEstadoFormulario(estado, 'Revisá los campos marcados.', 'error');
+        if (configurado) {
+            formularioContacto.reset();
+            actualizarContadorContacto();
+            mostrarConfirmacionContacto();
+            return;
         }
-    } finally {
-        if (boton) boton.disabled = false;
-        if (textoBoton) textoBoton.textContent = 'Enviar mensaje';
+    } catch {
+        /* Si EmailJS falla o no esta configurado, se abre WhatsApp. */
     }
+
+    abrirWhatsApp(mensajeDeContacto(datos), true);
+    mostrarEstadoFormulario(estado, 'Te respondemos por WhatsApp.');
+
+    if (boton) boton.disabled = false;
+    if (textoBoton) textoBoton.textContent = 'Enviar mensaje';
 }
 
 if (formularioContacto) {

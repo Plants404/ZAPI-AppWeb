@@ -1,8 +1,7 @@
 'use strict';
 
-/* Cliente HTTP compartido. Todas las páginas llaman a la API con rutas
-   relativas: en desarrollo el servidor estático hace de proxy y en
-   producción el sitio y la API viven en el mismo origen. */
+/* Cliente HTTP compartido. En desarrollo, /api se proxea al backend local;
+   en producción, el sitio y la API comparten origen. */
 
 const API = Object.freeze({
     get(ruta, opciones) {
@@ -74,9 +73,4 @@ async function apiPedir(ruta, opciones = {}) {
     }
 
     return datos;
-}
-
-function mensajeDeError(error, respaldo = 'Ocurrió un error inesperado.') {
-    if (error && typeof error.message === 'string' && error.message) return error.message;
-    return respaldo;
 }

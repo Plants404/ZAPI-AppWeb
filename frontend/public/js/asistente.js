@@ -14,7 +14,7 @@ const entradaAsistente = document.getElementById("asistenteEntrada");
 const RESPUESTAS_ASISTENTE = [
     {
         claves: ["envio", "envío", "envios", "envíos", "entrega", "delivery", "llega"],
-        respuesta: "El envío es gratis desde <strong>" + formatearPrecio(CONFIG.envioGratis) +
+        respuesta: "El envío es gratis desde <strong>" + formatearPrecio(NEGOCIO.envioGratis) +
             "</strong>. Para pedidos menores coordinamos el costo por WhatsApp."
     },
     {
@@ -25,12 +25,12 @@ const RESPUESTAS_ASISTENTE = [
     {
         claves: ["pedido", "pedidos", "carrito", "comprar", "compré", "compre"],
         respuesta: 'Armá tu carrito y enviá el pedido. Queda guardado en ' +
-            '<a href="./cuenta.html">Mi cuenta</a> para que lo sigas desde cualquier dispositivo.'
+            '<a href="./pedidos.html">Mis pedidos</a> para ver tu historial.'
     },
     {
         claves: ["cuidado", "cuidados", "riego", "regar", "luz", "planta", "plantas"],
         respuesta: "Cada ficha de producto incluye sus cuidados básicos. " +
-            'Si tenés una duda puntual, <a href="https://wa.me/' + CONFIG.negocio.whatsapp + '" target="_blank" rel="noopener">escribinos por WhatsApp</a>.'
+            'Si tenés una duda puntual, <a href="https://wa.me/' + NEGOCIO.whatsapp + '" target="_blank" rel="noopener">escribinos por WhatsApp</a>.'
     },
     {
         claves: ["servicio", "servicios", "jardin", "jardín", "huerta", "proyecto", "presupuesto"],
@@ -97,7 +97,7 @@ function respuestaAsistente(texto) {
     return "No tengo esa respuesta a mano. Podés ver el " +
         '<a href="./catalogo.html">catálogo</a>, revisar ' +
         '<a href="./servicios.html">servicios</a> o ' +
-        '<a href="https://wa.me/' + CONFIG.negocio.whatsapp + '" target="_blank" rel="noopener">hablar con el equipo por WhatsApp</a>.';
+        '<a href="https://wa.me/' + NEGOCIO.whatsapp + '" target="_blank" rel="noopener">hablar con el equipo por WhatsApp</a>.';
 }
 
 function responderAsistente(texto) {

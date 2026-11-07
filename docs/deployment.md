@@ -10,14 +10,16 @@ La arquitectura de producción prevista es:
 
 1. Crear un cluster en MongoDB Atlas.
 2. Crear un usuario de aplicación con permisos de lectura y escritura sobre la base `zapi`.
-3. Permitir el acceso desde Vercel (rangos de IP o `0.0.0.0/0` con usuario y contraseña fuertes).
-4. Copiar la cadena de conexión. Debe incluir el replica set, por ejemplo:
+3. En **Network Access**, permitir las conexiones desde los servidores que ejecutan la API.
+4. Copiar la cadena de conexión y guardarla como `MONGODB_URI`. Debe incluir la base `zapi`.
 
 ```text
 mongodb+srv://usuario:clave@cluster.mongodb.net/zapi?retryWrites=true&w=majority
 ```
 
-Las transacciones de stock requieren replica set; Atlas lo provee por defecto.
+Si el usuario o la contraseña contienen caracteres especiales, codificarlos con URL encoding. No publicar la cadena completa: contiene credenciales. Las transacciones de stock requieren replica set; Atlas lo provee por defecto.
+
+Para desarrollo local, copiar `.env.example` a `.env` y guardar allí la cadena real en `MONGODB_URI`. El archivo `.env` está excluido de Git. La API lee esta variable al iniciar y reutiliza una conexión compartida a MongoDB.
 
 ## 2. Variables de entorno en Vercel
 

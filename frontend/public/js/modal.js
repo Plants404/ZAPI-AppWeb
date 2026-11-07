@@ -109,22 +109,14 @@ function cerrarModalProducto() {
 function agregarDesdeElModal() {
     const boton = document.getElementById("modalAgregar");
     const id = Number(boton.dataset.id);
+    const producto = obtenerProducto(id);
 
-    if (!agregarProductoAlCarrito(id)) {
+    if (!producto || !agregarProductoAlCarrito(id)) {
         mostrarAviso("Sin stock", "No quedan más unidades de este producto.");
         return;
     }
 
-    boton.classList.add("agregado");
-    boton.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">check</span> ¡Agregado!';
-
-    window.setTimeout(() => {
-        boton.classList.remove("agregado");
-
-        if (productoDelModal) {
-            boton.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito';
-        }
-    }, 1400);
+    avisarAgregado(boton, producto);
 }
 
 function avisarAgregado(boton, producto) {

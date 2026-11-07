@@ -1,125 +1,80 @@
 'use strict';
-/* Construye las páginas HTML públicas y del panel a partir de las fuentes.
+/* Construye las páginas HTML públicas a partir de las fuentes.
    Uso:
        node frontend/tools/construir.js
        node frontend/tools/construir.js --revisar
 
    Con --revisar no escribe nada: compara lo que generaría con lo que hay
-   en disco y termina con código 1 si alguna página quedó vieja. Así el
-   verificador puede exigir que el HTML publicado sea reproducible. */
+   en disco y termina con código 1 si alguna página quedó vieja. */
 
 const fs = require('fs');
 const path = require('path');
 
-const { pagina: armarPagina, paginaAdmin: armarPaginaAdmin } = require('./lib/plantilla.js');
+const { pagina: armarPagina } = require('./lib/plantilla.js');
 
 const raiz = path.join(__dirname, '..');
 const revisar = process.argv.includes('--revisar');
 
 const GRUPOS = [
     {
-        nombre: 'Páginas públicas',
+        nombre: 'Paginas publicas',
         carpeta: path.join(raiz, 'fuentes', 'paginas'),
         destino: raiz,
-        armar: armarPagina,
-    },
-    {
-        nombre: 'Panel de administración',
-        carpeta: path.join(raiz, 'fuentes', 'admin'),
-        destino: path.join(raiz, 'admin'),
-        armar: armarPaginaAdmin,
-    },
+        armar: armarPagina
+    }
 ];
 
-function escribirSiCambio(archivo, contenido) {
-    let anterior = null;
+function escribir(archivo, contenido) {
+    fs.writeFileSync(archivo, contenido, 'utf8');
+}
 
+function leer(archivo) {
     try {
-        anterior = fs.readFileSync(archivo, 'utf8');
+        return fs.readFileSync(archivo, 'utf8');
     } catch {
-        /* La primera escritura no tiene anterior. */
+        return null;
     }
-
-    if (anterior === contenido) return false;
-
-    if (!revisar) {
-        fs.mkdirSync(path.dirname(archivo), { recursive: true });
-        fs.writeFileSync(archivo, contenido, 'utf8');
-    }
-    return true;
 }
 
-function cargarPaginas(grupo) {
-    if (!fs.existsSync(grupo.carpeta)) {
-        throw new Error('no existe ' + path.relative(raiz, grupo.carpeta));
-    }
+function procesarGrupo(grupo) {
+    let fallos = 0;
 
-    const archivos = fs.readdirSync(grupo.carpeta)
-        .filter(nombre => nombre.endsWith('.js'))
-        .sort();
+    const archivos = fs.readdirSync(grupo.carpeta).filter(nombre => nombre.endsWith('.js'));
 
-    return archivos.map(nombre => {
-        const pagina = require(path.join(grupo.carpeta, nombre));
+    for (const nombre of archivos) {
+        const fuente = require(path.join(grupo.carpeta, nombre));
+        if (!fuente || !fuente.archivo) continue;
 
-        if (!pagina || typeof pagina !== 'object') {
-            throw new Error(nombre + ' no exporta una página');
-        }
+        const html = grupo.armar(fuente);
+        const destino = path.join(grupo.destino, fuente.archivo);
+        const actual = leer(destino);
 
-        if (!pagina.archivo || !pagina.contenido) {
-            throw new Error(nombre + ' no tiene "archivo" o "contenido"');
-        }
-
-        return pagina;
-    });
-}
-
-function construir() {
-    const desactualizadas = [];
-    const escritas = [];
-    let total = 0;
-
-    for (const grupo of GRUPOS) {
-        const paginas = cargarPaginas(grupo);
-        const nombres = new Set();
-
-        for (const pagina of paginas) {
-            if (nombres.has(pagina.archivo)) {
-                throw new Error('dos fuentes generan ' + pagina.archivo);
+        if (revisar) {
+            if (actual !== html) {
+                console.log('  FALLA ' + fuente.archivo + ' esta desactualizada');
+                fallos += 1;
+            } else {
+                console.log('  ok   ' + fuente.archivo);
             }
-            nombres.add(pagina.archivo);
-
-            const contenido = grupo.armar(pagina);
-            const archivo = path.join(grupo.destino, pagina.archivo);
-            const etiqueta = path.relative(raiz, archivo).replace(/\\/g, '/');
-
-            total += 1;
-
-            if (!escribirSiCambio(archivo, contenido)) continue;
-
-            desactualizadas.push(etiqueta);
-            if (!revisar) escritas.push(etiqueta);
-        }
-    }
-
-    if (revisar) {
-        if (desactualizadas.length) {
-            console.error('Páginas desactualizadas: ' + desactualizadas.join(', '));
-            console.error('Ejecutá "npm run generar" para reconstruirlas.');
-            process.exitCode = 1;
         } else {
-            console.log('Páginas HTML: todas al día (' + total + ').');
+            escribir(destino, html);
+            console.log('  ok   ' + fuente.archivo + ' generada');
         }
-        return;
     }
 
-    console.log('Páginas HTML: ' + total + ' revisadas, ' + escritas.length + ' actualizadas.');
-
-    if (escritas.length) console.log('Actualizadas: ' + escritas.join(', '));
+    return fallos;
 }
 
-try {
-    construir();
-} catch (error) {
-    console.error('Error: ' + error.message);
-    process.exitCode = 1;
+let totalFallos = 0;
+
+for (const grupo of GRUPOS) {
+    console.log(grupo.nombre);
+    totalFallos += procesarGrupo(grupo);
 }
+
+if (revisar) {
+    console.log('\n' + (totalFallos === 0 ? 'Todas las páginas están actualizadas.' : totalFallos + ' página(s) desactualizada(s).'));
+    process.exit(totalFallos === 0 ? 0 : 1);
+}
+
+console.log('\nSitio generado en ' + raiz);

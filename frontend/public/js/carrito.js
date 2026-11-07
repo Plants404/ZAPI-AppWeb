@@ -1,25 +1,31 @@
 'use strict';
 
-/* Página del carrito: dibuja las líneas, calcula totales y crea el pedido
-   en la API. El servidor vuelve a calcular precios y stock; WhatsApp se
-   abre con el código de la orden ya guardada. */
+/* Pagina del carrito: dibuja las lineas, calcula totales y arma el pedido
+   en el cliente. El pedido se guarda en localStorage ("Mis pedidos") y se
+   envia por WhatsApp. El stock nunca se descuenta del catalogo. */
 
 const formularioPedido = document.getElementById('checkoutForm');
+const botonWhatsApp = document.getElementById('whatsappButton');
+const estadoPedido = document.getElementById('pedEstado');
+
+const CAMPOS_PEDIDO = [
+    { id: 'pedNombre', error: 'pedErrorNombre', vacio: 'Escribí tu nombre', corto: 'Escribí tu nombre completo', minimo: 2 },
+    { id: 'pedTelefono', error: 'pedErrorTelefono', vacio: 'Falta un teléfono de contacto', corto: 'Revisá el teléfono de contacto', tipo: 'telefono' },
+    { id: 'pedEmail', error: 'pedErrorEmail', vacio: '', corto: 'Revisá el correo electrónico', tipo: 'correo', opcional: true }
+];
 
 function envioGratisActual() {
-    return Number(CONFIG.envioGratis) || 0;
+    return Number(NEGOCIO.envioGratis) || 0;
 }
 
 function actualizarTextosDeEnvio() {
-    const limite = envioGratisActual();
-
-    document.querySelectorAll('[data-shipping-threshold]').forEach(elemento => {
-        elemento.textContent = formatearPrecio(limite);
+    document.querySelectorAll("[data-envio-gratis]").forEach(elemento => {
+        elemento.textContent = formatearPrecio(envioGratisActual());
     });
 
-    const barra = document.getElementById('shippingProgress');
+    const barra = document.getElementById("shippingProgress");
 
-    if (barra) barra.setAttribute('aria-valuemax', String(limite));
+    if (barra) barra.setAttribute("aria-valuemax", String(envioGratisActual()));
 }
 
 function actualizarResumen() {
@@ -37,8 +43,8 @@ function actualizarResumen() {
 
     document.getElementById('subtotal').textContent = formatearPrecio(subtotal);
     document.getElementById('shipping').textContent = envio === null
-        ? 'A coordinar'
-        : subtotal > 0 ? 'Gratis' : formatearPrecio(0);
+        ? 'Gratis'
+        : formatearPrecio(0);
     document.getElementById('total').textContent = formatearPrecio(total === null ? subtotal : total);
 
     if (nota) nota.hidden = total !== null || carrito.length === 0;
@@ -151,31 +157,6 @@ function renderCarrito() {
     }
 }
 
-function mensajeDelPedido(pedido) {
-    const lineas = pedido.items.map(item =>
-        '• ' + item.nombre + ' x' + item.cantidad + ' — ' + formatearPrecio(item.precio * item.cantidad)
-    ).join('\n');
-    const contacto = [
-        'Nombre: ' + pedido.contacto.nombre,
-        'Teléfono: ' + pedido.contacto.telefono,
-        pedido.contacto.email ? 'Correo: ' + pedido.contacto.email : '',
-        pedido.zona ? 'Zona: ' + pedido.zona : '',
-        pedido.notas ? 'Notas: ' + pedido.notas : ''
-    ].filter(Boolean).join('\n');
-    const envio = pedido.envioPendiente
-        ? 'A coordinar por WhatsApp'
-        : pedido.total > pedido.subtotal ? formatearPrecio(pedido.total - pedido.subtotal) : 'Gratis';
-
-    return 'Hola ZAPI\n\nQuiero realizar el siguiente pedido:\n\n' + lineas +
-        '\n\n━━━━━━━━━━━━━━━━━━\n\n' +
-        'Pedido: ' + pedido.codigo + '\n' +
-        'Subtotal: ' + formatearPrecio(pedido.subtotal) + '\n' +
-        'Envío: ' + envio + '\n\n' +
-        'TOTAL: ' + formatearPrecio(pedido.total) + '\n\n' +
-        '━━━━━━━━━━━━━━━━━━\n\nDatos de contacto\n\n' + contacto +
-        '\n\n¿Podrían confirmarme la disponibilidad y coordinar la entrega?\n\nGracias.';
-}
-
 function leerCampo(id) {
     const campo = document.getElementById(id);
     return campo ? limpiarValor(campo.value) : '';
@@ -199,7 +180,7 @@ function validarPedido() {
     }
 
     if (email && !validarCorreo(email)) {
-        mostrarEstadoFormulario(document.getElementById('pedEstado'), 'Revisá el correo electrónico.', 'error');
+        mostrarEstadoFormulario(estadoPedido, 'Revisá el correo electrónico.', 'error');
         primerError = primerError || 'pedEmail';
     }
 
@@ -212,93 +193,75 @@ function validarPedido() {
     return true;
 }
 
-function marcarFaltantes(faltantes) {
-    const estado = document.getElementById('pedEstado');
-    const detalle = faltantes.map(item =>
-        item.nombre + ': pediste ' + item.solicitados + ', hay ' + item.disponibles
-    ).join(' · ');
+function armarDatosPedido() {
+    const carrito = obtenerCarrito();
+    const { subtotal, envio, total } = calcularTotales(carrito);
 
-    mostrarEstadoFormulario(estado, 'Ajustamos el stock disponible. ' + detalle, 'error');
+    return {
+        lineas: carrito.map(linea => ({
+            id: linea.id,
+            nombre: linea.nombre,
+            precio: linea.precio,
+            cantidad: linea.cantidad
+        })),
+        cliente: {
+            nombre: leerCampo('pedNombre'),
+            telefono: leerCampo('pedTelefono'),
+            email: leerCampo('pedEmail') || '',
+            zona: leerCampo('pedZona') || '',
+            notas: leerCampo('pedNotas') || ''
+        },
+        subtotal,
+        envio: envio === null ? 0 : envio,
+        total
+    };
 }
 
-async function confirmarPedido(evento) {
+function confirmarPedido(evento) {
     evento.preventDefault();
 
     const carrito = obtenerCarrito();
-    const estado = document.getElementById('pedEstado');
-    const boton = document.getElementById('whatsappButton');
-    const textoBoton = boton ? boton.innerHTML : '';
 
     if (!carrito.length) {
-        mostrarEstadoFormulario(estado, 'Agregá al menos un producto al carrito.', 'error');
+        mostrarEstadoFormulario(estadoPedido, 'Agregá al menos un producto al carrito.', 'error');
         return;
     }
 
     limpiarErrores(formularioPedido);
 
     if (!validarPedido()) {
-        mostrarEstadoFormulario(estado, 'Revisá los campos marcados.', 'error');
+        mostrarEstadoFormulario(estadoPedido, 'Revisá los campos marcados.', 'error');
         return;
     }
 
-    if (!SESION.usuario) {
-        volverALogin('carrito.html');
-        return;
+    if (botonWhatsApp) {
+        botonWhatsApp.disabled = true;
+        botonWhatsApp.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">hourglass_top</span> Preparando pedido…';
     }
 
-    if (SESION.usuario.role !== 'cliente') {
-        mostrarEstadoFormulario(estado, 'Las cuentas de administración no pueden crear pedidos online.', 'error');
-        return;
-    }
-
-    if (boton) {
-        boton.disabled = true;
-        boton.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">hourglass_top</span> Enviando pedido…';
-    }
-
-    mostrarEstadoFormulario(estado, '', '');
+    mostrarEstadoFormulario(estadoPedido, '', '');
 
     try {
-        const datos = await API.post('/api/pedidos', {
-            items: carrito.map(linea => ({ productoId: linea.id, cantidad: linea.cantidad })),
-            nombre: leerCampo('pedNombre'),
-            telefono: leerCampo('pedTelefono'),
-            email: leerCampo('pedEmail') || undefined,
-            zona: leerCampo('pedZona') || undefined,
-            notas: leerCampo('pedNotas') || undefined
-        });
-        const pedido = datos.pedido;
+        const datos = armarDatosPedido();
+        const pedido = guardarPedido(armarPedido(datos));
 
         vaciarCarrito();
         if (formularioPedido) formularioPedido.reset();
         actualizarTextosDeEnvio();
 
         mostrarEstadoFormulario(
-            estado,
-            'Pedido ' + pedido.codigo + ' recibido. Abrimos WhatsApp para coordinar la entrega.',
+            estadoPedido,
+            'Pedido ' + pedido.id + ' listo. Abrimos WhatsApp para coordinar la entrega.',
             'ok'
         );
 
-        abrirWhatsApp(mensajeDelPedido(pedido), true);
+        abrirWhatsApp(mensajeDePedido(pedido), true);
     } catch (error) {
-        if (error.estado === 401) {
-            volverALogin('carrito.html');
-            return;
-        }
-
-        if (error.estado === 409 && error.datos && Array.isArray(error.datos.faltantes)) {
-            marcarFaltantes(error.datos.faltantes);
-        } else if (error.datos && error.datos.campo === 'telefono') {
-            marcarErrorCampo('pedTelefono', 'pedErrorTelefono', mensajeDeError(error));
-        } else if (error.datos && error.datos.campo === 'nombre') {
-            marcarErrorCampo('pedNombre', 'pedErrorNombre', mensajeDeError(error));
-        } else {
-            mostrarEstadoFormulario(estado, mensajeDeError(error), 'error');
-        }
+        mostrarEstadoFormulario(estadoPedido, error.message || 'No se pudo armar el pedido. Intentá de nuevo.', 'error');
     } finally {
-        if (boton) {
-            boton.disabled = false;
-            boton.innerHTML = textoBoton;
+        if (botonWhatsApp) {
+            botonWhatsApp.disabled = false;
+            botonWhatsApp.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">check_circle</span> Confirmar pedido';
         }
     }
 }
@@ -336,24 +299,9 @@ if (botonVaciar) {
     });
 }
 
-if (formularioPedido) formularioPedido.addEventListener('submit', confirmarPedido);
-
-cuandoConfigLista(() => {
-    actualizarTextosDeEnvio();
-    actualizarResumen();
-});
-
-cuandoSesionLista(usuario => {
-    if (!usuario || usuario.role !== 'cliente') return;
-
-    const nombre = document.getElementById('pedNombre');
-    const telefono = document.getElementById('pedTelefono');
-    const email = document.getElementById('pedEmail');
-
-    if (nombre && !nombre.value) nombre.value = usuario.nombre || '';
-    if (telefono && !telefono.value) telefono.value = usuario.telefono || '';
-    if (email && !email.value) email.value = usuario.email || '';
-});
+if (formularioPedido) {
+    formularioPedido.addEventListener('submit', confirmarPedido);
+}
 
 suscribirAlCarrito(renderCarrito);
 
