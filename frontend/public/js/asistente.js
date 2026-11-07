@@ -39,7 +39,7 @@ const RESPUESTAS_ASISTENTE = [
     },
     {
         claves: ["contacto", "whatsapp", "telefono", "teléfono", "persona", "humano", "horario"],
-        respuesta: 'Podés escribirnos al <strong>' + CONFIG.negocio.whatsappVisible + '</strong> o desde ' +
+        respuesta: 'Podés escribirnos al <strong>' + NEGOCIO.whatsappVisible + '</strong> o desde ' +
             '<a href="./contacto.html">Contacto</a>.'
     },
     {

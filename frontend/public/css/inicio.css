@@ -158,15 +158,6 @@
     text-decoration: underline;
 }
 
-.testimonios-vacio {
-    padding: var(--espacio-lg);
-    border: 1px dashed var(--borde);
-    border-radius: var(--radio);
-    background: var(--white);
-    color: var(--muted);
-    text-align: center;
-}
-
 .testimonios-accion {
     display: flex;
     justify-content: center;

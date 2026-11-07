@@ -12,7 +12,7 @@ const PRODUCTOS = [
         "id": 1,
         "nombre": "Albahaca",
         "slug": "albahaca",
-        "categoria": "Aromaticas",
+        "categoria": "Aromáticas",
         "imagen": "public/img/albahaca.opt.jpg",
         "imagenes": [
             "public/img/albahaca.opt.jpg"
@@ -23,8 +23,8 @@ const PRODUCTOS = [
         "destacado": true,
         "infoDeVenta": [
             "Mata de 20 cm lista para plantar",
-            "Rinde mas de 8 semanas de cosecha continua",
-            "Incluye guia de cuidados digital"
+            "Rinde más de 8 semanas de cosecha continua",
+            "Incluye guía de cuidados digital"
         ]
     },
     {
@@ -42,8 +42,8 @@ const PRODUCTOS = [
         "destacado": false,
         "infoDeVenta": [
             "Resiembra: hasta 4 cortes por planta",
-            "Cultivo 100% agroecologico",
-            "Incluye guia de cuidados digital"
+            "Cultivo 100% agroecológico",
+            "Incluye guía de cuidados digital"
         ]
     },
     {
@@ -68,8 +68,8 @@ const PRODUCTOS = [
         "stock": 15,
         "destacado": true,
         "infoDeVenta": [
-            "Viene en maceta ceramica",
-            "Riego: 1 vez cada 15 dias",
+            "Viene en maceta cerámica",
+            "Riego: 1 vez cada 15 días",
             "Ideal para principiantes"
         ]
     },
@@ -86,13 +86,13 @@ const PRODUCTOS = [
             "public/img/cactus3.opt.jpg",
             "public/img/cactus2.opt.jpg"
         ],
-        "descripcion": "Decorativo y de facil mantenimiento.",
+        "descripcion": "Decorativo y de fácil mantenimiento.",
         "precioBase": 220,
         "stock": 6,
         "destacado": true,
         "infoDeVenta": [
-            "Viene en maceta ceramica",
-            "Soporta largos periodos sin riego",
+            "Viene en maceta cerámica",
+            "Soporta largos períodos sin riego",
             "Purifica el aire de tu hogar"
         ]
     },
@@ -106,13 +106,13 @@ const PRODUCTOS = [
             "public/img/almacigosuculentas.opt.jpg",
             "public/img/almacigosuculentas2.opt.jpg"
         ],
-        "descripcion": "Una seleccion de suculentas para tu hogar.",
+        "descripcion": "Una selección de suculentas para tu hogar.",
         "precioBase": 90,
         "stock": 10,
         "destacado": false,
         "infoDeVenta": [
             "Pack de 6 variedades surtidas",
-            "30% mas economico que por unidad",
+            "30% más económico que por unidad",
             "Incluye caja de regalo"
         ]
     },
@@ -132,7 +132,7 @@ const PRODUCTOS = [
         "infoDeVenta": [
             "Viene en maceta decorativa",
             "Hojas rojas, crema y verde",
-            "Incluye guia de cuidados digital"
+            "Incluye guía de cuidados digital"
         ]
     },
     {
@@ -148,14 +148,14 @@ const PRODUCTOS = [
             "public/img/kit_de_huerta_zapi4.opt.jpg",
             "public/img/kit_de_huerta_zapi5.opt.jpg"
         ],
-        "descripcion": "Semillas, sustrato y guia para tu primera huerta.",
+        "descripcion": "Semillas, sustrato y guía para tu primera huerta.",
         "precioBase": 650,
         "stock": 5,
         "destacado": true,
         "infoDeVenta": [
             "Semillas, sustrato y macetas para empezar",
-            "Guia de cultivo paso a paso",
-            "Embalaje reciclable, sin plastico de un solo uso"
+            "Guía de cultivo paso a paso",
+            "Embalaje reciclable, sin plástico de un solo uso"
         ]
     }
 ];
@@ -163,7 +163,7 @@ const PRODUCTOS = [
 
 // INICIO_CATEGORIAS
 const CATEGORIAS = [
-    "Aromaticas",
+    "Aromáticas",
     "Plantas",
     "Plantas de interior",
     "Combo",
