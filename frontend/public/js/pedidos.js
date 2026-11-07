@@ -14,34 +14,39 @@ function renderPedidos() {
     if (!pedidos.length) {
         contenedor.innerHTML = '';
         vacio.hidden = false;
+        vacio.classList.remove('hidden');
         return;
     }
 
     vacio.hidden = true;
+    vacio.classList.add('hidden');
     contenedor.innerHTML = pedidos.map(pedido => {
         const lineas = pedido.lineas.map(linea =>
-            '<li>' + linea.cantidad + ' × ' + escaparHTML(linea.nombre) + ' — ' + formatearPrecio(linea.precio * linea.cantidad) + '</li>'
+            '<li class="pedido-linea"><span class="pedido-linea-cantidad">' + linea.cantidad + ' ×</span><span class="pedido-linea-nombre">' + escaparHTML(linea.nombre) + '</span><span class="pedido-linea-precio">' + formatearPrecio(linea.precio * linea.cantidad) + '</span></li>'
         ).join('');
+        const estado = String(pedido.estado || 'pendiente').toLowerCase().replace(/[^a-z-]/g, '');
 
-        return `<article class="pedido">
+        return `<article class="pedido-card pedido">
             <div class="pedido-cabecera">
                 <div>
-                    <span class="etiqueta">${escapeHtmlEstado(pedido.estado)}</span>
-                    <strong>Pedido ${pedido.id}</strong>
+                    <span class="pedido-estado pedido-estado-${estado} etiqueta">${escapeHtmlEstado(pedido.estado)}</span>
+                    <strong class="pedido-codigo">Pedido ${pedido.id}</strong>
                 </div>
                 <div class="pedido-fecha">${formatearFecha(pedido.fecha)}</div>
             </div>
             <ul class="pedido-lineas">${lineas}</ul>
-            <div class="pedido-total">
-                <span>Total</span><strong>${formatearPrecio(pedido.total)}</strong>
-            </div>
-            <div class="pedido-acciones">
-                <button class="boton boton-primario" type="button" data-reenviar="${pedido.id}">
-                    <span class="material-symbols-outlined" aria-hidden="true">whatsapp</span> Reenviar por WhatsApp
-                </button>
-                <button class="boton boton-texto" type="button" data-eliminar="${pedido.id}">
-                    <span class="material-symbols-outlined" aria-hidden="true">delete</span> Eliminar del historial
-                </button>
+            <div class="pedido-pie">
+                <div class="pedido-resumen pedido-total">
+                    <span>Total</span><strong>${formatearPrecio(pedido.total)}</strong>
+                </div>
+                <div class="pedido-acciones">
+                    <button class="boton boton-primario" type="button" data-reenviar="${pedido.id}">
+                        <span class="material-symbols-outlined" aria-hidden="true">whatsapp</span> Reenviar por WhatsApp
+                    </button>
+                    <button class="boton boton-texto" type="button" data-eliminar="${pedido.id}">
+                        <span class="material-symbols-outlined" aria-hidden="true">delete</span> Eliminar del historial
+                    </button>
+                </div>
             </div>
         </article>`;
     }).join('');
