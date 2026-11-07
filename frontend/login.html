@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Ingresar · ZAPI</title>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600&display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet" href="./public/css/login.css">
+</head>
+<body>
+
+        <a class="volver" href="./index.html">Volver al inicio</a>
+
+<main class="wrap">
+
+    
+    <div id="shake">
+
+        
+        <div class="head" id="hd" data-state="happy" data-face="1" role="img"
+             aria-label="Personaje con un brote en la cabeza">
+            <div class="tilt" id="tilt"><div class="pp" id="pp"><div class="bob">
+
+                <img class="ex f1"  src="./personaje/01-feliz.svg"        alt="" draggable="false" decoding="async">
+                <img class="ex f2"  src="./personaje/02-duda.svg"         alt="" draggable="false" decoding="async">
+                <img class="ex f3"  src="./personaje/03-llanto.svg"       alt="" draggable="false" decoding="async">
+                <img class="ex f4"  src="./personaje/04-lentes.svg"       alt="" draggable="false" decoding="async">
+                <img class="ex f5"  src="./personaje/05-ojos-tapados.svg" alt="" draggable="false" decoding="async">
+                <img class="ex f7"  src="./personaje/07-guino.svg"        alt="" draggable="false" decoding="async">
+                <img class="ex f8"  src="./personaje/08-corazon.svg"      alt="" draggable="false" decoding="async">
+
+            </div></div></div>
+        </div>
+
+    <form class="card" id="f" novalidate>
+        <h1 id="titulo">Bienvenido</h1>
+        <p class="msg" id="msg" aria-live="polite">El acceso con cuenta requiere un backend. Podés recorrer el catálogo y hacer pedidos sin iniciar sesión.</p>
+
+        
+        <div class="f" id="fn" hidden>
+            <label for="n">Nombre</label>
+            <input id="n" type="text" autocomplete="name" placeholder="Tu nombre">
+        </div>
+
+        <div class="f">
+            <label for="u">Correo</label>
+            <input id="u" type="email" autocomplete="email" placeholder="tu@correo.com">
+        </div>
+
+        <div class="f">
+            <label for="p">Contraseña</label>
+            <input id="p" type="password" autocomplete="current-password" placeholder="••••••••">
+            <button type="button" class="eye" id="t" aria-label="Mostrar contraseña">VER</button>
+        </div>
+
+        <button class="go" id="go" type="submit">Ingresar</button>
+
+        <p class="swap">
+            <span id="swapTexto">¿No tenés cuenta?</span>
+            <button type="button" class="link" id="swap">Crear una</button>
+        </p>
+
+        <p class="tag">Pequeños brotes, grandes sueños</p>
+    </form>
+
+</main>
+
+<script src="./public/js/compat-restauracion.js"></script>
+<script src="./public/js/login.js"></script>
+</body>
+</html>
