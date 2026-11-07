@@ -103,9 +103,11 @@ se renderiza en la portada durante la generación.
 ## Despliegue
 
 El sitio se publica como sitio estático en GitHub Pages bajo subdirectorio y
-en Vercel. Para Vercel, `vercel.json` sirve `frontend/` como raíz estática y
-el comando de build es `npm run generar`. Las rutas internas son siempre
-relativas, así el sitio funciona tanto bajo un subdirectorio como en la raíz.
+en Vercel. En Vercel, configura el directorio raíz del proyecto como la raíz
+del repositorio. `vercel.json` ejecuta `npm run vercel-build` y publica
+`frontend/` como salida estática; no hace falta definir rewrites. Las rutas
+internas son siempre relativas, así el sitio funciona tanto bajo un
+subdirectorio como en la raíz.
 
 No hay base de datos, no hay API y no hay autenticación. No se requiere
 archivo `.env` ni variables de entorno de ejecución.
