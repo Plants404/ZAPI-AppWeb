@@ -68,7 +68,7 @@ frontend/
   *.html             HTML generado del sitio público
 e2e/                 prueba de navegador con Chrome
 scripts/dev.js       API + servidor estático en desarrollo
-netlify/functions/   adaptador serverless de la API
+api/index.js   adaptador serverless de la API para Vercel
 docs/                API, arquitectura y despliegue
 ```
 
@@ -143,9 +143,9 @@ pedido. El stock se repone si el pedido se cancela.
 
 ## Despliegue
 
-La publicación prevista es Netlify para el sitio y la función serverless, y
-MongoDB Atlas para la base. Ver `docs/deployment.md` para las variables de
-entorno, el build y las tareas posteriores al despliegue.
+La publicación prevista es Vercel para el sitio estático y la función
+serverless, y MongoDB Atlas para la base. Ver `docs/deployment.md` para las
+variables de entorno, el build y las tareas posteriores al despliegue.
 
 ## Documentación
 

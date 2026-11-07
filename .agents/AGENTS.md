@@ -27,7 +27,7 @@ comprobar el código.
   el orden de estilos y scripts y el layout del panel. No dupliques esa
   estructura en las páginas.
 - `backend/` es una API Express. `createApp(config)` no se conecta a Mongo:
-  la conexión la hacen `server.js` y la función de Netlify.
+  la conexión la hacen `server.js` y la función de Vercel (`api/index.js`).
 - `backend/src/routes/` contiene la API pública y `backend/src/routes/admin/`
   el panel. Toda ruta del panel exige rol `superadmin`.
 - `frontend/datos/catalogo.js` es solo la semilla del catálogo. La fuente de
