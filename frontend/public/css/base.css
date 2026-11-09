@@ -1,6 +1,8 @@
 /* Base compartida: reset, tipografía, controles, avisos, tarjetas de
    producto y los dos diálogos del sitio. Ninguna regla de acá depende de
-   una página concreta. */
+   una página concreta.
+   Enfoque mobile-first: los estilos base son para móvil y se agregan
+   mejoras con @media (min-width) para pantallas más grandes. */
 
 *,
 *::before,
@@ -22,6 +24,7 @@ body {
     line-height: 1.6;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
 body.sin-scroll {
@@ -373,10 +376,14 @@ ul {
     color: var(--leaf);
 }
 
+/* ==========================================================================
+   Productos: grilla de 2 columnas en móvil, auto-fill en tablet+
+   ========================================================================== */
+
 .productos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: var(--espacio-md);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--espacio-sm);
 }
 
 .tarjeta-producto {
@@ -425,11 +432,11 @@ ul {
     flex: 1;
     flex-direction: column;
     gap: .4rem;
-    padding: var(--espacio-md);
+    padding: var(--espacio-sm);
 }
 
 .tarjeta-cuerpo h3 {
-    font-size: var(--fs-xl);
+    font-size: var(--fs-lg);
 }
 
 .tarjeta-cuerpo h3 a {
@@ -453,6 +460,8 @@ ul {
     gap: .5rem;
     margin-top: auto;
     padding-top: var(--espacio-sm);
+    flex-direction: column;
+    align-items: stretch;
 }
 
 .tarjeta-pie strong {
@@ -495,10 +504,9 @@ ul {
 }
 
 /* Aviso flotante compartido. */
-
 .aviso-flotante {
     position: fixed;
-    bottom: var(--espacio-md);
+    bottom: var(--espacio-sm);
     left: 50%;
     z-index: 120;
     display: flex;
@@ -539,9 +547,8 @@ ul {
 }
 
 /* Ficha rápida de producto. */
-
 .modal-producto {
-    width: min(960px, 92vw);
+    width: min(92vw, 960px);
     max-width: none;
     max-height: 90vh;
     padding: 0;
@@ -558,12 +565,13 @@ ul {
 .modal-caja {
     position: relative;
     display: grid;
-    grid-template-columns: 1.05fr .95fr;
+    grid-template-columns: 1fr;
     max-height: 90vh;
     overflow: hidden;
     border-radius: var(--radio);
     background: var(--white);
     box-shadow: var(--sombra-lg);
+    overflow-y: auto;
 }
 
 .modal-cerrar {
@@ -577,14 +585,14 @@ ul {
 
 .modal-galeria {
     overflow-y: auto;
-    padding: var(--espacio-md);
+    padding: var(--espacio-sm);
     background: var(--sand);
 }
 
 .modal-foto {
     position: relative;
     overflow: hidden;
-    aspect-ratio: 2 / 3;
+    aspect-ratio: 4 / 3;
     border-radius: 10px;
     background: var(--cream);
 }
@@ -661,8 +669,8 @@ ul {
     display: flex;
     flex-direction: column;
     gap: .7rem;
-    overflow-y: auto;
-    padding: var(--espacio-lg);
+    overflow: visible;
+    padding: var(--espacio-md);
 }
 
 .modal-detalle h2 {
@@ -680,9 +688,8 @@ ul {
 }
 
 /* Diálogo para dejar una opinión. */
-
 .dialogo {
-    width: min(480px, 92vw);
+    width: min(92vw, 480px);
     max-width: none;
     max-height: 90vh;
     padding: 0;
@@ -696,7 +703,7 @@ ul {
     gap: .2rem;
     max-height: 90vh;
     overflow-y: auto;
-    padding: var(--espacio-lg);
+    padding: var(--espacio-md);
     border-radius: var(--radio);
     background: var(--white);
     box-shadow: var(--sombra-lg);
@@ -722,61 +729,108 @@ ul {
     margin-top: var(--espacio-sm);
 }
 
-@media (max-width: 768px) {
-    .modal-caja {
-        grid-template-columns: 1fr;
-        overflow-y: auto;
-    }
+/* ==========================================================================
+   Tablet y mejoras para pantallas medias (min-width: 769px)
+   ========================================================================== */
 
-    .modal-galeria {
-        padding: var(--espacio-sm);
-    }
+@media (min-width: 769px) {
 
-    .modal-foto {
-        max-height: 42vh;
-        aspect-ratio: 4 / 3;
-    }
-
-    .modal-detalle {
-        overflow: visible;
-        padding: var(--espacio-md);
-    }
-
-    .dialogo-caja {
-        padding: var(--espacio-md);
-    }
-}
-
-@media (max-width: 600px) {
     .productos-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: var(--espacio-sm);
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: var(--espacio-md);
+    }
+
+    .tarjeta-producto {
+        grid-template-columns: none;
     }
 
     .tarjeta-cuerpo {
-        padding: var(--espacio-sm);
+        padding: var(--espacio-md);
     }
 
     .tarjeta-cuerpo h3 {
-        font-size: var(--fs-lg);
+        font-size: var(--fs-xl);
     }
 
     .tarjeta-cuerpo > p,
     .tarjeta-pie .boton-agregar span:not(.material-symbols-outlined) {
-        display: none;
+        display: block;
     }
 
     .tarjeta-pie {
+        flex-direction: row;
         align-items: center;
-        flex-direction: column;
+        justify-content: space-between;
     }
 
     .boton-agregar {
-        width: 100%;
+        width: auto;
         justify-content: center;
     }
 
+    .modal-caja {
+        grid-template-columns: 1.05fr .95fr;
+        overflow-y: hidden;
+    }
+
+    .modal-galeria {
+        padding: var(--espacio-md);
+        overflow-y: auto;
+    }
+
+    .modal-foto {
+        max-height: none;
+        aspect-ratio: 2 / 3;
+    }
+
+    .modal-detalle {
+        overflow-y: auto;
+        padding: var(--espacio-lg);
+    }
+
+    .dialogo {
+        width: min(480px, 92vw);
+    }
+
+    .dialogo-caja {
+        padding: var(--espacio-lg);
+    }
+
     .aviso-flotante {
-        bottom: var(--espacio-sm);
+        bottom: var(--espacio-md);
+    }
+}
+
+@media (min-width: 1025px) {
+    .productos-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: var(--espacio-md);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .tarjeta-producto {
+        transition: none;
+    }
+
+    .tarjeta-producto:hover {
+        transform: none;
+        box-shadow: var(--sombra-sm);
+    }
+
+    .tarjeta-producto:hover .tarjeta-imagen img {
+        transform: none;
+    }
+
+    .boton {
+        transition: none;
+    }
+
+    .boton:hover {
+        transform: none;
     }
 }
