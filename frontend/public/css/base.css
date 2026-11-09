@@ -119,24 +119,6 @@ ul {
     border: 0;
 }
 
-.salto-contenido {
-    position: absolute;
-    top: -100px;
-    left: var(--espacio-md);
-    z-index: 200;
-    padding: .65rem 1rem;
-    border-radius: 0 0 var(--radio) var(--radio);
-    background: var(--forest);
-    color: var(--white);
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.salto-contenido:focus {
-    top: 0;
-    color: var(--white);
-}
-
 .material-symbols-outlined {
     font-size: 1.2em;
     line-height: 1;
