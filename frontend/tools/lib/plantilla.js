@@ -41,8 +41,7 @@ function cabecera(seccion, raiz, fichaProducto) {
             ? '<img src="' + raiz + '/public/img/logo.svg" alt="" width="40" height="40"><span>ZAPI</span>'
             : '<div class="logo-items-text"><span class="logo-nombre">ZAPI</span></div><div class="logo-items-img"><img src="' + raiz + '/public/img/logo.svg" alt=""></div>';
 
-    return `    <a class="saltar-contenido salto-contenido" href="#contenido">Saltar al contenido</a>
-<header class="site-header${fichaProducto ? ' header-producto' : ''}${headerClass}" data-header>
+    return `<header class="site-header${fichaProducto ? ' header-producto' : ''}${headerClass}" data-header>
         <button class="nav-toggle menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
             <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
             <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
