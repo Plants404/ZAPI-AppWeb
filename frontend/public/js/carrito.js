@@ -68,34 +68,34 @@ function lineaDeCarrito(linea) {
         ? `<small>${linea.cantidad} × ${formatearPrecio(linea.precio)}</small>`
         : '';
     const stock = unidades === null
-        ? '<p class="stock">Cargando disponibilidad…</p>'
-        : `<p class="stock ${claseDeStock(unidades)}">${textoDeStock(unidades)}</p>`;
+        ? '<p class="cart-item-stock stock">Cargando disponibilidad…</p>'
+        : `<p class="cart-item-stock stock ${claseDeStock(unidades)} ${unidades === 0 ? 'agotado' : unidades <= 3 ? 'pocas' : ''}">${textoDeStock(unidades)}</p>`;
 
     return `
-        <article class="linea-carrito" data-id="${linea.id}">
-            <a class="linea-foto" href="${escaparHTML(rutaFicha(producto))}">
+        <article class="cart-item linea-carrito" data-id="${linea.id}">
+            <a class="cart-item-image linea-foto" href="${escaparHTML(rutaFicha(producto))}">
                 <img src="${rutaConRaiz(escaparHTML(linea.imagen))}" alt="" loading="lazy" width="798" height="1200">
             </a>
-            <div class="linea-datos">
-                <span class="etiqueta">${escaparHTML(linea.categoria)}</span>
+            <div class="cart-item-info linea-datos">
+                <span class="cart-item-category etiqueta">${escaparHTML(linea.categoria)}</span>
                 <h2>${escaparHTML(linea.nombre)}</h2>
                 ${stock}
             </div>
-            <div class="linea-acciones">
-                <div class="control-cantidad" role="group" aria-label="Cantidad de ${escaparHTML(linea.nombre)}">
+            <div class="cart-item-actions linea-acciones">
+                <div class="quantity-control control-cantidad" role="group" aria-label="Cantidad de ${escaparHTML(linea.nombre)}">
                     <button class="boton-cantidad" type="button" data-accion="restar" data-id="${linea.id}" aria-label="Disminuir cantidad">
                         <span class="material-symbols-outlined" aria-hidden="true">remove</span>
                     </button>
-                    <span class="cantidad-valor" aria-live="polite">${linea.cantidad}</span>
+                    <span class="quantity-value cantidad-valor" aria-live="polite">${linea.cantidad}</span>
                     <button class="boton-cantidad" type="button" data-accion="sumar" data-id="${linea.id}" aria-label="Aumentar cantidad"${unidades !== null && linea.cantidad >= unidades ? ' disabled' : ''}>
                         <span class="material-symbols-outlined" aria-hidden="true">add</span>
                     </button>
                 </div>
-                <div class="linea-total">
+                <div class="cart-item-total linea-total">
                     <strong>${formatearPrecio(linea.precio * linea.cantidad)}</strong>
                     ${detalle}
                 </div>
-                <button class="icono-boton linea-quitar" type="button" data-accion="quitar" data-id="${linea.id}" aria-label="Eliminar ${escaparHTML(linea.nombre)} del carrito">
+                <button class="remove-item icono-boton linea-quitar" type="button" data-accion="quitar" data-id="${linea.id}" aria-label="Eliminar ${escaparHTML(linea.nombre)} del carrito">
                     <span class="material-symbols-outlined" aria-hidden="true">delete</span>
                 </button>
             </div>
@@ -122,7 +122,7 @@ function renderRecomendaciones() {
     const recomendaciones = obtenerCarrito().length ? recomendacionesDelCarrito() : [];
 
     seccion.hidden = recomendaciones.length === 0;
-    lista.innerHTML = recomendaciones.map(producto => htmlTarjetaProducto(producto)).join('');
+    lista.innerHTML = recomendaciones.map(producto => htmlTarjetaProducto(producto, undefined, true)).join('');
 }
 
 function renderCarrito() {

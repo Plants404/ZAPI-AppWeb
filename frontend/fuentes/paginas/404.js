@@ -1,53 +1,76 @@
 'use strict';
 
 const { NEGOCIO } = require('../../public/js/negocio.js');
+
 module.exports = {
     archivo: '404.html',
     seccion: '404',
-    titulo: '404 | ZAPI Vivero Agroecológico',
-    descripcion: 'La página que buscás no existe o cambió de lugar. Volvé al inicio de ZAPI.',
+    titulo: '404 · ZAPI | Esta planta aún no brotó',
+    descripcion: 'La página que buscás no existe o cambió de lugar. Volvamos a sembrar desde el inicio.',
     robots: 'noindex, follow',
     canonical: `${NEGOCIO.sitio}/404.html`,
     contenido: `
-<section class="pagina-404">
-    <div class="ilustracion-404" aria-hidden="true">
-        <span class="digito-404">4</span>
-        <svg class="planta-404" viewBox="0 0 200 260" focusable="false">
-            <g class="maceta-404">
-                <path class="maceta-cuerpo" d="M44 176 L156 176 L140 246 c-2 8 -9 12 -17 12 H77 c-8 0 -15 -4 -17 -12 Z"/>
-                <ellipse class="maceta-borde" cx="100" cy="176" rx="58" ry="13"/>
-                <ellipse class="maceta-tierra" cx="100" cy="177" rx="48" ry="10"/>
+<main class="escena">
+    <p class="marca">ZAPI</p>
+    <h1 class="year go" id="planta404" aria-label="Error 404">
+        <span class="digit" aria-hidden="true">4</span>
+        <svg class="tazon-svg" viewBox="0 0 200 260" aria-hidden="true" focusable="false">
+            <g class="tazon">
+                <path class="tazon-cuerpo" d="M44 176 L156 176 L140 246 c-2 8 -9 12 -17 12 H77 c-8 0 -15 -4 -17 -12 Z"/>
+                <ellipse class="tazon-borde" cx="100" cy="176" rx="58" ry="13"/>
+                <ellipse class="tierra" cx="100" cy="177" rx="48" ry="10"/>
+                <ellipse class="tierra-luz" cx="86" cy="174" rx="16" ry="4"/>
             </g>
-            <g class="tallo-404">
-                <path class="tallo" d="M100 178 C 93 146, 107 112, 100 82 C 95 58, 104 50, 100 42"/>
+            <g class="planta">
+                <path class="tallo" pathLength="1" d="M100 178 C 93 146, 107 112, 100 82 C 95 58, 104 50, 100 42"/>
                 <g transform="translate(100,146) rotate(-34)">
-                    <path class="hoja" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                    <g class="hoja hoja--salvia l1">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena" d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
                 </g>
                 <g transform="translate(100,124) rotate(212) scale(.95)">
-                    <path class="hoja" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                    <g class="hoja hoja--oliva l2">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena" d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
                 </g>
                 <g transform="translate(100,102) rotate(-42) scale(.95)">
-                    <path class="hoja" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                    <g class="hoja hoja--oliva l3">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena" d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
                 </g>
                 <g transform="translate(100,82) rotate(206) scale(.9)">
-                    <path class="hoja" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                    <g class="hoja hoja--salvia l4">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena" d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
+                </g>
+                <g transform="translate(100,64) rotate(-30) scale(.85)">
+                    <g class="hoja hoja--salvia l5">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena" d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
+                </g>
+                <g transform="translate(100,50) rotate(218) scale(.8)">
+                    <g class="hoja hoja--oliva l6">
+                        <path class="hoja-cuerpo" d="M0 0 C 12 -13, 35 -13, 46 0 C 35 13, 12 13, 0 0 Z"/>
+                        <path class="hoja-vena" d="M4 0 C 16 -1.6, 30 -1.6, 42 0"/>
+                    </g>
                 </g>
                 <g transform="translate(100,42)">
-                    <path class="brote-404" d="M0 0 C -10 -12, -8 -28, 0 -34 C 8 -28, 10 -12, 0 0 Z"/>
+                    <g class="brote">
+                        <path class="brote-cuerpo" d="M0 0 C -10 -12, -8 -28, 0 -34 C 8 -28, 10 -12, 0 0 Z"/>
+                        <path class="brote-linea" d="M0 -3 L 0 -31"/>
+                    </g>
                 </g>
             </g>
         </svg>
-        <span class="digito-404">4</span>
-    </div>
-
-    <span class="etiqueta">Error 404</span>
-    <h1>Esta planta aún no brotó</h1>
-    <p>La página que buscás no existe o cambió de lugar. Volvamos a sembrar desde el inicio.</p>
-
-    <div class="acciones-404">
-        <a class="boton boton-primario" href="./index.html">Volver al inicio</a>
-        <a class="boton boton-secundario" href="./catalogo.html">Explorar catálogo</a>
-    </div>
-</section>`,
-    scripts: []
+        <span class="digit" aria-hidden="true">4</span>
+    </h1>
+    <h2 class="titulo">Esta planta aún no brotó</h2>
+    <p class="texto">La página que buscás no existe o cambió de lugar. Volvamos a sembrar desde el inicio.</p>
+    <a class="boton" href="./index.html" id="volverInicio">Volver al inicio</a>
+</main>`
 };

@@ -16,6 +16,7 @@ function abrirTestimonio(disparador) {
 
     if (!dialogoTestimonio.open) {
         dialogoTestimonio.showModal();
+        document.body.classList.add('con-testimonio-abierto');
         bloquearScroll(true);
     }
 
@@ -141,7 +142,10 @@ async function enviarTestimonio(evento) {
 }
 
 if (dialogoTestimonio) {
-    dialogoTestimonio.addEventListener('close', () => bloquearScroll(false));
+    dialogoTestimonio.addEventListener('close', () => {
+        document.body.classList.remove('con-testimonio-abierto');
+        bloquearScroll(false);
+    });
 
     dialogoTestimonio.addEventListener('click', evento => {
         if (evento.target === dialogoTestimonio) cerrarTestimonio();

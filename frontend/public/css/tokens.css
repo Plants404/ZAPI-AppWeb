@@ -1,49 +1,61 @@
-/* Tokens de ZAPI. Este archivo es la única fuente de colores, tipografías,
-   radios, sombras y medidas compartidas. Las demás hojas usan estas
-   variables en lugar de repetir valores. */
+/* Tokens CSS de ZAPI — Valores únicos para todo el sitio.
+   Este archivo es la fuente única de verdad para colores, tipografías,
+   radios, sombras y espaciado. Ninguna otra hoja de estilo debe
+   contener valores hardcodeados de estos tipos. */
 
+/* Colores corporativos */
 :root {
-    --forest: #1f3a2e;
-    --moss: #3d6b4f;
-    --leaf: #4a7c59;
-    --cream: #f7f4ec;
-    --sand: #ece5d3;
-    --ink: #22261f;
-    --muted: #6a6f65;
-    --borde: #e4dccb;
-    --white: #ffffff;
-    --error: #a3341f;
-    --error-bg: #f9e6e2;
-    --ok: #2f6b47;
-    --ok-bg: #e7f2e9;
-    --aviso: #664d03;
-    --aviso-bg: #fff3cd;
-    --estrella: #c8951b;
+  --forest: #1f3a2e;
+  --moss: #3d6b4f;
+  --leaf: #4a7c59;
+  --cream: #f7f4ec;
+  --verde-secundario: #2e5240;
+  --menta: #e2ebdc;
+  --texto-verde-suave: #cfe0d3;
+  --sand: #ece5d3;
+  --earth: #6b5a44;
+  --ink: #22261f;
+  --muted-texto: #6a6f65;
+  --leaf-texto: #2f5c3c;
+  --borde: #e4dccb;
+  --white: #ffffff;
 
-    --serif: "Bebas Neue", Georgia, serif;
-    --sans: "Inter", system-ui, -apple-system, sans-serif;
+  /* Colores de estado y estados de stock */
+  --error: #a3341f;
+  --error-bg: #f9e6e2;
+  --amber-text: #664d03;
+  --amber-bg: #fff3cd;
+  --forest-bg: #f1ede2;
+  --leaf-bg: rgba(8, 255, 79, .65);
+  --leaf-hover: rgba(74, 124, 89, .35);
+  --leaf-texto-hover: #5b6058;
 
-    --radio: 14px;
-    --radio-pill: 999px;
+  /* Tipografía */
+  --serif: 'Bebas Neue', Georgia, serif;
+  --sans: 'Inter', system-ui, -apple-system, sans-serif;
 
-    --sombra-sm: 0 2px 10px rgb(31 58 46 / 6%);
-    --sombra-md: 0 12px 30px rgb(31 58 46 / 10%);
-    --sombra-lg: 0 24px 60px rgb(31 58 46 / 18%);
+  /* Radios */
+  --radius: 14px;
+  --radius-pill: 999px;
 
-    --espacio-xs: .5rem;
-    --espacio-sm: .75rem;
-    --espacio-md: 1.25rem;
-    --espacio-lg: 2rem;
-    --espacio-xl: 4rem;
+  /* Sombras */
+  --shadow-sm: 0 2px 10px rgba(31, 58, 46, .06);
+  --shadow-md: 0 12px 30px rgba(31, 58, 46, .10);
+  --shadow-lg: 0 24px 60px rgba(31, 58, 46, .18);
 
-    --ancho: 1200px;
-    --header-alto: 76px;
+  /* Espaciado */
+  --gutter: 1.25rem;
+  --gutter-sm: .75rem;
+  --gutter-md: 1.5rem;
+  --gutter-lg: 2rem;
 
-    --fs-xs: .75rem;
-    --fs-sm: .875rem;
-    --fs-base: 1rem;
-    --fs-lg: 1.125rem;
-    --fs-xl: 1.5rem;
-    --fs-2xl: 2rem;
-    --fs-3xl: 2.75rem;
+  /* Tamaños de fuente */
+  --fs-xs: .72rem;
+  --fs-sm: .75rem;
+  --fs-md: .95rem;
+  --fs-md-lg: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.35rem;
+  --fs-3xl: 2rem;
+  --fs-4xl: 2.6rem;
 }
