@@ -8,7 +8,7 @@ const navegacion = document.getElementById("navPrincipal");
 const fondoMenu = document.getElementById("navBackdrop");
 const hojaMenu = document.getElementById("hojaMenu");
 const escritorio = window.matchMedia("(min-width: 1024px)");
-const movil = window.matchMedia("(max-width: 767px)");
+const movil = window.matchMedia("(max-width: 1023px)");
 
 let menuAbierto = false;
 
