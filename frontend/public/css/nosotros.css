@@ -1,4 +1,4 @@
-/* Nosotros: problema y solución, pilares, razones, equipo y ubicación. */
+/* Nosotros: propuesta, valores, equipo y ubicación. */
 
 .banner-nosotros h1 {
     max-width: 22ch;
@@ -6,16 +6,23 @@
 
 .nosotros-duelo {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--espacio-md);
     padding-top: 0;
 }
 
+.nosotros-copy {
+    display: grid;
+    min-width: 0;
+    gap: var(--espacio-md);
+}
+
 .panel {
     display: flex;
+    min-width: 0;
     flex-direction: column;
     gap: .55rem;
-    padding: var(--espacio-lg);
+    padding: var(--espacio-md);
     border: 1px solid var(--borde);
     border-radius: var(--radio);
     background: var(--white);
@@ -32,19 +39,16 @@
 
 .panel-solucion h2,
 .panel-solucion .etiqueta {
-    color: var(--white);
+    color: var(--cream);
 }
 
-.panel-solucion p {
-    color: rgb(247 244 236 / 82%);
-}
-
+.panel-solucion p,
 .panel-solucion .lista-ventajas li {
-    color: rgb(247 244 236 / 86%);
+    color: var(--texto-verde-suave);
 }
 
 .panel-solucion .lista-ventajas .material-symbols-outlined {
-    color: var(--sand);
+    color: var(--menta);
 }
 
 .lista-preguntas {
@@ -56,10 +60,28 @@
     font-weight: 600;
 }
 
+.nosotros-foto {
+    overflow: hidden;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+    margin: 0;
+    border-radius: var(--radio);
+    background: var(--sand);
+}
+
+.nosotros-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .pilares-grid,
-.razones-grid {
+.razones-grid,
+.equipo-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--espacio-md);
 }
 
@@ -79,10 +101,6 @@
     font-size: 1.8rem;
 }
 
-.razones-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
 .razones-grid article > span {
     color: var(--borde);
     font-family: var(--serif);
@@ -96,14 +114,10 @@
     font-size: var(--fs-sm);
 }
 
-.equipo-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--espacio-md);
-}
-
 .persona {
     display: flex;
+    min-width: 0;
+    flex-direction: column;
     gap: var(--espacio-sm);
     padding: var(--espacio-md);
     border: 1px solid var(--borde);
@@ -140,7 +154,7 @@
 
 .nosotros-ubicacion {
     display: grid;
-    grid-template-columns: .9fr 1.1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--espacio-lg);
     align-items: center;
     padding-top: 0;
@@ -177,34 +191,43 @@
     border: 0;
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 600px) {
+    .panel {
+        padding: var(--espacio-lg);
+    }
+
+    .pilares-grid,
     .razones-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .persona {
+        flex-direction: row;
+    }
+}
+
+@media (min-width: 768px) {
+    .nosotros-duelo,
+    .nosotros-ubicacion {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .nosotros-foto {
+        height: 100%;
+        min-height: 400px;
+    }
+
+    .equipo-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 768px) {
-    .nosotros-duelo,
-    .nosotros-ubicacion {
-        grid-template-columns: 1fr;
-    }
-
-    .pilares-grid,
-    .equipo-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 600px) {
-    .panel {
-        padding: var(--espacio-md);
+@media (min-width: 1024px) {
+    .pilares-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .razones-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .persona {
-        flex-direction: column;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }

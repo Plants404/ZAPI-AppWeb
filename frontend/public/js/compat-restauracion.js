@@ -3,7 +3,7 @@
    compat-restauracion.js
    ------------------------------------------------------------
    Shim de compatibilidad para restaurar el login animado y el
-   chatbot de ZAPI sin editar el config.js actual (que ya no
+   chatbot Brotecito sin editar el config.js actual (que ya no
    existe en el sitio estático).
 
    Define solo cuando faltan:
@@ -128,7 +128,7 @@ if (typeof window.urlDelSitio === "undefined") {
     window.urlDelSitio = urlDelSitio;
 }
 
-/* ---- Globales que exige zapi-bot.js, solo cuando falten ---- */
+/* ---- Globales que exige Brotecito, solo cuando falten ---- */
 
 if (typeof window.formatearPrecio === "undefined") {
     window.formatearPrecio = function (valor) {

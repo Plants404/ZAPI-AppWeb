@@ -1,5 +1,7 @@
 'use strict';
 
+const { NEGOCIO } = require('../../public/js/negocio.js');
+
 const SERVICIOS = [
     ['support_agent', 'Asesoramiento personalizado', 'Guía paso a paso adaptada a tu espacio y tu tiempo.'],
     ['yard', 'Diseño de jardines', 'Planificación estética y funcional para patios y balcones.'],
@@ -43,7 +45,7 @@ ${SERVICIOS.map(([icono, titulo, texto], indice) => `
             <span class="servicio-numero" aria-hidden="true">${String(indice + 1).padStart(2, '0')}</span>
             <h3>${titulo}</h3>
             <p>${texto}</p>
-            <a class="enlace-flecha" href="./contacto.html">Consultar <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
+            <a class="enlace-flecha" href="https://wa.me/${NEGOCIO.whatsapp}" target="_blank" rel="noopener noreferrer" aria-label="Consultar por WhatsApp sobre ${titulo}">Consultar por WhatsApp <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span></a>
         </article>`).join('')}
     </div>
 </section>

@@ -4,7 +4,7 @@ const { NEGOCIO, slug } = require('../../public/js/negocio.js');
 
 const ENLACES = [
     { seccion: 'inicio', texto: 'Inicio', archivo: 'index.html' },
-    { seccion: 'catalogo', texto: 'Catalogo', archivo: 'catalogo.html' },
+    { seccion: 'catalogo', texto: 'Catálogo', archivo: 'catalogo.html' },
     { seccion: 'servicios', texto: 'Servicios', archivo: 'servicios.html' },
     { seccion: 'nosotros', texto: 'Nosotros', archivo: 'nosotros.html' },
     { seccion: 'contacto', texto: 'Contacto', archivo: 'contacto.html' }
@@ -34,14 +34,10 @@ function enlaceNavegacion(enlace, seccion, raiz) {
 }
 
 function cabecera(seccion, raiz, fichaProducto) {
-    const headerClass = seccion === 'carrito' || seccion === 'pedidos' ? ' cart-header' : '';
-    const logoContenido = headerClass
-        ? '<h4>ZAPI</h4>'
-        : fichaProducto
-            ? '<img src="' + raiz + '/public/img/logo.svg" alt="" width="40" height="40"><span>ZAPI</span>'
-            : '<div class="logo-items-text"><span class="logo-nombre">ZAPI</span></div><div class="logo-items-img"><img src="' + raiz + '/public/img/logo.svg" alt=""></div>';
+    const headerClass = fichaProducto ? ' header-producto' : '';
+    const logoContenido = '<div class="logo-items-text"><span class="logo-nombre">ZAPI</span></div><div class="logo-items-img"><img src="' + raiz + '/public/img/logo.svg" alt="" width="42" height="42"></div>';
 
-    return `<header class="site-header${fichaProducto ? ' header-producto' : ''}${headerClass}" data-header>
+    return `<header class="site-header${headerClass}" data-header>
         <button class="nav-toggle menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
             <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
             <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
@@ -53,7 +49,7 @@ function cabecera(seccion, raiz, fichaProducto) {
             ${logoContenido}
         </a>
 
-        <form class="${fichaProducto ? 'buscador-producto' : 'header-search'}" id="headerSearch" role="search" action="${raiz}/catalogo.html" autocomplete="off">
+        <form class="header-search${fichaProducto ? ' buscador-producto' : ''}" id="headerSearch" role="search" action="${raiz}/catalogo.html" autocomplete="off">
             <label class="visually-hidden" for="searchInput">Buscar productos</label>
             ${fichaProducto ? '' : icono('search', 'header-search-icono')}
             <input class="header-search-input" id="searchInput" name="q" type="search" placeholder="Buscar productos..." aria-describedby="searchStatus" spellcheck="false">
@@ -61,10 +57,9 @@ function cabecera(seccion, raiz, fichaProducto) {
             <button class="header-search-limpiar search-limpiar" id="searchClear" type="button" aria-label="Limpiar busqueda" hidden>${icono('close')}</button>
         </form>
 
-        <a class="${fichaProducto ? 'carrito-enlace' : 'header-cart header-carrito'}" href="${raiz}/carrito.html" aria-label="Ver carrito">
+        <a class="header-cart header-carrito${fichaProducto ? ' carrito-enlace' : ''}" href="${raiz}/carrito.html" aria-label="Ver carrito">
             ${icono('shopping_bag')}
             <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-            ${fichaProducto ? '<span>Carrito</span>' : ''}
         </a>
 
         <nav class="nav-bar site-nav" id="navPrincipal" aria-label="Navegacion principal">
@@ -219,26 +214,6 @@ function dialogoTestimonio() {
 </dialog>`;
 }
 
-function asistente(raiz) {
-    return `<button class="asistente-boton" id="asistenteBoton" type="button" aria-expanded="false" aria-controls="asistentePanel">
-    <img src="${raiz}/public/img/personaje/07-guino.svg" alt="">
-    <span class="visually-hidden">Abrir asistente ZAPI</span>
-</button>
-<section class="asistente-panel" id="asistentePanel" aria-labelledby="asistenteTitulo" hidden>
-    <header class="asistente-cabecera">
-        <img src="${raiz}/public/img/personaje/01-feliz.svg" alt="">
-        <div><strong id="asistenteTitulo">Asistente ZAPI</strong><small>Respuestas rápidas del vivero</small></div>
-        <button class="icono-boton" id="asistenteCerrar" type="button" aria-label="Cerrar asistente">${icono('close')}</button>
-    </header>
-    <div class="asistente-mensajes" id="asistenteMensajes" aria-live="polite"></div>
-    <form class="asistente-form" id="asistenteForm">
-        <label class="visually-hidden" for="asistenteEntrada">Escribí tu consulta</label>
-        <input id="asistenteEntrada" name="consulta" type="text" autocomplete="off" placeholder="¿En qué te podemos ayudar?">
-        <button type="submit" aria-label="Enviar consulta">${icono('send')}</button>
-    </form>
-</section>`;
-}
-
 function avisoFlotante() {
     return `<div class="aviso-flotante" id="avisoFlotante" role="status" aria-live="polite" hidden>
     ${icono('eco', 'aviso-icono')}
@@ -257,7 +232,7 @@ const SCRIPTS_BASE = [
     'compat-restauracion.js'
 ];
 
-const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'asistente.js', 'zapi-bot.js'];
+const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'zapi-bot.js'];
 
 function pagina(opciones) {
     const {
@@ -282,18 +257,23 @@ function pagina(opciones) {
     const ogImagen = `${NEGOCIO.sitio}/public/img/plants-hero.opt.jpg`;
     const fichaProducto = archivo.startsWith('producto-');
 
-    const cssPropio = `${raiz}/public/css/${seccion}.css`;
-    const hojas = fichaProducto
-        ? ['styles.css', 'estilos-producto.css', 'ajustes-estilo.css']
-        : archivo === 'index.html'
-            ? ['styles.css', 'stylecarrito.css', 'catalogo-catalogo.css', 'catalogo-modal.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css', 'ajustes-estilo.css']
-            : archivo === 'catalogo.html'
-                ? ['styles.css', 'catalogo-catalogo.css', 'catalogo-modal.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css', 'ajustes-estilo.css']
-                : archivo === 'carrito.html'
-                    ? ['tokens.css', 'styles.css', 'stylecarrito.css', 'catalogo-modal.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css', 'ajustes-estilo.css']
-                    : archivo === 'pedidos.html'
-                        ? ['styles.css', 'stylecarrito.css', 'tokens.css', 'pedidos.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css']
-                        : ['tokens.css', 'styles.css', cssPropio, 'zapi-bot.css', 'asistente.css', 'restauracion.css'];
+    const cssPropio = `${seccion === 'catalogo' ? 'catalogo-catalogo' : seccion}.css`;
+    const hojas = archivo === 'login.html'
+        ? ['tokens.css', 'styles.css', 'login.css', 'zapi-bot.css', 'restauracion.css']
+        : fichaProducto
+            ? ['styles.css', 'tokens.css', 'base.css', 'estructura.css', 'estilos-producto.css', 'zapi-bot.css', 'ajustes-estilo.css']
+            : [
+                'tokens.css',
+                'base.css',
+                'estructura.css',
+                cssPropio,
+                ...(archivo === 'index.html' || archivo === 'carrito.html'
+                    ? ['catalogo-catalogo.css', 'catalogo-modal.css']
+                    : archivo === 'catalogo.html'
+                        ? ['catalogo-modal.css']
+                    : []),
+                'zapi-bot.css'
+            ];
     const fuentes = fichaProducto
         ? 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap'
         : 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap';
@@ -367,7 +347,6 @@ ${fichaProducto ? `<a class="cart-link-float" href="${raiz}/carrito.html" id="ca
 </footer>` : pie(raiz, archivo)}
 ${productos && !fichaProducto ? modalProducto() : ''}
 ${opiniones ? dialogoTestimonio() : ''}
-${asistente(raiz)}
 ${avisoFlotante()}
 ${todosLosScripts.map(nombre => `    <script src="${rutaJs(nombre)}" defer></script>`).join('\n')}
 </body>
