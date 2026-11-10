@@ -14,12 +14,10 @@ function renderPedidos() {
     if (!pedidos.length) {
         contenedor.innerHTML = '';
         vacio.hidden = false;
-        vacio.classList.remove('hidden');
         return;
     }
 
     vacio.hidden = true;
-    vacio.classList.add('hidden');
     contenedor.innerHTML = pedidos.map(pedido => {
         const lineas = pedido.lineas.map(linea =>
             '<li class="pedido-linea"><span class="pedido-linea-cantidad">' + linea.cantidad + ' ×</span><span class="pedido-linea-nombre">' + escaparHTML(linea.nombre) + '</span><span class="pedido-linea-precio">' + formatearPrecio(linea.precio * linea.cantidad) + '</span></li>'

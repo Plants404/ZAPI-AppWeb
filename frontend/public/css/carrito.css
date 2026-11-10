@@ -1,14 +1,14 @@
-/* Carrito: líneas del pedido, resumen, progreso de envío y formulario
-   de contacto. El pedido se confirma por WhatsApp. */
+/* Carrito: productos, progreso de envío y resumen de compra. */
 
 .carrito-pagina {
     display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(300px, .9fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--espacio-lg);
     align-items: start;
+    width: 100%;
     max-width: var(--ancho);
     margin: 0 auto;
-    padding: var(--espacio-lg) var(--espacio-md) var(--espacio-xl);
+    padding: var(--espacio-lg) 16px var(--espacio-xl);
 }
 
 .carrito-contenido {
@@ -19,9 +19,9 @@
 
 .carrito-cabecera {
     display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: var(--espacio-md);
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--espacio-xs);
 }
 
 .carrito-cabecera h1 {
@@ -35,9 +35,10 @@
 
 .linea-carrito {
     display: grid;
-    grid-template-columns: 76px minmax(0, 1fr) auto;
+    grid-template-columns: 64px minmax(0, 1fr);
     gap: var(--espacio-sm);
     align-items: center;
+    min-width: 0;
     padding: var(--espacio-sm);
     border: 1px solid var(--borde);
     border-radius: var(--radio);
@@ -66,13 +67,18 @@
 }
 
 .linea-datos h2 {
+    overflow-wrap: anywhere;
     font-size: var(--fs-xl);
 }
 
 .linea-acciones {
     display: grid;
-    justify-items: end;
-    gap: .35rem;
+    grid-column: 1 / -1;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: start;
+    gap: var(--espacio-xs);
+    min-width: 0;
 }
 
 .control-cantidad {
@@ -88,14 +94,15 @@
 .boton-cantidad {
     display: grid;
     place-items: center;
-    width: 1.8rem;
-    height: 1.8rem;
+    width: 44px;
+    height: 44px;
     padding: 0;
     border: 0;
     border-radius: 50%;
     background: transparent;
     color: var(--forest);
     cursor: pointer;
+    transition: background-color .2s ease;
 }
 
 .boton-cantidad:hover:not([disabled]) {
@@ -134,10 +141,9 @@
 }
 
 .carrito-resumen {
-    position: sticky;
-    top: calc(var(--header-alto) + var(--espacio-md));
     display: grid;
     gap: var(--espacio-sm);
+    min-width: 0;
     padding: var(--espacio-md);
     border: 1px solid var(--borde);
     border-radius: var(--radio);
@@ -251,39 +257,43 @@
     color: var(--leaf);
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 600px) {
     .carrito-pagina {
-        grid-template-columns: 1fr;
-    }
-
-    .carrito-resumen {
-        position: static;
-    }
-}
-
-@media (max-width: 600px) {
-    .carrito-pagina {
-        padding: var(--espacio-md) var(--espacio-sm) var(--espacio-lg);
+        padding-right: var(--espacio-md);
+        padding-left: var(--espacio-md);
     }
 
     .carrito-cabecera {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: var(--espacio-xs);
+        align-items: flex-end;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: var(--espacio-md);
     }
 
     .linea-carrito {
-        grid-template-columns: 64px minmax(0, 1fr);
+        grid-template-columns: 76px minmax(0, 1fr) auto;
     }
 
     .linea-acciones {
-        grid-column: 1 / -1;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        justify-items: start;
+        grid-column: auto;
+        grid-template-columns: minmax(0, 1fr) auto;
+        justify-items: end;
     }
 
-    .linea-total {
-        justify-items: end;
+    .control-cantidad {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 1024px) {
+    .carrito-pagina {
+        grid-template-columns: minmax(0, 1.5fr) minmax(300px, .9fr);
+        padding-right: 32px;
+        padding-left: 32px;
+    }
+
+    .carrito-resumen {
+        position: sticky;
+        top: calc(var(--header-alto) + var(--espacio-md));
     }
 }

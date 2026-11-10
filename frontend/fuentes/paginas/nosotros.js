@@ -22,26 +22,31 @@ module.exports = {
 </section>
 
 <section class="seccion nosotros-duelo">
-    <article class="panel panel-problema">
-        <span class="etiqueta">El problema</span>
-        <h2>La idea entusiasma. El comienzo confunde.</h2>
-        <p>A casi todos nos gusta tener una huerta o un jardín y cuidarlo nosotros. Pero a la hora de empezar aparecen las dudas. Compramos una planta sin saber cómo cuidarla, se nos muere y lo dejamos.</p>
-        <ul class="lista-preguntas">
-            <li>¿Qué planto?</li>
-            <li>¿Cómo empiezo?</li>
-            <li>¿Va a funcionar?</li>
-        </ul>
-    </article>
-    <article class="panel panel-solucion">
-        <span class="etiqueta">La solución</span>
-        <h2>Un punto de partida pensado para principiantes.</h2>
-        <p>En ZAPI no te sumamos una planta más para dejarte solo. Te damos todo listo, explicado y con acompañamiento.</p>
-        <ul class="lista-ventajas">
-            <li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Todo listo y explicado, sin decisiones difíciles.</span></li>
-            <li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Elegido para tu espacio: balcón, patio o jardín.</span></li>
-            <li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Seguimos cerca después de la compra.</span></li>
-        </ul>
-    </article>
+    <div class="nosotros-copy">
+        <article class="panel panel-problema">
+            <span class="etiqueta">El problema</span>
+            <h2>La idea entusiasma. El comienzo confunde.</h2>
+            <p>A casi todos nos gusta tener una huerta o un jardín y cuidarlo nosotros. Pero a la hora de empezar aparecen las dudas. Compramos una planta sin saber cómo cuidarla, se nos muere y lo dejamos.</p>
+            <ul class="lista-preguntas">
+                <li>¿Qué planto?</li>
+                <li>¿Cómo empiezo?</li>
+                <li>¿Va a funcionar?</li>
+            </ul>
+        </article>
+        <article class="panel panel-solucion">
+            <span class="etiqueta">La solución</span>
+            <h2>Un punto de partida pensado para principiantes.</h2>
+            <p>En ZAPI no te sumamos una planta más para dejarte solo. Te damos todo listo, explicado y con acompañamiento.</p>
+            <ul class="lista-ventajas">
+                <li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Todo listo y explicado, sin decisiones difíciles.</span></li>
+                <li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Elegido para tu espacio: balcón, patio o jardín.</span></li>
+                <li><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>Seguimos cerca después de la compra.</span></li>
+            </ul>
+        </article>
+    </div>
+    <figure class="nosotros-foto">
+        <img src="./public/img/plants-hero.opt.jpg" alt="Plantas de interior en un ambiente luminoso" width="1200" height="800" loading="lazy">
+    </figure>
 </section>
 
 <section class="seccion nosotros-pilares" aria-labelledby="tituloPilares">

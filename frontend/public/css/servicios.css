@@ -1,14 +1,15 @@
-/* Servicios: grilla de propuestas y cierre con llamado a presupuesto. */
+/* Servicios: propuestas con consultas directas por WhatsApp. */
 
 .servicios-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--espacio-md);
 }
 
 .servicio-card {
     position: relative;
     display: flex;
+    min-width: 0;
     flex-direction: column;
     gap: .45rem;
     padding: var(--espacio-md);
@@ -21,8 +22,8 @@
 .servicio-icono {
     display: grid;
     place-items: center;
-    width: 2.6rem;
-    height: 2.6rem;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--sand);
     color: var(--forest);
@@ -48,18 +49,19 @@
 }
 
 .servicio-card .enlace-flecha {
+    min-height: 44px;
     margin-top: auto;
     padding-top: var(--espacio-sm);
 }
 
 .servicios-cierre {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--espacio-lg);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espacio-md);
     max-width: var(--ancho);
     margin: 0 auto var(--espacio-xl);
-    padding: var(--espacio-lg);
+    padding: var(--espacio-md);
     border-radius: var(--radio);
     background: var(--forest);
     color: var(--cream);
@@ -68,20 +70,20 @@
 .servicios-cierre h2 {
     max-width: 24ch;
     margin: .2rem 0 .4rem;
-    color: var(--white);
+    color: var(--cream);
 }
 
 .servicios-cierre p {
     max-width: 52ch;
-    color: rgb(247 244 236 / 78%);
+    color: var(--texto-verde-suave);
 }
 
 .servicios-cierre .etiqueta {
-    color: var(--sand);
+    color: var(--menta);
 }
 
 .servicios-cierre .boton-primario {
-    flex: 0 0 auto;
+    width: 100%;
     background: var(--white);
     color: var(--forest);
 }
@@ -91,27 +93,41 @@
     color: var(--forest);
 }
 
-@media (max-width: 768px) {
+@media (min-width: 600px) {
+    .servicios-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .servicios-cierre {
-        align-items: flex-start;
-        flex-direction: column;
         margin-right: var(--espacio-md);
         margin-left: var(--espacio-md);
+        padding: var(--espacio-lg);
+    }
+
+    .servicios-cierre .boton-primario {
+        width: auto;
     }
 }
 
-@media (max-width: 600px) {
+@media (min-width: 768px) {
     .servicios-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .servicios-cierre {
-        margin-right: var(--espacio-sm);
-        margin-left: var(--espacio-sm);
-        padding: var(--espacio-md);
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+@media (min-width: 1024px) {
+    .servicios-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .servicios-cierre .boton {
-        width: 100%;
+    .servicios-cierre {
+        margin-right: auto;
+        margin-left: auto;
     }
 }

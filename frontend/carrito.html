@@ -20,16 +20,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&family=Montserrat:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="./public/css/tokens.css">
-    <link rel="stylesheet" href="./public/css/styles.css">
-    <link rel="stylesheet" href="./public/css/stylecarrito.css">
+    <link rel="stylesheet" href="./public/css/base.css">
+    <link rel="stylesheet" href="./public/css/estructura.css">
+    <link rel="stylesheet" href="./public/css/carrito.css">
+    <link rel="stylesheet" href="./public/css/catalogo-catalogo.css">
     <link rel="stylesheet" href="./public/css/catalogo-modal.css">
     <link rel="stylesheet" href="./public/css/zapi-bot.css">
     <link rel="stylesheet" href="./public/css/asistente.css">
-    <link rel="stylesheet" href="./public/css/restauracion.css">
-    <link rel="stylesheet" href="./public/css/ajustes-estilo.css">
 </head>
 <body class="pagina-carrito " data-raiz=".">
-<header class="site-header cart-header" data-header>
+<header class="site-header" data-header>
         <button class="nav-toggle menu-boton" id="navToggle" type="button" aria-expanded="false" aria-controls="navPrincipal" aria-label="Abrir menu de navegacion">
             <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
             <span class="nav-toggle-barra menu-linea" aria-hidden="true"></span>
@@ -38,7 +38,7 @@
         </button>
 
         <a class="logo marca" href="./index.html" aria-label="ZAPI, ir al inicio">
-            <h4>ZAPI</h4>
+            <div class="logo-items-text"><span class="logo-nombre">ZAPI</span></div><div class="logo-items-img"><img src="./public/img/logo.svg" alt="" width="42" height="42"></div>
         </a>
 
         <form class="header-search" id="headerSearch" role="search" action="./catalogo.html" autocomplete="off">
@@ -52,11 +52,10 @@
         <a class="header-cart header-carrito" href="./carrito.html" aria-label="Ver carrito">
             <span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span>
             <span class="cart-count" data-cart-count aria-hidden="true">0</span>
-
         </a>
 
         <nav class="nav-bar site-nav" id="navPrincipal" aria-label="Navegacion principal">
-            <ul><li><a class="nav-link nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-link nav-enlace" href="./catalogo.html">Catalogo</a></li><li><a class="nav-link nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-link nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-link nav-enlace" href="./contacto.html">Contacto</a></li><li><a class="nav-link nav-enlace" href="./login.html">Ingresar</a></li></ul>
+            <ul><li><a class="nav-link nav-enlace" href="./index.html">Inicio</a></li><li><a class="nav-link nav-enlace" href="./catalogo.html">Catálogo</a></li><li><a class="nav-link nav-enlace" href="./servicios.html">Servicios</a></li><li><a class="nav-link nav-enlace" href="./nosotros.html">Nosotros</a></li><li><a class="nav-link nav-enlace" href="./contacto.html">Contacto</a></li><li><a class="nav-link nav-enlace" href="./login.html">Ingresar</a></li></ul>
         </nav>
 </header>
 <div class="nav-backdrop" id="navBackdrop" hidden></div>

@@ -8,25 +8,25 @@ module.exports = {
     productos: true,
     opiniones: true,
     contenido: `
-<section class="section hero" id="inicio">
+<section class="hero" id="inicio">
     <div class="hero-grid">
       <div class="hero-copy">
         <h1>Transformamos espacios con naturaleza.</h1>
         <p class="hero-lead">En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a traves de soluciones agroecologicas integrales.</p>
         <ul class="hero-features hero-beneficios">
-            <li><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</li>
-            <li><strong>Asesoramiento profesional:</strong> Paso a paso.</li>
-            <li><strong>Cuidado simple:</strong> Para que tu espacio prospere.</li>
+            <li><span aria-hidden="true">✓</span><span><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</span></li>
+            <li><span aria-hidden="true">✓</span><span><strong>Asesoramiento profesional:</strong> Paso a paso.</span></li>
+            <li><span aria-hidden="true">✓</span><span><strong>Cuidado simple:</strong> Para que tu espacio prospere.</span></li>
         </ul>
         <div class="hero-ctas">
-            <a class="boton boton-primario" href="./catalogo.html">Explorar catalogo</a>
+            <a class="boton boton-primario" href="./catalogo.html">Explorar catálogo</a>
             <a class="boton boton-secundario" href="./servicios.html">Conocer nuestros servicios</a>
         </div>
       </div>
-      <img src="./public/img/plants-hero.opt.jpg" alt="Plantas de interior verdes en un ambiente luminoso" width="1200" height="800" fetchpriority="high">
+      <img class="hero-visual" src="./public/img/plants-hero.opt.jpg" alt="Plantas de interior verdes en un ambiente luminoso" width="1200" height="800" fetchpriority="high">
     </div>
 
-    <div class="home-products-carousel" role="region" aria-label="Productos destacados">
+    <div class="destacados home-products-carousel" role="region" aria-label="Productos destacados">
         <div class="carousel-header">
             <h2>Productos destacados</h2>
         </div>

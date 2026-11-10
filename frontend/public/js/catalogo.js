@@ -7,6 +7,7 @@
 
 let categoriaActual = '';
 let busquedaActual = '';
+let ordenActual = 'recomendados';
 
 function coincideBusqueda(producto) {
     if (!busquedaActual) return true;
@@ -92,6 +93,14 @@ function renderCatalogo() {
 
     const visibles = productosVisibles();
 
+    if (ordenActual === 'precio-asc') {
+        visibles.sort((a, b) => a.precioBase - b.precioBase);
+    } else if (ordenActual === 'precio-desc') {
+        visibles.sort((a, b) => b.precioBase - a.precioBase);
+    } else if (ordenActual === 'nombre') {
+        visibles.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    }
+
     if (conteo) {
         conteo.textContent = visibles.length === 1
             ? '1 producto'
@@ -138,6 +147,15 @@ document.addEventListener('click', evento => {
         window.refrescarCampoBuscador('');
     }
 });
+
+const selectorOrden = document.getElementById('catalogSort');
+
+if (selectorOrden) {
+    selectorOrden.addEventListener('change', () => {
+        ordenActual = selectorOrden.value;
+        renderCatalogo();
+    });
+}
 
 renderFiltros();
 renderCatalogo();
