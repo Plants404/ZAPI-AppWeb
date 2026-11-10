@@ -5,6 +5,7 @@ node_modules/
 .env
 .env.*
 *.env
+!.env.example
 
 # Salidas de herramientas y editor
 .netlify/
