@@ -24,7 +24,6 @@
     <link rel="stylesheet" href="./public/css/estructura.css">
     <link rel="stylesheet" href="./public/css/contacto.css">
     <link rel="stylesheet" href="./public/css/zapi-bot.css">
-    <link rel="stylesheet" href="./public/css/asistente.css">
 </head>
 <body class="pagina-contacto " data-raiz=".">
 <header class="site-header" data-header>
@@ -226,23 +225,6 @@
 </footer>
 
 
-<button class="asistente-boton" id="asistenteBoton" type="button" aria-expanded="false" aria-controls="asistentePanel">
-    <img src="./public/img/personaje/07-guino.svg" alt="">
-    <span class="visually-hidden">Abrir asistente ZAPI</span>
-</button>
-<section class="asistente-panel" id="asistentePanel" aria-labelledby="asistenteTitulo" hidden>
-    <header class="asistente-cabecera">
-        <img src="./public/img/personaje/01-feliz.svg" alt="">
-        <div><strong id="asistenteTitulo">Asistente ZAPI</strong><small>Respuestas rápidas del vivero</small></div>
-        <button class="icono-boton" id="asistenteCerrar" type="button" aria-label="Cerrar asistente"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-    </header>
-    <div class="asistente-mensajes" id="asistenteMensajes" aria-live="polite"></div>
-    <form class="asistente-form" id="asistenteForm">
-        <label class="visually-hidden" for="asistenteEntrada">Escribí tu consulta</label>
-        <input id="asistenteEntrada" name="consulta" type="text" autocomplete="off" placeholder="¿En qué te podemos ayudar?">
-        <button type="submit" aria-label="Enviar consulta"><span class="material-symbols-outlined" aria-hidden="true">send</span></button>
-    </form>
-</section>
 <div class="aviso-flotante" id="avisoFlotante" role="status" aria-live="polite" hidden>
     <span class="material-symbols-outlined aviso-icono" aria-hidden="true">eco</span>
     <div class="aviso-texto"><strong id="avisoFlotanteTitulo"></strong><span id="avisoFlotanteMensaje"></span></div>
@@ -258,7 +240,6 @@
     <script src="./public/js/contacto.js" defer></script>
     <script src="./public/js/menu.js" defer></script>
     <script src="./public/js/buscador.js" defer></script>
-    <script src="./public/js/asistente.js" defer></script>
     <script src="./public/js/zapi-bot.js" defer></script>
 </body>
 </html>
