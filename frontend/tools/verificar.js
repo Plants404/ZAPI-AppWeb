@@ -204,7 +204,7 @@ for (const pagina of PAGINAS) {
 
 seccion('Orden de carga de scripts');
 
-const ORDEN_ESPERADO = ['negocio.js', 'utilidades.js', 'catalogo-datos.js', 'carrito-estado.js', 'pedidos-estado.js', 'modal.js', 'menu.js', 'buscador.js', 'asistente.js'];
+const ORDEN_ESPERADO = ['negocio.js', 'utilidades.js', 'catalogo-datos.js', 'carrito-estado.js', 'pedidos-estado.js', 'modal.js', 'menu.js', 'buscador.js', 'zapi-bot.js'];
 
 for (const pagina of PAGINAS) {
     const contenido = leer(path.join(raiz, pagina));
