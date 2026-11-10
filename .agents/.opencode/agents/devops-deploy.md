@@ -9,7 +9,7 @@ Lee `AGENTS.md` e inspecciona la configuración real de publicación, scripts y 
 
 ## Responsabilidades
 - Revisar comandos de desarrollo, generación y verificación.
-- Mantener las rutas relativas para que el sitio funcione en Netlify y en un subdirectorio de GitHub Pages.
+- Mantener las rutas relativas para que el sitio funcione en Vercel y en un subdirectorio de GitHub Pages.
 - Actualizar la configuración de publicación cuando cambie la estructura del repositorio.
 - Revisar workflows de CI/CD y automatizar verificaciones seguras.
 - Comprobar el resultado de `npm run check` antes de publicar.

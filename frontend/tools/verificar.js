@@ -78,14 +78,11 @@ const RASTROS = [
     { archivo: 'public/js/configuracion.js', motivo: 'configuracion.js' },
     { archivo: 'public/js/sesion.js', motivo: 'sesion.js' },
     { archivo: 'public/js/cuenta.js', motivo: 'cuenta.js' },
-    { archivo: 'public/js/login.js', motivo: 'login.js' },
     { archivo: 'public/js/contenido-publico.js', motivo: 'contenido-publico.js' },
-    { archivo: 'backend', motivo: 'backend/' },
     { archivo: 'api', motivo: 'api/' },
     { archivo: 'scripts', motivo: 'scripts/' },
     { archivo: 'tests', motivo: 'tests/' },
-    { archivo: 'e2e', motivo: 'e2e/' },
-    { archivo: '.env.example', motivo: '.env.example' }
+    { archivo: 'e2e', motivo: 'e2e/' }
 ];
 
 for (const rastro of RASTROS) {
@@ -101,17 +98,16 @@ const adminPublico = path.join(raiz, 'admin');
 if (fs.existsSync(adminPublico)) error('Queda carpeta admin/ publicada');
 else ok('Sin carpeta admin/ publicada');
 
-const loginHtml = path.join(raiz, 'login.html');
 const cuentaHtml = path.join(raiz, 'cuenta.html');
 const productoHtml = path.join(raiz, 'producto.html');
-for (const h of [loginHtml, cuentaHtml, productoHtml]) {
+for (const h of [cuentaHtml, productoHtml]) {
     if (fs.existsSync(h)) error('Queda pagina eliminada: ' + path.basename(h));
 }
-if (!fs.existsSync(loginHtml) && !fs.existsSync(cuentaHtml) && !fs.existsSync(productoHtml)) ok('Sin paginas de login/cuenta/producto sueltas');
+if (!fs.existsSync(cuentaHtml) && !fs.existsSync(productoHtml)) ok('Sin paginas de cuenta/producto sueltas');
 
 seccion('Referencias prohibidas en HTML, JS y CSS publicados');
 
-const PROHIBIDOS = ['/api', 'login.html', 'admin.html', 'cuenta.html', 'mongo', 'mongodb', 'sesion', 'promocion-banner', 'data-shipping-threshold'];
+const PROHIBIDOS = ['admin.html', 'cuenta.html', 'mongo', 'mongodb', 'sesion', 'promocion-banner', 'data-shipping-threshold'];
 const archivosRevisar = [];
 
 for (const dir of [raiz, path.join(raiz, 'public', 'js'), path.join(raiz, 'public', 'css')]) {

@@ -19,10 +19,18 @@ async function connectDatabase() {
     await nuevoCliente.connect();
     const nuevaBase = nuevoCliente.db(process.env.MONGODB_DB || 'zapi');
     await nuevaBase.command({ ping: 1 });
+    await asegurarIndices(nuevaBase);
 
     cliente = nuevoCliente;
     baseDeDatos = nuevaBase;
     return baseDeDatos;
+}
+
+async function asegurarIndices(base) {
+    await base.collection('orders').createIndex({ id: 1 }, { unique: true });
+    await base.collection('orders').createIndex({ estado: 1, fecha: -1 });
+    await base.collection('contacts').createIndex({ createdAt: -1 });
+    await base.collection('testimonials').createIndex({ estado: 1, createdAt: -1 });
 }
 
 function getDatabase() {
