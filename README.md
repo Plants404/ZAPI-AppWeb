@@ -1,20 +1,17 @@
 # ZAPI
 
-Sitio estático del vivero agroecológico ZAPI, sin backend, sin autenticación y
-sin panel de administración. El catálogo, los pedidos, el contacto y los
-testimonios funcionan enteramente en el navegador: los pedidos se arman en el
-carrito, se validan en el cliente, se guardan en localStorage (“Mis pedidos”)
-y se envían por WhatsApp. El contacto y los testimonios se envían por EmailJS;
-si falta configuración o falla el envío, se abre WhatsApp precargado como
-respaldo.
+Sitio del vivero agroecológico ZAPI con frontend estático y una API opcional
+en Node.js y Express conectada a MongoDB. El frontend actual conserva su flujo
+local de pedidos y sus envíos por WhatsApp/EmailJS; la API ofrece persistencia
+para catálogo, pedidos, consultas de contacto y testimonios.
 
 El sitio se publica en GitHub Pages bajo un subdirectorio y en Vercel, con
-rutas internas siempre relativas. No hay frameworks, bundlers ni dependencias
-de ejecución; ESLint es solo una herramienta de desarrollo.
+rutas internas siempre relativas. El frontend no usa frameworks ni bundlers;
+el backend usa Express y el driver oficial de MongoDB.
 
 ## Puesta en marcha
 
-Instala las dependencias de desarrollo y ejecuta el sitio localmente:
+Instala las dependencias y ejecuta el sitio localmente:
 
 ```bash
 npm install
@@ -22,8 +19,46 @@ npm run frontend
 ```
 
 El servidor estático levanta el sitio en `http://localhost:5500`. Sirve los
-archivos de `frontend/` con rutas relativas y no requiere base de datos ni
-API.
+archivos de `frontend/` con rutas relativas.
+
+## API y MongoDB Atlas
+
+La API requiere Node.js 24 o superior y una instancia de MongoDB (por ejemplo,
+MongoDB Atlas). Copia `.env.example` a `.env` y reemplaza
+`REEMPLAZAR_CON_PASSWORD` en `MONGODB_URI` por la contraseña del usuario de
+base de datos. Codifica para URL los caracteres especiales de la contraseña.
+No pongas esa cadena en el frontend ni la subas al repositorio. En Atlas,
+crea un usuario de base de datos con acceso
+`readWrite` únicamente a la base `zapi` y permite en Network Access solo las
+direcciones IP que realmente necesites.
+
+```bash
+npm install
+npm run backend:seed
+npm run backend
+```
+
+La API local escucha en `http://localhost:5501`. `GET /api/health` confirma
+que el servidor puede ejecutar un ping contra MongoDB. Configura
+`FRONTEND_ORIGINS` como una lista separada por comas si el frontend se sirve
+desde otros orígenes; por defecto se permiten los puertos locales 5500.
+El despliegue actual de Vercel publica solo el frontend estático: aloja esta
+API en un servicio Node.js y configura allí `MONGODB_URI`, `MONGODB_DB` y
+`FRONTEND_ORIGINS`.
+
+Endpoints disponibles:
+
+- `GET /api/products` y `GET /api/products/:slug`: catálogo activo.
+- `POST /api/orders`: crea un pedido con precios recalculados desde MongoDB;
+  no descuenta stock.
+- `POST /api/contact`: guarda consultas privadas de contacto.
+- `GET /api/testimonials`: devuelve solo testimonios aprobados.
+- `POST /api/testimonials`: guarda opiniones pendientes de aprobación.
+
+Los pedidos y consultas no tienen endpoints de lectura públicos. Los
+testimonios se publican solo después de que una persona cambie su estado a
+`approved` en la base de datos. El frontend existente todavía no envía estos
+formularios a la API; sus flujos actuales no cambian al iniciar el backend.
 
 ## Generación y verificación
 
@@ -42,6 +77,7 @@ El comando genera las páginas públicas, las fichas de producto como
 Para comprobar que todo está reproducible y coherente:
 
 ```bash
+npm run test:backend
 npm run verificar
 npm run lint
 npm run check
@@ -74,9 +110,16 @@ frontend/
     generar-productos.js genera fichas y rellena datos del catálogo
     generar-sitemap.js  genera sitemap.xml y robots.txt
     servir.js           servidor estático local
-  *.html          HTML generado del sitio público
-  sitemap.xml     mapa del sitio
-  robots.txt      instrucciones para rastreadores
+  *.html                páginas generadas del sitio público
+  sitemap.xml           mapa del sitio
+  robots.txt             instrucciones para rastreadores
+backend/
+  app.js                 rutas y middleware de Express
+  db.js                  conexión al driver oficial de MongoDB
+  server.js              arranque de la API
+  seed.js                sincroniza productos desde frontend/datos/catalogo.js
+  routes/                endpoints de productos, pedidos y formularios
+  lib/                   validación y errores HTTP
 ```
 
 Cada página pública comparte la misma cabecera y el mismo pie, generados desde
