@@ -64,6 +64,8 @@ function crearApp(opciones = {}) {
         }
         res.set('X-Content-Type-Options', 'nosniff');
         res.set('Referrer-Policy', 'no-referrer');
+        res.set('X-Frame-Options', 'DENY');
+        res.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self';");
 
         if (req.method === 'OPTIONS') {
             res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -110,7 +112,7 @@ function crearApp(opciones = {}) {
             message = 'La solicitud supera el tamaño permitido.';
         }
 
-        if (status >= 500) console.error('Error de API:', error);
+        if (status >= 500) console.error('Error de API:', error.message);
         res.status(status).json({ error: message });
     });
 
