@@ -7,7 +7,7 @@
     "frontend": "node frontend/tools/servir.js",
     "backend": "node --env-file-if-exists=.env backend/server.js",
     "backend:seed": "node --env-file-if-exists=.env backend/seed.js",
-    "test:backend": "node --test backend/test",
+    "test:backend": "node --test \"backend/test/*.test.js\"",
     "generar": "node frontend/tools/construir.js && node frontend/tools/generar-productos.js && node frontend/tools/generar-sitemap.js",
     "verificar": "node frontend/tools/verificar.js",
     "lint": "eslint .",
