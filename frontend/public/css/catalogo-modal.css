@@ -19,13 +19,13 @@ font-weight: 600;
 text-align: center;
 transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
 cursor: pointer;
-box-shadow: 0 6px 16px rgba(31, 58, 46, .18);
+box-shadow: var(--add-cart-shadow);
 }
 
 .add-cart:hover {
 background: var(--moss);
 transform: translateY(-2px);
-box-shadow: 0 10px 22px rgba(31, 58, 46, .22);
+box-shadow: var(--add-cart-hover-shadow);
 }
 
 .add-cart.added {
@@ -88,7 +88,7 @@ position: absolute;
 
 inset: 0;
 
-background: rgba(31, 58, 46, .58);
+background: var(--modal-overlay);
 
 backdrop-filter: blur(4px);
 
@@ -147,7 +147,7 @@ height: 44px;
 
 border-radius: 50%;
 
-background: rgba(247, 244, 236, .94);
+background: var(--cream-overlay-94);
 
 color: var(--forest);
 
@@ -236,7 +236,7 @@ height: 44px;
 
 border-radius: 50%;
 
-background: rgba(247, 244, 236, .92);
+background: var(--cream-overlay-92);
 
 color: var(--forest);
 
@@ -296,7 +296,7 @@ padding: .25rem .6rem;
 
 border-radius: 999px;
 
-background: rgba(31, 58, 46, .72);
+background: var(--forest-overlay-modal-counter);
 
 color: var(--cream);
 
@@ -406,7 +406,7 @@ padding: .3rem .7rem;
 
 border-radius: 999px;
 
-background: rgba(74, 124, 89, .12);
+background: var(--leaf-wash);
 
 color: var(--moss);
 
@@ -454,7 +454,7 @@ padding: 0;
 
 margin: 0 0 1.3rem;
 
-border-top: 1px dashed rgba(74, 124, 89, .35);
+border-top: 1px dashed var(--leaf-border-hover);
 
 padding-top: 1rem;
 
@@ -591,7 +591,7 @@ padding: .9rem 1.25rem;
 
 margin-top: 1.2rem;
 
-box-shadow: 0 -12px 18px rgba(255, 255, 255, .92);
+box-shadow: var(--modal-sticky-shadow);
 
 }
 
@@ -631,7 +631,7 @@ outline-offset: 2px;
 
 
 
-@media (min-width: 821px) {
+@media (min-width: 768px) {
 
 .modal-producto {
 
@@ -739,4 +739,3 @@ transform: none;
 }
 
 }
-

@@ -275,7 +275,7 @@ ul {
 .campo-input:focus {
     border-color: var(--leaf);
     outline: none;
-    box-shadow: 0 0 0 3px rgb(74 124 89 / 18%);
+    box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .campo-input.campo-con-error {
@@ -397,9 +397,11 @@ ul {
     transition: box-shadow .2s ease, transform .2s ease;
 }
 
-.tarjeta-producto:hover {
-    box-shadow: var(--sombra-md);
-    transform: translateY(-2px);
+@media (hover: hover) {
+    .tarjeta-producto:hover {
+        box-shadow: var(--sombra-md);
+        transform: translateY(-2px);
+    }
 }
 
 .tarjeta-imagen {
@@ -528,7 +530,7 @@ ul {
 }
 
 .aviso-flotante .icono-boton:hover {
-    background: rgb(255 255 255 / 12%);
+    background: var(--white-overlay-soft);
 }
 
 .aviso-icono {
@@ -556,9 +558,13 @@ ul {
     background: transparent;
 }
 
+.modal-producto:not([open]) {
+    display: none;
+}
+
 .modal-producto::backdrop,
 .dialogo::backdrop {
-    background: rgb(15 33 24 / 55%);
+    background: var(--dialog-overlay);
     backdrop-filter: blur(3px);
 }
 
@@ -612,7 +618,7 @@ ul {
     height: 2.4rem;
     border: 0;
     border-radius: 50%;
-    background: rgb(255 255 255 / 88%);
+    background: var(--white-overlay);
     color: var(--forest);
     cursor: pointer;
     transform: translateY(-50%);
@@ -632,7 +638,7 @@ ul {
     bottom: .5rem;
     padding: .15rem .5rem;
     border-radius: var(--radio-pill);
-    background: rgb(31 58 46 / 78%);
+    background: var(--forest-overlay-counter);
     color: var(--white);
     font-size: var(--fs-xs);
 }
