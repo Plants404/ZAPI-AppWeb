@@ -214,26 +214,6 @@ function dialogoTestimonio() {
 </dialog>`;
 }
 
-function asistente(raiz) {
-    return `<button class="asistente-boton" id="asistenteBoton" type="button" aria-expanded="false" aria-controls="asistentePanel">
-    <img src="${raiz}/public/img/personaje/07-guino.svg" alt="">
-    <span class="visually-hidden">Abrir asistente ZAPI</span>
-</button>
-<section class="asistente-panel" id="asistentePanel" aria-labelledby="asistenteTitulo" hidden>
-    <header class="asistente-cabecera">
-        <img src="${raiz}/public/img/personaje/01-feliz.svg" alt="">
-        <div><strong id="asistenteTitulo">Asistente ZAPI</strong><small>Respuestas rápidas del vivero</small></div>
-        <button class="icono-boton" id="asistenteCerrar" type="button" aria-label="Cerrar asistente">${icono('close')}</button>
-    </header>
-    <div class="asistente-mensajes" id="asistenteMensajes" aria-live="polite"></div>
-    <form class="asistente-form" id="asistenteForm">
-        <label class="visually-hidden" for="asistenteEntrada">Escribí tu consulta</label>
-        <input id="asistenteEntrada" name="consulta" type="text" autocomplete="off" placeholder="¿En qué te podemos ayudar?">
-        <button type="submit" aria-label="Enviar consulta">${icono('send')}</button>
-    </form>
-</section>`;
-}
-
 function avisoFlotante() {
     return `<div class="aviso-flotante" id="avisoFlotante" role="status" aria-live="polite" hidden>
     ${icono('eco', 'aviso-icono')}
@@ -252,7 +232,7 @@ const SCRIPTS_BASE = [
     'compat-restauracion.js'
 ];
 
-const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'asistente.js', 'zapi-bot.js'];
+const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'zapi-bot.js'];
 
 function pagina(opciones) {
     const {
@@ -279,9 +259,9 @@ function pagina(opciones) {
 
     const cssPropio = `${seccion === 'catalogo' ? 'catalogo-catalogo' : seccion}.css`;
     const hojas = archivo === 'login.html'
-        ? ['tokens.css', 'styles.css', 'login.css', 'zapi-bot.css', 'asistente.css', 'restauracion.css']
+        ? ['tokens.css', 'styles.css', 'login.css', 'zapi-bot.css', 'restauracion.css']
         : fichaProducto
-            ? ['styles.css', 'tokens.css', 'base.css', 'estructura.css', 'estilos-producto.css', 'zapi-bot.css', 'asistente.css', 'ajustes-estilo.css']
+            ? ['styles.css', 'tokens.css', 'base.css', 'estructura.css', 'estilos-producto.css', 'zapi-bot.css', 'ajustes-estilo.css']
             : [
                 'tokens.css',
                 'base.css',
@@ -292,8 +272,7 @@ function pagina(opciones) {
                     : archivo === 'catalogo.html'
                         ? ['catalogo-modal.css']
                     : []),
-                'zapi-bot.css',
-                'asistente.css'
+                'zapi-bot.css'
             ];
     const fuentes = fichaProducto
         ? 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap'
@@ -368,7 +347,6 @@ ${fichaProducto ? `<a class="cart-link-float" href="${raiz}/carrito.html" id="ca
 </footer>` : pie(raiz, archivo)}
 ${productos && !fichaProducto ? modalProducto() : ''}
 ${opiniones ? dialogoTestimonio() : ''}
-${asistente(raiz)}
 ${avisoFlotante()}
 ${todosLosScripts.map(nombre => `    <script src="${rutaJs(nombre)}" defer></script>`).join('\n')}
 </body>
