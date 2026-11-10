@@ -225,6 +225,38 @@ function htmlTarjetaProducto(producto, raiz, recomendacion = false) {
         ? '<span class="material-symbols-outlined" aria-hidden="true">block</span> <span>Sin stock</span>'
         : '<span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> <span>Agregar</span>';
 
+    if (!recomendacion) {
+        const beneficios = producto.infoDeVenta || [];
+        const listaBeneficios = beneficios.map(item => `<span class="product-beneficio-item"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>${escaparHTML(item)}</span></span>`).join("");
+        const beneficiosTactiles = beneficios.map(item => `<li><span class="benefit-icon" aria-hidden="true">✓</span><span>${escaparHTML(item)}</span></li>`).join("");
+        const etiquetaBoton = agotado
+            ? `Sin stock: ${escaparHTML(producto.nombre)}`
+            : `Agregar ${escaparHTML(producto.nombre)} al carrito`;
+
+        return `
+            <article class="${tarjeta} tarjeta-producto${agotado ? " tarjeta-agotada" : ""}" data-id="${escaparHTML(producto.id)}">
+                <div class="product-visual">
+                    <a class="product-visual-link tarjeta-imagen" href="${escaparHTML(ficha)}" data-abrir-producto="${escaparHTML(producto.id)}" aria-label="Ver ${escaparHTML(producto.nombre)}">
+                        <img src="${rutaConRaiz(escaparHTML(imagenes[0] || ""))}" alt="${escaparHTML(producto.nombre)}" loading="lazy" width="798" height="1200">
+                        <span class="product-stock-pill stock ${claseDeStock(unidades)} ${stockVisual}">${escaparHTML(textoDeStock(unidades))}</span>
+                        <span class="product-beneficios-lista">${listaBeneficios}</span>
+                    </a>
+                    <button class="add-cart boton-agregar" type="button" data-agregar-producto="${escaparHTML(producto.id)}" aria-label="${etiquetaBoton}"${agotado ? " disabled" : ""}>
+                        <span class="material-symbols-outlined" aria-hidden="true">${agotado ? "block" : "add"}</span>
+                    </button>
+                </div>
+                <div class="product-body tarjeta-cuerpo">
+                    <div class="product-heading">
+                        <h3 class="product-name"><a class="product-link" href="${escaparHTML(ficha)}" data-abrir-producto="${escaparHTML(producto.id)}">${escaparHTML(producto.nombre)}</a></h3>
+                        <div class="product-price"><span class="current">${formatearPrecio(producto.precioBase)}</span></div>
+                    </div>
+                    <div class="product-tags"><span class="product-badge">${escaparHTML(producto.categoria)}</span></div>
+                    <div class="product-benefit"><span class="benefit-icon" aria-hidden="true">✓</span><span>${escaparHTML(beneficios[0] || "")}</span></div>
+                    <ul class="product-beneficios-tactil">${beneficiosTactiles}</ul>
+                </div>
+            </article>`;
+    }
+
     return `
         <article class="${tarjeta} tarjeta-producto${agotado ? " tarjeta-agotada" : ""}" data-id="${escaparHTML(producto.id)}">
             <a class="${visual} tarjeta-imagen" href="${escaparHTML(ficha)}" data-abrir-producto="${escaparHTML(producto.id)}" aria-label="Ver ${escaparHTML(producto.nombre)}">

@@ -20,7 +20,7 @@ module.exports = {
     </div>
     <h2>Pedidos realizados</h2>
     <div id="pedidosContenedor" class="pedidos-lista"></div>
-    <div id="pedidosVacio" class="pedidos-vacio hidden" hidden>
+    <div id="pedidosVacio" class="pedidos-vacio" hidden>
         <div class="pedidos-vacio-principal">
             <div class="pedidos-vacio-mensaje">
                 <span class="pedidos-vacio-icono material-symbols-outlined" aria-hidden="true">receipt_long</span>
@@ -29,15 +29,6 @@ module.exports = {
                 <div class="pedidos-vacio-acciones">
                     <a href="./catalogo.html" class="pedidos-boton pedidos-boton-principal"><span class="material-symbols-outlined" aria-hidden="true">eco</span> Explorar catálogo</a>
                     <a href="./carrito.html" class="pedidos-boton pedidos-boton-secundario">Ir al carrito</a>
-                </div>
-            </div>
-            <div class="pedidos-ejemplo" aria-hidden="true">
-                <p class="pedidos-ejemplo-eyebrow">ASÍ SE VERÁ TU PRIMER PEDIDO</p>
-                <div class="pedidos-ejemplo-tarjeta">
-                    <div class="pedidos-ejemplo-cabecera"><strong>Pedido de ejemplo</strong><span>Pendiente</span></div>
-                    <div class="pedidos-ejemplo-linea"><span>2× Albahaca</span><strong>$ 300</strong></div>
-                    <div class="pedidos-ejemplo-linea"><span>1× Ruda</span><strong>$ 120</strong></div>
-                    <div class="pedidos-ejemplo-total"><span>Total</span><strong>$ 420</strong></div>
                 </div>
             </div>
         </div>
