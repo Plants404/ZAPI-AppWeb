@@ -2,9 +2,11 @@
 
 ## Contexto
 
-ZAPI es el sitio estático del vivero agroecológico ZAPI, sin backend, sin
-autenticación y sin panel de administración. El catálogo, el stock, los
-pedidos, el contacto y los testimonios funcionan enteramente en el navegador.
+ZAPI es el sitio estático del vivero agroecológico ZAPI con una API opcional
+en Node.js/Express y MongoDB para persistencia de catálogo, pedidos, contacto
+y testimonios. El frontend funciona sin la API: el catálogo, el stock, los
+pedidos, el contacto y los testimonios operan en el navegador. La API se activa
+cuando se configura `MONGODB_URI` y se inicia el servidor backend.
 No asumas que una funcionalidad existe sin comprobar el código.
 
 ## Principios generales
@@ -44,8 +46,9 @@ No asumas que una funcionalidad existe sin comprobar el código.
 - Nunca expongas secretos ni credenciales en el repositorio.
 - Escapa el contenido dinámico antes de insertarlo como HTML y valida los
   formularios en el navegador.
-- No hay sesión ni autenticación; no hay referencias internas a `/api`,
-  `login`, `admin` ni `mongo`.
+- La autenticación y el panel de administración no forman parte de esta fase.
+  Las referencias a `/api`, `login`, `admin` y `mongo` pertenecen al backend
+  opcional y no se exponen en el frontend estático publicado.
 - Antes de eliminar código, comprueba referencias directas, dinámicas e
   indirectas.
 

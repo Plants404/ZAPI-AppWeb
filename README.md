@@ -152,8 +152,11 @@ del repositorio. `vercel.json` ejecuta `npm run vercel-build` y publica
 internas son siempre relativas, así el sitio funciona tanto bajo un
 subdirectorio como en la raíz.
 
-No hay base de datos, no hay API y no hay autenticación. No se requiere
-archivo `.env` ni variables de entorno de ejecución.
+La API de Node.js/Express con MongoDB es opcional: el frontend funciona sin
+ella. Para publicar la API, aloja `backend/` en un servicio Node.js y
+configura allí `MONGODB_URI`, `MONGODB_DB`, `FRONTEND_ORIGINS` y, si el
+servidor está detrás de un proxy, `TRUST_PROXY=1`. Copia `.env.example` a
+`.env` en el entorno de ejecución y nunca lo subas al repositorio.
 
 ## Comandos
 

@@ -18,21 +18,36 @@ function crearRouter(getDatabase) {
             .toArray();
         const porId = new Map(productos.map(producto => [producto.id, producto]));
 
-        const lineas = [...cantidades].map(([id, cantidad]) => {
+        const lineas = [];
+        const descontados = []; // { id, cantidad } para rollback si algo falla
+
+        for (const [id, cantidad] of cantidades) {
             const producto = porId.get(id);
-            if (!producto) throw new HttpError(409, 'Un producto del pedido ya no está disponible.');
-            if (cantidad > producto.stock) {
+            if (!producto) {
+                await restaurarStock(db, descontados);
+                throw new HttpError(409, 'Un producto del pedido ya no está disponible.');
+            }
+
+            const resultado = await db.collection('products').findOneAndUpdate(
+                { id, active: true, stock: { $gte: cantidad } },
+                { $inc: { stock: -cantidad } },
+                { returnDocument: 'after' }
+            );
+
+            if (!resultado || !resultado.value) {
+                await restaurarStock(db, descontados);
                 throw new HttpError(409, `No hay stock suficiente de ${producto.nombre}.`);
             }
 
-            return {
+            descontados.push({ id, cantidad });
+            lineas.push({
                 id: producto.id,
                 slug: producto.slug,
                 nombre: producto.nombre,
                 precio: producto.precioBase,
                 cantidad
-            };
-        });
+            });
+        }
 
         const subtotal = lineas.reduce((total, linea) => total + linea.precio * linea.cantidad, 0);
         const envio = subtotal >= ENVIO_GRATIS_DESDE ? 0 : null;
@@ -46,12 +61,27 @@ function crearRouter(getDatabase) {
             envio,
             total: subtotal + (envio || 0)
         };
-        await db.collection('orders').insertOne(pedido);
+
+        try {
+            await db.collection('orders').insertOne(pedido);
+        } catch (error) {
+            await restaurarStock(db, descontados);
+            throw error;
+        }
 
         res.status(201).json({ order: pedido });
     });
 
     return router;
+}
+
+async function restaurarStock(db, descontados) {
+    for (const { id, cantidad } of descontados) {
+        await db.collection('products').findOneAndUpdate(
+            { id, active: true },
+            { $inc: { stock: cantidad } }
+        );
+    }
 }
 
 module.exports = { crearRouter };
