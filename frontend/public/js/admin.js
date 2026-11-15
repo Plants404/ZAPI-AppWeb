@@ -78,6 +78,11 @@ async function fetchJson(path, { method = 'GET', body } = {}) {
         headers,
         ...(body ? { body } : {})
     });
+    if (respuesta.status === 401) {
+        /* Sin sesión de administrador: se pide iniciar sesión en vez de mostrar el panel vacío. */
+        window.location.href = './login.html';
+        throw new Error('Sesión requerida. Iniciá sesión para continuar.');
+    }
     if (!respuesta.ok) {
         const texto = await respuesta.text().catch(() => '');
         let detalle = texto;
