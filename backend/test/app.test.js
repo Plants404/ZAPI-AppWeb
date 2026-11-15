@@ -250,7 +250,7 @@ test('contacto se guarda y devuelve solo una confirmación pública', async t =>
     assert.deepEqual(Object.keys(await response.json()).sort(), ['id', 'message']);
 });
 
-test('solo publica testimonios aprobados y recibe nuevos como pendientes', async t => {
+test('solo publica testimonios aprobados y publica los nuevos al instante', async t => {
     const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));

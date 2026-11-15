@@ -262,7 +262,7 @@
         <button class="testimonio-cerrar-x icono-boton dialogo-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar formulario de opinion"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
         <span class="etiqueta">Tu experiencia</span>
         <h2 class="testimonio-titulo" id="testimonioTitulo">Contanos cómo fue tu compra</h2>
-        <p class="testimonio-bajada">Leemos todas las opiniones. Publicamos solo las que estan verificadas y autorizadas.</p>
+        <p class="testimonio-bajada">Tu opinión se publica enseguida en la página. Contanos con honestidad cómo te fue.</p>
 
         <div class="testimonio-campo">
             <label class="testimonio-etiqueta campo-label" for="testimonioNombre">Nombre <span aria-hidden="true">*</span></label>
@@ -275,14 +275,12 @@
             <span class="testimonio-error campo-error" id="errorTestimonioLugar"></span>
         </div>
         <div class="testimonio-campo">
-            <label class="testimonio-etiqueta campo-label" for="testimonioEstrellas">Puntaje</label>
-            <select class="testimonio-input campo-input" id="testimonioEstrellas" name="estrellas">
-                <option value="5">5 estrellas</option>
-                <option value="4">4 estrellas</option>
-                <option value="3">3 estrellas</option>
-                <option value="2">2 estrellas</option>
-                <option value="1">1 estrella</option>
-            </select>
+            <span class="testimonio-etiqueta campo-label" id="testimonioEstrellasEtiqueta">Puntaje</span>
+            <div class="estrellas-selector" id="testimonioEstrellasSelector" role="radiogroup" aria-labelledby="testimonioEstrellasEtiqueta">
+                <button class="estrella-boton" type="button" role="radio" aria-checked="false" data-valor="1" aria-label="1 estrella">★</button><button class="estrella-boton" type="button" role="radio" aria-checked="false" data-valor="2" aria-label="2 estrellas">★</button><button class="estrella-boton" type="button" role="radio" aria-checked="false" data-valor="3" aria-label="3 estrellas">★</button><button class="estrella-boton" type="button" role="radio" aria-checked="false" data-valor="4" aria-label="4 estrellas">★</button><button class="estrella-boton" type="button" role="radio" aria-checked="true" data-valor="5" aria-label="5 estrellas">★</button>
+                <span class="estrellas-texto" id="testimonioEstrellasTexto" aria-live="polite">Excelente</span>
+            </div>
+            <input type="hidden" id="testimonioEstrellas" name="estrellas" value="5">
         </div>
         <div class="testimonio-campo">
             <label class="testimonio-etiqueta campo-label" for="testimonioTexto">Tu opinion <span aria-hidden="true">*</span></label>
