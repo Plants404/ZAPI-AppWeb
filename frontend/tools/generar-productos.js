@@ -10,12 +10,14 @@ const fs = require('fs');
 const path = require('path');
 
 const { pagina: armarPagina } = require('./lib/plantilla.js');
-const { generarFicha } = require('../fuentes/paginas/producto.js');
-const { PRODUCTOS } = require('../datos/catalogo.js');
+const { obtenerPublicacion } = require('./lib/publicacion.js');
+const { PRODUCTOS: PRODUCTOS_LOCALES } = require('../datos/catalogo.js');
 
 const raiz = path.join(__dirname, '..');
 const revisar = process.argv.includes('--revisar');
 const GENERADO = 'ZAPI producto generado';
+let PRODUCTOS = PRODUCTOS_LOCALES;
+let generarFicha;
 
 function leer(archivo) {
     try {
@@ -126,15 +128,26 @@ function actualizarCatalogoDatos() {
     }
 }
 
-console.log('Fichas de producto');
-generarTodas();
+async function main() {
+    const publicacion = await obtenerPublicacion({ revisar });
+    if (publicacion) PRODUCTOS = publicacion.catalogo;
+    ({ generarFicha } = require('../fuentes/paginas/producto.js'));
 
-console.log('Datos del catalogo');
-actualizarCatalogoDatos();
+    console.log('Fichas de producto');
+    generarTodas();
 
-if (revisar) {
-    console.log('\n' + (fallos === 0 ? 'Todo esta actualizado.' : fallos + ' elemento(s) desactualizado(s).'));
-    process.exit(fallos === 0 ? 0 : 1);
+    console.log('Datos del catalogo');
+    actualizarCatalogoDatos();
+
+    if (revisar) {
+        console.log('\n' + (fallos === 0 ? 'Todo esta actualizado.' : fallos + ' elemento(s) desactualizado(s).'));
+        process.exitCode = fallos === 0 ? 0 : 1;
+    } else {
+        console.log('\nFichas y datos generados en ' + raiz);
+    }
 }
 
-console.log('\nFichas y datos generados en ' + raiz);
+main().catch(error => {
+    console.error('No se pudieron generar las fichas: ' + error.message);
+    process.exitCode = 1;
+});

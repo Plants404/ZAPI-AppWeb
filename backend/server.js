@@ -7,8 +7,9 @@ async function startServer() {
     await connectDatabase();
 
     const port = Number(process.env.PORT) || 5501;
-    const host = process.env.HOST || '127.0.0.1';
-    const server = crearApp().listen(port, host, () => {
+    const host = process.env.HOST || '0.0.0.0';
+    const app = await crearApp();
+    const server = app.listen(port, host, () => {
         console.log(`API ZAPI escuchando en http://${host}:${port}`);
     });
 

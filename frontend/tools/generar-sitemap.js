@@ -10,11 +10,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { obtenerPublicacion } = require('./lib/publicacion.js');
 
 const raiz = path.join(__dirname, '..');
 const revisar = process.argv.includes('--revisar');
 const { NEGOCIO } = require(path.join(raiz, 'public', 'js', 'negocio.js'));
-const { PRODUCTOS } = require(path.join(raiz, 'datos', 'catalogo.js'));
+const { PRODUCTOS: PRODUCTOS_LOCALES } = require(path.join(raiz, 'datos', 'catalogo.js'));
+let PRODUCTOS = PRODUCTOS_LOCALES;
 
 const PAGINAS = [
     ['index.html', '1.0', 'weekly'],
@@ -77,15 +79,25 @@ function comparar(archivo, contenido) {
     }
 }
 
-console.log('Sitemap');
-comparar('sitemap.xml', generarSitemap());
+async function main() {
+    const publicacion = await obtenerPublicacion({ revisar });
+    if (publicacion) PRODUCTOS = publicacion.catalogo;
 
-console.log('Robots');
-comparar('robots.txt', generarRobots());
+    console.log('Sitemap');
+    comparar('sitemap.xml', generarSitemap());
 
-if (revisar) {
-    console.log('\n' + (fallos === 0 ? 'Todo esta actualizado.' : fallos + ' archivo(s) desactualizado(s).'));
-    process.exit(fallos === 0 ? 0 : 1);
+    console.log('Robots');
+    comparar('robots.txt', generarRobots());
+
+    if (revisar) {
+        console.log('\n' + (fallos === 0 ? 'Todo esta actualizado.' : fallos + ' archivo(s) desactualizado(s).'));
+        process.exitCode = fallos === 0 ? 0 : 1;
+    } else {
+        console.log('\nSitemap y robots generados en ' + raiz);
+    }
 }
 
-console.log('\nSitemap y robots generados en ' + raiz);
+main().catch(error => {
+    console.error('No se pudieron generar sitemap y robots: ' + error.message);
+    process.exitCode = 1;
+});

@@ -1,9 +1,30 @@
 'use strict';
 
 const test = require('node:test');
+const { limitesDe } = require('./limites-falsos.js');
 const assert = require('node:assert/strict');
-const { crearApp } = require('../app.js');
+const fs = require('node:fs');
+const http = require('http');
+const path = require('node:path');
+const { crearApp, validarOrigenes } = require('../app.js');
 const { construirOperacionesProductos } = require('../seed.js');
+
+async function conEntorno(valores, ejecutar) {
+    const anteriores = new Map();
+    for (const [clave, valor] of Object.entries(valores)) {
+        anteriores.set(clave, process.env[clave]);
+        if (valor === undefined) delete process.env[clave];
+        else process.env[clave] = valor;
+    }
+    try {
+        return await ejecutar();
+    } finally {
+        for (const [clave, valor] of anteriores) {
+            if (valor === undefined) delete process.env[clave];
+            else process.env[clave] = valor;
+        }
+    }
+}
 
 function crearBaseFalsa() {
     const productos = [
@@ -48,22 +69,23 @@ function crearBaseFalsa() {
                     async findOneAndUpdate(filtro, actualizacion) {
                         const inc = actualizacion.$inc && actualizacion.$inc.stock;
                         const p = productos.find(item => item.id === filtro.id && item.active);
-                        if (!p) return { value: null };
+                        if (!p) return null;
                         if (filtro.stock && filtro.stock.$gte !== undefined) {
                             if (p.stock >= filtro.stock.$gte) {
                                 p.stock += inc;
-                                return { value: { ...p } };
+                                return { ...p };
                             }
-                            return { value: null };
+                            return null;
                         }
                         if (inc) {
                             p.stock += inc;
-                            return { value: { ...p } };
+                            return { ...p };
                         }
-                        return { value: null };
+                        return null;
                     }
                 };
             }
+            if (nombre === 'limites') return limitesDe(this);
             if (registros[nombre]) {
                 return {
                     async insertOne(documento) {
@@ -92,7 +114,7 @@ function crearBaseFalsa() {
 }
 
 test('health comprueba la conexión a la base de datos', async t => {
-    const server = crearApp({ getDatabase: crearBaseFalsa }).listen(0);
+    const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
 
@@ -101,8 +123,37 @@ test('health comprueba la conexión a la base de datos', async t => {
     assert.deepEqual(await response.json(), { ok: true, database: 'connected' });
 });
 
+test('GET /api/depurar llega al handler de cron y exige su secreto', async t => {
+    const base = {
+        collection(nombre) {
+            assert.equal(nombre, 'orders');
+            return {
+                find() {
+                    return { async toArray() { return []; } };
+                }
+            };
+        }
+    };
+
+    await conEntorno({ CRON_SECRET: 'secreto-de-prueba' }, async () => {
+        const server = http.createServer(await crearApp({ getDatabase: () => base })).listen(0);
+        t.after(() => server.close());
+        await new Promise(resolve => server.once('listening', resolve));
+
+        const url = `http://127.0.0.1:${server.address().port}/api/depurar`;
+        const sinSecreto = await fetch(url);
+        assert.equal(sinSecreto.status, 401);
+
+        const autorizado = await fetch(url, {
+            headers: { Authorization: 'Bearer secreto-de-prueba' }
+        });
+        assert.equal(autorizado.status, 200);
+        assert.deepEqual(await autorizado.json(), { ok: true, depurados: 0 });
+    });
+});
+
 test('el catálogo solo expone productos públicos activos', async t => {
-    const server = crearApp({ getDatabase: crearBaseFalsa }).listen(0);
+    const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
 
@@ -114,7 +165,7 @@ test('el catálogo solo expone productos públicos activos', async t => {
 });
 
 test('el pedido usa los precios de MongoDB, no los enviados por el cliente', async t => {
-    const server = crearApp({ getDatabase: crearBaseFalsa }).listen(0);
+    const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
 
@@ -123,7 +174,8 @@ test('el pedido usa los precios de MongoDB, no los enviados por el cliente', asy
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             cliente: { nombre: 'Ana', telefono: '098 123 456' },
-            lineas: [{ id: 1, cantidad: 2, precio: 1, nombre: 'Producto falso' }]
+            lineas: [{ id: 1, cantidad: 2, precio: 1, nombre: 'Producto falso' }],
+            usuario: { id: 'falso', email: 'falso@example.com' }
         })
     });
 
@@ -132,10 +184,11 @@ test('el pedido usa los precios de MongoDB, no los enviados por el cliente', asy
     assert.equal(order.lineas[0].precio, 150);
     assert.equal(order.subtotal, 300);
     assert.equal(order.lineas[0].nombre, 'Albahaca');
+    assert.equal(order.historial[0].usuario, 'sistema');
 });
 
 test('contacto se guarda y devuelve solo una confirmación pública', async t => {
-    const server = crearApp({ getDatabase: crearBaseFalsa }).listen(0);
+    const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
 
@@ -155,7 +208,7 @@ test('contacto se guarda y devuelve solo una confirmación pública', async t =>
 });
 
 test('solo publica testimonios aprobados y recibe nuevos como pendientes', async t => {
-    const server = crearApp({ getDatabase: crearBaseFalsa }).listen(0);
+    const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
     const base = `http://127.0.0.1:${server.address().port}/api/testimonials`;
@@ -207,16 +260,16 @@ function crearBaseFalsaConStock() {
                         if (filtro.stock && filtro.stock.$gte !== undefined) {
                             if (producto.stock >= filtro.stock.$gte) {
                                 producto.stock += inc;
-                                return { value: { ...producto } };
+                                return { ...producto };
                             }
-                            return { value: null };
+                            return null;
                         }
                         if (inc && inc > 0) {
                             producto.stock += inc;
                             restauraciones.push({ id: filtro.id, cantidad: inc });
-                            return { value: { ...producto } };
+                            return { ...producto };
                         }
-                        return { value: null };
+                        return null;
                     },
                     async findOne(filtro, opciones) {
                         if (filtro.id === producto.id && producto.active) {
@@ -237,6 +290,7 @@ function crearBaseFalsaConStock() {
                     }
                 };
             }
+            if (nombre === 'limites') return limitesDe(this);
             throw new Error(`Colección inesperada: ${nombre}`);
         },
         obtenerStock() {
@@ -250,7 +304,7 @@ function crearBaseFalsaConStock() {
 
 test('dos pedidos por el ultimo stock no venden de mas', async t => {
     const base = crearBaseFalsaConStock();
-    const server = crearApp({ getDatabase: () => base }).listen(0);
+    const server = http.createServer(await crearApp({ getDatabase: () => base })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
     const url = `http://127.0.0.1:${server.address().port}/api/orders`;
@@ -297,16 +351,16 @@ test('el rollback devuelve el stock cuando una linea falla', async t => {
                         if (filtro.stock && filtro.stock.$gte !== undefined) {
                             if (p && p.stock >= filtro.stock.$gte) {
                                 p.stock += inc;
-                                return { value: { ...p } };
+                                return { ...p };
                             }
-                            return { value: null };
+                            return null;
                         }
                         if (inc && inc > 0) {
                             p.stock += inc;
                             restauraciones.push({ id: filtro.id, cantidad: inc });
-                            return { value: { ...p } };
+                            return { ...p };
                         }
-                        return { value: null };
+                        return null;
                     },
                     async findOne(filtro, opciones) {
                         const p = [productoA, productoB].find(item => item.id === filtro.id && item.active);
@@ -321,16 +375,15 @@ test('el rollback devuelve el stock cuando una linea falla', async t => {
             }
             if (nombre === 'orders') {
                 return {
-                    async insertOne() {
-                        return { insertedId: 'registro-falso' };
-                    }
+                    async insertOne() { return { insertedId: 'registro-falso' }; }
                 };
             }
+            if (nombre === 'limites') return limitesDe(this);
             throw new Error(`Colección inesperada: ${nombre}`);
         }
     };
 
-    const server = crearApp({ getDatabase: () => base }).listen(0);
+    const server = http.createServer(await crearApp({ getDatabase: () => base })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
     const url = `http://127.0.0.1:${server.address().port}/api/orders`;
@@ -361,10 +414,11 @@ test('el limitador responde 429 tras superar el umbral por IP', async t => {
                     async insertOne() { return { insertedId: 'registro-falso' }; }
                 };
             }
+            if (nombre === 'limites') return limitesDe(this);
             throw new Error(`Colección inesperada: ${nombre}`);
         }
     };
-    const server = crearApp({ getDatabase: () => base }).listen(0);
+    const server = http.createServer(await crearApp({ getDatabase: () => base })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
     const url = `http://127.0.0.1:${server.address().port}/api/contact`;
@@ -398,4 +452,110 @@ test('el seed no pisa el stock de productos existentes', () => {
     assert.ok('$setOnInsert' in operacion);
     assert.equal(operacion.$set.stock, undefined, 'el stock no va en $set de actualizacion');
     assert.equal(operacion.$setOnInsert.stock, 99, 'el stock solo se asigna al insertar');
+});
+
+test('las rutas no leen findOneAndUpdate.value', () => {
+    const carpeta = path.join(__dirname, '..', 'routes');
+    for (const archivo of fs.readdirSync(carpeta).filter(nombre => nombre.endsWith('.js'))) {
+        const fuente = fs.readFileSync(path.join(carpeta, archivo), 'utf8');
+        assert.doesNotMatch(fuente, /\.value\b/, `${archivo} no debe leer .value`);
+    }
+});
+
+test('CORS exige orígenes válidos en producción y usa localhost en desarrollo', async () => {
+    await conEntorno({
+        NODE_ENV: 'production',
+        VERCEL: undefined,
+        FRONTEND_ORIGINS: undefined
+    }, async () => {
+        assert.throws(() => validarOrigenes(), /obligatorio en producción/);
+    });
+
+    await conEntorno({
+        NODE_ENV: 'production',
+        VERCEL: undefined,
+        FRONTEND_ORIGINS: 'https://NOMBRE-DEL-PROYECTO.vercel.app'
+    }, async () => {
+        assert.throws(() => validarOrigenes(), /marcador sin resolver/);
+    });
+
+    for (const marcador of ['PEGAR_TOKEN', 'REEMPLAZAR_DOMINIO']) {
+        await conEntorno({
+            NODE_ENV: 'production',
+            VERCEL: undefined,
+            FRONTEND_ORIGINS: `https://${marcador}.example`
+        }, async () => {
+            assert.throws(() => validarOrigenes(), /marcador sin resolver/);
+        });
+    }
+
+    await conEntorno({
+        NODE_ENV: 'test',
+        VERCEL: '',
+        FRONTEND_ORIGINS: ''
+    }, async () => {
+        assert.throws(() => validarOrigenes(), /obligatorio en producción/);
+    });
+
+    await conEntorno({
+        NODE_ENV: 'development',
+        VERCEL: undefined,
+        FRONTEND_ORIGINS: ''
+    }, async () => {
+        assert.deepEqual(validarOrigenes(), ['http://localhost:5500', 'http://127.0.0.1:5500']);
+    });
+});
+
+test('preflight permite PATCH y credenciales solo para auth/admin con origen permitido', async t => {
+    await conEntorno({
+        NODE_ENV: 'test',
+        VERCEL: undefined,
+        FRONTEND_ORIGINS: 'https://zapi.example'
+    }, async () => {
+        const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
+        t.after(() => server.close());
+        await new Promise(resolve => server.once('listening', resolve));
+        const baseUrl = `http://127.0.0.1:${server.address().port}`;
+        const headers = {
+            Origin: 'https://zapi.example',
+            'Access-Control-Request-Method': 'PATCH',
+            'Access-Control-Request-Headers': 'Content-Type'
+        };
+
+        const auth = await fetch(`${baseUrl}/api/auth/login`, { method: 'OPTIONS', headers });
+        assert.equal(auth.status, 204);
+        assert.equal(auth.headers.get('cache-control'), 'no-store');
+        assert.match(auth.headers.get('access-control-allow-methods'), /\bPATCH\b/);
+        assert.equal(auth.headers.get('access-control-allow-headers'), 'Content-Type');
+        assert.equal(auth.headers.get('access-control-allow-credentials'), 'true');
+
+        const eventos = await fetch(`${baseUrl}/api/eventos`, { method: 'OPTIONS', headers });
+        assert.equal(eventos.status, 204);
+        assert.equal(eventos.headers.get('access-control-allow-credentials'), null);
+
+        const publico = await fetch(`${baseUrl}/api/products`, { method: 'OPTIONS', headers });
+        assert.equal(publico.status, 204);
+        assert.equal(publico.headers.get('access-control-allow-credentials'), null);
+
+        const rechazado = await fetch(`${baseUrl}/api/admin/resumen`, {
+            method: 'OPTIONS',
+            headers: { ...headers, Origin: 'https://ajeno.example' }
+        });
+        assert.equal(rechazado.status, 403);
+        assert.equal(rechazado.headers.get('access-control-allow-credentials'), null);
+    });
+});
+
+test('auth y admin envían Cache-Control no-store', async t => {
+    const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
+    t.after(() => server.close());
+    await new Promise(resolve => server.once('listening', resolve));
+    const baseUrl = `http://127.0.0.1:${server.address().port}`;
+
+    const auth = await fetch(`${baseUrl}/api/auth/yo`);
+    const admin = await fetch(`${baseUrl}/api/admin/resumen`);
+    assert.equal(auth.status, 401);
+    assert.equal(admin.status, 401);
+    assert.equal(auth.headers.get('cache-control'), 'no-store');
+    assert.equal(admin.headers.get('cache-control'), 'no-store');
 });
