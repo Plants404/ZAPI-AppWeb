@@ -7,6 +7,7 @@
 const API_RESUMEN = '/api/admin/resumen';
 const API_PEDIDOS = '/api/admin/pedidos';
 const API_PEDIDO_PRESENCIAL = '/api/admin/pedidos/presencial';
+const API_ADMIN = '/api/admin';
 const API_PRODUCTOS = '/api/admin/productos';
 const API_AUDITORIA = '/api/admin/auditoria';
 const API_PUBLICACION_BORRADOR = '/api/admin/publicacion/borrador';
@@ -43,7 +44,9 @@ const panels = {
     pedidos: document.getElementById('panelPedidos'),
     catalogo: document.getElementById('panelCatalogo'),
     auditoria: document.getElementById('panelAuditoria'),
-    proximo: document.getElementById('panelProximo'),
+    mensajes: document.getElementById('panelMensajes'),
+    testimonios: document.getElementById('panelTestimonios'),
+    accesos: document.getElementById('panelAccesos'),
     estilo: document.getElementById('panelEstilo'),
     analitica: document.getElementById('panelAnalitica')
 };
@@ -456,6 +459,101 @@ function renderAuditoria(entradas) {
             <td>${escaparHTML(entrada.resumen || '-')}</td>
         </tr>
     `).join('');
+}
+
+/* ----- Mensajes, testimonios y accesos ----- */
+
+const ETIQUETAS_MENSAJE = { new: 'Nuevo', read: 'Leído', answered: 'Respondido' };
+const ETIQUETAS_TESTIMONIO = { pending: 'Pendiente', approved: 'Aprobado', rejected: 'Rechazado' };
+const CLASE_ESTADO_GESTION = { new: 'pendiente', read: 'entregado', answered: 'confirmado', pending: 'pendiente', approved: 'confirmado', rejected: 'cancelado' };
+
+function selectorEstado(etiquetas, actual, atributo, id) {
+    const opciones = Object.entries(etiquetas)
+        .map(([valor, texto]) => `<option value="${valor}"${valor === actual ? ' selected' : ''}>${texto}</option>`).join('');
+    return `<select class="campo-input admin-select-estado" ${atributo}="${escaparHTML(id)}" aria-label="Cambiar estado">${opciones}</select>`;
+}
+
+function pintarTabla(cuerpoId, vacioId, filas, vacioHtml) {
+    document.getElementById(cuerpoId).innerHTML = filas.join('');
+    document.getElementById(vacioId).hidden = filas.length > 0;
+    if (vacioHtml) document.getElementById(vacioId).textContent = vacioHtml;
+}
+
+async function cargarMensajes() {
+    try {
+        const estado = document.getElementById('filtroMensajes').value;
+        const data = await fetchJson(`${API_ADMIN}/mensajes${estado ? `?estado=${estado}` : ''}`);
+        pintarTabla('adminCuerpoMensajes', 'adminMensajesVacio', (data.mensajes || []).map(m => `
+            <tr>
+                <td>${formatearFecha(m.fecha)}</td>
+                <td>${escaparHTML(m.nombre)}<br><a href="mailto:${escaparHTML(m.email)}">${escaparHTML(m.email)}</a>${m.telefono ? `<br>${escaparHTML(m.telefono)}` : ''}</td>
+                <td>${escaparHTML(m.asunto)}</td>
+                <td class="admin-texto-largo">${escaparHTML(m.mensaje)}</td>
+                <td><span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[m.estado] || 'pendiente'}">${ETIQUETAS_MENSAJE[m.estado] || escaparHTML(m.estado)}</span><br>${selectorEstado(ETIQUETAS_MENSAJE, m.estado, 'data-mensaje', m.id)}</td>
+            </tr>`), 'No hay mensajes.');
+    } catch (error) {
+        mostrarAviso('No se pudieron cargar los mensajes', error.message);
+    }
+}
+
+async function cargarTestimonios() {
+    try {
+        const estado = document.getElementById('filtroTestimonios').value;
+        const data = await fetchJson(`${API_ADMIN}/testimonios${estado ? `?estado=${estado}` : ''}`);
+        pintarTabla('adminCuerpoTestimonios', 'adminTestimoniosVacio', (data.testimonios || []).map(t => `
+            <tr>
+                <td>${formatearFecha(t.fecha)}</td>
+                <td>${escaparHTML(t.autor)}${t.lugar ? `<br>${escaparHTML(t.lugar)}` : ''}</td>
+                <td class="admin-texto-largo">${escaparHTML(t.texto)}</td>
+                <td>${'★'.repeat(Number(t.estrellas) || 0)}</td>
+                <td><span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[t.estado] || 'pendiente'}">${ETIQUETAS_TESTIMONIO[t.estado] || escaparHTML(t.estado)}</span><br>${selectorEstado(ETIQUETAS_TESTIMONIO, t.estado, 'data-testimonio', t.id)}</td>
+            </tr>`), 'No hay testimonios.');
+    } catch (error) {
+        mostrarAviso('No se pudieron cargar los testimonios', error.message);
+    }
+}
+
+async function cargarAccesos() {
+    try {
+        const data = await fetchJson(`${API_ADMIN}/usuarios`);
+        pintarTabla('adminCuerpoAccesos', 'adminAccesosVacio', (data.usuarios || []).map(u => `
+            <tr>
+                <td>${escaparHTML(u.nombre || '-')}${u.esYo ? ' <span class="admin-badge">Vos</span>' : ''}</td>
+                <td>${escaparHTML(u.email)}</td>
+                <td><span class="admin-badge admin-badge-${u.rol === 'admin' ? 'confirmado' : 'entregado'}">${u.rol === 'admin' ? 'Administrador' : 'Cliente'}</span></td>
+                <td>${formatearFecha(u.fecha)}</td>
+                <td>${u.esYo ? '-' : `<select class="campo-input admin-select-estado" data-usuario="${escaparHTML(u.id)}" aria-label="Cambiar rol"><option value="cliente"${u.rol === 'cliente' ? ' selected' : ''}>Cliente</option><option value="admin"${u.rol === 'admin' ? ' selected' : ''}>Administrador</option></select>`}</td>
+            </tr>`), 'No hay usuarios.');
+    } catch (error) {
+        mostrarAviso('No se pudieron cargar los accesos', error.message);
+    }
+}
+
+async function cambiarGestion(ruta, cuerpo, recargar, titulo) {
+    try {
+        await fetchJson(`${API_ADMIN}/${ruta}`, { method: 'PATCH', body: JSON.stringify(cuerpo) });
+        mostrarAviso(titulo, 'El cambio se guardó correctamente.');
+    } catch (error) {
+        mostrarAviso('No se pudo guardar', error.message);
+    }
+    recargar();
+}
+
+function iniciarGestion() {
+    document.getElementById('filtroMensajes').addEventListener('change', cargarMensajes);
+    document.getElementById('filtroTestimonios').addEventListener('change', cargarTestimonios);
+    document.getElementById('adminCuerpoMensajes').addEventListener('change', evento => {
+        const select = evento.target.closest('[data-mensaje]');
+        if (select) cambiarGestion(`mensajes/${select.dataset.mensaje}`, { estado: select.value }, cargarMensajes, 'Mensaje actualizado');
+    });
+    document.getElementById('adminCuerpoTestimonios').addEventListener('change', evento => {
+        const select = evento.target.closest('[data-testimonio]');
+        if (select) cambiarGestion(`testimonios/${select.dataset.testimonio}`, { estado: select.value }, cargarTestimonios, 'Testimonio actualizado');
+    });
+    document.getElementById('adminCuerpoAccesos').addEventListener('change', evento => {
+        const select = evento.target.closest('[data-usuario]');
+        if (select) cambiarGestion(`usuarios/${select.dataset.usuario}`, { rol: select.value }, cargarAccesos, 'Rol actualizado');
+    });
 }
 
 /* ----- Analítica de clientes ----- */
@@ -1223,10 +1321,6 @@ document.addEventListener('DOMContentLoaded', () => {
         enlace.addEventListener('click', evento => {
             evento.preventDefault();
             const panel = enlace.dataset.panel;
-            if (enlace.hasAttribute('aria-disabled') || panel === 'proximo') {
-                mostrarPanel('proximo');
-                return;
-            }
             mostrarPanel(panel);
             if (panel === 'resumen') cargarResumen();
             else if (panel === 'pedidos') cargarPedidos();
@@ -1234,6 +1328,9 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (panel === 'auditoria') cargarAuditoria();
             else if (panel === 'estilo') cargarEstilo();
             else if (panel === 'analitica') cargarAnalitica();
+            else if (panel === 'mensajes') cargarMensajes();
+            else if (panel === 'testimonios') cargarTestimonios();
+            else if (panel === 'accesos') cargarAccesos();
         });
     });
 
@@ -1355,6 +1452,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adminVentaPresencial').addEventListener('click', abrirVentaPresencial);
 
     /* Nuevo producto. */
+    iniciarGestion();
     document.getElementById('adminNuevoProducto').addEventListener('click', () => abrirProducto(null));
     document.getElementById('formProducto').addEventListener('submit', guardarProductoForm);
     document.getElementById('prodGaleria').addEventListener('click', accionGaleria);

@@ -16,6 +16,7 @@ const { crearRouter: crearRouterPedidos } = require('./routes/orders.js');
 const { crearRouter: crearRouterEnvios } = require('./routes/submissions.js');
 const { crearRouter: crearRouterAuth } = require('./routes/auth.js');
 const { crearRouter: crearRouterAdmin } = require('./routes/admin.js');
+const { crearRouter: crearRouterGestion } = require('./routes/gestion.js');
 const { crearRouterAdmin: crearRouterAdminOperaciones } = require('./routes/orders.js');
 const {
     crearRouter: crearRouterPublicacion,
@@ -177,6 +178,7 @@ async function crearApp(opciones = {}) {
     app.use('/api/auth', crearRouterAuth(obtenerBase));
     app.use('/api/admin', crearRouterAdmin(obtenerBase));
     app.use('/api/admin', crearRouterAdminOperaciones(obtenerBase));
+    app.use('/api/admin', crearRouterGestion(obtenerBase));
     app.use('/api/admin/productos', crearRouterAdminProductos(obtenerBase));
     app.use('/api/admin/imagenes', crearRouterImagenesAdmin(obtenerBase));
     app.use('/api/imagenes', crearRouterImagenes(obtenerBase));
