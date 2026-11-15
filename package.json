@@ -6,7 +6,14 @@
   "scripts": {
     "frontend": "node frontend/tools/servir.js",
     "backend": "node --env-file-if-exists=.env backend/server.js",
+    "backend:conectar": "node --env-file-if-exists=.env backend/conectar.js",
     "backend:seed": "node --env-file-if-exists=.env backend/seed.js",
+    "backend:crear-admin": "node --env-file-if-exists=.env backend/crear-admin.js",
+    "backend:depurar": "node --env-file-if-exists=.env backend/depurar.js",
+    "backend:indices": "node --env-file-if-exists=.env backend/indices.js",
+    "probar:cors": "node backend/probar-cors.js",
+    "probar:limiter": "node --env-file-if-exists=.env backend/probar-limiter.js",
+    "probar:flujo": "node --env-file-if-exists=.env backend/probar-flujo.js",
     "test:backend": "node --test \"backend/test/*.test.js\"",
     "generar": "node frontend/tools/construir.js && node frontend/tools/generar-productos.js && node frontend/tools/generar-sitemap.js",
     "verificar": "node frontend/tools/verificar.js",
@@ -15,11 +22,13 @@
     "vercel-build": "npm run generar"
   },
   "engines": {
-    "node": ">=24"
+    "node": "24.x"
   },
   "dependencies": {
+    "dotenv": "^18.0.10",
     "express": "^5.1.0",
-    "mongodb": "^6.17.0"
+    "mongodb": "^6.17.0",
+    "mongoose": "^9.12.1"
   },
   "devDependencies": {
     "eslint": "^10.12.0",

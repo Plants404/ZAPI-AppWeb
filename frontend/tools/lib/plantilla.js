@@ -108,6 +108,9 @@ function pie(raiz, archivo) {
     if (archivo === 'carrito.html' || archivo === 'pedidos.html') {
         return `<footer class="cart-footer">
     <p>ZAPI · Vivero Agroecológico · Precios sujetos a disponibilidad</p>
+    <nav class="cart-footer-nav" aria-label="Paginas del sitio">
+        <a href="${raiz}/privacidad.html">Privacidad</a>
+    </nav>
 </footer>`;
     }
 
@@ -125,6 +128,7 @@ function pie(raiz, archivo) {
             ${ENLACES.map(enlace => `<a href="${raiz}/${enlace.archivo}">${enlace.texto}</a>`).join('')}
             <a href="${raiz}/carrito.html">Carrito</a>
             <a href="${raiz}/pedidos.html">Mis pedidos</a>
+            <a href="${raiz}/privacidad.html">Privacidad</a>
         </nav>
         <div class="footer-contacto">
             <h2>Contacto</h2>
@@ -229,7 +233,8 @@ const SCRIPTS_BASE = [
     'carrito-estado.js',
     'pedidos-estado.js',
     'modal.js',
-    'compat-restauracion.js'
+    'compat-restauracion.js',
+    'rastreo.js'
 ];
 
 const SCRIPTS_FINALES = ['menu.js', 'buscador.js', 'zapi-bot.js'];
@@ -249,11 +254,15 @@ function pagina(opciones) {
         canonical = `${NEGOCIO.sitio}/${archivo}`,
         opiniones = false,
         productos = false,
-        bodyAttrs = ''
+        bodyAttrs = '',
+        armazonPropio = false
     } = opciones;
 
     const rutaJs = nombre => `${raiz}/public/js/${nombre}`;
-    const todosLosScripts = [...SCRIPTS_BASE, ...scripts, ...SCRIPTS_FINALES];
+    const scriptsBase = archivo === 'admin.html'
+        ? SCRIPTS_BASE.filter(nombre => nombre !== 'rastreo.js')
+        : SCRIPTS_BASE;
+    const todosLosScripts = [...scriptsBase, ...scripts, ...SCRIPTS_FINALES];
     const ogImagen = `${NEGOCIO.sitio}/public/img/plants-hero.opt.jpg`;
     const fichaProducto = archivo.startsWith('producto-');
 
@@ -272,7 +281,7 @@ function pagina(opciones) {
                     : archivo === 'catalogo.html'
                         ? ['catalogo-modal.css']
                     : []),
-                'zapi-bot.css'
+                ...(archivo === 'admin.html' ? [] : ['zapi-bot.css'])
             ];
     const fuentes = fichaProducto
         ? 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:opsz,wght@14..32,100..900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap'
@@ -298,6 +307,31 @@ function pagina(opciones) {
 </head>
 <body>
 ${contenido}
+</body>
+</html>
+`);
+    }
+
+    /* Armazon propio: usado por admin.html. */
+    if (armazonPropio) {
+        return limpiarEspaciosFinales(`<!DOCTYPE html>
+<html lang="es" data-cuentas="off">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>${escapar(titulo)}</title>
+    <meta name="description" content="${escapar(descripcion)}">
+    <meta name="robots" content="${escapar(robots)}">
+    <link rel="canonical" href="${escapar(canonical)}">
+    <link rel="icon" type="image/svg+xml" href="${raiz}/public/img/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="${fuentes}">
+${hojas.map(hoja => `    <link rel="stylesheet" href="${raiz}/public/css/${hoja}">`).join('\n')}
+</head>
+<body class="pagina-${seccion} admin-armazon ${claseBody}" data-raiz="${raiz}"${bodyAttrs ? ' ' + bodyAttrs : ''}>
+${contenido}
+${([...scriptsBase, ...scripts]).map(nombre => `    <script src="${rutaJs(nombre)}" defer></script>`).join('\n')}
 </body>
 </html>
 `);
@@ -343,6 +377,7 @@ ${fichaProducto ? `<a class="cart-link-float" href="${raiz}/carrito.html" id="ca
         <a href="${raiz}/index.html">Inicio</a>
         <a href="${raiz}/catalogo.html">Catalogo</a>
         <a href="${raiz}/carrito.html">Carrito</a>
+        <a href="${raiz}/privacidad.html">Privacidad</a>
     </nav>
 </footer>` : pie(raiz, archivo)}
 ${productos && !fichaProducto ? modalProducto() : ''}

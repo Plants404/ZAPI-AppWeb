@@ -10,8 +10,13 @@ function construirOperacionesProductos(productos, ahora) {
             updateOne: {
                 filter: { id: producto.id },
                 update: {
-                    $set: { ...resto, updatedAt: ahora },
-                    $setOnInsert: { active: true, createdAt: ahora, stock }
+                    $set: { updatedAt: ahora },
+                    $setOnInsert: {
+                        ...resto,
+                        active: true,
+                        createdAt: ahora,
+                        stock
+                    }
                 },
                 upsert: true
             }
