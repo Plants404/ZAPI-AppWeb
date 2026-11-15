@@ -30,7 +30,10 @@ let filtros = {
 };
 
 let productosCatalogo = [];
-let productoEnEdicion = null;
+let productoEnEdicion = null; /* id del producto abierto en el diálogo; null = alta */
+let imagenesProducto = [];
+const MAX_IMAGENES = 12;
+const API_IMAGENES = '/api/admin/imagenes';
 
 let productosVenta = [];
 let lineasVenta = [];
@@ -46,7 +49,7 @@ const panels = {
 };
 
 const dialogoVentaPresencial = document.getElementById('dialogoVentaPresencial');
-const dialogoNuevoProducto = document.getElementById('dialogoNuevoProducto');
+const dialogoProducto = document.getElementById('dialogoProducto');
 
 function mostrarAviso(titulo, mensaje) {
     const aviso = document.getElementById('adminAviso');
@@ -74,7 +77,12 @@ async function fetchJson(path, { method = 'GET', body } = {}) {
     });
     if (!respuesta.ok) {
         const texto = await respuesta.text().catch(() => '');
-        throw new Error(`Error ${respuesta.status}${texto ? ': ' + texto : ''}`);
+        let detalle = texto;
+        try {
+            const datos = JSON.parse(texto);
+            detalle = datos.error || datos.message || texto;
+        } catch (e) { /* respuesta que no es JSON */ }
+        throw new Error(`Error ${respuesta.status}${detalle ? ': ' + detalle : ''}`);
     }
     if (respuesta.status === 204) return null;
     return respuesta.json();
@@ -398,73 +406,20 @@ function renderCatalogo(productos) {
         return;
     }
     vacio.hidden = true;
-    cuerpo.innerHTML = productos.map(producto => {
-        const enEdicion = productoEnEdicion === producto.id;
-        const estadoVisible = producto.visible ? 'true' : 'false';
-        const opcionVisible = `<option value="${estadoVisible}" selected>${producto.visible ? 'Sí' : 'No'}</option><option value="${producto.visible ? 'false' : 'true'}">${producto.visible ? 'No' : 'Sí'}</option>`;
-        if (enEdicion) {
-            return `
-                <tr id="fila-producto-${producto.id}">
-                    <td class="admin-codigo">#${producto.id}</td>
-                    <td>${escaparHTML(producto.slug)}</td>
-                    <td>${escaparHTML(producto.nombre)}</td>
-                    <td>${escaparHTML(producto.categoria)}</td>
-                    <td class="admin-numero"><input class="campo-input" type="number" min="0" step="0.01" value="${producto.precioBase}" data-campo="precioBase"></td>
-                    <td class="admin-numero"><input class="campo-input" type="number" min="0" value="${producto.stock}" data-campo="stock"></td>
-                    <td><select class="campo-input">${opcionVisible}</select></td>
-                    <td>${producto.active ? 'Sí' : 'No'}</td>
-                    <td>${producto.destacado ? 'Sí' : 'No'}</td>
-                    <td class="admin-acciones">
-                        <button class="boton boton-primario admin-guardar-producto" data-id="${producto.id}" type="button">Guardar</button>
-                        <button class="boton boton-texto admin-cancelar-edicion" data-id="${producto.id}" type="button">Cancelar</button>
-                    </td>
-                </tr>
-            `;
-        }
-        return `
-            <tr id="fila-producto-${producto.id}">
-                <td class="admin-codigo">#${producto.id}</td>
-                <td>${escaparHTML(producto.slug)}</td>
-                <td>${escaparHTML(producto.nombre)}</td>
-                <td>${escaparHTML(producto.categoria)}</td>
-                <td class="admin-numero">${formatearPrecio(producto.precioBase)}</td>
-                <td><span class="stock ${claseDeStock(producto.stock)}">${textoDeStock(producto.stock)}</span></td>
-                <td>${producto.visible ? 'Sí' : 'No'}</td>
-                <td>${producto.active ? 'Sí' : 'No'}</td>
-                <td>${producto.destacado ? 'Sí' : 'No'}</td>
-                <td class="admin-acciones"><button class="boton boton-texto" data-accion="editar" data-id="${producto.id}" type="button">Editar</button></td>
-            </tr>
-        `;
-    }).join('');
-}
-
-async function guardarProducto(id) {
-    const fila = document.getElementById(`fila-producto-${id}`);
-    if (!fila) return;
-    const precioInput = fila.querySelector('[data-campo="precioBase"]');
-    const stockInput = fila.querySelector('[data-campo="stock"]');
-    const visibleSelect = fila.querySelector('select');
-    const precio = Number(precioInput.value);
-    const stock = Number(stockInput.value);
-    if (!Number.isFinite(precio) || precio < 0) {
-        mostrarAviso('Precio inválido', 'Ingresá un precio mayor o igual a 0.');
-        return;
-    }
-    if (!Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock)) {
-        mostrarAviso('Stock inválido', 'Ingresá un stock entero mayor o igual a 0.');
-        return;
-    }
-    try {
-        await fetchJson(`${API_PRODUCTOS}/${id}`, {
-            method: 'PATCH',
-            body: JSON.stringify({ precioBase: precio, stock: stock, visible: visibleSelect.value === 'true' })
-        });
-        productoEnEdicion = null;
-        mostrarAviso('Producto actualizado', 'Los cambios se guardaron correctamente.');
-        cargarCatalogo();
-    } catch (error) {
-        mostrarAviso('No se pudo guardar el producto', error.message);
-    }
+    cuerpo.innerHTML = productos.map(producto => `
+        <tr id="fila-producto-${producto.id}">
+            <td class="admin-codigo">#${producto.id}</td>
+            <td>${escaparHTML(producto.slug)}</td>
+            <td><span class="admin-producto-nombre">${producto.imagen ? `<img class="admin-miniatura" src="${escaparHTML(srcImagen(producto.imagen))}" alt="" loading="lazy">` : '<span class="admin-miniatura admin-miniatura-vacia" aria-hidden="true"></span>'}${escaparHTML(producto.nombre)}</span></td>
+            <td>${escaparHTML(producto.categoria)}</td>
+            <td class="admin-numero">${formatearPrecio(producto.precioBase)}</td>
+            <td><span class="stock ${claseDeStock(producto.stock)}">${textoDeStock(producto.stock)}</span></td>
+            <td>${producto.visible ? 'Sí' : 'No'}</td>
+            <td>${producto.active ? 'Sí' : 'No'}</td>
+            <td>${producto.destacado ? 'Sí' : 'No'}</td>
+            <td class="admin-acciones"><button class="boton boton-texto" data-accion="editar" data-id="${producto.id}" type="button">Editar</button></td>
+        </tr>
+    `).join('');
 }
 
 async function cargarAuditoria() {
@@ -1037,48 +992,167 @@ function cerrarVentaPresencial() {
     cerrarDialogo(dialogoVentaPresencial);
 }
 
-/* ----- Nuevo producto ----- */
+/* ----- Producto: alta y edición (datos + imágenes) ----- */
 
-function abrirNuevoProducto() {
-    const form = document.getElementById('formNuevoProducto');
+/* Las imágenes del sitio son relativas a la raíz publicada; el admin vive allí. */
+function srcImagen(ruta) {
+    return /^public\//.test(ruta) ? './' + ruta : ruta;
+}
+
+function renderGaleria() {
+    const lista = document.getElementById('prodGaleria');
+    document.getElementById('prodGaleriaVacia').hidden = imagenesProducto.length > 0;
+    lista.innerHTML = imagenesProducto.map((ruta, indice) => `
+        <li class="admin-galeria-item${indice === 0 ? ' es-principal' : ''}">
+            <img src="${escaparHTML(srcImagen(ruta))}" alt="Imagen ${indice + 1}" loading="lazy">
+            ${indice === 0 ? '<span class="admin-galeria-marca">Principal</span>' : ''}
+            <div class="admin-galeria-botones">
+                ${indice === 0 ? '' : `<button class="boton boton-texto" type="button" data-img="principal" data-i="${indice}">Principal</button>`}
+                <button class="boton boton-texto" type="button" data-img="quitar" data-i="${indice}">Quitar</button>
+            </div>
+        </li>
+    `).join('');
+}
+
+function abrirProducto(id) {
+    const form = document.getElementById('formProducto');
     limpiarErrores(form);
     form.reset();
-    document.getElementById('estadoNuevoProducto').hidden = true;
-    dialogoNuevoProducto.showModal();
+    document.getElementById('estadoProducto').hidden = true;
+    const producto = id === null ? null : productosCatalogo.find(item => item.id === id);
+    productoEnEdicion = producto ? producto.id : null;
+    document.getElementById('dialogoProductoTitulo').textContent = producto ? `Editar producto #${producto.id}` : 'Nuevo producto';
+
+    const categorias = [...new Set(productosCatalogo.map(item => item.categoria).filter(Boolean))];
+    document.getElementById('prodCategorias').innerHTML = categorias.map(c => `<option value="${escaparHTML(c)}"></option>`).join('');
+
+    const valor = (campo, defecto) => (producto ? producto[campo] : defecto);
+    document.getElementById('prodNombre').value = valor('nombre', '');
+    document.getElementById('prodSlug').value = valor('slug', '');
+    document.getElementById('prodCategoria').value = valor('categoria', '');
+    document.getElementById('prodDescripcion').value = valor('descripcion', '');
+    document.getElementById('prodPrecio').value = valor('precioBase', '');
+    document.getElementById('prodStock').value = valor('stock', 8);
+    document.getElementById('prodVisible').value = String(valor('visible', true));
+    document.getElementById('prodActivo').value = String(valor('active', true));
+    document.getElementById('prodDestacado').value = String(valor('destacado', false));
+    document.getElementById('prodInfo').value = producto ? (producto.infoDeVenta || []).join('\n') : '';
+    imagenesProducto = producto ? [...(producto.imagenes && producto.imagenes.length ? producto.imagenes : (producto.imagen ? [producto.imagen] : []))] : [];
+    renderGaleria();
+    dialogoProducto.showModal();
     bloquearScroll(true);
 }
 
-function cerrarNuevoProducto() {
-    cerrarDialogo(dialogoNuevoProducto);
+function cerrarProducto() {
+    cerrarDialogo(dialogoProducto);
 }
 
-async function guardarNuevoProducto(evento) {
+/* Reduce la foto a 1200 px (JPEG) antes de subirla: livianas para el sitio y para la base. */
+async function reducirImagen(archivo) {
+    const bitmap = await createImageBitmap(archivo);
+    const escala = Math.min(1, 1200 / Math.max(bitmap.width, bitmap.height));
+    const lienzo = document.createElement('canvas');
+    lienzo.width = Math.max(1, Math.round(bitmap.width * escala));
+    lienzo.height = Math.max(1, Math.round(bitmap.height * escala));
+    const contexto = lienzo.getContext('2d');
+    contexto.fillStyle = '#ffffff';
+    contexto.fillRect(0, 0, lienzo.width, lienzo.height);
+    contexto.drawImage(bitmap, 0, 0, lienzo.width, lienzo.height);
+    bitmap.close();
+    return new Promise((resolve, reject) => {
+        lienzo.toBlob(blob => (blob ? resolve(blob) : reject(new Error('No se pudo procesar la imagen.'))), 'image/jpeg', 0.85);
+    });
+}
+
+async function subirImagenes(archivos) {
+    const estado = document.getElementById('estadoProducto');
+    for (const archivo of archivos) {
+        if (imagenesProducto.length >= MAX_IMAGENES) {
+            mostrarEstadoFormulario(estado, `Máximo ${MAX_IMAGENES} imágenes por producto.`, 'error');
+            estado.hidden = false;
+            break;
+        }
+        try {
+            mostrarEstadoFormulario(estado, `Subiendo ${archivo.name}...`, 'info');
+            estado.hidden = false;
+            const blob = await reducirImagen(archivo);
+            const respuesta = await fetch(API_IMAGENES, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'image/jpeg', Accept: 'application/json' },
+                body: blob
+            });
+            if (!respuesta.ok) throw new Error(`Error ${respuesta.status}`);
+            const datos = await respuesta.json();
+            imagenesProducto.push(datos.url);
+            renderGaleria();
+            estado.hidden = true;
+        } catch (error) {
+            mostrarEstadoFormulario(estado, `No se pudo subir ${archivo.name}: ${error.message}`, 'error');
+            estado.hidden = false;
+        }
+    }
+}
+
+function agregarImagenUrl() {
+    const campo = document.getElementById('prodUrl');
+    const estado = document.getElementById('estadoProducto');
+    const url = campo.value.trim();
+    if (!/^https:\/\/[^\s"'<>]{4,480}$/.test(url)) {
+        mostrarEstadoFormulario(estado, 'Ingresá una URL que empiece con https://', 'error');
+        estado.hidden = false;
+        return;
+    }
+    if (imagenesProducto.length >= MAX_IMAGENES) {
+        mostrarEstadoFormulario(estado, `Máximo ${MAX_IMAGENES} imágenes por producto.`, 'error');
+        estado.hidden = false;
+        return;
+    }
+    if (!imagenesProducto.includes(url)) imagenesProducto.push(url);
+    campo.value = '';
+    estado.hidden = true;
+    renderGaleria();
+}
+
+function accionGaleria(evento) {
+    const boton = evento.target.closest('[data-img]');
+    if (!boton) return;
+    const indice = Number(boton.dataset.i);
+    if (boton.dataset.img === 'quitar') {
+        imagenesProducto.splice(indice, 1);
+    } else if (boton.dataset.img === 'principal') {
+        const [imagen] = imagenesProducto.splice(indice, 1);
+        imagenesProducto.unshift(imagen);
+    }
+    renderGaleria();
+}
+
+async function guardarProductoForm(evento) {
     evento.preventDefault();
     const form = evento.target;
     limpiarErrores(form);
-    const estado = document.getElementById('estadoNuevoProducto');
+    const estado = document.getElementById('estadoProducto');
     estado.hidden = true;
 
-    const slug = limpiarValor(document.getElementById('nuevoSlug').value);
-    const nombre = limpiarValor(document.getElementById('nuevoNombre').value);
-    const precio = Number(document.getElementById('nuevoPrecio').value);
-    const stock = Number(document.getElementById('nuevoStock').value);
-    const visible = document.getElementById('nuevoVisible').value === 'true';
+    const slug = limpiarValor(document.getElementById('prodSlug').value);
+    const nombre = limpiarValor(document.getElementById('prodNombre').value);
+    const precioTexto = document.getElementById('prodPrecio').value.trim();
+    const stockTexto = document.getElementById('prodStock').value.trim();
+    const precio = Number(precioTexto);
+    const stock = Number(stockTexto);
 
-    let errores = [];
-    if (!slug) errores.push({ id: 'nuevoSlug', mensaje: 'Ingresá un slug.' });
-    else if (!/^[a-z0-9-]+$/.test(slug)) errores.push({ id: 'nuevoSlug', mensaje: 'Usá solo letras minúsculas, números y guiones.' });
-    if (!nombre) errores.push({ id: 'nuevoNombre', mensaje: 'Ingresá un nombre.' });
-    if (!Number.isFinite(precio) || precio < 0) errores.push({ id: 'nuevoPrecio', mensaje: 'Ingresá un precio válido.' });
-    if (!Number.isFinite(stock) || stock < 0 || !Number.isInteger(stock)) errores.push({ id: 'nuevoStock', mensaje: 'Ingresá un stock válido.' });
+    const errores = [];
+    if (!nombre) errores.push({ id: 'prodNombre', mensaje: 'Ingresá un nombre.' });
+    if (!slug) errores.push({ id: 'prodSlug', mensaje: 'Ingresá un slug.' });
+    else if (!/^[a-z0-9-]+$/.test(slug)) errores.push({ id: 'prodSlug', mensaje: 'Usá solo minúsculas, números y guiones.' });
+    if (precioTexto === '' || !Number.isFinite(precio) || precio < 0) errores.push({ id: 'prodPrecio', mensaje: 'Ingresá un precio válido.' });
+    if (stockTexto === '' || !Number.isInteger(stock) || stock < 0) errores.push({ id: 'prodStock', mensaje: 'Ingresá un stock entero válido.' });
 
     if (errores.length > 0) {
         errores.forEach(error => {
             const input = document.getElementById(error.id);
-            if (input) {
-                input.classList.add('campo-con-error');
-                input.setAttribute('aria-invalid', 'true');
-            }
+            input.classList.add('campo-con-error');
+            input.setAttribute('aria-invalid', 'true');
             const errorEl = document.getElementById('error' + error.id.charAt(0).toUpperCase() + error.id.slice(1));
             if (errorEl) errorEl.textContent = error.mensaje;
         });
@@ -1087,33 +1161,39 @@ async function guardarNuevoProducto(evento) {
         return;
     }
 
-    const boton = document.getElementById('adminGuardarNuevoProducto');
+    const cuerpo = {
+        slug,
+        nombre,
+        categoria: limpiarValor(document.getElementById('prodCategoria').value),
+        descripcion: limpiarValor(document.getElementById('prodDescripcion').value),
+        precioBase: precio,
+        stock,
+        visible: document.getElementById('prodVisible').value === 'true',
+        active: document.getElementById('prodActivo').value === 'true',
+        destacado: document.getElementById('prodDestacado').value === 'true',
+        infoDeVenta: document.getElementById('prodInfo').value.split('\n').map(linea => linea.trim()).filter(Boolean),
+        imagenes: imagenesProducto,
+        imagen: imagenesProducto[0] || ''
+    };
+
+    const boton = document.getElementById('adminGuardarProducto');
     const textoOriginal = boton.textContent;
     boton.disabled = true;
-    boton.textContent = 'Creando...';
+    boton.textContent = 'Guardando...';
+    const edicion = productoEnEdicion !== null;
 
     try {
-        await fetchJson(API_PRODUCTOS, {
-            method: 'POST',
-            body: JSON.stringify({
-                slug,
-                nombre,
-                categoria: '',
-                imagen: '',
-                imagenes: [],
-                descripcion: '',
-                precioBase: precio,
-                stock,
-                visible,
-                destacado: false,
-                infoDeVenta: ''
-            })
+        await fetchJson(edicion ? `${API_PRODUCTOS}/${productoEnEdicion}` : API_PRODUCTOS, {
+            method: edicion ? 'PATCH' : 'POST',
+            body: JSON.stringify(cuerpo)
         });
-        mostrarAviso('Producto creado', 'El producto se agregó al catálogo.');
-        cerrarNuevoProducto();
+        mostrarAviso(edicion ? 'Producto actualizado' : 'Producto creado', edicion ? 'Los cambios se guardaron correctamente.' : 'El producto se agregó al catálogo.');
+        cerrarProducto();
         cargarCatalogo();
     } catch (error) {
-        mostrarAviso('No se pudo crear el producto', error.message);
+        mostrarEstadoFormulario(estado, error.message, 'error');
+        estado.hidden = false;
+    } finally {
         boton.disabled = false;
         boton.textContent = textoOriginal;
     }
@@ -1174,7 +1254,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dialogo) cerrarDialogo(dialogo);
         });
     });
-    [dialogoVentaPresencial, dialogoNuevoProducto].forEach(dialogo => {
+    [dialogoVentaPresencial, dialogoProducto].forEach(dialogo => {
         if (!dialogo) return;
         dialogo.addEventListener('click', evento => {
             if (evento.target === dialogo) cerrarDialogo(dialogo);
@@ -1236,25 +1316,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    /* Edición del catálogo (delegación: editar / guardar / cancelar). */
+    /* Edición del catálogo: el botón Editar abre el diálogo del producto. */
     document.getElementById('adminCuerpoCatalogo').addEventListener('click', evento => {
         const editar = evento.target.closest('[data-accion="editar"]');
-        const guardar = evento.target.closest('.admin-guardar-producto');
-        const cancelar = evento.target.closest('.admin-cancelar-edicion');
-        if (editar) {
-            productoEnEdicion = Number(editar.dataset.id);
-            renderCatalogo(productosCatalogo);
-            return;
-        }
-        if (cancelar) {
-            productoEnEdicion = null;
-            renderCatalogo(productosCatalogo);
-            return;
-        }
-        if (guardar) {
-            guardarProducto(Number(guardar.dataset.id));
-            return;
-        }
+        if (editar) abrirProducto(Number(editar.dataset.id));
     });
 
     /* Venta presencial: líneas. */
@@ -1290,8 +1355,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adminVentaPresencial').addEventListener('click', abrirVentaPresencial);
 
     /* Nuevo producto. */
-    document.getElementById('adminNuevoProducto').addEventListener('click', abrirNuevoProducto);
-    document.getElementById('formNuevoProducto').addEventListener('submit', guardarNuevoProducto);
+    document.getElementById('adminNuevoProducto').addEventListener('click', () => abrirProducto(null));
+    document.getElementById('formProducto').addEventListener('submit', guardarProductoForm);
+    document.getElementById('prodGaleria').addEventListener('click', accionGaleria);
+    document.getElementById('prodAgregarUrl').addEventListener('click', agregarImagenUrl);
+    document.getElementById('prodArchivos').addEventListener('change', async evento => {
+        const archivos = [...evento.target.files];
+        evento.target.value = '';
+        await subirImagenes(archivos);
+    });
 
     /* Estilo del sitio: guardar borrador, vista previa, publicar. */
     document.getElementById('btnGuardarBorrador').addEventListener('click', guardarBorrador);

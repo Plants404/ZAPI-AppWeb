@@ -464,6 +464,7 @@
 }
 
 .admin-dialog-caja {
+  position: relative;
   background: var(--white);
   border-radius: var(--radius);
   padding: var(--espacio-md);
@@ -808,4 +809,173 @@ body[data-modo="cliente"] .admin-boton-menu {
 
 body[data-modo="cliente"] .admin-main {
   margin-left: 0;
+}
+
+/* Diálogo de producto: datos e imágenes */
+.admin-dialog-ancho {
+  max-width: 44rem;
+}
+
+.admin-campo-tres {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--espacio-sm);
+}
+
+.admin-campo-dos {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacio-sm);
+}
+
+.admin-imagenes {
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  padding: var(--espacio-sm);
+  margin: 0;
+  min-width: 0;
+}
+
+.admin-galeria {
+  list-style: none;
+  margin: 0 0 var(--espacio-sm);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--espacio-sm);
+}
+
+.admin-galeria-item {
+  position: relative;
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+}
+
+.admin-galeria-item.es-principal {
+  border-color: var(--moss);
+  box-shadow: 0 0 0 1px var(--moss);
+}
+
+.admin-galeria-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.admin-galeria-marca {
+  position: absolute;
+  top: .35rem;
+  left: .35rem;
+  padding: .1rem .5rem;
+  border-radius: var(--radius-pill);
+  background: var(--moss);
+  color: var(--white);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.admin-galeria-botones {
+  display: flex;
+  justify-content: space-between;
+  gap: .25rem;
+  padding: .25rem;
+}
+
+.admin-archivo {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.admin-archivo:focus-visible + * ,
+.admin-subir:focus-within {
+  outline: 2px solid var(--moss);
+}
+
+.admin-subir {
+  gap: .4rem;
+  cursor: pointer;
+  border: 1px solid var(--moss);
+  color: var(--moss);
+  background: var(--white);
+}
+
+.admin-imagenes-acciones,
+.admin-imagenes-url {
+  margin-top: var(--espacio-sm);
+}
+
+.admin-fila-url {
+  display: flex;
+  gap: var(--espacio-sm);
+}
+
+.admin-fila-url .campo-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-producto-nombre {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.admin-miniatura {
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--cream);
+  flex: none;
+}
+
+@media (min-width: 600px) {
+  .admin-galeria { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .admin-campo-dos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 768px) {
+  .admin-galeria { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.admin-dialog-cerrar {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.admin-dialog-cerrar:hover {
+  background: var(--cream);
+}
+
+.admin-ayuda {
+  display: block;
+  margin-top: .2rem;
+  color: var(--texto-suave);
+  font-size: var(--fs-xs);
+}
+
+.admin-dialog .admin-campo .campo-error {
+  min-height: 0;
+}
+
+.admin-dialog-caja h2 {
+  padding-right: 2.5rem;
+  margin-bottom: var(--espacio-sm);
 }
