@@ -766,59 +766,6 @@
   }
 }
 
-/* Vista de cliente: el sitio público dentro del panel, en modo prueba */
-.admin-vista-cliente {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-sm);
-}
-
-/* Aviso flotante en la esquina: no ocupa espacio sobre el sitio */
-.admin-vista-cliente-barra {
-  position: fixed;
-  right: var(--espacio-md);
-  bottom: var(--espacio-md);
-  z-index: 1500;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--espacio-xs, .5rem);
-  width: min(22rem, calc(100% - 2 * var(--espacio-md)));
-  padding: var(--espacio-md);
-  border-radius: var(--radius);
-  background: var(--forest);
-  color: var(--cream);
-  box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .3);
-}
-
-.admin-vista-cliente-barra span {
-  color: var(--texto-verde-suave);
-  font-size: var(--fs-sm);
-}
-
-.admin-vista-cliente-barra .boton {
-  align-self: stretch;
-  margin-top: .25rem;
-}
-
-.admin-vista-cliente-marco {
-  width: 100%;
-  height: calc(100vh - var(--admin-barra-alto) - 3rem);
-  min-height: 28rem;
-  border: 1px solid var(--borde);
-  border-radius: var(--radius);
-  background: var(--white);
-}
-
-body[data-modo="cliente"] .admin-sidebar,
-body[data-modo="cliente"] .admin-boton-menu {
-  display: none;
-}
-
-body[data-modo="cliente"] .admin-main {
-  margin-left: 0;
-}
-
 /* Diálogo de producto: datos e imágenes */
 .admin-dialog-ancho {
   max-width: 44rem;
