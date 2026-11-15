@@ -6,11 +6,5 @@
       "source": "/api/:path*",
       "destination": "https://zapi-backend.onrender.com/api/:path*"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/depurar",
-      "schedule": "0 3 * * *"
-    }
   ]
 }

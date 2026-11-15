@@ -171,15 +171,15 @@ el mismo origen de Vercel, incluidas las cookies de sesión del administrador.
    inicia con `npm run backend` y verifica `/api/health`.
 2. En Render, configura `MONGODB_URI` con la URI privada de Atlas. El Blueprint
    define `MONGODB_DB=zapi-api2`, `FRONTEND_ORIGINS=https://zapivivero.vercel.app`,
-   `NODE_ENV=production` y `TRUST_PROXY=1`. `CRON_SECRET` debe ser un secreto
-   aleatorio configurado también en Vercel para proteger el cron.
+   `NODE_ENV=production` y `TRUST_PROXY=1`. Configura `CRON_SECRET` con un
+   secreto aleatorio largo (por ejemplo `openssl rand -hex 32`); protege
+   `/api/depurar` y `/api/diagnostico-ip`.
 3. En Vercel, conecta el repositorio con **Root Directory** en la raíz. El
    build corre `npm run vercel-build` y publica `frontend/`. Configura:
 
    | Variable | Valor |
    |----------|-------|
    | `ZAPI_API_URL` | `https://zapi-backend.onrender.com` para generar con la API publicada |
-   | `CRON_SECRET` | El mismo secreto configurado en Render |
 
    El proxy de `/api/*` apunta a `https://zapi-backend.onrender.com`. Si cambia
    el dominio del servicio Render, actualiza el destino en `vercel.json` y
@@ -197,9 +197,30 @@ el mismo origen de Vercel, incluidas las cookies de sesión del administrador.
 
    Estos comandos verifican la conexión, preparan los índices, cargan los
    productos y crean el usuario administrador en MongoDB Atlas.
-5. El cron diario de Vercel llama `/api/depurar` a través del proxy. La ruta
+5. El workflow `.github/workflows/depurar.yml` llama una vez por día a
+   `/api/depurar` directamente en Render, con reintentos mientras la instancia
+   gratuita despierta. En GitHub, agrega el secret `CRON_SECRET` (el mismo de
+   Render) y, si cambia el dominio, la variable `RENDER_API_URL`. La ruta
    anonimiza pedidos antiguos; las consultas y testimonios vencidos se eliminan
    por índices TTL.
+6. Calibra `TRUST_PROXY` para que el rate limiting vea la IP real del cliente
+   y no la de Vercel. Desde tu computadora, llama a la API **a través de
+   Vercel**:
+
+   ```bash
+   curl -H "Authorization: Bearer <CRON_SECRET>" https://zapivivero.vercel.app/api/diagnostico-ip
+   ```
+
+   El campo `ip` debe ser tu IP pública (compárala con
+   `curl https://ifconfig.me`). Si aparece otra IP, mira `xForwardedFor`: la
+   tuya es una de esas direcciones. Cuenta su posición desde la derecha
+   (la última es 1) y usa ese número en `TRUST_PROXY` en Render. No subas el
+   número más allá de lo necesario: cada salto extra permite falsificar la IP.
+
+Notas del plan gratuito de Render: la instancia se duerme tras 15 minutos sin
+tráfico y la primera petición puede tardar cerca de un minuto. Los deploys de
+vista previa de Vercel tienen otro dominio; agrégalo a `FRONTEND_ORIGINS` si
+necesitas probar formularios o el panel desde ellos.
 
 El plan Hobby de Vercel es solo para uso no comercial. Si el proyecto se usa
 con fines comerciales, hay que elegir un plan que lo permita.
@@ -216,7 +237,7 @@ con fines comerciales, hay que elegir un plan que lo permita.
 - `npm run backend:seed`: sincroniza productos desde `frontend/datos/catalogo.js`
   a MongoDB.
 - `npm run backend:depurar`: anonimiza datos personales de pedidos con más de
-  365 días. Ejecutado diariamente por el cron de Vercel.
+  365 días. En producción lo ejecuta a diario el workflow de GitHub Actions.
 - `npm run backend:indices`: crea los índices TTL de MongoDB manualmente
   (no se ejecuta en arranque).
 - `npm run probar:flujo`: prueba el flujo real de la API y elimina sus datos;
