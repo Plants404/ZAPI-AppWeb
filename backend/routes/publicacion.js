@@ -52,7 +52,7 @@ function clonarProducto(p) {
         precioBase: p.precioBase,
         stock: p.stock,
         active: !!p.active,
-        visible: !!p.visible,
+        visible: p.visible !== false,
         destacado: !!p.destacado,
         infoDeVenta: p.infoDeVenta || ''
     };
@@ -113,6 +113,9 @@ function crearRouter(getDatabase) {
         const borrador = await db.collection('configuracionBorrador').findOne({ _id: 'borrador' });
         if (!borrador) {
             throw new HttpError(400, 'No hay borrador para publicar.');
+        }
+        if (!(borrador.catalogo || []).some(p => p.active !== false && p.visible !== false)) {
+            throw new HttpError(400, 'El borrador no tiene productos activos y visibles.');
         }
 
         const publicadoActual = await db.collection('configuracionPublicada').findOne({ _id: 'publicado' });
