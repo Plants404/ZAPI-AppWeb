@@ -737,3 +737,30 @@
     gap: var(--espacio-xs);
   }
 }
+
+/* Escritorio: menú lateral fijo bajo la barra superior */
+@media (min-width: 1024px) {
+  .admin-sidebar {
+    top: var(--admin-barra-alto);
+    height: calc(100vh - var(--admin-barra-alto));
+    z-index: 90;
+  }
+
+  .admin-main {
+    margin-left: var(--admin-sidebar-ancho);
+  }
+
+  .admin-boton-menu,
+  .admin-boton-cerrar,
+  .admin-sidebar-fondo {
+    display: none;
+  }
+}
+
+/* Celular: barra superior sin textos secundarios para que no se pisen */
+@media (max-width: 600px) {
+  .admin-marca-sub,
+  .admin-modo-texto {
+    display: none;
+  }
+}
