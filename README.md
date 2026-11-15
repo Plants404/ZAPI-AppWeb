@@ -29,7 +29,7 @@ MongoDB Atlas). Copia `.env.example` a `.env` y reemplaza
 base de datos. Codifica para URL los caracteres especiales de la contraseña.
 No pongas esa cadena en el frontend ni la subas al repositorio. En Atlas,
 crea un usuario de base de datos con acceso
-`readWrite` únicamente a la base `zapi` y permite en Network Access solo las
+`readWrite` únicamente a la base `zapi-api2` y permite en Network Access solo las
 direcciones IP que realmente necesites.
 
 ```bash
@@ -123,13 +123,12 @@ backend/
   db.js                  conexión al driver oficial de MongoDB
   server.js              arranque de la API
   seed.js                sincroniza productos desde frontend/datos/catalogo.js
-  api/index.js           handler de Express para Vercel (no llama listen)
-  vercel.json            duración de la función y cron diario de Vercel
   indices.js             crea índices TTL manualmente (no se ejecuta en arranque)
   depurar.js             anonimiza pedidos viejos (script de depuración)
   routes/                endpoints de productos, pedidos y formularios
   lib/                   validación, rate limiting, errores HTTP, páginas públicas, eventos
-api/index.js             entrada de Vercel Functions; delega en backend/api/index.js
+vercel.json              publicación estática en Vercel y proxy de API a Render
+render.yaml              servicio web de Render para el backend
 ```
 
 Cada página pública comparte la misma cabecera y el mismo pie, generados desde
@@ -161,34 +160,32 @@ configurado, por WhatsApp como respaldo. La lista de testimonios publicados se
 edita a mano en `datos/testimonios.js` y se renderiza en la portada durante
 la generación.
 
-## Despliegue en Vercel
+## Despliegue del frontend en Vercel y la API en Render
 
-El sitio estático y la API Express se despliegan en un solo proyecto y bajo el
-mismo origen de Vercel, sin dominio propio. Así el navegador usa `/api/...`
-en el mismo origen y no depende de cookies de terceros ni de CORS entre
-dominios.
+Vercel publica solo el sitio estático de `frontend/`. Las rutas `/api/*` se
+reenvían al servicio Render configurado en `vercel.json`. El navegador conserva
+el mismo origen de Vercel, incluidas las cookies de sesión del administrador.
 
-1. En Vercel, crea un único proyecto conectado a este repositorio. Deja el
-   **Root Directory** en la raíz del repositorio. El build corre
-   `npm run vercel-build` y publica `frontend/`.
-2. Después del primer despliegue, copia la URL pública asignada por Vercel.
-   En **Settings → Environment Variables**, carga las variables en el panel,
-   nunca en archivos:
+1. En Render, crea un Blueprint desde este repositorio usando `render.yaml`.
+   El servicio usa la raíz del repositorio, instala dependencias con `npm ci`,
+   inicia con `npm run backend` y verifica `/api/health`.
+2. En Render, configura `MONGODB_URI` con la URI privada de Atlas. El Blueprint
+   define `MONGODB_DB=zapi-api2`, `FRONTEND_ORIGINS=https://zapivivero.vercel.app`,
+   `NODE_ENV=production` y `TRUST_PROXY=1`. `CRON_SECRET` debe ser un secreto
+   aleatorio configurado también en Vercel para proteger el cron.
+3. En Vercel, conecta el repositorio con **Root Directory** en la raíz. El
+   build corre `npm run vercel-build` y publica `frontend/`. Configura:
 
    | Variable | Valor |
    |----------|-------|
-   | `MONGODB_URI` | Cadena de conexión de Atlas (secreto) |
-   | `MONGODB_DB` | Nombre de la base de datos |
-   | `CRON_SECRET` | Secreto aleatorio para proteger `/api/depurar` |
-   | `FRONTEND_ORIGINS` | URL pública real del proyecto, con `https://` |
-   | `DEPLOY_HOOK_URL` | URL del deploy hook, opcional |
-   | `ZAPI_API_URL` | URL pública del mismo proyecto, sin `/api` al final |
+   | `ZAPI_API_URL` | `https://zapi-backend.onrender.com` para generar con la API publicada |
+   | `CRON_SECRET` | El mismo secreto configurado en Render |
 
-   Cargá los valores en los entornos de Vercel que vayas a usar. No subas
-   `.env` ni guardes credenciales en el repositorio. `FRONTEND_ORIGINS` es
-   necesario para la validación del backend aunque sitio y API compartan
-   origen.
-3. Desde tu computadora, con un `.env` local configurado para Atlas, ejecuta
+   El proxy de `/api/*` apunta a `https://zapi-backend.onrender.com`. Si cambia
+   el dominio del servicio Render, actualiza el destino en `vercel.json` y
+   vuelve a desplegar Vercel. No configures `MONGODB_URI` en Vercel ni la
+   guardes en el repositorio.
+4. Desde tu computadora, con un `.env` local configurado para Atlas, ejecuta
    una sola vez y en este orden:
 
    ```bash
@@ -200,9 +197,9 @@ dominios.
 
    Estos comandos verifican la conexión, preparan los índices, cargan los
    productos y crean el usuario administrador en MongoDB Atlas.
-4. El cron diario de `/api/depurar` usa `CRON_SECRET`. La ruta anonimiza
-   pedidos antiguos; las consultas y testimonios vencidos se eliminan por
-   índices TTL.
+5. El cron diario de Vercel llama `/api/depurar` a través del proxy. La ruta
+   anonimiza pedidos antiguos; las consultas y testimonios vencidos se eliminan
+   por índices TTL.
 
 El plan Hobby de Vercel es solo para uso no comercial. Si el proyecto se usa
 con fines comerciales, hay que elegir un plan que lo permita.
