@@ -41,32 +41,66 @@
         </div>
 
     <form class="card" id="f" novalidate>
-        <h1 id="titulo">Bienvenido</h1>
-        <p class="msg" id="msg" aria-live="polite">El acceso con cuenta requiere un backend. Podés recorrer el catálogo y hacer pedidos sin iniciar sesión.</p>
+        <div class="tabs" role="tablist" aria-label="Elegí una opción">
+            <button class="tab" id="tabLogin" type="button" role="tab" aria-selected="true" aria-controls="f">Ingresar</button>
+            <button class="tab" id="tabRegistro" type="button" role="tab" aria-selected="false" aria-controls="f">Crear cuenta</button>
+        </div>
 
-        
+        <h1 id="titulo">Bienvenido</h1>
+        <p class="msg" id="msg" aria-live="polite">¡Hola! Ingresá para seguir creciendo</p>
+
         <div class="f" id="fn" hidden>
             <label for="n">Nombre</label>
-            <input id="n" type="text" autocomplete="name" placeholder="Tu nombre">
+            <div class="campo">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-8 1.7-8 5v1h16v-1c0-3.3-4.7-5-8-5Z"/></svg>
+                <input id="n" type="text" autocomplete="name" placeholder="Tu nombre" maxlength="120">
+            </div>
+            <p class="err" id="errN" role="alert"></p>
         </div>
 
         <div class="f">
             <label for="u">Correo</label>
-            <input id="u" type="email" autocomplete="email" placeholder="tu@correo.com">
+            <div class="campo">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm8 7.2L5.2 7H4.5v.3L12 13l7.5-5.7V7h-.7L12 12.2Z"/></svg>
+                <input id="u" type="email" autocomplete="email" placeholder="tu@correo.com">
+            </div>
+            <p class="err" id="errU" role="alert"></p>
         </div>
 
         <div class="f">
             <label for="p">Contraseña</label>
-            <input id="p" type="password" autocomplete="current-password" placeholder="••••••••">
-            <button type="button" class="eye" id="t" aria-label="Mostrar contraseña">VER</button>
+            <div class="campo">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-7-2a2 2 0 0 1 4 0v2h-4V7Z"/></svg>
+                <input id="p" type="password" autocomplete="current-password" placeholder="••••••••">
+                <button type="button" class="eye" id="t" aria-label="Mostrar contraseña">VER</button>
+            </div>
+            <p class="err" id="errP" role="alert"></p>
+        </div>
+
+        <div class="registro-extra" id="extra" hidden>
+            <div class="fuerza" aria-live="polite">
+                <div class="fuerza-barra"><span id="fuerzaRelleno"></span></div>
+                <span class="fuerza-texto" id="fuerzaTexto">Escribí una contraseña</span>
+            </div>
+            <ul class="reqs" id="reqs">
+                <li data-req="largo"><span class="tilde" aria-hidden="true"></span>Al menos 12 caracteres</li>
+                <li data-req="mezcla"><span class="tilde" aria-hidden="true"></span>Letras y números (recomendado)</li>
+                <li data-req="igual"><span class="tilde" aria-hidden="true"></span>Las dos contraseñas coinciden</li>
+            </ul>
+
+            <div class="f" id="fp2">
+                <label for="p2">Repetí la contraseña</label>
+                <div class="campo">
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 9h-1V7a4 4 0 0 0-8 0v2H7a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2Zm-7-2a2 2 0 0 1 4 0v2h-4V7Z"/></svg>
+                    <input id="p2" type="password" autocomplete="new-password" placeholder="••••••••">
+                </div>
+                <p class="err" id="errP2" role="alert"></p>
+            </div>
+
+            <p class="legal">Al crear tu cuenta aceptás nuestra <a href="./privacidad.html">política de privacidad</a>. Con tu cuenta seguís tus pedidos y comprás más rápido.</p>
         </div>
 
         <button class="go" id="go" type="submit">Ingresar</button>
-
-        <p class="swap">
-            <span id="swapTexto">¿No tenés cuenta?</span>
-            <button type="button" class="link" id="swap">Crear una</button>
-        </p>
 
         <p class="tag">Pequeños brotes, grandes sueños</p>
     </form>

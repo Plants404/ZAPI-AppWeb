@@ -12,8 +12,18 @@
     const fn = $('#fn');
     const t = $('#t');
     const go = $('#go');
-    const swap = $('#swap');
-    const swapTexto = $('#swapTexto');
+    const tabLogin = $('#tabLogin');
+    const tabRegistro = $('#tabRegistro');
+    const p2 = $('#p2');
+    const extra = $('#extra');
+    const errN = $('#errN');
+    const errU = $('#errU');
+    const errP = $('#errP');
+    const errP2 = $('#errP2');
+    const fuerzaRelleno = $('#fuerzaRelleno');
+    const fuerzaTexto = $('#fuerzaTexto');
+    const reqs = $('#reqs');
+    const CLAVE_MINIMA = 12;
     const titulo = $('#titulo');
     const shake = $('#shake');
     const form = $('#f');
@@ -55,6 +65,11 @@
     function rest() { lean(0, 0); }
 
     const DEF = '¡Hola! Ingresá para seguir creciendo';
+    const DEF_REGISTRO = '¡Hola! Creá tu cuenta y empecemos';
+
+    function defMsg() {
+        return modo === 'registro' ? DEF_REGISTRO : DEF;
+    }
 
     function valid(v) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
@@ -68,7 +83,7 @@
             if (estado !== 'confuse') return;
             rest();
             if (document.activeElement === p) st('hide', 'Shh, no estoy mirando');
-            else st('idle', DEF);
+            else st('idle', defMsg());
         }, 2200);
     }
 
@@ -97,7 +112,7 @@
 
     u.addEventListener('focus', function () {
         clearTimeout(tm);
-        st('look', DEF);
+        st('look', defMsg());
         lean(-3, -2);
     });
     u.addEventListener('input', function () {
@@ -117,12 +132,25 @@
         if (e.relatedTarget === t) return;
         hd.removeAttribute('data-peek');
         if (estado === 'confuse') return;
-        st('idle', DEF);
+        st('idle', defMsg());
+    });
+
+    p2.addEventListener('focus', function () {
+        if (estado === 'confuse') return;
+        st('hide', 'Shh, no estoy mirando');
+        rest();
+    });
+    p2.addEventListener('blur', function (e) {
+        if (e.relatedTarget === t) return;
+        hd.removeAttribute('data-peek');
+        if (estado === 'confuse') return;
+        st('idle', defMsg());
     });
 
     t.addEventListener('click', function () {
         const mostrar = p.type === 'password';
         p.type = mostrar ? 'text' : 'password';
+        p2.type = p.type;
         t.textContent = mostrar ? 'OCULTAR' : 'VER';
         p.focus();
         if (mostrar) hd.setAttribute('data-peek', '');
@@ -132,22 +160,80 @@
 
     let modo = 'login';
 
+    /* ----- Ayudas del formulario de registro ----- */
+
+    function ponerError(campo, mensaje) {
+        const mapa = { n: errN, u: errU, p: errP, p2: errP2 };
+        const entrada = { n: n, u: u, p: p, p2: p2 }[campo];
+        mapa[campo].textContent = mensaje || '';
+        entrada.classList.toggle('malo', Boolean(mensaje));
+        if (mensaje) entrada.setAttribute('aria-invalid', 'true');
+        else entrada.removeAttribute('aria-invalid');
+    }
+
+    function limpiarErrores() {
+        ['n', 'u', 'p', 'p2'].forEach(function (c) { ponerError(c, ''); });
+    }
+
+    function puntajeClave(v) {
+        let puntos = 0;
+        if (v.length >= CLAVE_MINIMA) puntos += 1;
+        if (v.length >= 16) puntos += 1;
+        if (/[a-z]/.test(v) && /[A-Z]/.test(v)) puntos += 1;
+        if (/\d/.test(v) && /[a-zA-Z]/.test(v)) puntos += 1;
+        if (/[^a-zA-Z0-9]/.test(v)) puntos += 1;
+        return v.length < CLAVE_MINIMA ? Math.min(puntos, 1) : Math.max(2, Math.min(puntos, 4));
+    }
+
+    function marcarReq(nombre, cumple) {
+        const li = reqs.querySelector('[data-req="' + nombre + '"]');
+        if (li) li.classList.toggle('ok', cumple);
+    }
+
+    function actualizarClave() {
+        const v = p.value;
+        const nivel = v ? puntajeClave(v) : 0;
+        const textos = ['Escribí una contraseña', 'Muy corta', 'Aceptable', 'Buena', 'Muy fuerte'];
+
+        fuerzaRelleno.className = nivel ? 'f' + nivel : '';
+        fuerzaRelleno.style.width = (nivel * 25) + '%';
+        fuerzaTexto.textContent = textos[nivel];
+        marcarReq('largo', v.length >= CLAVE_MINIMA);
+        marcarReq('mezcla', /\d/.test(v) && /[a-zA-Z]/.test(v));
+        marcarReq('igual', v.length > 0 && v === p2.value);
+    }
+
+    p.addEventListener('input', function () { ponerError('p', ''); actualizarClave(); });
+    p2.addEventListener('input', function () { ponerError('p2', ''); actualizarClave(); });
+    n.addEventListener('input', function () { ponerError('n', ''); });
+    u.addEventListener('input', function () { ponerError('u', ''); });
+
     function ponerModo(m) {
         modo = m;
         const registro = m === 'registro';
 
         fn.hidden = !registro;
+        extra.hidden = !registro;
+        tabLogin.setAttribute('aria-selected', String(!registro));
+        tabRegistro.setAttribute('aria-selected', String(registro));
         titulo.textContent = registro ? 'Creá tu cuenta' : 'Bienvenido';
         go.textContent = registro ? 'Crear cuenta' : 'Ingresar';
-        swapTexto.textContent = registro ? '¿Ya tenés cuenta?' : '¿No tenés cuenta?';
-        swap.textContent = registro ? 'Ingresar' : 'Crear una';
         p.autocomplete = registro ? 'new-password' : 'current-password';
-        st('idle', registro ? '¡Hola! Creá tu cuenta y empecemos' : DEF);
+        p.placeholder = registro ? 'Mínimo 12 caracteres' : '••••••••';
+        limpiarErrores();
+        if (registro) actualizarClave();
+        st('idle', defMsg());
     }
 
-    swap.addEventListener('click', function () {
-        ponerModo(modo === 'login' ? 'registro' : 'login');
-        (modo === 'registro' ? n : u).focus();
+    tabLogin.addEventListener('click', function () {
+        if (modo === 'login') return;
+        ponerModo('login');
+        u.focus();
+    });
+    tabRegistro.addEventListener('click', function () {
+        if (modo === 'registro') return;
+        ponerModo('registro');
+        n.focus();
     });
 
     function sacudir() {
@@ -155,7 +241,7 @@
         void shake.offsetWidth;
         shake.classList.add('shake');
         setTimeout(function () {
-            if (estado === 'error') st('idle', DEF);
+            if (estado === 'error') st('idle', defMsg());
         }, 2400);
     }
 
@@ -186,13 +272,37 @@
 
         const correo = u.value.trim();
 
+        limpiarErrores();
+
         if (!valid(correo)) {
+            ponerError('u', 'Revisá el correo: falta el @ o el .com');
             confuse();
             return;
         }
 
-        if (modo === 'registro' && n.value.trim().length < 2) {
-            st('confuse', 'Escribí tu nombre para crear la cuenta');
+        if (modo === 'registro') {
+            let hayError = false;
+
+            if (n.value.trim().length < 2) {
+                ponerError('n', 'Escribí tu nombre (mínimo 2 letras).');
+                hayError = true;
+            }
+            if (p.value.length < CLAVE_MINIMA) {
+                ponerError('p', 'Usá al menos ' + CLAVE_MINIMA + ' caracteres.');
+                hayError = true;
+            }
+            if (p2.value !== p.value) {
+                ponerError('p2', 'Las contraseñas no coinciden.');
+                hayError = true;
+            }
+            if (hayError) {
+                st('confuse', 'Revisá los campos marcados');
+                sacudir();
+                return;
+            }
+        } else if (!p.value) {
+            ponerError('p', 'Escribí tu contraseña.');
+            st('confuse', 'Falta la contraseña');
             return;
         }
 
@@ -225,14 +335,33 @@
             const datos = await respuesta.json().catch(function () { return {}; });
 
             if (!respuesta.ok) {
+                if (respuesta.status === 409) ponerError('u', datos.error || 'Ya existe una cuenta con ese correo.');
+                if (respuesta.status === 400 && /contraseña/i.test(datos.error || '')) ponerError('p', datos.error);
                 st('error', datos.error || 'Ups, revisá tus datos e intentá de nuevo');
                 sacudir();
                 return;
             }
 
-            st('ok', '¡Listo! Entrando…');
+            /* Registrarse no inicia sesión por sí solo: se entra enseguida con los mismos datos. */
+            let sesion = datos;
+            if (modo === 'registro') {
+                const entrada = await fetch(window.urlApi('/api/auth/login'), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ email: correo, clave: p.value }),
+                });
+                sesion = await entrada.json().catch(function () { return {}; });
+                if (!entrada.ok) {
+                    st('error', 'Tu cuenta se creó. Ingresá con tu correo y contraseña.');
+                    ponerModo('login');
+                    return;
+                }
+            }
+
+            st('ok', modo === 'registro' ? '¡Cuenta creada! Entrando…' : '¡Listo! Entrando…');
             window.setTimeout(function () {
-                const destinoFinal = datos && datos.rol === 'admin'
+                const destinoFinal = sesion && sesion.rol === 'admin'
                     ? window.urlDelSitio('/admin.html')
                     : destino();
                 window.location.href = destinoFinal;
@@ -250,7 +379,8 @@
         p.disabled = true;
         t.disabled = true;
         go.disabled = true;
-        swap.disabled = true;
+        tabLogin.disabled = true;
+        tabRegistro.disabled = true;
         st('error', 'El acceso requiere una API configurada. Contactá al equipo.');
     }
 
