@@ -18,6 +18,13 @@
   --admin-texto: var(--ink);
   --admin-texto-suave: var(--muted-texto);
   --admin-fondo: var(--cream);
+  /* Alias de tokens que este panel usaba sin que existieran. */
+  --texto: var(--ink);
+  --texto-suave: var(--muted-texto);
+  --fondo: var(--cream);
+  --xs: var(--fs-xs);
+  --estado-vacio-bg: var(--forest-bg);
+  --mente-papel: var(--leaf-wash);
 }
 
 /* ============================================================================
@@ -272,7 +279,8 @@
   gap: .5rem;
 }
 
-.admin-tarjeta .admin-tarjeta-titulo {
+.admin-tarjeta .admin-tarjeta-titulo,
+.admin-tarjeta .admin-tarjeta-label {
   font-size: var(--fs-xs);
   color: var(--texto-suave);
   text-transform: uppercase;
@@ -324,7 +332,8 @@
   gap: .5rem;
 }
 
-.admin-tarjeta .admin-tarjeta-titulo {
+.admin-tarjeta .admin-tarjeta-titulo,
+.admin-tarjeta .admin-tarjeta-label {
   font-size: var(--fs-xs);
   color: var(--texto-suave);
   text-transform: uppercase;
@@ -343,6 +352,43 @@
   font-size: var(--xs);
   color: var(--muted-texto);
   margin: 0;
+}
+
+/* Gráfico de ventas (SVG) */
+.admin-grafico-wrap {
+  overflow-x: auto;
+}
+
+.admin-grafico {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 16rem;
+  min-width: 30rem;
+}
+
+.admin-grafico-linea {
+  stroke: var(--borde);
+  stroke-width: 1;
+}
+
+.admin-grafico-eje,
+.admin-grafico-etiqueta {
+  fill: var(--muted-texto);
+  font-size: 11px;
+  font-family: inherit;
+}
+
+.admin-grafico-eje {
+  text-anchor: end;
+}
+
+.admin-barra-web {
+  fill: var(--leaf);
+}
+
+.admin-barra-pre {
+  fill: var(--earth);
 }
 
 /* Tablas */
@@ -386,6 +432,10 @@
 }
 
 /* Diálogos */
+.admin-dialog:not([open]) {
+  display: none;
+}
+
 .admin-dialog {
   position: fixed;
   top: 0;
@@ -532,6 +582,89 @@
 .admin-aviso-mensaje {
   color: var(--texto-suave);
   font-size: var(--fs-sm);
+}
+
+/* Filtros de pedidos */
+.admin-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-md);
+  border-bottom: 1px solid var(--borde);
+}
+
+.admin-filtro {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+/* Estilo del sitio: colores de marca */
+.admin-campo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--espacio-md);
+}
+
+.campo-input.campo-color {
+  width: 100%;
+  height: 2.75rem;
+  padding: .2rem;
+  cursor: pointer;
+}
+
+/* Insignias de estado y de acción */
+.admin-badge {
+  display: inline-block;
+  padding: .15rem .6rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--forest-bg);
+  color: var(--ink);
+}
+
+.admin-badge-pendiente {
+  background: var(--amber-bg);
+  color: var(--amber-text);
+}
+
+.admin-badge-confirmado,
+.admin-badge-creado {
+  background: var(--menta);
+  color: var(--leaf-texto);
+}
+
+.admin-badge-entregado,
+.admin-badge-actualizado {
+  background: var(--leaf-wash-medium);
+  color: var(--forest);
+}
+
+.admin-badge-cancelado,
+.admin-badge-eliminado {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+.admin-select-estado {
+  min-height: 2.25rem;
+  padding: 0 .5rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+
+.admin-paginacion {
+  flex-wrap: wrap;
+  gap: var(--espacio-xs);
+  padding: var(--espacio-md);
 }
 
 /* Responsive: menú lateral como drawer en móvil */
