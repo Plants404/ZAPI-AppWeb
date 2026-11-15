@@ -930,33 +930,32 @@ async function restaurarVersion(version) {
 function abrirVistaPrevia() {
     const validacion = validarEstiloFormulario(document.getElementById('formEstilo'));
     if (!validacion.valido) return;
-    const estilo = validacion.estilo;
-    const params = new URLSearchParams({ estilo: JSON.stringify(estilo) });
-    const url = `index.html?${params.toString()}`;
-    const win = window.open(url, '_blank');
-    if (!win) {
-        mostrarAviso('Vista previa bloqueada', 'Permití ventanas emergentes para ver la vista previa.');
-        return;
-    }
+    const { titulo, subtitulo, boton, colores } = validacion.estilo;
+    const dialogo = document.getElementById('dialogoVistaPrevia');
+    const marco = document.getElementById('marcoVistaPrevia');
+
     const aplicar = () => {
         try {
-            const { colores } = estilo;
-            const css = `
-:root {
-    --zapi-color-primario: ${escaparHTML(colores.primario)};
-    --zapi-color-secundario: ${escaparHTML(colores.secundario)};
-    --zapi-color-acento: ${escaparHTML(colores.acento)};
-}
-`;
-            const style = win.document.createElement('style');
-            style.textContent = css;
-            win.document.head.appendChild(style);
-        } catch (e) {
-            /* No crítica: la ventana puede no estar lista aún. */
+            const doc = marco.contentDocument;
+            if (!doc || !doc.body) return;
+            const raiz = doc.documentElement.style;
+            raiz.setProperty('--forest', colores.primario);
+            raiz.setProperty('--moss', colores.secundario);
+            raiz.setProperty('--leaf', colores.acento);
+            const h1 = doc.querySelector('.hero-copy h1');
+            const lead = doc.querySelector('.hero-lead');
+            const cta = doc.querySelector('.hero-ctas .boton-primario');
+            if (h1) h1.textContent = titulo;
+            if (lead) lead.textContent = subtitulo;
+            if (cta) cta.textContent = boton;
+        } catch (error) {
+            /* Misma origen: no debería fallar; si falla se ve la portada sin cambios. */
         }
     };
-    if (win.document.readyState === 'complete') aplicar();
-    else win.addEventListener('load', aplicar, { once: true });
+    marco.onload = aplicar;
+    marco.src = './index.html';
+    dialogo.showModal();
+    bloquearScroll(true);
 }
 
 /* ----- Venta presencial ----- */
@@ -1323,6 +1322,14 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (panel === 'testimonios') cargarTestimonios();
             else if (panel === 'accesos') cargarAccesos();
         });
+    });
+
+    document.getElementById('adminCerrarSesion').addEventListener('click', async () => {
+        try {
+            await fetchJson('/api/auth/logout', { method: 'POST' });
+        } catch (error) { /* si falla igual salimos del panel */ }
+        try { sessionStorage.removeItem('zapiModoCliente'); } catch (error) { /* sin almacenamiento */ }
+        window.location.href = './login.html';
     });
 
     const selectorModo = document.getElementById('adminModo');
