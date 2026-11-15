@@ -1,0 +1,34 @@
+# Anonimiza pedidos viejos llamando a la API en Render una vez por día.
+# Reemplaza al cron de Vercel: llama a Render directo (sin pasar por el proxy)
+# y reintenta mientras el plan gratuito de Render despierta la instancia.
+#
+# Configurá en GitHub (Settings > Secrets and variables > Actions):
+#   - Secret   CRON_SECRET       el mismo valor que CRON_SECRET en Render
+#   - Variable RENDER_API_URL    opcional, por defecto https://zapi-backend.onrender.com
+name: Depurar pedidos
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC = 03:00 en Uruguay
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  depurar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Llamar /api/depurar
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          API_URL: ${{ vars.RENDER_API_URL || 'https://zapi-backend.onrender.com' }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::Falta el secret CRON_SECRET en el repositorio."
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error \
+            --retry 6 --retry-delay 20 --retry-all-errors --max-time 90 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$API_URL/api/depurar"

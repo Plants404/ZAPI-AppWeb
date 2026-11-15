@@ -152,6 +152,28 @@ test('GET /api/depurar llega al handler de cron y exige su secreto', async t => 
     });
 });
 
+test('GET /api/diagnostico-ip exige el secreto y respeta TRUST_PROXY', async t => {
+    await conEntorno({ CRON_SECRET: 'secreto-de-prueba', TRUST_PROXY: '2' }, async () => {
+        const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
+        t.after(() => server.close());
+        await new Promise(resolve => server.once('listening', resolve));
+
+        const url = `http://127.0.0.1:${server.address().port}/api/diagnostico-ip`;
+        assert.equal((await fetch(url)).status, 401);
+
+        const respuesta = await fetch(url, {
+            headers: {
+                Authorization: 'Bearer secreto-de-prueba',
+                'X-Forwarded-For': '1.1.1.1, 203.0.113.7, 10.0.0.2'
+            }
+        });
+        assert.equal(respuesta.status, 200);
+        const cuerpo = await respuesta.json();
+        assert.equal(cuerpo.ip, '203.0.113.7');
+        assert.equal(cuerpo.trustProxy, 2);
+    });
+});
+
 test('el catálogo solo expone productos públicos activos', async t => {
     const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
     t.after(() => server.close());
