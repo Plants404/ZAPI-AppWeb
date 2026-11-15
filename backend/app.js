@@ -7,7 +7,11 @@ const { HttpError } = require('./lib/http-error.js');
 const { verificarLimite } = require('./lib/limiter.js');
 const { depurarPedidos } = require('./depurar.js');
 const { crearRouter: crearRouterProductos } = require('./routes/products.js');
-const { crearRouterAdmin: crearRouterAdminProductos } = require('./routes/products.js');
+const {
+    crearRouterAdmin: crearRouterAdminProductos,
+    crearRouterImagenesAdmin,
+    crearRouterImagenes
+} = require('./routes/products.js');
 const { crearRouter: crearRouterPedidos } = require('./routes/orders.js');
 const { crearRouter: crearRouterEnvios } = require('./routes/submissions.js');
 const { crearRouter: crearRouterAuth } = require('./routes/auth.js');
@@ -173,7 +177,9 @@ async function crearApp(opciones = {}) {
     app.use('/api/auth', crearRouterAuth(obtenerBase));
     app.use('/api/admin', crearRouterAdmin(obtenerBase));
     app.use('/api/admin', crearRouterAdminOperaciones(obtenerBase));
-    app.use('/api/admin/products', crearRouterAdminProductos(obtenerBase));
+    app.use('/api/admin/productos', crearRouterAdminProductos(obtenerBase));
+    app.use('/api/admin/imagenes', crearRouterImagenesAdmin(obtenerBase));
+    app.use('/api/imagenes', crearRouterImagenes(obtenerBase));
     app.use('/api/admin/publicacion', crearRouterPublicacion(obtenerBase));
     app.use('/api', crearRouterPublicado(obtenerBase));
     app.use('/api/products', crearRouterProductos(obtenerBase));
