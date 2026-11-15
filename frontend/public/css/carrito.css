@@ -297,3 +297,25 @@
         top: calc(var(--header-alto) + var(--espacio-md));
     }
 }
+
+/* Recomendaciones del carrito: pie con precio y botón dentro de la tarjeta,
+   sin que el botón empuje al precio fuera del borde. */
+#recommendationsList .tarjeta-pie {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--espacio-sm);
+    padding: var(--espacio-sm) var(--espacio-md) var(--espacio-md);
+}
+
+#recommendationsList .tarjeta-pie .product-price {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+#recommendationsList .tarjeta-pie .boton-agregar {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+    padding: .6rem .9rem;
+    white-space: nowrap;
+}

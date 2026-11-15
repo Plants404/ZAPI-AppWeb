@@ -559,8 +559,8 @@ line-height: 1.2;
 }
 
 .product-stock-pill.stock-ok {
-background: var(--leaf-wash);
-color: var(--forest);
+background: var(--menta);
+color: var(--leaf-texto);
 }
 
 .product-stock-pill.pocas {
