@@ -6,6 +6,11 @@
    registrar analítica. */
 
 (function () {
+    /* Vista previa del panel (iframe): sin aviso y sin analítica. */
+    if (window.name === 'zapi-vista-previa') {
+        window.modoCliente = true;
+        return;
+    }
     let destino = null;
     try {
         if (sessionStorage.getItem('zapiModoCliente') === '1') {

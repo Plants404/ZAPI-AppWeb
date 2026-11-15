@@ -38,6 +38,12 @@
                         <option value="cliente">Ver como cliente</option>
                     </select>
                 </div>
+                <a class="admin-boton-barra" href="./index.html" target="_blank" rel="noopener" id="adminVerSitio">
+                    <span class="material-symbols-outlined" aria-hidden="true">public</span><span class="admin-boton-barra-texto">Ver sitio web</span>
+                </a>
+                <button class="admin-boton-barra admin-boton-barra-salir" type="button" id="adminCerrarSesion">
+                    <span class="material-symbols-outlined" aria-hidden="true">logout</span><span class="admin-boton-barra-texto">Cerrar sesión</span>
+                </button>
             </div>
         </header>
 
@@ -376,6 +382,16 @@
                     <button class="boton boton-texto" type="button" data-cerrar-dialogo>Cancelar</button>
                     <button class="boton boton-primario" id="adminGuardarVentaPresencial" type="submit">Crear venta</button>
                 </div>
+            </div>
+        </dialog>
+
+        <dialog class="admin-dialog" id="dialogoVistaPrevia" aria-labelledby="dialogoVistaPreviaTitulo">
+            <div class="admin-dialog-caja admin-dialog-previa">
+                <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                <span class="etiqueta">Estilo del sitio</span>
+                <h2 id="dialogoVistaPreviaTitulo">Vista previa de la portada</h2>
+                <p class="admin-ayuda">Así se vería la portada con tus cambios. Todavía no está publicada.</p>
+                <iframe class="admin-previa-marco" id="marcoVistaPrevia" name="zapi-vista-previa" title="Vista previa de la portada" src="about:blank"></iframe>
             </div>
         </dialog>
 
