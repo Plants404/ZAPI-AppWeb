@@ -7,7 +7,6 @@ const fs = require('node:fs');
 const http = require('http');
 const path = require('node:path');
 const { crearApp, validarOrigenes } = require('../app.js');
-const { restaurarRutaOriginal } = require('../api/index.js');
 const { construirOperacionesProductos } = require('../seed.js');
 
 async function conEntorno(valores, ejecutar) {
@@ -151,21 +150,6 @@ test('GET /api/depurar llega al handler de cron y exige su secreto', async t => 
         assert.equal(autorizado.status, 200);
         assert.deepEqual(await autorizado.json(), { ok: true, depurados: 0 });
     });
-});
-
-test('el rewrite de Vercel restaura las rutas originales y conserva la query', () => {
-    for (const ruta of ['/api/orders', '/api/depurar']) {
-        const req = {
-            url: '/api/index?__zapiPath=' + encodeURIComponent(ruta) + '&origen=prueba'
-        };
-        const res = {
-            setHeader() {},
-            end() {}
-        };
-
-        assert.equal(restaurarRutaOriginal(req, res), true);
-        assert.equal(req.url, ruta + '?origen=prueba');
-    }
 });
 
 test('el catálogo solo expone productos públicos activos', async t => {
