@@ -131,22 +131,37 @@ async function crearApp(opciones = {}) {
         res.json({ ok: true, database: 'connected' });
     });
 
-    app.get('/api/depurar', async (req, res, next) => {
+    /* Rutas de mantenimiento: exigen `Authorization: Bearer <CRON_SECRET>`. */
+    function exigirSecretoCron(req, res, next) {
         const cronSecret = process.env.CRON_SECRET;
         if (!cronSecret) {
-            return next(new HttpError(503, 'Depuración no configurada.'));
+            return next(new HttpError(503, 'Mantenimiento no configurado.'));
         }
         const auth = req.get('Authorization') || '';
         const prefijo = 'Bearer ';
         if (!auth.startsWith(prefijo)) {
             return next(new HttpError(401, 'No autorizado.'));
         }
-        const token = auth.slice(prefijo.length);
-        const a = Buffer.from(token);
+        const a = Buffer.from(auth.slice(prefijo.length));
         const b = Buffer.from(cronSecret);
         if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
             return next(new HttpError(401, 'No autorizado.'));
         }
+        next();
+    }
+
+    /* Ayuda a calibrar TRUST_PROXY detrás de Vercel + Render: `ip` debe ser
+       la IP pública de quien llama, no la de un proxy. */
+    app.get('/api/diagnostico-ip', exigirSecretoCron, (req, res) => {
+        res.set('Cache-Control', 'no-store');
+        res.json({
+            ip: req.ip,
+            trustProxy: app.get('trust proxy'),
+            xForwardedFor: req.get('X-Forwarded-For') || null
+        });
+    });
+
+    app.get('/api/depurar', exigirSecretoCron, async (req, res, next) => {
         try {
             const depurados = await depurarPedidos(db);
             res.json({ ok: true, depurados });
