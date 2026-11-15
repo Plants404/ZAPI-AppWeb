@@ -876,6 +876,34 @@ ul {
     text-decoration: none;
 }
 
+/* Selector de estrellas del formulario de opinión */
+.estrellas-selector {
+    display: flex;
+    align-items: center;
+    gap: .15rem;
+}
+
+.estrella-boton {
+    padding: .1rem .15rem;
+    border: 0;
+    background: none;
+    color: #cfc9b6;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color .15s ease, transform .15s ease;
+}
+
+.estrella-boton.activa { color: #e0a82e; }
+.estrella-boton:hover { transform: scale(1.15); }
+.estrella-boton:focus-visible { outline: 2px solid var(--leaf, #4f8a4b); outline-offset: 2px; border-radius: 6px; }
+
+.estrellas-texto {
+    margin-left: .6rem;
+    color: var(--texto-suave, #5b6b60);
+    font-size: var(--fs-sm, .9rem);
+}
+
 /* Tarjetas de testimonios de la portada */
 .resena-tarjeta {
     display: flex;

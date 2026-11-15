@@ -176,7 +176,7 @@ function dialogoTestimonio() {
         <button class="testimonio-cerrar-x icono-boton dialogo-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar formulario de opinion">${icono('close')}</button>
         <span class="etiqueta">Tu experiencia</span>
         <h2 class="testimonio-titulo" id="testimonioTitulo">Contanos cómo fue tu compra</h2>
-        <p class="testimonio-bajada">Leemos todas las opiniones. Publicamos solo las que estan verificadas y autorizadas.</p>
+        <p class="testimonio-bajada">Tu opinión se publica enseguida en la página. Contanos con honestidad cómo te fue.</p>
 
         <div class="testimonio-campo">
             <label class="testimonio-etiqueta campo-label" for="testimonioNombre">Nombre <span aria-hidden="true">*</span></label>
@@ -189,14 +189,12 @@ function dialogoTestimonio() {
             <span class="testimonio-error campo-error" id="errorTestimonioLugar"></span>
         </div>
         <div class="testimonio-campo">
-            <label class="testimonio-etiqueta campo-label" for="testimonioEstrellas">Puntaje</label>
-            <select class="testimonio-input campo-input" id="testimonioEstrellas" name="estrellas">
-                <option value="5">5 estrellas</option>
-                <option value="4">4 estrellas</option>
-                <option value="3">3 estrellas</option>
-                <option value="2">2 estrellas</option>
-                <option value="1">1 estrella</option>
-            </select>
+            <span class="testimonio-etiqueta campo-label" id="testimonioEstrellasEtiqueta">Puntaje</span>
+            <div class="estrellas-selector" id="testimonioEstrellasSelector" role="radiogroup" aria-labelledby="testimonioEstrellasEtiqueta">
+                ${[1, 2, 3, 4, 5].map(n => `<button class="estrella-boton" type="button" role="radio" aria-checked="${n === 5}" data-valor="${n}" aria-label="${n} ${n === 1 ? 'estrella' : 'estrellas'}">★</button>`).join('')}
+                <span class="estrellas-texto" id="testimonioEstrellasTexto" aria-live="polite">Excelente</span>
+            </div>
+            <input type="hidden" id="testimonioEstrellas" name="estrellas" value="5">
         </div>
         <div class="testimonio-campo">
             <label class="testimonio-etiqueta campo-label" for="testimonioTexto">Tu opinion <span aria-hidden="true">*</span></label>
