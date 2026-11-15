@@ -764,3 +764,48 @@
     display: none;
   }
 }
+
+/* Vista de cliente: el sitio público dentro del panel, en modo prueba */
+.admin-vista-cliente {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+}
+
+.admin-vista-cliente-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-sm) var(--espacio-md);
+  border-radius: var(--radius);
+  background: var(--forest);
+  color: var(--cream);
+}
+
+.admin-vista-cliente-barra span {
+  color: var(--texto-verde-suave);
+  font-size: var(--fs-sm);
+}
+
+.admin-vista-cliente-barra .boton {
+  margin-left: auto;
+}
+
+.admin-vista-cliente-marco {
+  width: 100%;
+  height: calc(100vh - var(--admin-barra-alto) - 7rem);
+  min-height: 28rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+body[data-modo="cliente"] .admin-sidebar,
+body[data-modo="cliente"] .admin-boton-menu {
+  display: none;
+}
+
+body[data-modo="cliente"] .admin-main {
+  margin-left: 0;
+}

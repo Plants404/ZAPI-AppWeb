@@ -80,7 +80,27 @@ async function fetchJson(path, { method = 'GET', body } = {}) {
     return respuesta.json();
 }
 
+let panelActivo = 'resumen';
+
+function aplicarModo(modo) {
+    const vista = document.getElementById('vistaCliente');
+    const marco = document.getElementById('adminMarcoCliente');
+    const selector = document.getElementById('adminModo');
+    const cliente = modo === 'cliente';
+    document.body.dataset.modo = modo;
+    if (selector) selector.value = modo;
+    if (!vista) return;
+    vista.hidden = !cliente;
+    if (cliente) {
+        for (const clave of Object.keys(panels)) panels[clave].hidden = true;
+        if (marco && !marco.getAttribute('src')) marco.setAttribute('src', marco.dataset.src);
+    } else {
+        mostrarPanel(panelActivo);
+    }
+}
+
 function mostrarPanel(id) {
+    panelActivo = id;
     for (const clave of Object.keys(panels)) {
         panels[clave].hidden = clave !== id;
     }
@@ -1138,8 +1158,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('adminModo').addEventListener('change', evento => {
-        document.body.dataset.modo = evento.target.value;
+        aplicarModo(evento.target.value);
     });
+    const volverAdmin = document.getElementById('adminVolverAdmin');
+    if (volverAdmin) volverAdmin.addEventListener('click', () => aplicarModo('admin'));
 
     document.querySelectorAll('[data-cerrar-aviso]').forEach(boton => {
         boton.addEventListener('click', cerrarAviso);
