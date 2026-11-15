@@ -46,8 +46,7 @@ No asumas que una funcionalidad existe sin comprobar el código.
 - Nunca expongas secretos ni credenciales en el repositorio.
 - Escapa el contenido dinámico antes de insertarlo como HTML y valida los
   formularios en el navegador.
-- La autenticación y el panel de administración no forman parte de esta fase.
-  Las referencias a `/api`, `login`, `admin` y `mongo` pertenecen al backend
+- Las referencias a `/api`, `login`, `admin` y `mongo` pertenecen al backend
   opcional y no se exponen en el frontend estático publicado.
 - Antes de eliminar código, comprueba referencias directas, dinámicas e
   indirectas.

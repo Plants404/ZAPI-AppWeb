@@ -232,7 +232,10 @@
 
             st('ok', '¡Listo! Entrando…');
             window.setTimeout(function () {
-                window.location.href = destino();
+                const destinoFinal = datos && datos.rol === 'admin'
+                    ? window.urlDelSitio('/admin.html')
+                    : destino();
+                window.location.href = destinoFinal;
             }, 1500);
         } catch {
             st('error', 'No pudimos conectarnos. Revisá la conexión e intentá de nuevo.');

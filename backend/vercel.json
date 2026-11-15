@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "backend/api/index.js": {
+      "maxDuration": 30
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/depurar",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}
