@@ -875,3 +875,57 @@ ul {
     text-align: center;
     text-decoration: none;
 }
+
+/* Tarjetas de testimonios de la portada */
+.resena-tarjeta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-sm);
+    padding: var(--espacio-md);
+    border: 1px solid var(--borde);
+    border-radius: var(--radius);
+    background: var(--white);
+    text-align: left;
+}
+
+.resena-estrellas {
+    margin: 0;
+    color: var(--moss);
+    font-size: var(--fs-lg, 1.1rem);
+    letter-spacing: .1em;
+}
+
+.resena-texto {
+    margin: 0;
+    flex: 1;
+    color: var(--forest);
+    line-height: 1.55;
+}
+
+.resena-autor {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    color: var(--forest);
+}
+
+.resena-autor span {
+    color: var(--texto-suave, #5b6b60);
+    font-size: var(--fs-sm);
+}
+
+.testimonios-grilla {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--espacio-md);
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .testimonios-grilla { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+    .testimonios-grilla { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
