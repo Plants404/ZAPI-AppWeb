@@ -200,7 +200,7 @@ function crearRouter(getDatabase) {
                 precioBase: p.precioBase,
                 stock: p.stock,
                 active: !!p.active,
-                visible: !!p.visible,
+                visible: p.visible !== false,
                 destacado: !!p.destacado
             }))
         });
