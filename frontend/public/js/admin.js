@@ -91,27 +91,18 @@ async function fetchJson(path, { method = 'GET', body } = {}) {
     return respuesta.json();
 }
 
-let panelActivo = 'resumen';
-
+/* "Ver como cliente" abre el sitio real en esta misma pestaña; el aviso para volver
+   lo muestra el propio sitio (modo-cliente.js) a partir de esta marca. */
 function aplicarModo(modo) {
-    const vista = document.getElementById('vistaCliente');
-    const marco = document.getElementById('adminMarcoCliente');
-    const selector = document.getElementById('adminModo');
-    const cliente = modo === 'cliente';
-    document.body.dataset.modo = modo;
-    if (selector) selector.value = modo;
-    if (!vista) return;
-    vista.hidden = !cliente;
-    if (cliente) {
-        for (const clave of Object.keys(panels)) panels[clave].hidden = true;
-        if (marco && !marco.getAttribute('src')) marco.setAttribute('src', marco.dataset.src);
-    } else {
-        mostrarPanel(panelActivo);
-    }
+    if (modo !== 'cliente') return;
+    try {
+        sessionStorage.setItem('zapiModoCliente', '1');
+        sessionStorage.setItem('zapiVolverA', location.pathname + location.search);
+    } catch (error) { /* sin almacenamiento: se abre igual el sitio */ }
+    location.href = './index.html';
 }
 
 function mostrarPanel(id) {
-    panelActivo = id;
     for (const clave of Object.keys(panels)) {
         panels[clave].hidden = clave !== id;
     }
@@ -1334,11 +1325,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    document.getElementById('adminModo').addEventListener('change', evento => {
-        aplicarModo(evento.target.value);
-    });
-    const volverAdmin = document.getElementById('adminVolverAdmin');
-    if (volverAdmin) volverAdmin.addEventListener('click', () => aplicarModo('admin'));
+    const selectorModo = document.getElementById('adminModo');
+    selectorModo.addEventListener('change', evento => aplicarModo(evento.target.value));
+    /* Al volver con "atrás" el selector debe mostrar de nuevo el modo administrador. */
+    window.addEventListener('pageshow', () => { selectorModo.value = 'admin'; });
 
     document.querySelectorAll('[data-cerrar-aviso]').forEach(boton => {
         boton.addEventListener('click', cerrarAviso);

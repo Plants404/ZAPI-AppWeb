@@ -234,6 +234,7 @@ const SCRIPTS_BASE = [
     'pedidos-estado.js',
     'modal.js',
     'compat-restauracion.js',
+    'modo-cliente.js',
     'rastreo.js'
 ];
 
@@ -260,7 +261,7 @@ function pagina(opciones) {
 
     const rutaJs = nombre => `${raiz}/public/js/${nombre}`;
     const scriptsBase = archivo === 'admin.html'
-        ? SCRIPTS_BASE.filter(nombre => nombre !== 'rastreo.js')
+        ? SCRIPTS_BASE.filter(nombre => nombre !== 'rastreo.js' && nombre !== 'modo-cliente.js')
         : SCRIPTS_BASE;
     const todosLosScripts = [...scriptsBase, ...scripts, ...SCRIPTS_FINALES];
     const ogImagen = `${NEGOCIO.sitio}/public/img/plants-hero.opt.jpg`;

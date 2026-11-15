@@ -840,3 +840,38 @@ ul {
         transform: none;
     }
 }
+
+/* Aviso flotante del modo "ver como cliente" */
+.modo-cliente-aviso {
+    position: fixed;
+    right: var(--espacio-md, 1rem);
+    bottom: var(--espacio-md, 1rem);
+    z-index: 3000;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: .35rem;
+    width: min(22rem, calc(100% - 2rem));
+    padding: var(--espacio-md, 1rem);
+    border-radius: var(--radius);
+    background: var(--forest);
+    color: var(--cream);
+    box-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .3);
+}
+
+.modo-cliente-aviso span {
+    font-size: var(--fs-sm);
+    opacity: .85;
+}
+
+.modo-cliente-aviso a {
+    display: block;
+    margin-top: .25rem;
+    padding: .6rem 1.2rem;
+    border-radius: var(--radius);
+    background: var(--moss);
+    color: var(--white);
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}

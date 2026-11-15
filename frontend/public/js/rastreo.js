@@ -7,7 +7,6 @@
 
 (function () {
     if (typeof window.hayApiConfigurada !== 'function' || !window.hayApiConfigurada()) return;
-    if (window.name === 'zapi-vista-cliente') return;
     if (window.modoCliente || document.body.classList.contains('admin-page')) return;
 
     const endpoint = window.urlApi('/api/eventos');
