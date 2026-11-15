@@ -1,5 +1,25 @@
 'use strict';
 
+const { TESTIMONIOS } = require('../../datos/testimonios.js');
+
+const escapar = texto => String(texto)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+const tarjetaTestimonio = t => `
+        <article class="resena-tarjeta" role="listitem">
+            <p class="resena-estrellas" role="img" aria-label="${t.estrellas} de 5 estrellas">${'★'.repeat(t.estrellas)}${'☆'.repeat(5 - t.estrellas)}</p>
+            <blockquote class="resena-texto">${escapar(t.texto)}</blockquote>
+            <footer class="resena-autor">
+                <strong>${escapar(t.autor)}</strong>
+                <span>${escapar(t.lugar)}${t.producto ? ' · ' + escapar(t.producto) : ''}</span>
+            </footer>
+        </article>`;
+
+const listaTestimonios = TESTIMONIOS.length
+    ? TESTIMONIOS.map(tarjetaTestimonio).join('')
+    : '<p class="estado-vacio">Todavía no publicamos opiniones. Si compraste con nosotros, nos encantara leer tu experiencia.</p>';
+
 module.exports = {
     archivo: 'index.html',
     seccion: 'inicio',
@@ -42,8 +62,7 @@ module.exports = {
         <h2>Lo que dicen nuestros clientes</h2>
         <p>Historias de quienes ya transformaron sus espacios con ZAPI.</p>
     </div>
-    <div class="testimonios-grilla" id="testimoniosLista" role="list" aria-label="Testimonios de clientes">
-        <p class="estado-vacio">Todavía no publicamos opiniones. Si compraste con nosotros, nos encantara leer tu experiencia.</p>
+    <div class="testimonios-grilla" id="testimoniosLista" role="list" aria-label="Testimonios de clientes">${listaTestimonios}
     </div>
     <div class="testimonios-accion">
         <button class="btn-testimonio boton boton-secundario" type="button" data-abrir-testimonio>

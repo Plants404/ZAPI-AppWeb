@@ -103,10 +103,16 @@ function crearRouter(getDatabase) {
         /* Pedidos por confirmar. */
         const pedidosPorConfirmar = pedidos.filter(p => p.estado === 'pendiente').length;
 
-        /* Conversión: pedidos confirmados / visitantes únicos. */
-        const visitantesUnicos = 0; /* Se actualiza con la entrega de analítica de clientes. */
+        /* Visitantes únicos: sesiones distintas con alguna vista en los últimos 30 días. */
+        const desde = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const vistas = await db.collection('eventos')
+            .find({ tipo: 'vista_de_pagina', timestamp: { $gte: desde } }, { projection: { idSesion: 1 } })
+            .toArray();
+        const visitantesUnicos = new Set(vistas.map(e => e.idSesion)).size;
+
+        /* Conversión: pedidos confirmados o entregados / visitantes únicos. */
         const conversion = visitantesUnicos
-            ? pedidos.filter(p => p.estado === 'confirmado').length / visitantesUnicos
+            ? validos.filter(p => new Date(p.fecha) >= desde).length / visitantesUnicos
             : null;
 
         res.json({
