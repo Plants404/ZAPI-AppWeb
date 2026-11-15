@@ -746,6 +746,7 @@ main:focus {
 
     .site-header .header-carrito {
         flex: 0 0 44px;
+        order: 1; /* el carrito va al extremo derecho, después del menú */
     }
 
     .site-header .site-nav {
