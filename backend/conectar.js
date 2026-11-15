@@ -63,7 +63,7 @@ async function main() {
         return;
     }
 
-    const nombreBase = process.env.MONGODB_DB || 'zapi';
+    const nombreBase = process.env.MONGODB_DB || 'zapi-api2';
     let db;
     try {
         db = await connectDatabase();

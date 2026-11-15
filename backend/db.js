@@ -22,7 +22,7 @@ async function abrirConexion() {
     const nuevoCliente = new MongoClient(uri.trim(), OPCIONES_CLIENTE);
     try {
         await nuevoCliente.connect();
-        const nuevaBase = nuevoCliente.db(process.env.MONGODB_DB || 'zapi');
+        const nuevaBase = nuevoCliente.db(process.env.MONGODB_DB || 'zapi-api2');
         await nuevaBase.command({ ping: 1 });
         cliente = nuevoCliente;
         baseDeDatos = nuevaBase;
