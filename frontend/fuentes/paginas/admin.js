@@ -50,9 +50,9 @@ module.exports = {
                     <li><a class="admin-menu-enlace" href="#" data-panel="catalogo"><span class="material-symbols-outlined" aria-hidden="true">inventory</span><span class="admin-menu-texto">Catálogo y stock</span></a></li>
                     <li><a class="admin-menu-enlace" href="#" data-panel="estilo"><span class="material-symbols-outlined" aria-hidden="true">palette</span><span class="admin-menu-texto">Estilo del sitio</span></a></li>
                     <li><a class="admin-menu-enlace" href="#" data-panel="analitica"><span class="material-symbols-outlined" aria-hidden="true">bar_chart</span><span class="admin-menu-texto">Analítica de clientes</span></a></li>
-                    <li><a class="admin-menu-enlace admin-menu-enlace-desactivado" href="#" data-panel="proximo" aria-disabled="true"><span class="material-symbols-outlined" aria-hidden="true">message</span><span class="admin-menu-texto">Mensajes</span><span class="admin-chip">Pronto</span></a></li>
-                    <li><a class="admin-menu-enlace admin-menu-enlace-desactivado" href="#" data-panel="proximo" aria-disabled="true"><span class="material-symbols-outlined" aria-hidden="true">rate_review</span><span class="admin-menu-texto">Testimonios</span><span class="admin-chip">Pronto</span></a></li>
-                    <li><a class="admin-menu-enlace admin-menu-enlace-desactivado" href="#" data-panel="proximo" aria-disabled="true"><span class="material-symbols-outlined" aria-hidden="true">people</span><span class="admin-menu-texto">Accesos</span><span class="admin-chip">Pronto</span></a></li>
+                    <li><a class="admin-menu-enlace" href="#" data-panel="mensajes"><span class="material-symbols-outlined" aria-hidden="true">message</span><span class="admin-menu-texto">Mensajes</span></a></li>
+                    <li><a class="admin-menu-enlace" href="#" data-panel="testimonios"><span class="material-symbols-outlined" aria-hidden="true">rate_review</span><span class="admin-menu-texto">Testimonios</span></a></li>
+                    <li><a class="admin-menu-enlace" href="#" data-panel="accesos"><span class="material-symbols-outlined" aria-hidden="true">people</span><span class="admin-menu-texto">Accesos</span></a></li>
                 </ul>
             </div>
         </nav>
@@ -165,11 +165,53 @@ module.exports = {
                 </div>
             </section>
 
-            <section class="admin-panel admin-panel-proximo" id="panelProximo" hidden aria-label="Sección próximamente">
-                <div class="estado-vacio">
-                    <span class="material-symbols-outlined" aria-hidden="true">construction</span>
-                    <h2>Esta sección se construye en la próxima entrega</h2>
-                    <p>El menú se activa visualmente, pero la pantalla aún no está disponible.</p>
+            <section class="admin-panel" id="panelMensajes" hidden aria-label="Mensajes">
+                <div class="admin-panel-cabecera">
+                    <h1>Mensajes</h1>
+                    <p>Consultas recibidas desde el formulario de contacto (últimas 100).</p>
+                    <div class="admin-panel-herramientas">
+                        <label class="campo-label" for="filtroMensajes">Estado</label>
+                        <select class="campo-input admin-select-estado" id="filtroMensajes"><option value="">Todos</option><option value="new">Nuevos</option><option value="read">Leídos</option><option value="answered">Respondidos</option></select>
+                    </div>
+                </div>
+                <div class="admin-tabla-wrap">
+                    <table class="admin-tabla" aria-label="Mensajes">
+                        <thead><tr><th scope="col">Fecha</th><th scope="col">Contacto</th><th scope="col">Asunto</th><th scope="col">Mensaje</th><th scope="col">Estado</th></tr></thead>
+                        <tbody id="adminCuerpoMensajes"></tbody>
+                    </table>
+                    <p id="adminMensajesVacio" class="estado-vacio" hidden>No hay registros para mostrar.</p>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panelTestimonios" hidden aria-label="Testimonios">
+                <div class="admin-panel-cabecera">
+                    <h1>Testimonios</h1>
+                    <p>Opiniones de clientes: aprobá las que se pueden mostrar.</p>
+                    <div class="admin-panel-herramientas">
+                        <label class="campo-label" for="filtroTestimonios">Estado</label>
+                        <select class="campo-input admin-select-estado" id="filtroTestimonios"><option value="">Todos</option><option value="pending">Pendientes</option><option value="approved">Aprobados</option><option value="rejected">Rechazados</option></select>
+                    </div>
+                </div>
+                <div class="admin-tabla-wrap">
+                    <table class="admin-tabla" aria-label="Testimonios">
+                        <thead><tr><th scope="col">Fecha</th><th scope="col">Autor</th><th scope="col">Opinión</th><th scope="col">Estrellas</th><th scope="col">Estado</th></tr></thead>
+                        <tbody id="adminCuerpoTestimonios"></tbody>
+                    </table>
+                    <p id="adminTestimoniosVacio" class="estado-vacio" hidden>No hay registros para mostrar.</p>
+                </div>
+            </section>
+
+            <section class="admin-panel" id="panelAccesos" hidden aria-label="Accesos">
+                <div class="admin-panel-cabecera">
+                    <h1>Accesos</h1>
+                    <p>Personas con cuenta y su rol. Los administradores pueden entrar a este panel.</p>
+                </div>
+                <div class="admin-tabla-wrap">
+                    <table class="admin-tabla" aria-label="Accesos">
+                        <thead><tr><th scope="col">Nombre</th><th scope="col">Correo</th><th scope="col">Rol</th><th scope="col">Alta</th><th scope="col">Acciones</th></tr></thead>
+                        <tbody id="adminCuerpoAccesos"></tbody>
+                    </table>
+                    <p id="adminAccesosVacio" class="estado-vacio" hidden>No hay registros para mostrar.</p>
                 </div>
             </section>
 

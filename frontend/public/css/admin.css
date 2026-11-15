@@ -979,3 +979,9 @@ body[data-modo="cliente"] .admin-main {
   padding-right: 2.5rem;
   margin-bottom: var(--espacio-sm);
 }
+
+.admin-texto-largo {
+  max-width: 28rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
