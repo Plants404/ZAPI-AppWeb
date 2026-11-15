@@ -739,3 +739,23 @@ transform: none;
 }
 
 }
+
+
+/* El <dialog> nativo ocupa toda la ventana (como el diseño original): el fondo
+   oscuro cubre la pantalla, la ficha queda centrada y no aparece barra de
+   desplazamiento ni marco alrededor. */
+dialog.modal-producto {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    overflow: hidden;
+    background: transparent;
+    border: 0;
+}
+
+dialog.modal-producto::backdrop {
+    background: transparent;
+    backdrop-filter: none;
+}
