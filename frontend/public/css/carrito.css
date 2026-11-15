@@ -319,3 +319,13 @@
     padding: .6rem .9rem;
     white-space: nowrap;
 }
+
+/* Recomendaciones: tarjetas más compactas (foto apaisada en vez de vertical). */
+#recommendationsList .tarjeta-imagen {
+    aspect-ratio: 4 / 3;
+}
+
+#recommendationsList .tarjeta-cuerpo {
+    gap: .3rem;
+    padding: var(--espacio-sm) var(--espacio-md) 0;
+}
