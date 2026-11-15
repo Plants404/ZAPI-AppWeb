@@ -1,6 +1,6 @@
 {
   "functions": {
-    "backend/api/index.js": {
+    "api/index.js": {
       "maxDuration": 30
     }
   },
