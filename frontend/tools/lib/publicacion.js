@@ -39,7 +39,7 @@ async function obtenerPublicacion({ revisar = false, entorno = process.env, fetc
         if (!respuesta.ok) throw new Error('HTTP ' + respuesta.status);
 
         const publicacion = await respuesta.json();
-        if (!publicacion || !Array.isArray(publicacion.catalogo) || !catalogoValido(publicacion.catalogo)) {
+        if (!publicacion || !Array.isArray(publicacion.catalogo) || publicacion.catalogo.length === 0 || !catalogoValido(publicacion.catalogo)) {
             throw new Error('respuesta sin catálogo publicado');
         }
         return publicacion;
