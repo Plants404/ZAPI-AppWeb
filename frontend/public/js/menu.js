@@ -131,3 +131,47 @@ if (botonMenu && navegacion) {
 
     sincronizarMenu();
 }
+
+/* Estado de sesión en la barra: si hay sesión, "Ingresar" pasa a ser el
+   nombre de la persona (con acceso a su cuenta) y aparece "Salir". */
+(function sesionEnBarra() {
+    const enlaceIngresar = document.querySelector("#navPrincipal a[href$='login.html']");
+    if (!enlaceIngresar || typeof window.urlApi !== "function") return;
+
+    const origen = function (ruta) {
+        return typeof window.urlDelSitio === "function" ? window.urlDelSitio(ruta) : ruta;
+    };
+
+    fetch(window.urlApi("/api/auth/yo"), { credentials: "include" })
+        .then(respuesta => (respuesta.ok ? respuesta.json() : null))
+        .then(datos => {
+            if (!datos || !datos.ok) return;
+
+            const esAdmin = datos.rol === "admin";
+            const nombre = String(datos.nombre || datos.email || "Mi cuenta").trim().split(/\s+/)[0];
+
+            enlaceIngresar.textContent = esAdmin ? "Panel" : nombre;
+            enlaceIngresar.setAttribute("href", origen(esAdmin ? "/admin.html" : "/pedidos.html"));
+            enlaceIngresar.setAttribute("title", datos.email || "");
+
+            const salir = document.createElement("li");
+            salir.innerHTML = '<a class="nav-link nav-enlace" href="#" data-salir>Salir</a>';
+            enlaceIngresar.parentElement.after(salir);
+
+            const hoja = document.querySelector(".bottom-sheet-ingresar");
+            if (hoja) {
+                hoja.textContent = esAdmin ? "Ir al panel" : "Mi cuenta · " + nombre;
+                hoja.setAttribute("href", origen(esAdmin ? "/admin.html" : "/pedidos.html"));
+                hoja.style.setProperty("display", "flex", "important");
+            }
+
+            document.addEventListener("click", evento => {
+                if (!evento.target.closest("[data-salir]")) return;
+                evento.preventDefault();
+                fetch(window.urlApi("/api/auth/logout"), { method: "POST", credentials: "include" })
+                    .catch(() => null)
+                    .then(() => { window.location.href = origen("/index.html"); });
+            });
+        })
+        .catch(() => null);
+})();
