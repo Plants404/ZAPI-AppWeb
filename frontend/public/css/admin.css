@@ -83,15 +83,29 @@
   color: var(--texto);
 }
 
-.admin-marca-icono {
-  color: var(--moss);
+.admin-marca-logo {
+  width: auto;
+  height: 2.5rem;
 }
 
 .admin-marca-titulo {
+  color: var(--forest);
   font-family: var(--serif);
-  font-size: var(--fs-xl);
-  font-weight: 700;
-  letter-spacing: .02em;
+  font-size: var(--fs-3xl);
+  font-weight: 400;
+  letter-spacing: .06em;
+  line-height: 1;
+}
+
+.admin-marca-sub {
+  padding: .15rem .5rem;
+  border-radius: var(--radius-pill);
+  background: var(--menta);
+  color: var(--leaf-texto);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 
 .admin-topbar-centro {
@@ -135,8 +149,8 @@
   left: 0;
   width: var(--admin-sidebar-ancho);
   height: 100vh;
-  background: var(--white);
-  border-right: 1px solid var(--borde);
+  background: var(--forest);
+  border-right: 1px solid var(--forest);
   z-index: 1000;
   transform: translateX(0);
   transition: transform .25s ease;
@@ -168,7 +182,7 @@
   background: none;
   border: none;
   font-size: var(--fs-lg);
-  color: var(--texto-suave);
+  color: var(--texto-verde-suave);
   cursor: pointer;
 }
 
@@ -184,32 +198,32 @@
   gap: var(--espacio-sm);
   padding: .75rem var(--espacio-md);
   font-size: var(--fs-sm);
-  color: var(--texto-suave);
+  color: var(--texto-verde-suave);
   text-decoration: none;
   border-radius: 0;
   transition: background .2s ease, color .2s ease;
 }
 
 .admin-menu-enlace:hover {
-  background: var(--estado-vacio-bg, rgba(0,0,0,.04));
-  color: var(--texto);
+  background: var(--white-overlay-soft);
+  color: var(--white);
 }
 
 .admin-menu-enlace-activo {
-  background: var(--mente-papel, rgba(31, 58, 46, .10));
-  color: var(--moss);
-  border-right: 3px solid var(--moss);
+  background: var(--moss);
+  color: var(--white);
+  border-right: 3px solid var(--menta);
 }
 
 .admin-menu-enlace .material-symbols-outlined {
   font-size: 1.25rem;
   width: 1.5em;
   text-align: center;
-  color: var(--muted-texto);
+  color: var(--texto-verde-suave);
 }
 
 .admin-menu-enlace-activo .material-symbols-outlined {
-  color: var(--moss);
+  color: var(--white);
 }
 
 .admin-menu-enlace .admin-chip {
@@ -217,8 +231,8 @@
   font-size: .7rem;
   padding: .15rem .5rem;
   border-radius: var(--radius-pill);
-  background: var(--menta);
-  color: var(--moss);
+  background: var(--white-overlay-soft);
+  color: var(--texto-verde-suave);
   font-weight: 600;
 }
 
@@ -721,5 +735,32 @@
 
   .admin-topbar-centro {
     gap: var(--espacio-xs);
+  }
+}
+
+/* Escritorio: menú lateral fijo bajo la barra superior */
+@media (min-width: 1024px) {
+  .admin-sidebar {
+    top: var(--admin-barra-alto);
+    height: calc(100vh - var(--admin-barra-alto));
+    z-index: 90;
+  }
+
+  .admin-main {
+    margin-left: var(--admin-sidebar-ancho);
+  }
+
+  .admin-boton-menu,
+  .admin-boton-cerrar,
+  .admin-sidebar-fondo {
+    display: none;
+  }
+}
+
+/* Celular: barra superior sin textos secundarios para que no se pisen */
+@media (max-width: 600px) {
+  .admin-marca-sub,
+  .admin-modo-texto {
+    display: none;
   }
 }

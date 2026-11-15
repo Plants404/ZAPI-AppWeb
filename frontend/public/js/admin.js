@@ -92,6 +92,20 @@ function mostrarPanel(id) {
     window.scrollTo(0, 0);
 }
 
+const ESCRITORIO = window.matchMedia('(min-width: 1024px)');
+
+/* En escritorio el menú queda fijo a la izquierda; en pantallas chicas es un cajón. */
+function ajustarSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    const fondo = document.querySelector('.admin-sidebar-fondo');
+    const boton = document.getElementById('adminBotonMenu');
+    if (!sidebar) return;
+    sidebar.hidden = !ESCRITORIO.matches;
+    sidebar.classList.toggle('admin-sidebar--abierto', ESCRITORIO.matches);
+    if (fondo) fondo.hidden = true;
+    if (boton) boton.setAttribute('aria-expanded', 'false');
+}
+
 function abrirSidebar() {
     const sidebar = document.getElementById('adminSidebar');
     const fondo = document.querySelector('.admin-sidebar-fondo');
@@ -103,6 +117,7 @@ function abrirSidebar() {
 }
 
 function cerrarSidebar() {
+    if (ESCRITORIO.matches) return;
     const sidebar = document.getElementById('adminSidebar');
     const fondo = document.querySelector('.admin-sidebar-fondo');
     const boton = document.getElementById('adminBotonMenu');
@@ -1088,6 +1103,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const botonMenu = document.getElementById('adminBotonMenu');
     const fondo = document.querySelector('.admin-sidebar-fondo');
     const cerradoresSidebar = document.querySelectorAll('[data-cerrar-sidebar]');
+    ajustarSidebar();
+    ESCRITORIO.addEventListener('change', ajustarSidebar);
 
     botonMenu.addEventListener('click', () => {
         const sidebar = document.getElementById('adminSidebar');
