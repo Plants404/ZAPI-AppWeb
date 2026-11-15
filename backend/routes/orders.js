@@ -4,7 +4,7 @@ const { randomUUID } = require('node:crypto');
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');
 const { validarPedido } = require('../lib/validation.js');
-const { requerirAdmin } = require('../lib/auth.js');
+const { requerirAdmin, requerirSesion } = require('../lib/auth.js');
 const { registrarAuditoria } = require('../lib/auditoria.js');
 
 const ESTADOS_VALIDOS = ['pendiente', 'confirmado', 'entregado', 'cancelado'];
@@ -108,8 +108,8 @@ async function restaurarStock(db, descontados) {
 function crearRouter(getDatabase) {
     const router = express.Router();
 
-    /* Venta web: carrito.js envía el pedido aquí. Canal 'web'. */
-    router.post('/', async (req, res) => {
+    /* Venta web: exige cliente con sesión iniciada. Canal 'web'. */
+    router.post('/', requerirSesion(getDatabase), async (req, res) => {
         const { cliente, cantidades } = validarPedido(req.body);
         const pedido = await crearPedido(getDatabase(), {
             cliente,

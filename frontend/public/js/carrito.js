@@ -211,8 +211,31 @@ function armarDatosPedido() {
     };
 }
 
-function confirmarPedido(evento) {
+/* Para comprar hay que haber iniciado sesión (o crear una cuenta). */
+async function hayClienteConSesion() {
+    try {
+        const respuesta = await fetch(window.urlApi('/api/auth/yo'), { credentials: 'include' });
+
+        return respuesta.ok;
+    } catch {
+        return false;
+    }
+}
+
+async function confirmarPedido(evento) {
     evento.preventDefault();
+
+    if (!(await hayClienteConSesion())) {
+        mostrarEstadoFormulario(
+            estadoPedido,
+            'Para confirmar tu pedido iniciá sesión o creá tu cuenta. Tu carrito se mantiene.',
+            'error'
+        );
+        window.setTimeout(() => {
+            window.location.href = window.urlDelSitio('/login.html') + '?volver=' + encodeURIComponent('/carrito.html');
+        }, 1800);
+        return;
+    }
 
     const carrito = obtenerCarrito();
 
