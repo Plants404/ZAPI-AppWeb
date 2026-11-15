@@ -42,23 +42,25 @@ La API local escucha en `http://localhost:5501`. `GET /api/health` confirma
 que el servidor puede ejecutar un ping contra MongoDB. Configura
 `FRONTEND_ORIGINS` como una lista separada por comas si el frontend se sirve
 desde otros orígenes; por defecto se permiten los puertos locales 5500.
-El despliegue actual de Vercel publica solo el frontend estático: aloja esta
-API en un servicio Node.js y configura allí `MONGODB_URI`, `MONGODB_DB` y
-`FRONTEND_ORIGINS`.
 
-Endpoints disponibles:
+Endpoints principales:
 
 - `GET /api/products` y `GET /api/products/:slug`: catálogo activo.
-- `POST /api/orders`: crea un pedido con precios recalculados desde MongoDB;
-  no descuenta stock.
+- `POST /api/orders`: crea el pedido con precios de MongoDB y descuenta stock
+  con una actualización condicional.
 - `POST /api/contact`: guarda consultas privadas de contacto.
 - `GET /api/testimonials`: devuelve solo testimonios aprobados.
 - `POST /api/testimonials`: guarda opiniones pendientes de aprobación.
+- `GET /api/publicado`: devuelve el snapshot publicado sin campos internos.
+- `/api/auth/*` y `/api/admin/*`: autenticación, resumen y operaciones
+  administrativas; todas las rutas de administración requieren rol admin.
 
-Los pedidos y consultas no tienen endpoints de lectura públicos. Los
-testimonios se publican solo después de que una persona cambie su estado a
-`approved` en la base de datos. El frontend existente todavía no envía estos
-formularios a la API; sus flujos actuales no cambian al iniciar el backend.
+Los pedidos y consultas no tienen endpoints de lectura públicos; el listado
+de pedidos está protegido bajo `/api/admin`. Una transición permitida a
+`cancelado` devuelve el stock una sola vez. Los testimonios se publican solo
+después de que una persona cambie su estado a `approved` en la base de datos.
+`POST /api/auth/registro` crea cuentas cliente; las cuentas admin se crean
+manualmente con `npm run backend:crear-admin`.
 
 ## Generación y verificación
 
@@ -73,6 +75,10 @@ npm run generar
 El comando genera las páginas públicas, las fichas de producto como
 `producto-<slug>.html`, rellena los bloques de datos de
 `public/js/catalogo-datos.js` y produce `sitemap.xml` y `robots.txt`.
+Si `ZAPI_API_URL` está configurada, usa el catálogo de `GET /api/publicado`;
+si el endpoint falla o todavía no existe, avisa y conserva los datos locales.
+La verificación (`npm run verificar`) siempre usa los datos locales y no hace
+solicitudes de red.
 
 Para comprobar que todo está reproducible y coherente:
 
@@ -83,7 +89,7 @@ npm run lint
 npm run check
 ```
 
-`npm run verificar` ejecuta las herramientas con `--revisar`, confirma que el
+`npm run verificar` ejecuta las herramientas estáticas, confirma que el
 HTML publicado coincide con lo que se generaría desde las fuentes, valida que
 no queden restos del stack full-stack y comprueba el orden de carga de
 scripts y CSS. `npm run lint` ejecuta ESLint sobre los archivos JavaScript.
@@ -96,10 +102,9 @@ frontend/
     catalogo.js   única fuente de productos, precios, slugs y stock
     testimonios.js  testimonios publicados a mano (lista vacía por defecto)
   fuentes/
-    paginas/      fuentes de cada página pública (inicio, catálogo, carrito,
-                  contacto, nosotros, servicios, 404 y generador de producto)
+    paginas/      fuentes de páginas públicas y del panel de administración
   public/
-    css/          tokens, base, estructura y una hoja por página
+    css/          tokens, base, estructura y hojas por página, incluido admin
     js/           negocio, utilidades, catalogo-datos, carrito-estado,
                   pedidos-estado, modal, scripts de página, menu, buscador,
                   asistente
@@ -118,8 +123,12 @@ backend/
   db.js                  conexión al driver oficial de MongoDB
   server.js              arranque de la API
   seed.js                sincroniza productos desde frontend/datos/catalogo.js
+  api/index.js           punto de entrada para Vercel Functions (no llama listen)
+  vercel.json            duración de la función y cron diario de Vercel
+  indices.js             crea índices TTL manualmente (no se ejecuta en arranque)
+  depurar.js             anonimiza pedidos viejos (script de depuración)
   routes/                endpoints de productos, pedidos y formularios
-  lib/                   validación y errores HTTP
+  lib/                   validación, rate limiting, errores HTTP, páginas públicas, eventos
 ```
 
 Cada página pública comparte la misma cabecera y el mismo pie, generados desde
@@ -128,41 +137,97 @@ el carrito, no en la navegación principal.
 
 ## Pedidos
 
-Los pedidos se arman en el carrito, se validan en el cliente (nombre, teléfono
-y correo cuando se incluye) y se guardan en localStorage bajo “Mis pedidos”.
+Los pedidos del sitio estático se arman en el carrito, se validan en el cliente
+(nombre, teléfono y correo cuando se incluye) y se guardan en localStorage bajo “Mis pedidos”.
 Al confirmar, el sitio abre WhatsApp con el detalle del pedido listo para
 enviar. El stock del catálogo nunca se descuenta desde el navegador; se
 mantiene a mano en `datos/catalogo.js`.
 
+El API opcional descuenta stock en MongoDB al crear el pedido, sin modificar
+el stock del catálogo del frontend.
+
 ## Contacto y testimonios
 
 El formulario de contacto usa EmailJS con marcadores `PEGAR_*` en
-`public/js/negocio.js`. Si falta configuración o falla el envío, se abre
-WhatsApp con la consulta precargada. Los testimonios se envían de la misma
-forma: por correo si EmailJS está configurado, por WhatsApp como respaldo. La
-lista de testimonios publicados se edita a mano en `datos/testimonios.js` y
-se renderiza en la portada durante la generación.
+`public/js/negocio.js`. Actualmente EmailJS **no está configurado en
+producción**: se describe solo WhatsApp como canal de contacto en la política
+de privacidad y se abrirá WhatsApp precargado si el envío falla o falta
+configuración. Cuando EmailJS esté activo y probado, actualiza la política de
+privacidad y carga las credenciales en el entorno.
 
-## Despliegue
+Los testimonios se envían de la misma forma: por correo si EmailJS está
+configurado, por WhatsApp como respaldo. La lista de testimonios publicados se
+edita a mano en `datos/testimonios.js` y se renderiza en la portada durante
+la generación.
 
-El sitio se publica como sitio estático en GitHub Pages bajo subdirectorio y
-en Vercel. En Vercel, configura el directorio raíz del proyecto como la raíz
-del repositorio. `vercel.json` ejecuta `npm run vercel-build` y publica
-`frontend/` como salida estática; no hace falta definir rewrites. Las rutas
-internas son siempre relativas, así el sitio funciona tanto bajo un
-subdirectorio como en la raíz.
+## Despliegue en Vercel
 
-La API de Node.js/Express con MongoDB es opcional: el frontend funciona sin
-ella. Para publicar la API, aloja `backend/` en un servicio Node.js y
-configura allí `MONGODB_URI`, `MONGODB_DB`, `FRONTEND_ORIGINS` y, si el
-servidor está detrás de un proxy, `TRUST_PROXY=1`. Copia `.env.example` a
-`.env` en el entorno de ejecución y nunca lo subas al repositorio.
+El sitio estático y la API Express se despliegan en un solo proyecto y bajo el
+mismo origen de Vercel, sin dominio propio. Así el navegador usa `/api/...`
+en el mismo origen y no depende de cookies de terceros ni de CORS entre
+dominios.
+
+1. En Vercel, crea un único proyecto conectado a este repositorio. Deja el
+   **Root Directory** en la raíz del repositorio. El build corre
+   `npm run vercel-build` y publica `frontend/`.
+2. Después del primer despliegue, copia la URL pública asignada por Vercel.
+   En **Settings → Environment Variables**, carga las variables en el panel,
+   nunca en archivos:
+
+   | Variable | Valor |
+   |----------|-------|
+   | `MONGODB_URI` | Cadena de conexión de Atlas (secreto) |
+   | `MONGODB_DB` | Nombre de la base de datos |
+   | `CRON_SECRET` | Secreto aleatorio para proteger `/api/depurar` |
+   | `FRONTEND_ORIGINS` | URL pública real del proyecto, con `https://` |
+   | `DEPLOY_HOOK_URL` | URL del deploy hook, opcional |
+   | `ZAPI_API_URL` | URL pública del mismo proyecto, sin `/api` al final |
+
+   Cargá los valores en los entornos de Vercel que vayas a usar. No subas
+   `.env` ni guardes credenciales en el repositorio. `FRONTEND_ORIGINS` es
+   necesario para la validación del backend aunque sitio y API compartan
+   origen.
+3. Desde tu computadora, con un `.env` local configurado para Atlas, ejecuta
+   una sola vez y en este orden:
+
+   ```bash
+   npm run backend:conectar
+   npm run backend:indices
+   npm run backend:seed
+   npm run backend:crear-admin
+   ```
+
+   Estos comandos verifican la conexión, preparan los índices, cargan los
+   productos y crean el usuario administrador en MongoDB Atlas.
+4. El cron diario de `/api/depurar` usa `CRON_SECRET`. La ruta anonimiza
+   pedidos antiguos; las consultas y testimonios vencidos se eliminan por
+   índices TTL.
+
+El plan Hobby de Vercel es solo para uso no comercial. Si el proyecto se usa
+con fines comerciales, hay que elegir un plan que lo permita.
 
 ## Comandos
 
 - `npm run frontend`: servidor estático local en `http://localhost:5500`.
+- `npm run backend`: servidor de la API local en `http://localhost:5501`.
 - `npm run generar`: genera HTML, fichas de producto, datos del catálogo,
   sitemap y robots.
 - `npm run verificar`: verificación estática de reproducibilidad y estructura.
 - `npm run lint`: ESLint sobre los archivos JavaScript.
-- `npm run check`: ejecuta lint y verificación en secuencia.
+- `npm run check`: ejecuta lint, pruebas de backend y verificación en secuencia.
+- `npm run backend:seed`: sincroniza productos desde `frontend/datos/catalogo.js`
+  a MongoDB.
+- `npm run backend:depurar`: anonimiza datos personales de pedidos con más de
+  365 días. Ejecutado diariamente por el cron de Vercel.
+- `npm run backend:indices`: crea los índices TTL de MongoDB manualmente
+  (no se ejecuta en arranque).
+- `npm run probar:flujo`: prueba el flujo real de la API y elimina sus datos;
+  exige que `MONGODB_DB` termine en `_prueba`.
+- `npm run probar:cors -- <url>`: prueba CORS contra la URL de la API dada
+  (ej. `https://api.zapi.uy`).
+
+## Notas sobre límites de Vercel Hobby
+
+El plan Hobby de Vercel no admite uso comercial. Si el sitio de ZAPI tiene
+fines comerciales, considera un plan de pago de Vercel o aloja la API en otro
+servicio Node.js.
