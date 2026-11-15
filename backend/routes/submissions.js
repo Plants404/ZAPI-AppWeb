@@ -45,13 +45,13 @@ function crearRouter(getDatabase) {
 
         const documento = {
             ...testimonio,
-            estado: 'pending',
+            estado: 'approved',
             createdAt: new Date()
         };
         const resultado = await getDatabase().collection('testimonials').insertOne(documento);
 
         res.status(201).json({
-            message: 'Opinión recibida para revisión.',
+            message: 'Opinión publicada.',
             id: resultado.insertedId
         });
     });
