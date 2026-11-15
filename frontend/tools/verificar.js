@@ -79,7 +79,7 @@ const RASTROS = [
     { archivo: 'public/js/sesion.js', motivo: 'sesion.js' },
     { archivo: 'public/js/cuenta.js', motivo: 'cuenta.js' },
     { archivo: 'public/js/contenido-publico.js', motivo: 'contenido-publico.js' },
-    { archivo: 'api', motivo: 'api/' },
+    { archivo: path.join('frontend', 'api'), motivo: 'frontend/api/' },
     { archivo: 'scripts', motivo: 'scripts/' },
     { archivo: 'tests', motivo: 'tests/' },
     { archivo: 'e2e', motivo: 'e2e/' }

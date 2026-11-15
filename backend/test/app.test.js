@@ -156,7 +156,7 @@ test('GET /api/depurar llega al handler de cron y exige su secreto', async t => 
 test('el rewrite de Vercel restaura las rutas originales y conserva la query', () => {
     for (const ruta of ['/api/orders', '/api/depurar']) {
         const req = {
-            url: '/backend/api/index?__zapiPath=' + encodeURIComponent(ruta) + '&origen=prueba'
+            url: '/api/index?__zapiPath=' + encodeURIComponent(ruta) + '&origen=prueba'
         };
         const res = {
             setHeader() {},

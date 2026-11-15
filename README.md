@@ -123,12 +123,13 @@ backend/
   db.js                  conexión al driver oficial de MongoDB
   server.js              arranque de la API
   seed.js                sincroniza productos desde frontend/datos/catalogo.js
-  api/index.js           punto de entrada para Vercel Functions (no llama listen)
+  api/index.js           handler de Express para Vercel (no llama listen)
   vercel.json            duración de la función y cron diario de Vercel
   indices.js             crea índices TTL manualmente (no se ejecuta en arranque)
   depurar.js             anonimiza pedidos viejos (script de depuración)
   routes/                endpoints de productos, pedidos y formularios
   lib/                   validación, rate limiting, errores HTTP, páginas públicas, eventos
+api/index.js             entrada de Vercel Functions; delega en backend/api/index.js
 ```
 
 Cada página pública comparte la misma cabecera y el mismo pie, generados desde
