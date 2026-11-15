@@ -49,7 +49,7 @@ function coincide(item, filtro) {
     return true;
 }
 
-function crearBaseFalsa({ orders = [], products = [], sessions = [], users = [] } = {}) {
+function crearBaseFalsa({ orders = [], products = [], sessions = [], users = [], eventos = [] } = {}) {
     return {
         async command() {
             return { ok: 1 };
@@ -59,6 +59,7 @@ function crearBaseFalsa({ orders = [], products = [], sessions = [], users = [] 
                 : nombre === 'products' ? products
                 : nombre === 'sessions' ? sessions
                 : nombre === 'users' ? users
+                : nombre === 'eventos' ? eventos
                 : [];
 
             return {
@@ -296,4 +297,27 @@ test('productos con sesión de admin incluye productos inactivos', async t => {
     assert.ok(inactivo);
     assert.equal(inactivo.active, false);
     assert.equal(inactivo.stock, 0);
+});
+
+test('resumen calcula visitantes únicos y conversión desde la analítica', async t => {
+    const ahora = new Date();
+    const base = crearBaseFalsa({
+        orders: [
+            { id: 1, fecha: ahora, estado: 'entregado', canal: 'web', cliente: { nombre: 'Ana' }, lineas: [], total: 1000 }
+        ],
+        eventos: [
+            { tipo: 'vista_de_pagina', idSesion: 's1', timestamp: ahora },
+            { tipo: 'vista_de_pagina', idSesion: 's1', timestamp: ahora },
+            { tipo: 'vista_de_pagina', idSesion: 's2', timestamp: ahora },
+            { tipo: 'vista_de_pagina', idSesion: 's3', timestamp: ahora },
+            { tipo: 'vista_de_pagina', idSesion: 's4', timestamp: ahora }
+        ]
+    });
+    base.collection('sessions').insertOne(sesion('admin-1', 'admin'));
+    const { server, url } = await iniciar(base);
+    t.after(() => server.close());
+
+    const datos = await (await fetchAdmin(url, '/resumen', 'admin-1')).json();
+    assert.equal(datos.visitantesUnicos, 4);
+    assert.equal(datos.conversion, 0.25);
 });

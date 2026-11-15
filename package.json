@@ -9,6 +9,7 @@
     "backend:conectar": "node --env-file-if-exists=.env backend/conectar.js",
     "backend:seed": "node --env-file-if-exists=.env backend/seed.js",
     "backend:crear-admin": "node --env-file-if-exists=.env backend/crear-admin.js",
+    "backend:demo": "node --env-file-if-exists=.env backend/seed-demo.js",
     "backend:depurar": "node --env-file-if-exists=.env backend/depurar.js",
     "backend:indices": "node --env-file-if-exists=.env backend/indices.js",
     "probar:cors": "node backend/probar-cors.js",
