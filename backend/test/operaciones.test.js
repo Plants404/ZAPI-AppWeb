@@ -477,7 +477,7 @@ test('C1: alta de producto sin sesión responde 401', async t => {
     const { server, url } = await iniciar(base);
     t.after(() => server.close());
 
-    const respuesta = await fetchAdmin(url, '/products', undefined, {
+    const respuesta = await fetchAdmin(url, '/productos', undefined, {
         method: 'POST',
         body: { slug: 'menta', nombre: 'Menta', precioBase: 200, stock: 5, visible: true }
     });
@@ -491,7 +491,7 @@ test('C2: alta de producto con sesión de admin crea producto y audita', async t
     const { server, url } = await iniciar(base);
     t.after(() => server.close());
 
-    const respuesta = await fetchAdmin(url, '/products', 'admin-1', {
+    const respuesta = await fetchAdmin(url, '/productos', 'admin-1', {
         method: 'POST',
         body: { slug: 'menta', nombre: 'Menta', precioBase: 200, stock: 5, visible: true }
     });
@@ -503,7 +503,7 @@ test('C2: alta de producto con sesión de admin crea producto y audita', async t
     assert.equal(product.precioBase, 200);
     assert.equal(product.stock, 5);
     assert.equal(product.visible, true);
-    assert.equal(product.activo, true);
+    assert.equal(product.active, true);
 
     const guardado = await base.collection('products').findOne({ slug: 'menta' });
     assert.ok(guardado, 'el producto se persiste');
@@ -519,7 +519,7 @@ test('C3: slug duplicado en alta de producto responde 409', async t => {
     const { server, url } = await iniciar(base);
     t.after(() => server.close());
 
-    const respuesta = await fetchAdmin(url, '/products', 'admin-1', {
+    const respuesta = await fetchAdmin(url, '/productos', 'admin-1', {
         method: 'POST',
         body: { slug: 'albahaca', nombre: 'Otra albahaca', precioBase: 10, stock: 1, visible: true }
     });
@@ -532,7 +532,7 @@ test('D1: editar producto sin sesión responde 401', async t => {
     const { server, url } = await iniciar(base);
     t.after(() => server.close());
 
-    const respuesta = await fetchAdmin(url, '/products/1', undefined, {
+    const respuesta = await fetchAdmin(url, '/productos/1', undefined, {
         method: 'PATCH',
         body: { precioBase: 180 }
     });
@@ -546,7 +546,7 @@ test('D2: admin edita precio, stock y visible, y audita', async t => {
     const { server, url } = await iniciar(base);
     t.after(() => server.close());
 
-    const respuesta = await fetchAdmin(url, '/products/1', 'admin-1', {
+    const respuesta = await fetchAdmin(url, '/productos/1', 'admin-1', {
         method: 'PATCH',
         body: { precioBase: 180, stock: 7, visible: false }
     });
@@ -573,7 +573,7 @@ test('D3: editar producto no existente responde 404', async t => {
     const { server, url } = await iniciar(base);
     t.after(() => server.close());
 
-    const respuesta = await fetchAdmin(url, '/products/999', 'admin-1', {
+    const respuesta = await fetchAdmin(url, '/productos/999', 'admin-1', {
         method: 'PATCH',
         body: { precioBase: 180 }
     });

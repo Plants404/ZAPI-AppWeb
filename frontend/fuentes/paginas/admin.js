@@ -308,8 +308,8 @@ module.exports = {
         </main>
 
         <dialog class="admin-dialog" id="dialogoVentaPresencial" aria-labelledby="dialogoVentaPresencialTitulo">
-            <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-            <div class="admin-dialog-caja">
+                        <div class="admin-dialog-caja">
+                <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
                 <span class="etiqueta">Venta presencial</span>
                 <h2 id="dialogoVentaPresencialTitulo">Nueva venta presencial</h2>
                 <form id="formVentaPresencial" novalidate>
@@ -341,47 +341,87 @@ module.exports = {
             </div>
         </dialog>
 
-        <dialog class="admin-dialog" id="dialogoNuevoProducto" aria-labelledby="dialogoNuevoProductoTitulo">
-            <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-            <div class="admin-dialog-caja">
+        <dialog class="admin-dialog" id="dialogoProducto" aria-labelledby="dialogoProductoTitulo">
+                        <div class="admin-dialog-caja admin-dialog-ancho">
+                <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
                 <span class="etiqueta">Catálogo y stock</span>
-                <h2 id="dialogoNuevoProductoTitulo">Nuevo producto</h2>
-                <form id="formNuevoProducto" novalidate>
-                    <div class="admin-campo">
-                        <label class="campo-label" for="nuevoSlug">Slug <span aria-hidden="true">*</span></label>
-                        <input class="campo-input" id="nuevoSlug" name="slug" type="text" maxlength="120" placeholder="ej. maceta-terracota" required>
-                        <span class="campo-error" id="errorNuevoSlug"></span>
-                        <span class="admin-ayuda" id="ayudaNuevoSlug">Identificador amigable de la URL (letras, números y guiones).</span>
+                <h2 id="dialogoProductoTitulo">Nuevo producto</h2>
+                <form id="formProducto" novalidate>
+                    <div class="admin-campo admin-campo-dos">
+                        <div>
+                            <label class="campo-label" for="prodNombre">Nombre <span aria-hidden="true">*</span></label>
+                            <input class="campo-input" id="prodNombre" name="nombre" type="text" maxlength="160" required>
+                            <span class="campo-error" id="errorProdNombre"></span>
+                        </div>
+                        <div>
+                            <label class="campo-label" for="prodSlug">Slug <span aria-hidden="true">*</span></label>
+                            <input class="campo-input" id="prodSlug" name="slug" type="text" maxlength="120" placeholder="ej. maceta-terracota" required>
+                            <span class="campo-error" id="errorProdSlug"></span>
+                        </div>
                     </div>
                     <div class="admin-campo">
-                        <label class="campo-label" for="nuevoNombre">Nombre <span aria-hidden="true">*</span></label>
-                        <input class="campo-input" id="nuevoNombre" name="nombre" type="text" maxlength="160" required>
-                        <span class="campo-error" id="errorNuevoNombre"></span>
+                        <label class="campo-label" for="prodCategoria">Categoría</label>
+                        <input class="campo-input" id="prodCategoria" name="categoria" type="text" maxlength="80" list="prodCategorias">
+                        <datalist id="prodCategorias"></datalist>
+                    </div>
+                    <div class="admin-campo">
+                        <label class="campo-label" for="prodDescripcion">Descripción</label>
+                        <textarea class="campo-input" id="prodDescripcion" name="descripcion" rows="3" maxlength="1000"></textarea>
                     </div>
                     <div class="admin-campo admin-campo-dos">
                         <div>
-                            <label class="campo-label" for="nuevoPrecio">Precio <span aria-hidden="true">*</span></label>
-                            <input class="campo-input" id="nuevoPrecio" name="precioBase" type="number" min="0" step="0.01" required>
-                            <span class="campo-error" id="errorNuevoPrecio"></span>
+                            <label class="campo-label" for="prodPrecio">Precio <span aria-hidden="true">*</span></label>
+                            <input class="campo-input" id="prodPrecio" name="precioBase" type="number" min="0" step="0.01" required>
+                            <span class="campo-error" id="errorProdPrecio"></span>
                         </div>
                         <div>
-                            <label class="campo-label" for="nuevoStock">Stock <span aria-hidden="true">*</span></label>
-                            <input class="campo-input" id="nuevoStock" name="stock" type="number" min="0" required>
-                            <span class="campo-error" id="errorNuevoStock"></span>
+                            <label class="campo-label" for="prodStock">Stock <span aria-hidden="true">*</span></label>
+                            <input class="campo-input" id="prodStock" name="stock" type="number" min="0" step="1" required>
+                            <span class="campo-error" id="errorProdStock"></span>
+                        </div>
+                    </div>
+                    <div class="admin-campo admin-campo-tres">
+                        <div>
+                            <label class="campo-label" for="prodVisible">Visible</label>
+                            <select class="campo-input" id="prodVisible" name="visible"><option value="true">Sí</option><option value="false">No</option></select>
+                        </div>
+                        <div>
+                            <label class="campo-label" for="prodActivo">Activo</label>
+                            <select class="campo-input" id="prodActivo" name="active"><option value="true">Sí</option><option value="false">No</option></select>
+                        </div>
+                        <div>
+                            <label class="campo-label" for="prodDestacado">Destacado</label>
+                            <select class="campo-input" id="prodDestacado" name="destacado"><option value="false">No</option><option value="true">Sí</option></select>
                         </div>
                     </div>
                     <div class="admin-campo">
-                        <label class="campo-label" for="nuevoVisible">Visible en el catálogo</label>
-                        <select class="campo-input" id="nuevoVisible" name="visible">
-                            <option value="true">Sí</option>
-                            <option value="false">No</option>
-                        </select>
+                        <label class="campo-label" for="prodInfo">Información de venta</label>
+                        <textarea class="campo-input" id="prodInfo" name="infoDeVenta" rows="3" placeholder="Una línea por dato"></textarea>
+                        <span class="admin-ayuda">Una línea por dato (hasta 8).</span>
                     </div>
-                    <p class="formulario-estado" id="estadoNuevoProducto" role="status" aria-live="polite" hidden></p>
+                    <fieldset class="admin-campo admin-imagenes">
+                        <legend class="campo-label">Imágenes</legend>
+                        <ul class="admin-galeria" id="prodGaleria"></ul>
+                        <p class="admin-ayuda" id="prodGaleriaVacia">Todavía no hay imágenes. La primera es la principal.</p>
+                        <div class="admin-imagenes-acciones">
+                            <label class="boton boton-secundario admin-subir" for="prodArchivos">
+                                <span class="material-symbols-outlined" aria-hidden="true">add_photo_alternate</span> Subir imágenes
+                            </label>
+                            <input class="admin-archivo" id="prodArchivos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+                        </div>
+                        <div class="admin-imagenes-url">
+                            <label class="campo-label" for="prodUrl">O pegá una URL https</label>
+                            <div class="admin-fila-url">
+                                <input class="campo-input" id="prodUrl" type="url" maxlength="480" placeholder="https://...">
+                                <button class="boton boton-texto" id="prodAgregarUrl" type="button">Agregar</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <p class="formulario-estado" id="estadoProducto" role="status" aria-live="polite" hidden></p>
                 </form>
                 <div class="admin-dialog-acciones">
                     <button class="boton boton-texto" type="button" data-cerrar-dialogo>Cancelar</button>
-                    <button class="boton boton-primario" id="adminGuardarNuevoProducto" type="submit">Crear producto</button>
+                    <button class="boton boton-primario" id="adminGuardarProducto" type="submit" form="formProducto">Guardar producto</button>
                 </div>
             </div>
         </dialog>
