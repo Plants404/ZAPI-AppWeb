@@ -5,10 +5,10 @@
 
 const { HttpError } = require('./http-error.js');
 
-/* Los alias "-latest" apuntan siempre al modelo vigente, asi que no se
-   rompen cuando Google retira una version. Si el primero no existe (404),
-   se prueba el siguiente. */
-const MODELOS_POR_DEFECTO = ['gemini-flash-lite-latest', 'gemini-flash-latest'];
+/* Primero un modelo estable y barato; despues los alias "-latest", que
+   apuntan siempre al modelo vigente. Si uno no existe (404), se prueba el
+   siguiente. */
+const MODELOS_POR_DEFECTO = ['gemini-3.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-flash-latest'];
 const MODELO_POR_DEFECTO = MODELOS_POR_DEFECTO[0];
 const MAX_MENSAJES = 8;
 const MAX_LARGO_MENSAJE = 500;
