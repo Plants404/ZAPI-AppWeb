@@ -655,26 +655,6 @@ test('C10: esPaginaValida acepta rutas públicas conocidas', () => {
     assert.equal(esPaginaValida('/producto-cualquiera-123'), true);
 });
 
-test('C11: admin.js escapa lo que viene de eventos y pedidos al renderizar', () => {
-    const fs = require('fs');
-    const adminJs = fs.readFileSync(
-        require.resolve('../../_vanilla-original/public/js/admin.js'),
-        'utf8'
-    );
-    const debeEscapar = [
-        ['páginas', 'escaparHTML(nombreDePagina(p.pagina))'],
-        ['productos', 'escaparHTML(p.nombre)'],
-        ['clientes', 'escaparHTML(c.nombre)'],
-        ['id de cliente', 'data-cliente="${escaparHTML(c.id)}"'],
-        ['ficha', 'escaparHTML(cliente.nombre)'],
-        ['zona', 'escaparHTML(cliente.zona)'],
-        ['favoritos', 'escaparHTML(f)']
-    ];
-    for (const [que, codigo] of debeEscapar) {
-        assert.ok(adminJs.includes(codigo), `la analítica escapa ${que} con escaparHTML`);
-    }
-});
-
 test('C16: normalizarPagina quita .html final', () => {
     assert.equal(normalizarPagina('/catalogo.html'), '/catalogo');
     assert.equal(normalizarPagina('/index.html'), '/');

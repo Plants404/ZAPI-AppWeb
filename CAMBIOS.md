@@ -53,14 +53,10 @@ rechazarlo. También se arregló la forma en que se mapeaban las rutas de analí
 
 Quedan pendientes tres avisos de lint que ya existían: dos en `Layout.jsx` y uno
 en `Login.jsx` (llamar a `setState` dentro de un efecto). No rompen nada, pero
-conviene revisarlos. Una duda abierta: `backend/test/eventos.test.js` lee un
-archivo de `_vanilla-original/`, así que esa carpeta no se puede borrar sin
-adaptar ese test. Otra: las pruebas con la base real (Atlas) no pudieron correrse
+conviene revisarlos. Una duda abierta: las pruebas con la base real (Atlas) no pudieron correrse
 desde el entorno donde se hizo la migración, por eso conviene hacer la lista de
 pruebas manuales en el navegador antes de publicar.
 
-## Lo que quedó guardado
+## Lo que se eliminó
 
-La carpeta `_vanilla-original/` conserva el frontend viejo completo (páginas,
-scripts, estilos, generadores y la configuración de ESLint) como respaldo y
-referencia. No se usa para nada al ejecutar el sitio.
+La carpeta `_vanilla-original/` (el frontend viejo completo, con sus generadores y la configuración de ESLint) se borró del proyecto. Sigue disponible en el historial de git, por ejemplo en el commit `43168c6`. También se quitó la prueba C11 de `backend/test/eventos.test.js`, que revisaba el escapado de HTML en el `admin.js` viejo: React escapa el texto por defecto, así que ya no aplica.
