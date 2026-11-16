@@ -26,6 +26,9 @@ async function abrirConexion() {
         await nuevaBase.command({ ping: 1 });
         cliente = nuevoCliente;
         baseDeDatos = nuevaBase;
+        /* Solo host y nombre de base: nunca el usuario ni la contraseña. */
+        const host = uri.trim().replace(/^mongodb(\+srv)?:\/\//, '').replace(/^[^@]*@/, '').split(/[/?]/)[0];
+        console.log(`MongoDB conectado: host=${host} base=${nuevaBase.databaseName}`);
         return baseDeDatos;
     } catch (error) {
         await nuevoCliente.close().catch(() => {});
