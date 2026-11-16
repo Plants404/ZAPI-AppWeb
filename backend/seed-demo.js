@@ -8,8 +8,7 @@
 const { connectDatabase, closeDatabase } = require('./db.js');
 const { TESTIMONIOS, generarPedidos, generarEventos } = require('./lib/datos-demo.js');
 
-async function main() {
-    const db = await connectDatabase();
+async function cargarDemo(db) {
     const ahora = new Date();
 
     for (const coleccion of ['orders', 'eventos', 'testimonials']) {
@@ -31,9 +30,17 @@ async function main() {
     console.log(`Demo cargada: ${pedidos.length} pedidos, ${eventos.length} eventos, ${testimonios.length} testimonios.`);
 }
 
+async function main() {
+    await cargarDemo(await connectDatabase());
+}
+
+if (require.main === module) {
 main()
     .catch(error => {
         console.error('No se pudo cargar la demo:', error.message);
         process.exitCode = 1;
     })
     .finally(closeDatabase);
+}
+
+module.exports = { cargarDemo };
