@@ -1459,3 +1459,23 @@
     padding: .3rem .9rem;
     font-size: .75rem;
 }
+
+/* Botones de la cabecera: sin el borde por defecto del navegador y con un
+   fondo suave, para que el carrito y el cierre se vean como un par. */
+.zapi-header-close {
+    margin-left: 0;
+    border: 0;
+    background: rgba(255, 255, 255, .12);
+}
+
+.zapi-header-close:hover {
+    background: rgba(255, 255, 255, .24);
+}
+
+.zapi-header-accion {
+    background: rgba(255, 255, 255, .12);
+}
+
+.zapi-header-accion:hover {
+    background: rgba(255, 255, 255, .24);
+}
