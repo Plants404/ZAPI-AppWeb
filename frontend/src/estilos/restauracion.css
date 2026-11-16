@@ -1,0 +1,22 @@
+/* Restauracion: reglas del logo original. Se carga después de tokens.css. */
+
+/* Logo original (bloque con <span class="logo-nombre">) */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+header .logo-nombre {
+    font: var(--serif);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--forest);
+    margin: 0;
+    letter-spacing: .04em;
+}
+
+header .logo-items-img img {
+    height: 42px;
+    width: auto;
+}
