@@ -40,7 +40,7 @@ function Pie({ compacto = false }) {
         <div className="footer-contacto">
           <h2>Contacto</h2>
           <p><Icono nombre="location_on" /> {NEGOCIO.direccion}</p>
-          <a href={`https://wa.me/${NEGOCIO.whatsapp}`} target="_blank" rel="noopener"><Icono nombre="chat" /> WhatsApp {NEGOCIO.whatsappVisible}</a>
+          <a href={`https://wa.me/${NEGOCIO.whatsapp}`} target="_blank" rel="noopener"><Icono nombre="chat" /> {`WhatsApp ${NEGOCIO.whatsappVisible}`}</a>
           <Link to="/contacto"><Icono nombre="mail" /> Escribinos por correo</Link>
         </div>
       </div>

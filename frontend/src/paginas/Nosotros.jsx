@@ -15,7 +15,7 @@ function Nosotros() {
               <span className="material-symbols-outlined" aria-hidden="true">chat</span> Pedido coordinado por WhatsApp
             </li>
             <li>
-              <span className="material-symbols-outlined" aria-hidden="true">local_shipping</span> Envío gratis desde {formatearPrecio(NEGOCIO.envioGratis)}
+              <span className="material-symbols-outlined" aria-hidden="true">local_shipping</span> Envío gratis desde <span data-envio-gratis>{formatearPrecio(NEGOCIO.envioGratis)}</span>
             </li>
             <li>
               <span className="material-symbols-outlined" aria-hidden="true">eco</span> Acompañamiento para tu espacio verde

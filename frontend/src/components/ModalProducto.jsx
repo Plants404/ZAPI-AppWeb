@@ -93,7 +93,7 @@ function ModalProducto() {
                 ))}
               </ul>
               <p className="modal-precio"><span className="current" id="modalPrecio">{formatearPrecio(producto.precioBase)}</span></p>
-              <p className={'modal-stock stock ' + claseDeStock(unidades)} id="modalStock">{textoDeStock(unidades)}</p>
+              <p className={'stock ' + claseDeStock(unidades)} id="modalStock">{textoDeStock(unidades)}</p>
               <button className={'modal-agregar add-cart boton boton-primario' + (agregado ? ' agregado added' : '')} type="button" id="modalAgregar" disabled={agotado} onClick={() => agregar(producto.id)}>
                 {agotado
                   ? <><span className="material-symbols-outlined" aria-hidden="true">block</span> Sin stock</>

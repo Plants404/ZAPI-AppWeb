@@ -202,7 +202,7 @@ function Contacto() {
               <label className="campo-label" htmlFor="contactoConsulta">Mensaje <span aria-hidden="true">*</span></label>
               <textarea {...campo('mensaje')} id="contactoConsulta" name="consulta" rows="6" maxLength={LIMITE_MENSAJE} aria-describedby="errorConsulta contactoContador" />
               <span className="campo-error" id="errorConsulta">{errores.mensaje}</span>
-              <span className={'contacto-contador' + (restantes <= 100 ? ' contador-cerca' : '')} id="contactoContador">{restantes}/{LIMITE_MENSAJE}</span>
+              <span className={'contacto-contador' + (restantes <= 100 ? ' contador-cerca' : '')} id="contactoContador">{`${restantes}/${LIMITE_MENSAJE}`}</span>
               <div className="visually-hidden" aria-hidden="true">
                 <label htmlFor="contactoSitio">Dejá este campo vacío</label>
                 <input id="contactoSitio" name="sitio_web" type="text" tabIndex="-1" autoComplete="off" value={campos.sitio} onChange={cambiar('sitio')} />

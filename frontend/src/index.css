@@ -1,9 +1,7 @@
-/* Estilos compartidos por todo el sitio (los mismos que usaba el sitio viejo).
-   Los de cada página se importan desde su propio componente. */
-@import './estilos/tokens.css';
-@import './estilos/base.css';
-@import './estilos/estructura.css';
-@import './estilos/zapi-bot.css';
-
+/* Cada página activa sus propias hojas de estilo (como en el sitio viejo): ver estilos/hojas.js y los
+   <Estilos> de cada página. Acá solo queda lo que no pertenece a ninguna hoja. */
 /* Con sesión iniciada, el botón de cuenta de la hoja móvil se muestra siempre (como en el sitio viejo). */
 .bottom-sheet-ingresar.con-sesion { display: flex !important; }
+
+/* El sitio viejo no tenía contenedor "#root": para que el <body> acomode las páginas igual, se vuelve transparente. */
+#root { display: contents; }

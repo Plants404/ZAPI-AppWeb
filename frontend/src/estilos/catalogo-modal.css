@@ -92,7 +92,6 @@ background: var(--modal-overlay);
 
 backdrop-filter: blur(4px);
 
--webkit-backdrop-filter: blur(4px);
 
 }
 
