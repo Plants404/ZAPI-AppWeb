@@ -14,7 +14,8 @@ const API_PUBLICACION_BORRADOR = '/api/admin/publicacion/borrador';
 const API_PUBLICACION_PUBLICAR = '/api/admin/publicacion/publicar';
 const API_PUBLICACION_HISTORIAL = '/api/admin/publicacion/historial';
 const API_PUBLICACION_RESTAURAR = '/api/admin/publicacion/restaurar';
-const API_EVENTOS = '/api/admin/eventos';
+const API_ANALITICA = '/api/admin/analitica';
+const API_CLIENTES = '/api/admin/clientes';
 const POR_PAGINA = 20;
 
 const COLOR_HEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
@@ -553,188 +554,451 @@ function iniciarGestion() {
 
 /* ----- Analítica de clientes ----- */
 
+const TEXTOS_ANALITICA = {
+    resumen: { etiqueta: 'RESUMEN', titulo: 'Cómo se mueven tus clientes' },
+    clientes: { etiqueta: 'CLIENTES', titulo: 'Quiénes compran y cuándo vuelven' },
+    productos: { etiqueta: 'PRODUCTOS Y HORARIOS', titulo: 'Qué interesa y cuándo conviene estar' }
+};
+const NOMBRES_PAGINA = {
+    '/': 'Inicio', '/catalogo': 'Catálogo', '/carrito': 'Carrito', '/servicios': 'Servicios',
+    '/nosotros': 'Nosotros', '/contacto': 'Contacto', '/pedidos': 'Mis pedidos', '/login': 'Ingreso', '/privacidad': 'Privacidad'
+};
+const DIAS_SEMANA = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+const DIAS_PLURAL = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábados', 'domingos'];
+const COLORES_CALOR = ['#eef3ef', '#bcd3c4', '#6f9c80', '#2f5a43', '#1f3a2e'];
+const ETIQUETAS_ESTADO_CLIENTE = { recurrente: 'Recurrente', nuevo: 'Nuevo', inactivo: 'Hace tiempo que no vuelve' };
+
+let analiticaDias = 30;
+let analiticaVista = 'resumen';
+let analiticaComparar = true;
+let analiticaDatos = null;
+let clientesDatos = null;
+let segmentoClientes = 'todos';
+let clienteElegido = null;
+
+const numeroAn = valor => new Intl.NumberFormat('es-UY').format(Number(valor) || 0);
+const porcentajeAn = (parte, total) => (total ? Math.round((parte / total) * 100) : 0);
+
+function hacePalabra(dias) {
+    if (dias <= 0) return 'hoy';
+    if (dias === 1) return 'ayer';
+    return `hace ${dias} días`;
+}
+
+function textoDesde(dias) {
+    if (dias >= 60) return `hace ${Math.round(dias / 30)} meses`;
+    if (dias >= 30) return 'hace 1 mes';
+    return `hace ${Math.max(dias, 1)} ${dias === 1 ? 'día' : 'días'}`;
+}
+
 async function cargarAnalitica() {
+    mostrarVistaAnalitica(analiticaVista);
+}
+
+async function cargarDatosAnalitica() {
     try {
-        const data = await fetchJson(API_EVENTOS);
-        renderAnalitica(data);
+        analiticaDatos = await fetchJson(`${API_ANALITICA}?dias=${analiticaDias}`);
+        renderResumenAnalitica();
+        renderProductosAnalitica();
     } catch (error) {
         mostrarAviso('No se pudo cargar la analítica', error.message);
     }
 }
 
-function renderAnalitica(data) {
-    const eventos = Array.isArray(data.eventos) ? data.eventos : [];
-    const porTipo = data.porTipo || {};
-    renderEmbudo(porTipo);
-    renderFlujo(eventos);
-    renderClicksPorPagina(eventos);
-    renderRanking(eventos);
-    renderDispositivos(eventos);
+async function cargarClientesAnalitica() {
+    try {
+        clientesDatos = await fetchJson(API_CLIENTES);
+        const lista = clientesDatos.clientes || [];
+        if (!lista.some(c => c.id === clienteElegido)) clienteElegido = lista.length ? lista[0].id : null;
+        renderClientesAnalitica();
+    } catch (error) {
+        mostrarAviso('No se pudieron cargar los clientes', error.message);
+    }
 }
 
-function renderEmbudo(porTipo) {
-    const contenedor = document.getElementById('adminEmbudo');
-    const vacio = document.getElementById('adminEmbudoVacio');
-    const vistas = Number(porTipo.vista_de_pagina) || 0;
-    if (vistas === 0) {
-        contenedor.innerHTML = '';
-        vacio.hidden = false;
+function mostrarVistaAnalitica(vista) {
+    analiticaVista = vista;
+    const textos = TEXTOS_ANALITICA[vista];
+    document.getElementById('anEtiqueta').textContent = `ANALÍTICA DE CLIENTES · ${textos.etiqueta}`;
+    document.getElementById('anTitulo').textContent = textos.titulo;
+    document.getElementById('anResumen').hidden = vista !== 'resumen';
+    document.getElementById('anClientes').hidden = vista !== 'clientes';
+    document.getElementById('anProductos').hidden = vista !== 'productos';
+    document.getElementById('anPeriodo').hidden = vista === 'clientes';
+    document.getElementById('anComparar').hidden = vista !== 'resumen';
+    document.getElementById('anCsv').hidden = vista !== 'resumen';
+    document.getElementById('anNota').textContent = vista === 'clientes'
+        ? 'Sale de los pedidos que ya existen. Solo con datos que la persona dejó al pedir; la navegación anónima nunca se une a un cliente.'
+        : 'Eventos anónimos del sitio: sin IP ni datos personales. Se conservan 90 días.';
+    document.querySelectorAll('#anVistas .an-vista-tab').forEach(tab => {
+        const activa = tab.dataset.vista === vista;
+        tab.classList.toggle('activa', activa);
+        tab.setAttribute('aria-selected', String(activa));
+    });
+    if (vista === 'clientes') cargarClientesAnalitica();
+    else cargarDatosAnalitica();
+}
+
+/* ----- Resumen ----- */
+
+function trazoSparkline(serie, color, etiqueta) {
+    const maximo = Math.max(...serie, 1);
+    const n = serie.length;
+    const puntos = serie.map((valor, i) => `${n > 1 ? 2 + (i / (n - 1)) * 86 : 45} ${26 - (valor / maximo) * 22}`);
+    return `<svg width="90" height="28" viewBox="0 0 90 28" role="img" aria-label="${escaparHTML(etiqueta)}"><path d="M${puntos.join(' L')}" fill="none" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function textoDelta(actual, previo) {
+    if (!analiticaComparar) return { texto: '', color: '' };
+    if (!previo) return { texto: 'Sin datos del período anterior', color: '#5b6b60' };
+    const cambio = Math.round(((actual - previo) / previo) * 100);
+    if (cambio === 0) return { texto: 'Igual que el período anterior', color: '#5b6b60' };
+    return cambio > 0
+        ? { texto: `▲ ${cambio} % vs. anterior`, color: '#1f5a3a' }
+        : { texto: `▼ ${Math.abs(cambio)} % vs. anterior`, color: '#8a5a12' };
+}
+
+function tarjetaKpi(titulo, valor, delta, sparkline) {
+    return `<article class="an-kpi">
+        <span class="an-kpi-titulo">${escaparHTML(titulo)}</span>
+        <div class="an-kpi-valor">${escaparHTML(valor)}</div>
+        <div class="an-kpi-pie"><span style="color:${delta.color}">${escaparHTML(delta.texto)}</span>${sparkline}</div>
+    </article>`;
+}
+
+function renderResumenAnalitica() {
+    const datos = analiticaDatos;
+    if (!datos) return;
+    const a = datos.indicadores.actual;
+    const p = datos.indicadores.previo;
+    const serie = datos.serie;
+    const conversionDiaria = serie.visitas.map((v, i) => (v ? serie.pedidos[i] / v : 0));
+    const colorDe = delta => (delta.color === '#8a5a12' ? '#b7791f' : '#4a7c59');
+
+    const dVisitas = textoDelta(a.visitas, p.visitas);
+    const dCarrito = textoDelta(a.carrito, p.carrito);
+    const dPedidos = textoDelta(a.pedidos, p.pedidos);
+    document.getElementById('anKpis').innerHTML = [
+        tarjetaKpi('Visitas (sesiones)', numeroAn(a.visitas), dVisitas, trazoSparkline(serie.visitas, colorDe(dVisitas), 'Visitas por día')),
+        tarjetaKpi('Agregaron al carrito', numeroAn(a.carrito), dCarrito, trazoSparkline(serie.carrito, colorDe(dCarrito), 'Carritos por día')),
+        tarjetaKpi('Pedidos iniciados', numeroAn(a.pedidos), dPedidos, trazoSparkline(serie.pedidos, colorDe(dPedidos), 'Pedidos por día')),
+        tarjetaKpi('Conversión de visita a pedido', `${porcentajeAn(a.pedidos, a.visitas)} %`,
+            { texto: `${numeroAn(a.pedidos)} de ${numeroAn(a.visitas)} visitas`, color: '#5b6b60' },
+            trazoSparkline(conversionDiaria, '#5b6b60', 'Conversión por día'))
+    ].join('');
+
+    renderEmbudoAnalitica(datos);
+    renderInsightsAnalitica(datos);
+    renderLineaAnalitica(datos);
+    renderDispositivosAnalitica(datos);
+}
+
+function renderEmbudoAnalitica(datos) {
+    const contenedor = document.getElementById('anEmbudo');
+    const perdida = document.getElementById('anPerdida');
+    const [visitas, carrito, pedidos, whatsapp] = datos.embudo.map(paso => paso.valor);
+    if (visitas === 0) {
+        contenedor.innerHTML = '<p class="estado-vacio">No hay eventos de embudo registrados en este período.</p>';
+        perdida.hidden = true;
         return;
     }
-    vacio.hidden = true;
     const pasos = [
-        { clave: 'vista_de_pagina', label: 'Visitas' },
-        { clave: 'agregar_al_carrito', label: 'Agregó al carrito' },
-        { clave: 'inicio_de_pedido', label: 'Inició pedido' },
-        { clave: 'clic_a_whatsapp', label: 'Contactó por WhatsApp' }
+        { texto: 'Entraron al sitio', valor: visitas, color: '#1f3a2e', minimo: 0 },
+        { texto: 'Agregaron al carrito', valor: carrito, color: '#3d6b4f', minimo: 70 },
+        { texto: 'Iniciaron el pedido', valor: pedidos, color: '#4a7c59', minimo: 60 },
+        { texto: 'Escribieron por WhatsApp', valor: whatsapp, color: '#b7791f', minimo: 56 }
     ];
     contenedor.innerHTML = pasos.map(paso => {
-        const valor = Number(porTipo[paso.clave]) || 0;
-        const porcentaje = vistas > 0 ? Math.round((valor / vistas) * 100) : 0;
-        const ancho = vistas > 0 ? (valor / vistas) * 100 : 0;
-        return `
-        <div class="admin-paso-embudo">
-            <span class="admin-paso-valor">${valor}</span>
-            <span class="admin-paso-label">${escaparHTML(paso.label)}</span>
-            <span class="admin-paso-porcentaje">${porcentaje}%</span>
-            <div class="admin-barra-embudo-wrap">
-                <div class="admin-barra-embudo" style="width:${ancho}%" role="progressbar" aria-valuenow="${valor}" aria-valuemax="${vistas}" aria-label="${escaparHTML(paso.label)}: ${valor} (${porcentaje}%)"></div>
-            </div>
+        const pct = porcentajeAn(paso.valor, visitas);
+        return `<div class="an-paso">
+            <span class="an-paso-nombre">${paso.texto}</span>
+            <div class="an-paso-pista"><div class="an-paso-barra" style="width:${Math.min(pct, 100)}%;min-width:${paso.minimo}px;background:${paso.color}">${numeroAn(paso.valor)}</div></div>
+            <span class="an-paso-pct">${pct} %</span>
         </div>`;
     }).join('');
+
+    const caeCarrito = 1 - carrito / visitas;
+    const caePedido = carrito ? 1 - pedidos / carrito : 0;
+    perdida.hidden = false;
+    perdida.innerHTML = caeCarrito >= caePedido
+        ? `<strong>Mayor pérdida:</strong><span>de cada 100 personas que miran, ${Math.round(caeCarrito * 100)} no agregan nada al carrito. Ahí está el margen más grande.</span>`
+        : `<strong>Mayor pérdida:</strong><span>de cada 100 personas que agregan al carrito, ${Math.round(caePedido * 100)} no inician el pedido. Ahí está el margen más grande.</span>`;
 }
 
-function renderFlujo(eventos) {
-    const svg = document.getElementById('adminFlujoSVG');
-    const vacio = document.getElementById('adminFlujoVacio');
-    if (!eventos || eventos.length === 0) {
-        svg.hidden = true;
-        vacio.hidden = false;
-        return;
-    }
-    vacio.hidden = true;
-    svg.hidden = false;
+function franjaDelDia(bloque) {
+    const hora = 8 + bloque * 2;
+    return hora < 12 ? 'a la mañana' : hora < 19 ? 'a la tarde' : 'a la noche';
+}
 
-    const vistasPorPagina = {};
-    for (const evento of eventos) {
-        if (evento.tipo === 'vista_de_pagina' && evento.pagina) {
-            vistasPorPagina[evento.pagina] = (vistasPorPagina[evento.pagina] || 0) + 1;
+function celdasPico(horarios, cantidad) {
+    const celdas = [];
+    horarios.forEach((fila, dia) => fila.forEach((valor, bloque) => { if (valor > 0) celdas.push({ dia, bloque, valor }); }));
+    return celdas.sort((x, y) => y.valor - x.valor).slice(0, cantidad);
+}
+
+function renderInsightsAnalitica(datos) {
+    const lista = [];
+    const { movil, computadora } = datos.dispositivos;
+    if (movil.sesiones && computadora.sesiones) {
+        const [mayor, menor, nMayor, nMenor] = movil.sesiones >= computadora.sesiones
+            ? [movil, computadora, 'celular', 'computadora'] : [computadora, movil, 'computadora', 'celular'];
+        if (mayor.conversion < menor.conversion) {
+            lista.push({ titulo: `El ${nMayor} trae más visitas, pero convierte menos.`, texto: `${mayor.porcentaje} % de las entradas, ${mayor.conversion} % de pedidos contra ${menor.conversion} % en ${nMenor}.` });
+        } else {
+            lista.push({ titulo: `El ${nMayor} trae más visitas y convierte igual o mejor.`, texto: `${mayor.porcentaje} % de las entradas, ${mayor.conversion} % de pedidos contra ${menor.conversion} % en ${nMenor}.` });
         }
     }
-    const paginasOrdenadas = Object.entries(vistasPorPagina).sort((a, b) => b[1] - a[1]);
-    const entrada = paginasOrdenadas[0] ? paginasOrdenadas[0][0] : '-';
-    const segunda = paginasOrdenadas[1] ? paginasOrdenadas[1][0] : '-';
-    const ultima = eventos[eventos.length - 1];
-    const salida = (ultima && ultima.pagina) || '-';
+    const pico = celdasPico(datos.horarios, 1)[0];
+    if (pico) {
+        lista.push({ titulo: `Los ${DIAS_PLURAL[pico.dia]} ${franjaDelDia(pico.bloque)} es el mejor momento.`, texto: 'Conviene tener stock y responder rápido en ese horario.' });
+    }
+    const { actual, previo } = datos.indicadores;
+    if (previo.pedidos) {
+        const cambio = Math.round(((actual.pedidos - previo.pedidos) / previo.pedidos) * 100);
+        if (cambio < 0) lista.push({ titulo: `Pedidos iniciados bajó ${Math.abs(cambio)} %.`, texto: 'Revisá si el paso de confirmar pedido se entiende bien.' });
+        else if (cambio > 0) lista.push({ titulo: `Pedidos iniciados subió ${cambio} %.`, texto: 'Lo que cambiaste en el período está funcionando.' });
+        else lista.push({ titulo: 'Pedidos iniciados se mantiene estable.', texto: 'Igual que en el período anterior.' });
+    }
+    document.getElementById('anInsights').innerHTML = lista.length
+        ? lista.map(item => `<div class="an-insight"><strong>${escaparHTML(item.titulo)}</strong> ${escaparHTML(item.texto)}</div>`).join('')
+        : '<div class="an-insight">Todavía no hay datos suficientes para sacar conclusiones. Aparecen a medida que entran visitas.</div>';
+}
 
-    const nombreCorto = pagina => pagina === '-' ? 'Sin datos' : String(pagina).replace(/^\//, '') || 'inicio';
-    const dato = (indice, fallback) => paginasOrdenadas[indice] ? paginasOrdenadas[indice][1] : fallback;
-
-    svg.innerHTML = `<svg viewBox="0 0 560 140" class="admin-flujo-svg" aria-label="Flujo de navegación">
-        <rect x="40" y="50" width="150" height="40" rx="8" class="admin-flujo-nodo"/>
-        <text x="115" y="75" class="admin-flujo-texto" text-anchor="middle">${escaparHTML(nombreCorto(entrada))}</text>
-        <text x="115" y="92" class="admin-flujo-dato" text-anchor="middle">${dato(0, 0)} vistas</text>
-        <path d="M 190 70 L 260 70" class="admin-flujo-flecha"/>
-        <path d="M 250 64 L 260 70 L 250 76" class="admin-flujo-flecha"/>
-        <rect x="260" y="50" width="150" height="40" rx="8" class="admin-flujo-nodo"/>
-        <text x="335" y="75" class="admin-flujo-texto" text-anchor="middle">${escaparHTML(nombreCorto(segunda))}</text>
-        <text x="335" y="92" class="admin-flujo-dato" text-anchor="middle">${dato(1, 0)} vistas</text>
-        <path d="M 410 70 L 480 70" class="admin-flujo-flecha"/>
-        <path d="M 470 64 L 480 70 L 470 76" class="admin-flujo-flecha"/>
-        <rect x="410" y="50" width="110" height="40" rx="8" class="admin-flujo-nodo admin-flujo-nodo--salida"/>
-        <text x="465" y="75" class="admin-flujo-texto" text-anchor="middle">${escaparHTML(nombreCorto(salida))}</text>
-        <text x="465" y="92" class="admin-flujo-dato" text-anchor="middle">Salida</text>
+function renderLineaAnalitica(datos) {
+    const actual = datos.serie.visitas;
+    const previa = datos.serie.visitasPrevias;
+    const hayPrevia = analiticaComparar && previa.some(valor => valor > 0);
+    const maximo = Math.max(...actual, ...(hayPrevia ? previa : [0]), 1);
+    const trazo = serie => {
+        const n = serie.length;
+        return `M${serie.map((valor, i) => `${n > 1 ? (i / (n - 1)) * 640 : 320} ${190 - (valor / maximo) * 170}`).join(' L')}`;
+    };
+    document.getElementById('anLeyenda').innerHTML = `<span><i class="an-linea-solida"></i>Últimos ${datos.dias} días</span>${hayPrevia ? `<span><i class="an-linea-punteada"></i>Anteriores ${datos.dias}</span>` : ''}`;
+    document.getElementById('anLinea').innerHTML = `<svg viewBox="0 0 640 200" width="100%" height="200" role="img" aria-label="Línea de visitas diarias de los últimos ${datos.dias} días" preserveAspectRatio="none">
+        <g stroke="#ece6d6" stroke-width="1"><line x1="0" y1="40" x2="640" y2="40"/><line x1="0" y1="90" x2="640" y2="90"/><line x1="0" y1="140" x2="640" y2="140"/><line x1="0" y1="190" x2="640" y2="190"/></g>
+        ${hayPrevia ? `<path d="${trazo(previa)}" fill="none" stroke="#a39b83" stroke-width="2" stroke-dasharray="2 5" stroke-linecap="round" vector-effect="non-scaling-stroke"/>` : ''}
+        <path d="${trazo(actual)}" fill="none" stroke="#1f3a2e" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
     </svg>`;
 }
 
-function renderClicksPorPagina(eventos) {
-    const cuerpo = document.getElementById('adminCuerpoClicksPagina');
-    const vacio = document.getElementById('adminClicksPaginaVacio');
-    const porPagina = {};
-    for (const evento of eventos) {
-        if (evento.tipo === 'clic_elemento_clave' && evento.pagina) {
-            porPagina[evento.pagina] = (porPagina[evento.pagina] || 0) + 1;
-        }
-    }
-    const entradas = Object.entries(porPagina).sort((a, b) => b[1] - a[1]);
-    if (entradas.length === 0) {
-        cuerpo.innerHTML = '';
-        vacio.hidden = false;
-        return;
-    }
-    vacio.hidden = true;
-    cuerpo.innerHTML = entradas.map(([pagina, clics]) => `
-        <tr>
-            <td>${escaparHTML(pagina === '' ? '(inicio)' : pagina)}</td>
-            <td class="admin-numero">${clics}</td>
-        </tr>`).join('');
+function renderDispositivosAnalitica(datos) {
+    const fila = (nombre, d, color) => `<div class="an-disp">
+        <div class="an-disp-cabecera"><span>${nombre}</span><span>${d.porcentaje} %</span></div>
+        <div class="an-disp-pista"><div style="width:${d.porcentaje}%;background:${color}"></div></div>
+        <span class="an-disp-nota">${d.sesiones ? `${d.conversion} de cada 100 visitas terminan en pedido` : 'Sin visitas en este período'}</span>
+    </div>`;
+    document.getElementById('anDispositivos').innerHTML =
+        fila('Celular', datos.dispositivos.movil, '#3d6b4f') + fila('Computadora', datos.dispositivos.computadora, '#1f3a2e');
 }
 
-function renderRanking(eventos) {
-    const cuerpo = document.getElementById('adminCuerpoRanking');
-    const vacio = document.getElementById('adminRankingVacio');
-    const porElemento = {};
-    for (const evento of eventos) {
-        if (!evento.elemento) continue;
-        if (!porElemento[evento.elemento]) porElemento[evento.elemento] = { conteo: 0, tipo: evento.tipo };
-        porElemento[evento.elemento].conteo += 1;
-        if (evento.tipo !== 'clic_elemento_clave') porElemento[evento.elemento].tipo = evento.tipo;
+/* ----- Productos, horarios y páginas ----- */
+
+function renderProductosAnalitica() {
+    const datos = analiticaDatos;
+    if (!datos) return;
+
+    const productos = datos.productos;
+    const maximo = Math.max(...productos.map(p => Math.max(p.agregados, p.pedidos)), 1);
+    const lista = document.getElementById('anListaProductos');
+    const mirar = document.getElementById('anParaMirar');
+    if (!productos.length) {
+        lista.innerHTML = '<p class="estado-vacio">Todavía no hay datos. A partir de ahora el sitio registra qué producto se agrega al carrito, y acá se compara con lo que se compra.</p>';
+    } else {
+        lista.innerHTML = productos.slice(0, 6).map(p => `<div class="an-producto">
+            <div class="an-producto-cabecera"><strong>${escaparHTML(p.nombre)}</strong><span>${p.agregados ? `${p.pedidos} de ${p.agregados} se compran` : `${p.pedidos} ${p.pedidos === 1 ? 'pedido' : 'pedidos'}`}</span></div>
+            <div class="an-barra-pista"><div style="width:${(p.agregados / maximo) * 100}%;background:#a9c5b3"></div></div>
+            <div class="an-barra-pista"><div style="width:${(p.pedidos / maximo) * 100}%;background:#1f3a2e"></div></div>
+        </div>`).join('');
     }
-    const entradas = Object.entries(porElemento)
-        .sort((a, b) => b[1].conteo - a[1].conteo)
-        .slice(0, 10);
-    if (entradas.length === 0) {
-        cuerpo.innerHTML = '';
-        vacio.hidden = false;
-        return;
+    const candidato = productos.filter(p => p.agregados >= 5).sort((x, y) => x.pedidos / x.agregados - y.pedidos / y.agregados)[0];
+    if (candidato && candidato.pedidos / candidato.agregados < 0.25) {
+        mirar.hidden = false;
+        mirar.innerHTML = `<strong>Para mirar:</strong><span>${escaparHTML(candidato.nombre)} se agrega mucho y casi no se compra. Puede ser precio, stock o que la foto no convence.</span>`;
+    } else {
+        mirar.hidden = true;
     }
-    vacio.hidden = true;
-    const tipoLabel = {
-        clic_elemento_clave: 'Elemento clave',
-        agregar_al_carrito: 'Carrito',
-        inicio_de_pedido: 'Pedido',
-        clic_a_whatsapp: 'WhatsApp'
-    };
-    cuerpo.innerHTML = entradas.map(([elemento, datos]) => `
-        <tr>
-            <td>${escaparHTML(elemento)}</td>
-            <td class="admin-numero">${datos.conteo}</td>
-            <td>${tipoLabel[datos.tipo] || datos.tipo}</td>
-        </tr>`).join('');
+
+    renderHorariosAnalitica(datos.horarios);
+    renderPaginasAnalitica(datos.paginas);
 }
 
-function renderDispositivos(eventos) {
-    const contenedor = document.getElementById('adminDispositivos');
-    const total = eventos.length;
-    if (total === 0) {
-        contenedor.innerHTML = '<p class="estado-vacio">No hay datos de dispositivos.</p>';
-        return;
-    }
-    const porDispositivo = { desktop: 0, mobile: 0, desconocido: 0 };
-    for (const evento of eventos) {
-        const dispositivo = evento.dispositivo || 'desconocido';
-        if (porDispositivo[dispositivo] === undefined) porDispositivo[dispositivo] = 0;
-        porDispositivo[dispositivo] += 1;
-    }
-    const items = [
-        { clave: 'desktop', label: 'Escritorio' },
-        { clave: 'mobile', label: 'Móvil' },
-        { clave: 'desconocido', label: 'Desconocido' }
-    ];
-    contenedor.innerHTML = items.map(item => {
-        const valor = porDispositivo[item.clave] || 0;
-        const porcentaje = Math.round((valor / total) * 100);
-        const ancho = (valor / total) * 100;
-        return `
-        <div class="admin-dispositivo-item">
-            <span class="admin-dispositivo-label">${escaparHTML(item.label)}</span>
-            <span class="admin-dispositivo-valor">${valor}</span>
-            <div class="admin-barra-dispositivo-wrap">
-                <div class="admin-barra-dispositivo" style="width:${ancho}%" title="${escaparHTML(item.label)}: ${porcentaje}%"></div>
-            </div>
-            <span class="admin-dispositivo-porcentaje">${porcentaje}%</span>
-        </div>`;
+function renderHorariosAnalitica(horarios) {
+    const maximo = Math.max(...horarios.flat(), 0);
+    const nivel = valor => (valor === 0 || maximo === 0 ? 0 : Math.max(1, Math.ceil((valor / maximo) * 4)));
+    const encabezado = ['8h', '', '12h', '', '16h', '', '20h'].map(h => `<span>${h}</span>`).join('');
+    const filas = horarios.map((fila, dia) => `<div class="an-calor-fila"><span class="an-calor-dia">${DIAS_SEMANA[dia]}</span>${fila.map(valor => `<div class="an-calor-celda" style="background:${COLORES_CALOR[nivel(valor)]}"></div>`).join('')}</div>`).join('');
+    document.getElementById('anHorarios').innerHTML = `<div class="an-calor" role="img" aria-label="Mapa de calor de visitas por día y franja horaria; más oscuro es más visitas">
+        <div class="an-calor-encabezado">${encabezado}</div>${filas}
+        <div class="an-calor-leyenda"><span>Menos</span>${COLORES_CALOR.map(c => `<i style="background:${c}"></i>`).join('')}<span>Más</span></div>
+    </div>`;
+
+    const pico = document.getElementById('anPico');
+    const celdas = celdasPico(horarios, 2);
+    if (!celdas.length) { pico.hidden = true; return; }
+    const rango = celda => `de ${8 + celda.bloque * 2} a ${10 + celda.bloque * 2}`;
+    const frase = celdas.length === 2 && celdas[0].dia === celdas[1].dia
+        ? `los ${DIAS_PLURAL[celdas[0].dia]} ${rango(celdas[0])} y ${rango(celdas[1])}`
+        : celdas.map(celda => `los ${DIAS_PLURAL[celda.dia]} ${rango(celda)}`).join(' y ');
+    pico.hidden = false;
+    pico.innerHTML = `<strong>Pico:</strong><span>${frase}. Buen momento para publicar en redes.</span>`;
+}
+
+function nombreDePagina(ruta) {
+    if (NOMBRES_PAGINA[ruta]) return NOMBRES_PAGINA[ruta];
+    if (ruta.startsWith('/producto-')) return `Ficha: ${ruta.slice(10).replace(/-/g, ' ')}`;
+    return ruta;
+}
+
+function renderPaginasAnalitica(paginas) {
+    const cuerpo = document.getElementById('anCuerpoPaginas');
+    document.getElementById('anPaginasVacio').hidden = paginas.length > 0;
+    const maxVisitas = Math.max(...paginas.map(p => p.visitas), 1);
+    const peor = paginas.filter(p => p.visitas >= maxVisitas * 0.1).sort((x, y) => x.siguen - y.siguen)[0];
+    cuerpo.innerHTML = paginas.map(p => {
+        const bajo = p.siguen < 30;
+        return `<tr>
+            <th scope="row">${escaparHTML(nombreDePagina(p.pagina))}</th>
+            <td>${numeroAn(p.visitas)}</td>
+            <td>${numeroAn(p.clics)}</td>
+            <td><div class="an-sigue"><div class="an-sigue-pista"><div style="width:${p.siguen}%;background:${bajo ? '#b7791f' : '#4a7c59'}"></div></div><strong>${p.siguen} %</strong>${peor && peor.pagina === p.pagina && bajo ? '<span class="an-sigue-aviso">se pierden acá</span>' : ''}</div></td>
+        </tr>`;
     }).join('');
+}
+
+/* ----- Clientes ----- */
+
+function renderClientesAnalitica() {
+    const datos = clientesDatos;
+    if (!datos) return;
+    const r = datos.resumen;
+    const ticket = textoDelta(r.ticket.valor, r.ticket.previo);
+    document.getElementById('anClientesKpis').innerHTML = `
+        <article class="an-kpi"><span class="an-kpi-titulo">Clientes con pedido</span><div class="an-kpi-valor">${numeroAn(r.clientes)}</div><span class="an-kpi-nota">en los últimos 90 días</span></article>
+        <article class="an-kpi"><span class="an-kpi-titulo">Nuevos y recurrentes</span>
+            <div class="an-doble-barra"><div style="width:${r.nuevosPct}%;background:#3d6b4f"></div><div style="width:${r.recurrentesPct}%;background:#b7791f"></div></div>
+            <div class="an-doble-leyenda"><span><strong>${r.nuevosPct} %</strong> nuevos</span><span><strong>${r.recurrentesPct} %</strong> vuelven a comprar</span></div></article>
+        <article class="an-kpi"><span class="an-kpi-titulo">Pedido promedio</span><div class="an-kpi-valor">${formatearPrecio(r.ticket.valor)}</div><span class="an-kpi-nota" style="color:${ticket.color || '#5b6b60'}">${escaparHTML(ticket.texto || 'En los últimos 90 días')}</span></article>
+        <article class="an-kpi"><span class="an-kpi-titulo">Tiempo entre compras</span><div class="an-kpi-valor">${r.entreCompras === null ? '—' : `${r.entreCompras} días`}</div><span class="an-kpi-nota">en clientes que repiten</span></article>`;
+
+    const s = datos.segmentos;
+    const segmentos = [
+        { id: 'todos', texto: 'Todos', n: s.todos }, { id: 'nuevos', texto: 'Nuevos', n: s.nuevos },
+        { id: 'recurrentes', texto: 'Recurrentes', n: s.recurrentes }, { id: 'inactivos', texto: 'Sin comprar hace 60 días', n: s.inactivos }
+    ];
+    document.getElementById('anSegmentos').innerHTML = segmentos.map(seg =>
+        `<button type="button" data-segmento="${seg.id}" aria-pressed="${seg.id === segmentoClientes}">${seg.texto} <span>${seg.n}</span></button>`).join('');
+
+    const filtrados = datos.clientes.filter(c => segmentoClientes === 'todos'
+        || (segmentoClientes === 'nuevos' && c.pedidos === 1)
+        || (segmentoClientes === 'recurrentes' && c.pedidos > 1)
+        || (segmentoClientes === 'inactivos' && c.estado === 'inactivo'));
+    document.getElementById('anClientesVacio').hidden = filtrados.length > 0;
+    document.getElementById('anCuerpoClientes').innerHTML = filtrados.map(c => `<tr class="an-fila-cliente${c.id === clienteElegido ? ' elegido' : ''}" data-cliente="${escaparHTML(c.id)}" tabindex="0">
+        <th scope="row">${escaparHTML(c.nombre)}</th><td>${c.pedidos}</td><td>${formatearPrecio(c.total)}</td><td>${hacePalabra(c.dias)}</td>
+        <td><span class="an-estado an-estado-${c.estado}">${ETIQUETAS_ESTADO_CLIENTE[c.estado]}</span></td></tr>`).join('');
+    renderFichaAnalitica();
+}
+
+function telefonoWhatsApp(telefono) {
+    let digitos = String(telefono || '').replace(/\D/g, '');
+    if (digitos.startsWith('0')) digitos = `598${digitos.slice(1)}`;
+    return digitos;
+}
+
+function renderFichaAnalitica() {
+    const ficha = document.getElementById('anFicha');
+    const cliente = clientesDatos && clientesDatos.clientes.find(c => c.id === clienteElegido);
+    if (!cliente) {
+        ficha.innerHTML = '<p class="estado-vacio">Cuando haya pedidos, acá aparece la ficha de cada cliente.</p>';
+        return;
+    }
+    const mensaje = encodeURIComponent(`Hola ${cliente.nombre.split(' ')[0]}, te escribimos de ZAPI.`);
+    const telefono = telefonoWhatsApp(cliente.telefono);
+    ficha.innerHTML = `
+        <div><div class="an-etiqueta">FICHA DEL CLIENTE</div>
+            <h2 class="an-ficha-nombre">${escaparHTML(cliente.nombre)}</h2>
+            <span class="an-ficha-sub">Cliente desde ${textoDesde(Math.floor((Date.now() - new Date(cliente.primera).getTime()) / 86400000))}${cliente.zona ? ` · ${escaparHTML(cliente.zona)}` : ''}</span></div>
+        <div class="an-ficha-cifras">
+            <div><strong>${cliente.pedidos}</strong><span>pedidos</span></div>
+            <div><strong>${formatearPrecio(cliente.ticket)}</strong><span>por pedido</span></div>
+            <div><strong>${cliente.entreCompras === null ? '—' : `${cliente.entreCompras} d`}</strong><span>entre compras</span></div>
+        </div>
+        ${cliente.favoritos.length ? `<div><h3>Lo que más compra</h3><div class="an-chips">${cliente.favoritos.map(f => `<span>${escaparHTML(f)}</span>`).join('')}</div></div>` : ''}
+        <div><h3>Últimos pedidos</h3><ul class="an-ultimos">${cliente.ultimos.map(u => `<li><span>${u.dias <= 0 ? 'Hoy' : `Hace ${u.dias} días`} · ${u.productos} ${u.productos === 1 ? 'producto' : 'productos'}</span><strong>${escaparHTML(u.estado.charAt(0).toUpperCase() + u.estado.slice(1))}</strong></li>`).join('')}</ul></div>
+        <div class="an-ficha-acciones">
+            ${telefono ? `<a class="an-boton-verde" href="https://wa.me/${telefono}?text=${mensaje}" target="_blank" rel="noopener">Escribirle por WhatsApp</a>` : ''}
+            <button class="an-boton" type="button" data-ver-pedidos="${escaparHTML(cliente.nombre)}">Ver todos sus pedidos</button>
+        </div>`;
+}
+
+function verPedidosDeCliente(nombre) {
+    filtros.q = nombre;
+    document.getElementById('filtroQ').value = nombre;
+    paginaActual = 1;
+    mostrarPanel('pedidos');
+    cargarPedidos();
+}
+
+function descargarCsvAnalitica() {
+    const datos = analiticaDatos;
+    if (!datos) return;
+    const celda = valor => `"${String(valor).replace(/"/g, '""')}"`;
+    const a = datos.indicadores.actual;
+    const filas = [
+        ['Indicador', `Últimos ${datos.dias} días`],
+        ['Visitas (sesiones)', a.visitas], ['Agregaron al carrito', a.carrito],
+        ['Pedidos iniciados', a.pedidos], ['Escribieron por WhatsApp', a.whatsapp],
+        [],
+        ['Día', 'Visitas', 'Carritos', 'Pedidos iniciados'],
+        ...datos.serie.visitas.map((v, i) => [i + 1, v, datos.serie.carrito[i], datos.serie.pedidos[i]])
+    ];
+    const csv = filas.map(fila => fila.map(celda).join(',')).join('\n');
+    const enlace = document.createElement('a');
+    enlace.href = URL.createObjectURL(new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }));
+    enlace.download = `analitica-${datos.dias}-dias.csv`;
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    URL.revokeObjectURL(enlace.href);
+}
+
+function iniciarAnalitica() {
+    document.getElementById('anVistas').addEventListener('click', evento => {
+        const tab = evento.target.closest('.an-vista-tab');
+        if (tab) mostrarVistaAnalitica(tab.dataset.vista);
+    });
+    document.getElementById('anPeriodo').addEventListener('click', evento => {
+        const boton = evento.target.closest('[data-dias]');
+        if (!boton) return;
+        analiticaDias = Number(boton.dataset.dias);
+        document.querySelectorAll('#anPeriodo button').forEach(b => b.setAttribute('aria-pressed', String(b === boton)));
+        cargarDatosAnalitica();
+    });
+    document.getElementById('anComparar').addEventListener('click', evento => {
+        analiticaComparar = !analiticaComparar;
+        evento.currentTarget.setAttribute('aria-pressed', String(analiticaComparar));
+        renderResumenAnalitica();
+    });
+    document.getElementById('anCsv').addEventListener('click', descargarCsvAnalitica);
+    document.getElementById('anSegmentos').addEventListener('click', evento => {
+        const boton = evento.target.closest('[data-segmento]');
+        if (!boton) return;
+        segmentoClientes = boton.dataset.segmento;
+        renderClientesAnalitica();
+    });
+    const elegirCliente = evento => {
+        const fila = evento.target.closest('[data-cliente]');
+        if (!fila || (evento.type === 'keydown' && evento.key !== 'Enter' && evento.key !== ' ')) return;
+        evento.preventDefault();
+        clienteElegido = fila.dataset.cliente;
+        renderClientesAnalitica();
+    };
+    document.getElementById('anCuerpoClientes').addEventListener('click', elegirCliente);
+    document.getElementById('anCuerpoClientes').addEventListener('keydown', elegirCliente);
+    document.getElementById('anFicha').addEventListener('click', evento => {
+        const boton = evento.target.closest('[data-ver-pedidos]');
+        if (boton) verPedidosDeCliente(boton.dataset.verPedidos);
+    });
 }
 
 /* ----- Estilo del sitio: editor a pantalla completa ----- */
@@ -2239,6 +2503,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* Estilo del sitio: guardar borrador, vista previa, publicar. */
     iniciarEditorEstilo();
+    iniciarAnalitica();
     document.getElementById('btnGuardarBorrador').addEventListener('click', guardarBorrador);
     document.getElementById('btnPublicar').addEventListener('click', publicar);
 
