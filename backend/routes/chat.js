@@ -14,7 +14,7 @@ function crearRouter(getDatabase, { consultar = consultarGemini } = {}) {
 
         const mensajes = validarMensajes(req.body);
         const productos = await getDatabase().collection('products')
-            .find({ active: true }, { projection: { _id: 0, nombre: 1, categoria: 1, precioBase: 1, stock: 1 } })
+            .find({ active: true }, { projection: { _id: 0, nombre: 1, categoria: 1, precioBase: 1, stock: 1, descripcion: 1, infoDeVenta: 1 } })
             .sort({ id: 1 })
             .toArray();
 
