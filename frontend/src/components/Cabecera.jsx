@@ -3,6 +3,8 @@ import { useRef, useState } from 'react'
 import Icono from './Icono.jsx'
 import ContadorCarrito from './ContadorCarrito.jsx'
 import { useCarrito } from '../estado/carrito.jsx'
+import { useCatalogo } from '../estado/catalogo.jsx'
+import { datosDeCuenta, useSesion } from '../estado/sesion.jsx'
 import { filtrarProductos } from '../data/buscar.js'
 
 const ENLACES = [
@@ -18,6 +20,9 @@ const ENLACES = [
    buscador y la página del catálogo ven siempre el mismo texto. */
 function Cabecera({ seccion, fichaProducto = false, menu }) {
   const { cantidadTotal } = useCarrito()
+  const { productos } = useCatalogo()
+  const { sesion, salir } = useSesion()
+  const cuenta = datosDeCuenta(sesion)
   const { pathname } = useLocation()
   const navegar = useNavigate()
   const [params, setParams] = useSearchParams()
@@ -47,7 +52,7 @@ function Cabecera({ seccion, fichaProducto = false, menu }) {
   }
 
   const termino = texto.trim()
-  const encontrados = enCatalogo && termino ? filtrarProductos({ busqueda: termino }).length : 0
+  const encontrados = enCatalogo && termino ? filtrarProductos(productos, { busqueda: termino }).length : 0
   const anuncio = termino && encontrados > 0 ? `${encontrados} ${encontrados === 1 ? 'producto' : 'productos'} para "${termino}".` : ''
   const etiquetaCarrito = cantidadTotal === 1 ? 'Ver carrito, 1 producto' : `Ver carrito, ${cantidadTotal} productos`
 
@@ -89,7 +94,12 @@ function Cabecera({ seccion, fichaProducto = false, menu }) {
                 </li>
               )
             })}
-            <li><Link className="nav-link nav-enlace" to="/login">Ingresar</Link></li>
+            <li>
+              {cuenta
+                ? <Link className="nav-link nav-enlace" to={cuenta.destino} title={cuenta.correo}>{cuenta.esAdmin ? 'Panel' : cuenta.nombre}</Link>
+                : <Link className="nav-link nav-enlace" to="/login">Ingresar</Link>}
+            </li>
+            {cuenta && <li><a className="nav-link nav-enlace" href="#salir" onClick={e => { e.preventDefault(); salir() }}>Salir</a></li>}
           </ul>
         </nav>
       </header>

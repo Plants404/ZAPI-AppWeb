@@ -3,18 +3,19 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { filtrarProductos } from '../data/buscar.js'
 import ProductoCard from '../components/ProductoCard.jsx'
-import { CATEGORIAS } from '../data/productos.js'
+import { EstadoCatalogo, useCatalogo } from '../estado/catalogo.jsx'
 
 // Catálogo: filtro por categoría, orden y búsqueda (la búsqueda viene de la cabecera: ?q=...).
 function Catalogo() {
   const [params, setParams] = useSearchParams()
+  const { productos, categorias, cargando, error, recargar } = useCatalogo()
   const busqueda = (params.get('q') || '').trim()
   const [categoria, setCategoria] = useState('')
   const [orden, setOrden] = useState('recomendados')
   const barra = useRef(null)
   const [indicador, setIndicador] = useState(null)
 
-  const visibles = filtrarProductos({ categoria, busqueda })
+  const visibles = filtrarProductos(productos, { categoria, busqueda })
   if (orden === 'precio-asc') visibles.sort((a, b) => a.precioBase - b.precioBase)
   else if (orden === 'precio-desc') visibles.sort((a, b) => b.precioBase - a.precioBase)
   else if (orden === 'nombre') visibles.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
@@ -61,7 +62,7 @@ function Catalogo() {
           <div className="catalog-filterbar">
             <span className="catalog-filterbar-label" id="catalogFiltersLabel">Explorá por categoría</span>
             <div className={'catalog-filters catalogo-filtros' + (indicador ? ' con-indicador' : '')} id="catalogFilters" role="group" aria-labelledby="catalogFiltersLabel" ref={barra}>
-              {['', ...CATEGORIAS].map(valor => (
+              {['', ...categorias].map(valor => (
                 <button key={valor || 'todas'} className={'catalog-filter catalogo-filtro' + (valor === categoria ? ' activo' : '')} type="button" aria-pressed={valor === categoria} onClick={e => elegir(valor, e)}>
                   {valor || 'Todas'}
                 </button>
@@ -69,12 +70,14 @@ function Catalogo() {
               <span className="catalog-filter-indicator" id="catalogFilterIndicator" aria-hidden="true" style={indicador || undefined}></span>
             </div>
             <div className="catalog-toolbar">
-              <p className="catalog-count" id="catalogCount" aria-live="polite">{visibles.length === 1 ? '1 producto' : visibles.length + ' productos'}</p>
+              <p className="catalog-count" id="catalogCount" aria-live="polite">{cargando ? 'Cargando…' : visibles.length === 1 ? '1 producto' : visibles.length + ' productos'}</p>
               <label className="catalog-sort-label" htmlFor="catalogSort">Ordenar <select className="catalog-sort" id="catalogSort" value={orden} onChange={e => setOrden(e.target.value)}><option value="recomendados">Orden original</option><option value="precio-asc">Precio: menor a mayor</option><option value="precio-desc">Precio: mayor a menor</option><option value="nombre">Nombre: A–Z</option></select></label>
             </div>
           </div>
           <div className="catalog-grid productos-grid" id="productGrid">
-            {visibles.length
+            {cargando || error
+              ? <EstadoCatalogo cargando={cargando} error={error} recargar={recargar} />
+              : visibles.length
               ? visibles.map(producto => <ProductoCard key={producto.id} producto={producto} />)
               : (
                 <p className="estado-vacio">

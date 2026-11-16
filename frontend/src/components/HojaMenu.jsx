@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import Icono from './Icono.jsx'
 import ContadorCarrito from './ContadorCarrito.jsx'
+import { datosDeCuenta, useSesion } from '../estado/sesion.jsx'
 
 const ITEMS = [
   ['/', 'home', 'Inicio', 'inicio'],
@@ -13,6 +14,7 @@ const ITEMS = [
 
 // Menú que sube desde abajo en el celular.
 function HojaMenu({ seccion, menu }) {
+  const cuenta = datosDeCuenta(useSesion().sesion)
   return (
     <div className={'bottom-sheet' + (menu.hojaClase ? ' esta-abierto' : '')} id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden={!menu.hojaVisible} inert={!menu.hojaActiva} onClick={e => { if (e.target === e.currentTarget) menu.cerrar() }}>
       <div className="bottom-sheet-manija" aria-hidden="true"></div>
@@ -37,7 +39,9 @@ function HojaMenu({ seccion, menu }) {
         <div className="bottom-sheet-fila-pedidos" data-cuentas-off>
           <Link to="/pedidos" className="bottom-sheet-pedidos">Mis pedidos ›</Link>
         </div>
-        <Link to="/login" className="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</Link>
+        {cuenta
+          ? <Link to={cuenta.destino} className="bottom-sheet-ingresar con-sesion">{cuenta.esAdmin ? 'Ir al panel' : 'Mi cuenta · ' + cuenta.nombre}</Link>
+          : <Link to="/login" className="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</Link>}
       </div>
     </div>
   )

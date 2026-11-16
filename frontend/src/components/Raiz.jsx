@@ -1,10 +1,15 @@
 import { useEffect } from 'react'
-import { Outlet, useMatches } from 'react-router-dom'
+import { Outlet, useLocation, useMatches } from 'react-router-dom'
+import ModoClienteAviso from './ModoClienteAviso.jsx'
+import { useRastreo, useSitioEditable } from '../estado/sitio.js'
 import { IMAGEN_FALLBACK } from '../utilidades.js'
 
 // Raíz de todas las rutas: pone el título de la pestaña y la clase del <body>
 // según el "handle" de la ruta (lo mismo que hacía cada HTML del sitio viejo).
 function Raiz() {
+  const { pathname } = useLocation()
+  useSitioEditable()
+  useRastreo()
   const handle = useMatches().map(m => m.handle).filter(Boolean).pop() || {}
   const { titulo = 'ZAPI | Vivero agroecológico en Montevideo', bodyClass = '' } = handle
 
@@ -30,7 +35,12 @@ function Raiz() {
     return () => document.removeEventListener('error', alFallar, true)
   }, [])
 
-  return <Outlet />
+  return (
+    <>
+      <Outlet />
+      {!pathname.startsWith('/admin') && <ModoClienteAviso />}
+    </>
+  )
 }
 
 export default Raiz

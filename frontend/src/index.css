@@ -4,3 +4,6 @@
 @import './estilos/base.css';
 @import './estilos/estructura.css';
 @import './estilos/zapi-bot.css';
+
+/* Con sesión iniciada, el botón de cuenta de la hoja móvil se muestra siempre (como en el sitio viejo). */
+.bottom-sheet-ingresar.con-sesion { display: flex !important; }

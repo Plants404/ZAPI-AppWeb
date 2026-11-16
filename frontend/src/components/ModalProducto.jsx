@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useInterfaz } from '../estado/interfaz.jsx'
-import { obtenerProducto, unidadesDe } from '../estado/carrito.jsx'
+import { useCatalogo, unidadesDeProducto } from '../estado/catalogo.jsx'
 import { useAgregarAlCarrito } from '../estado/agregar.js'
 import { formatearPrecio, textoDeStock, claseDeStock, slug } from '../data/negocio.js'
 import { useBloquearScroll } from '../utilidades.js'
@@ -9,6 +9,7 @@ import { useBloquearScroll } from '../utilidades.js'
 // Ficha rápida de un producto (ventana). La abre cualquier tarjeta con abrirProducto(id).
 function ModalProducto() {
   const { productoAbierto, cerrarProducto } = useInterfaz()
+  const { obtenerProducto } = useCatalogo()
   const producto = obtenerProducto(productoAbierto)
   const dialogo = useRef(null)
   const caja = useRef(null)
@@ -36,7 +37,7 @@ function ModalProducto() {
   const fotos = producto
     ? (producto.imagenes && producto.imagenes.length ? producto.imagenes : [producto.imagen])
     : []
-  const unidades = producto ? unidadesDe(producto.id) : 0
+  const unidades = producto ? unidadesDeProducto(producto) : 0
   const agotado = unidades === 0
   const mover = delta => setIndice((indice + delta + fotos.length) % fotos.length)
 

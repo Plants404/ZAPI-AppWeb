@@ -2,26 +2,18 @@
    tarjetas de producto, el modal y la página del carrito. Se guarda en
    localStorage (clave "zapiCarrito"). */
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { PRODUCTOS } from '../data/productos.js'
+import { useCatalogo, unidadesDeProducto } from './catalogo.jsx'
 import { NEGOCIO } from '../data/negocio.js'
 
 const CLAVE_CARRITO = 'zapiCarrito'
 const CarritoContext = createContext(null)
 
-export const obtenerProducto = id => PRODUCTOS.find(p => Number(p.id) === Number(id)) || null
-
-export function unidadesDe(id) {
-  const producto = obtenerProducto(id)
-  const stock = Number(producto && producto.stock)
-  return Number.isFinite(stock) && stock > 0 ? Math.floor(stock) : 0
-}
-
-// Revisa una línea guardada contra el catálogo (precio, stock máximo).
-function normalizarLinea(linea) {
+// Arma una línea del carrito con los datos actuales del catálogo (precio, stock máximo).
+function normalizarLinea(linea, productos) {
   if (!linea || typeof linea !== 'object') return null
-  const producto = obtenerProducto(linea.id)
+  const producto = productos.find(p => Number(p.id) === Number(linea.id))
   if (!producto) return null
-  const maximo = unidadesDe(producto.id)
+  const maximo = unidadesDeProducto(producto)
   if (maximo === 0) return null
   const cantidad = Math.max(1, Math.floor(Number(linea.cantidad) || 1))
   return {
@@ -37,7 +29,7 @@ function normalizarLinea(linea) {
 function leerGuardado() {
   try {
     const crudo = JSON.parse(localStorage.getItem(CLAVE_CARRITO))
-    return Array.isArray(crudo) ? crudo.map(normalizarLinea).filter(Boolean) : []
+    return Array.isArray(crudo) ? crudo.filter(l => l && typeof l === 'object') : []
   } catch {
     return []
   }
@@ -50,8 +42,17 @@ export function calcularTotales(lineas) {
 }
 
 export function CarritoProvider({ children }) {
-  const [lineas, setLineas] = useState(leerGuardado)
+  const { productos, cargando, error } = useCatalogo()
+  const [guardado, setGuardado] = useState(leerGuardado)
   const [pulso, setPulso] = useState(0) // sube cada vez que se agrega algo (anima el contador)
+  const catalogoListo = !cargando && !error
+
+  // Mientras el catálogo carga (o si falla) se muestra lo guardado tal cual;
+  // cuando llega, cada línea se revisa contra precio y stock actuales.
+  const lineas = useMemo(
+    () => (catalogoListo ? guardado.map(l => normalizarLinea(l, productos)).filter(Boolean) : guardado),
+    [guardado, productos, catalogoListo]
+  )
 
   useEffect(() => {
     try { localStorage.setItem(CLAVE_CARRITO, JSON.stringify(lineas)) } catch { /* sin almacenamiento */ }
@@ -59,36 +60,37 @@ export function CarritoProvider({ children }) {
 
   // Si se modifica el carrito en otra pestaña, esta se actualiza.
   useEffect(() => {
-    const alCambiar = e => { if (e.key === CLAVE_CARRITO) setLineas(leerGuardado()) }
+    const alCambiar = e => { if (e.key === CLAVE_CARRITO) setGuardado(leerGuardado()) }
     window.addEventListener('storage', alCambiar)
     return () => window.removeEventListener('storage', alCambiar)
   }, [])
 
   // Devuelve true si se pudo agregar, false si ya no hay stock.
   const agregar = useCallback(id => {
-    const producto = obtenerProducto(id)
-    const disponibles = unidadesDe(id)
+    const producto = productos.find(p => Number(p.id) === Number(id))
+    const disponibles = unidadesDeProducto(producto)
     if (!producto || disponibles === 0) return false
     const existente = lineas.find(l => l.id === producto.id)
     if (existente && existente.cantidad >= disponibles) return false
-    setLineas(actuales => existente
-      ? actuales.map(l => (l.id === producto.id ? { ...l, cantidad: l.cantidad + 1 } : l))
-      : [...actuales, normalizarLinea({ id: producto.id, cantidad: 1 })])
+    setGuardado(existente
+      ? lineas.map(l => (l.id === producto.id ? { ...l, cantidad: l.cantidad + 1 } : l))
+      : [...lineas, normalizarLinea({ id: producto.id, cantidad: 1 }, productos)])
     setPulso(p => p + 1)
     return true
-  }, [lineas])
+  }, [lineas, productos])
 
   const cambiarCantidad = useCallback((id, delta) => {
     const linea = lineas.find(l => l.id === Number(id))
     if (!linea) return false
-    const nueva = Math.max(1, Math.min(unidadesDe(linea.id), linea.cantidad + delta))
+    const producto = productos.find(p => Number(p.id) === linea.id)
+    const nueva = Math.max(1, Math.min(unidadesDeProducto(producto), linea.cantidad + delta))
     if (nueva === linea.cantidad) return false
-    setLineas(actuales => actuales.map(l => (l.id === linea.id ? { ...l, cantidad: nueva } : l)))
+    setGuardado(lineas.map(l => (l.id === linea.id ? { ...l, cantidad: nueva } : l)))
     return true
-  }, [lineas])
+  }, [lineas, productos])
 
-  const quitar = useCallback(id => setLineas(actuales => actuales.filter(l => l.id !== Number(id))), [])
-  const vaciar = useCallback(() => setLineas([]), [])
+  const quitar = useCallback(id => setGuardado(lineas.filter(l => l.id !== Number(id))), [lineas])
+  const vaciar = useCallback(() => setGuardado([]), [])
 
   const valor = useMemo(() => ({
     lineas,
