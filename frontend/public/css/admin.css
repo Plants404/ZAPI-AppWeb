@@ -2216,3 +2216,54 @@
   text-transform: none;
   letter-spacing: normal;
 }
+
+/* Testimonios: tarjeta ordenada (autor, estrellas, opinión, acciones) */
+.gestion-grilla {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 30rem));
+  align-items: stretch;
+}
+
+.gestion-opinion {
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.gestion-opinion .gestion-autor {
+  margin-top: 0;
+  gap: .85rem;
+}
+
+.gestion-opinion .gestion-autor > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.gestion-opinion .gestion-autor strong {
+  display: block;
+  font-size: 1.05rem;
+}
+
+.gestion-opinion .gestion-cita {
+  flex: 1;
+  padding: 1rem 1.15rem;
+  background: var(--cream);
+  border-radius: 12px;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+.gestion-opinion .gestion-acciones {
+  align-items: center;
+  margin-top: 0;
+}
+
+.gestion-opinion .gestion-acciones .boton.gestion-eliminar {
+  margin-left: auto;
+  padding-inline: .5rem;
+  border-color: transparent;
+}
+
+.gestion-panel > .gestion-filtros {
+  margin-bottom: var(--espacio-md);
+}
