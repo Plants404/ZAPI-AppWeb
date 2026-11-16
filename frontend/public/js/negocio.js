@@ -30,7 +30,7 @@
         horario: "Visitas coordinadas previamente por WhatsApp.",
         envioGratis: 2500,
         emailjs: Object.freeze({
-            servicio: "PEGAR_SERVICIO",
+            servicio: "service_65fes09",
             plantillaContacto: "PEGAR_PLANTILLA_CONTACTO",
             plantillaTestimonio: "PEGAR_PLANTILLA_TESTIMONIO",
             clavePublica: "PEGAR_CLAVE_PUBLICA"
