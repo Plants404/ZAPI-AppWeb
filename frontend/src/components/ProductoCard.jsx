@@ -1,18 +1,15 @@
 import { Link } from 'react-router-dom'
 import { useInterfaz } from '../estado/interfaz.jsx'
 import { useAgregarAlCarrito } from '../estado/agregar.js'
+import { unidadesDeProducto } from '../estado/catalogo.jsx'
 import { formatearPrecio, textoDeStock, claseDeStock, slug } from '../data/negocio.js'
 
-function unidadesDe(producto) {
-  const stock = Number(producto.stock)
-  return Number.isFinite(stock) && stock > 0 ? Math.floor(stock) : 0
-}
 
 // Tarjeta de un producto (catálogo e inicio).
 function ProductoCard({ producto }) {
   const { abrirProducto } = useInterfaz()
   const [agregar, agregado] = useAgregarAlCarrito()
-  const unidades = unidadesDe(producto)
+  const unidades = unidadesDeProducto(producto)
   const agotado = unidades === 0
   const stockVisual = agotado ? 'agotado' : unidades <= 3 ? 'pocas' : ''
   const fotos = Array.isArray(producto.imagenes) && producto.imagenes.length ? producto.imagenes : [producto.imagen].filter(Boolean)
@@ -36,7 +33,7 @@ function ProductoCard({ producto }) {
             ))}
           </span>
         </Link>
-        <button className={'add-cart boton-agregar' + (agregado ? ' agregado added' : '')} type="button" aria-label={etiqueta} disabled={agotado} onClick={() => agregar(producto.id)}>
+        <button className={'add-cart boton-agregar' + (agregado ? ' agregado added' : '')} type="button" data-agregar-producto={producto.id} aria-label={etiqueta} disabled={agotado} onClick={() => agregar(producto.id)}>
           <span className="material-symbols-outlined" aria-hidden="true">{agotado ? 'block' : agregado ? 'check' : 'add'}</span>
         </button>
       </div>

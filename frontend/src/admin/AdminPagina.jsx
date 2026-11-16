@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Estilos from '../components/Estilos.jsx'
 import AdminBarraSuperior from './AdminBarraSuperior.jsx'
@@ -13,23 +13,43 @@ import PanelAccesos from './PanelAccesos.jsx'
 import PanelAuditoria from './PanelAuditoria.jsx'
 import PanelEstilo from './PanelEstilo.jsx'
 import PanelAnalitica from './PanelAnalitica.jsx'
-import DialogoVentaPresencial from './DialogoVentaPresencial.jsx'
-import DialogoBiblioteca from './DialogoBiblioteca.jsx'
-import DialogoHistorial from './DialogoHistorial.jsx'
-import DialogoProducto from './DialogoProducto.jsx'
 import { ToastsProvider } from '../estado/toasts.jsx'
-import { obtenerSesion } from '../api.js'
+import { obtenerMensajes, obtenerSesion, obtenerTestimoniosAdmin } from '../api.js'
+import { AdminContext, useAdmin, useCarga } from './contexto.jsx'
 import { useMediaQuery } from '../utilidades.js'
 
 // Panel de administración: tiene su propio armazón (sin cabecera ni pie del sitio).
 // Aquí vive lo común: qué panel se ve, el cajón del menú en celular y la revisión de sesión.
-function AdminPagina() {
+function AdminContenido({ aviso, setAviso }) {
   const navegar = useNavigate()
   const escritorio = useMediaQuery('(min-width: 1024px)')
+  const { avisar } = useAdmin()
   const [panel, setPanel] = useState('resumen')
+  const [consulta, setConsulta] = useState({ q: '', v: 0 }) // búsqueda con la que se abre "Pedidos"
   const [cajonAbierto, setCajonAbierto] = useState(false)
-  const [aviso, setAviso] = useState(null)
-  const [insignias] = useState({}) // se llena en la Fase 5 con los datos de la API
+  // Mensajes y testimonios se cargan al entrar: de ahí salen los numeritos del menú.
+  const mensajes = useCarga(obtenerMensajes, 'No se pudieron cargar los mensajes')
+  const testimonios = useCarga(obtenerTestimoniosAdmin, 'No se pudieron cargar los testimonios')
+  const insignias = {
+    mensajes: ((mensajes.datos && mensajes.datos.mensajes) || []).filter(m => m.estado === 'new').length,
+    testimonios: ((testimonios.datos && testimonios.datos.testimonios) || []).filter(t => t.estado === 'pending').length
+  }
+  const { recargar: recargarMensajes } = mensajes
+  const { recargar: recargarTestimonios } = testimonios
+
+  // "Ver todos sus pedidos" (desde la analítica): abre Pedidos ya filtrado por el nombre.
+  const verPedidosDe = useCallback(nombre => {
+    setConsulta(c => ({ q: nombre, v: c.v + 1 }))
+    setPanel('pedidos')
+  }, [])
+  const contexto = useMemo(() => ({ avisar, verPedidosDe }), [avisar, verPedidosDe])
+
+  // Al elegir esos dos paneles se vuelven a pedir, por si llegó algo nuevo.
+  function elegirPanel(id) {
+    setPanel(id)
+    if (id === 'mensajes') recargarMensajes()
+    if (id === 'testimonios') recargarTestimonios()
+  }
 
   // En escritorio el menú está siempre a la vista; en celular, solo si se abrió el cajón.
   const menuAbierto = escritorio || cajonAbierto
@@ -55,28 +75,38 @@ function AdminPagina() {
   const cerrarCajon = () => setCajonAbierto(false)
 
   return (
-    <ToastsProvider>
+    <AdminContext.Provider value={contexto}>
       <Estilos hojas={['tokens', 'base', 'estructura', 'admin']} />
       <div className="admin-shell">
         <AdminBarraSuperior menuAbierto={cajonAbierto} alternarMenu={() => setCajonAbierto(a => !a)} />
-        <AdminMenu panel={panel} elegirPanel={setPanel} abierto={menuAbierto} cerrar={cerrarCajon} insignias={insignias} />
+        <AdminMenu panel={panel} elegirPanel={elegirPanel} abierto={menuAbierto} cerrar={cerrarCajon} insignias={insignias} />
         <main className="admin-main" id="adminMain">
           <PaneladminAviso aviso={aviso} cerrar={() => setAviso(null)} />
           <PanelResumen activo={panel === 'resumen'} />
-          <PanelPedidos activo={panel === 'pedidos'} />
+          <PanelPedidos key={consulta.v} activo={panel === 'pedidos'} busquedaInicial={consulta.q} />
           <PanelCatalogo activo={panel === 'catalogo'} />
-          <PanelMensajes activo={panel === 'mensajes'} />
-          <PanelTestimonios activo={panel === 'testimonios'} />
+          <PanelMensajes activo={panel === 'mensajes'} carga={mensajes} />
+          <PanelTestimonios activo={panel === 'testimonios'} carga={testimonios} />
           <PanelAccesos activo={panel === 'accesos'} />
           <PanelAuditoria activo={panel === 'auditoria'} />
-          <PanelEstilo activo={panel === 'estilo'} />
+          <PanelEstilo activo={panel === 'estilo'} irAPanel={elegirPanel} />
           <PanelAnalitica activo={panel === 'analitica'} />
         </main>
-        <DialogoVentaPresencial />
-        <DialogoBiblioteca />
-        <DialogoHistorial />
-        <DialogoProducto />
       </div>
+    </AdminContext.Provider>
+  )
+}
+
+// Panel de administración. Acá se arma lo que comparten todos los paneles (toasts y aviso de errores).
+function AdminPagina() {
+  const [aviso, setAviso] = useState(null)
+  const avisar = useCallback((titulo, mensaje) => setAviso({ titulo, mensaje }), [])
+  const contexto = useMemo(() => ({ avisar }), [avisar])
+  return (
+    <ToastsProvider>
+      <AdminContext.Provider value={contexto}>
+        <AdminContenido aviso={aviso} setAviso={setAviso} />
+      </AdminContext.Provider>
     </ToastsProvider>
   )
 }

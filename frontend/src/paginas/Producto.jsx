@@ -1,25 +1,24 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAgregarAlCarrito } from '../estado/agregar.js'
-import { PRODUCTOS } from '../data/productos.js'
+import { EstadoCatalogo, useCatalogo, unidadesDeProducto } from '../estado/catalogo.jsx'
 import { NEGOCIO, formatearPrecio, textoDeStock, claseDeStock, slug } from '../data/negocio.js'
 import NoEncontrada from './NoEncontrada.jsx'
 
 const slugDe = p => p.slug || slug(p.nombre)
-const unidadesDe = p => {
-  const n = Number(p.stock)
-  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0
-}
+const unidadesDe = unidadesDeProducto
 
 // Ficha de un producto: la dirección /producto/<slug> decide cuál se muestra.
 function Producto() {
   const { slug: pedido } = useParams()
-  const producto = PRODUCTOS.find(p => slugDe(p) === pedido)
+  const { productos, cargando, error, recargar } = useCatalogo()
+  const producto = productos.find(p => slugDe(p) === pedido)
+  if (cargando || error) return <section className="section"><EstadoCatalogo cargando={cargando} error={error} recargar={recargar} /></section>
   // La "key" hace que al pasar de un producto a otro la ficha empiece de cero (foto 1).
-  return producto ? <Ficha key={producto.id} producto={producto} /> : <NoEncontrada />
+  return producto ? <Ficha key={producto.id} producto={producto} productos={productos} /> : <NoEncontrada />
 }
 
-function Ficha({ producto }) {
+function Ficha({ producto, productos }) {
   const [foto, setFoto] = useState(0)
   const [agregar, agregado] = useAgregarAlCarrito()
 
@@ -30,8 +29,8 @@ function Ficha({ producto }) {
   const whatsappUrl = 'https://wa.me/' + NEGOCIO.whatsapp + '?text=' + encodeURIComponent(
     'Hola ZAPI, me interesa ' + producto.nombre + ' (' + formatearPrecio(producto.precioBase) + '). ¿Está disponible?'
   )
-  const mismaCategoria = PRODUCTOS.filter(p => p.id !== producto.id && p.categoria === producto.categoria)
-  const otros = PRODUCTOS.filter(p => p.id !== producto.id && p.categoria !== producto.categoria)
+  const mismaCategoria = productos.filter(p => p.id !== producto.id && p.categoria === producto.categoria)
+  const otros = productos.filter(p => p.id !== producto.id && p.categoria !== producto.categoria)
   const relacionados = mismaCategoria.concat(otros).slice(0, 3)
 
   return (
