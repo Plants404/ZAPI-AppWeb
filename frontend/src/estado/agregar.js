@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useCarrito, obtenerProducto } from './carrito.jsx'
+import { useCarrito } from './carrito.jsx'
+import { useCatalogo } from './catalogo.jsx'
 import { useAviso } from './aviso.jsx'
 
 /* Agrega un producto al carrito y avisa. Devuelve [agregar, agregado]:
    "agregado" es true 1,4 s después de agregar (para mostrar el tilde en el botón). */
 export function useAgregarAlCarrito() {
   const { agregar } = useCarrito()
+  const { obtenerProducto } = useCatalogo()
   const { mostrarAviso } = useAviso()
   const [agregado, setAgregado] = useState(false)
   const reloj = useRef(null)
@@ -24,7 +26,7 @@ export function useAgregarAlCarrito() {
     reloj.current = window.setTimeout(() => setAgregado(false), 1400)
     mostrarAviso('Agregado al carrito', producto.nombre + ' ya está en tu pedido.')
     return true
-  }, [agregar, mostrarAviso])
+  }, [agregar, mostrarAviso, obtenerProducto])
 
   return [agregarYAvisar, agregado]
 }

@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ProductoRecomendado from '../components/ProductoRecomendado.jsx'
-import { useCarrito, obtenerProducto, unidadesDe } from '../estado/carrito.jsx'
+import { useCarrito } from '../estado/carrito.jsx'
+import { useCatalogo, unidadesDeProducto } from '../estado/catalogo.jsx'
 import { useAviso } from '../estado/aviso.jsx'
 import { useInterfaz } from '../estado/interfaz.jsx'
 import { armarPedido, guardarPedido, mensajeDePedido } from '../estado/pedidos.js'
 import { hayClienteConSesion } from '../api.js'
-import { PRODUCTOS } from '../data/productos.js'
 import { NEGOCIO, formatearPrecio, textoDeStock, claseDeStock, slug } from '../data/negocio.js'
 import { abrirWhatsApp, limpiarValor, validarCorreo } from '../utilidades.js'
 
@@ -14,6 +14,7 @@ const CAMPOS_VACIOS = { nombre: '', telefono: '', email: '', zona: '', notas: ''
 
 // Carrito: líneas, resumen con barra de envío gratis y formulario para confirmar el pedido.
 function Carrito() {
+  const { productos, obtenerProducto, unidadesDe } = useCatalogo()
   const { lineas, totales, cambiarCantidad, quitar, vaciar } = useCarrito()
   const { mostrarAviso } = useAviso()
   const { abrirTestimonio } = useInterfaz()
@@ -33,8 +34,8 @@ function Carrito() {
   const enCarrito = new Set(lineas.map(l => l.id))
   const categorias = new Set(lineas.map(l => l.categoria))
   const recomendados = hayLineas
-    ? PRODUCTOS
-      .filter(p => !enCarrito.has(p.id) && unidadesDe(p.id) > 0)
+    ? productos
+      .filter(p => !enCarrito.has(p.id) && unidadesDeProducto(p) > 0)
       .sort((a, b) => Number(categorias.has(b.categoria)) - Number(categorias.has(a.categoria)))
       .slice(0, 3)
     : []

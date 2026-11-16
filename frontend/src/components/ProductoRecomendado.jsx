@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom'
 import { useInterfaz } from '../estado/interfaz.jsx'
 import { useAgregarAlCarrito } from '../estado/agregar.js'
-import { unidadesDe } from '../estado/carrito.jsx'
+import { unidadesDeProducto } from '../estado/catalogo.jsx'
 import { formatearPrecio, textoDeStock, claseDeStock, slug } from '../data/negocio.js'
 
 // Tarjeta chica de "Recomendamos para tu compra" (en el carrito).
 function ProductoRecomendado({ producto }) {
   const { abrirProducto } = useInterfaz()
   const [agregar, agregado] = useAgregarAlCarrito()
-  const unidades = unidadesDe(producto.id)
+  const unidades = unidadesDeProducto(producto)
   const agotado = unidades === 0
   const stockVisual = agotado ? 'agotado' : unidades <= 3 ? 'pocas' : ''
   const ficha = '/producto/' + (producto.slug || slug(producto.nombre))
@@ -33,7 +33,7 @@ function ProductoRecomendado({ producto }) {
       </div>
       <div className="recommendation-footer tarjeta-pie">
         <div className="product-price"><span className="current">{formatearPrecio(producto.precioBase)}</span></div>
-        <button className={'recommendation-add add-cart boton-agregar' + (agregado ? ' agregado added' : '')} type="button" disabled={agotado} onClick={() => agregar(producto.id)}>
+        <button className={'recommendation-add add-cart boton-agregar' + (agregado ? ' agregado added' : '')} type="button" data-agregar-producto={producto.id} disabled={agotado} onClick={() => agregar(producto.id)}>
           {agotado
             ? <><span className="material-symbols-outlined" aria-hidden="true">block</span> <span>Sin stock</span></>
             : agregado

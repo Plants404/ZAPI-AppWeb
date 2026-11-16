@@ -1,16 +1,27 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ProductoCard from '../components/ProductoCard.jsx'
 import TestimonioCard from '../components/TestimonioCard.jsx'
-import { PRODUCTOS } from '../data/productos.js'
-import { TESTIMONIOS } from '../data/testimonios.js'
+import { EstadoCatalogo, useCatalogo } from '../estado/catalogo.jsx'
+import { obtenerTestimonios } from '../api.js'
 import { useInterfaz } from '../estado/interfaz.jsx'
 
 function Inicio() {
   const { abrirTestimonio, testimoniosNuevos } = useInterfaz()
-  const testimonios = [...testimoniosNuevos, ...TESTIMONIOS]
+  const { productos, cargando, error, recargar } = useCatalogo()
+  const [publicados, setPublicados] = useState([])
+
+  // Las opiniones publicadas vienen de la API. Si falla, la sección queda vacía.
+  useEffect(() => {
+    let vigente = true
+    obtenerTestimonios().then(lista => { if (vigente) setPublicados(lista) }).catch(() => {})
+    return () => { vigente = false }
+  }, [])
+
+  const testimonios = [...testimoniosNuevos, ...publicados]
   // Los 4 destacados (si no hay ninguno, los primeros 4), como hacía el sitio viejo.
-  const destacados = PRODUCTOS.filter(p => p.destacado).slice(0, 4)
-  const lista = destacados.length ? destacados : PRODUCTOS.slice(0, 4)
+  const destacados = productos.filter(p => p.destacado).slice(0, 4)
+  const lista = destacados.length ? destacados : productos.slice(0, 4)
 
   return (
     <>
@@ -52,7 +63,9 @@ function Inicio() {
             </div>
             <div className="carousel-viewport">
               <div className="carousel-track" id="productosDestacados">
-                {lista.map(producto => <ProductoCard key={producto.id} producto={producto} />)}
+                {cargando || error
+                  ? <EstadoCatalogo cargando={cargando} error={error} recargar={recargar} />
+                  : lista.map(producto => <ProductoCard key={producto.id} producto={producto} />)}
               </div>
             </div>
           </div>
