@@ -602,14 +602,53 @@ function initZapiBot() {
 
     }
 
-    async function responder(texto) {
+    /* Historial corto que se manda a la IA para que entienda el contexto. */
+    const historialIA = [];
+
+    /* Pregunta a Gemini a traves del servidor. Si falla (sin clave, sin
+       internet, limite de uso), devuelve null y se usan las respuestas fijas. */
+    async function preguntarALaIA(texto) {
+        historialIA.push({ rol: "user", texto });
+
+        try {
+            const respuesta = await fetch(window.urlApi("/api/chat"), {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ mensajes: historialIA.slice(-8) })
+            });
+
+            if (!respuesta.ok) throw new Error("Chat " + respuesta.status);
+
+            const datos = await respuesta.json();
+            const textoIA = typeof datos.respuesta === "string" ? datos.respuesta.trim() : "";
+
+            if (!textoIA) throw new Error("Respuesta vacia");
+
+            historialIA.push({ rol: "bot", texto: textoIA });
+            return textoIA;
+        } catch {
+            historialIA.pop();
+            return null;
+        }
+    }
+
+    async function responder(texto, { usarIA = true } = {}) {
 
         agregarMensaje(texto, "user", false);
 
         mostrarEscribiendo();
-        await zapiEsperar(400 + Math.random() * 400);
+
+        const textoIA = usarIA ? await preguntarALaIA(texto) : null;
+
+        if (textoIA === null) await zapiEsperar(400 + Math.random() * 400);
 
         quitarEscribiendo();
+
+        /* La respuesta de la IA va como texto plano (nunca como HTML). */
+        if (textoIA !== null) {
+            agregarMensaje(textoIA, "bot", false);
+            return;
+        }
 
         const preguntaCarrito = normalizar(texto).includes("carrito")
             || normalizar(texto).includes("pedido");
@@ -722,7 +761,7 @@ function initZapiBot() {
 
         const item = ZAPI_MENU.find(m => m.clave === clave);
 
-        if (item) responder(item.etiqueta);
+        if (item) responder(item.etiqueta, { usarIA: false });
     });
 
     pintarChips();

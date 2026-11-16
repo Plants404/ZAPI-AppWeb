@@ -22,7 +22,8 @@ const POLITICAS = Object.freeze({
     registro: { limite: 3, ventanaMs: 60 * 60 * 1000 },
     pedidos: { limite: 10, ventanaMs: 60 * 1000 },
     contacto: { limite: 5, ventanaMs: 60 * 1000 },
-    testimonios: { limite: 5, ventanaMs: 60 * 1000 }
+    testimonios: { limite: 5, ventanaMs: 60 * 1000 },
+    chat: { limite: 12, ventanaMs: 60 * 1000 }
 });
 
 const CLAVE_DUPLICADA = 11000;
