@@ -170,51 +170,34 @@
             <section class="admin-panel" id="panelMensajes" hidden aria-label="Mensajes">
                 <div class="admin-panel-cabecera">
                     <h1>Mensajes</h1>
-                    <p>Consultas recibidas desde el formulario de contacto (últimas 100).</p>
-                    <div class="admin-panel-herramientas">
-                        <label class="campo-label" for="filtroMensajes">Estado</label>
-                        <select class="campo-input admin-select-estado" id="filtroMensajes"><option value="">Todos</option><option value="new">Nuevos</option><option value="read">Leídos</option><option value="answered">Respondidos</option></select>
-                    </div>
+                    <p>Consultas que llegan desde el formulario de contacto (últimas 100).</p>
                 </div>
-                <div class="admin-tabla-wrap">
-                    <table class="admin-tabla" aria-label="Mensajes">
-                        <thead><tr><th scope="col">Fecha</th><th scope="col">Contacto</th><th scope="col">Asunto</th><th scope="col">Mensaje</th><th scope="col">Estado</th></tr></thead>
-                        <tbody id="adminCuerpoMensajes"></tbody>
-                    </table>
-                    <p id="adminMensajesVacio" class="estado-vacio" hidden>No hay registros para mostrar.</p>
-                </div>
+                <div class="gestion-resumen" id="resumenMensajes"></div>
+                <div class="gestion-filtros" id="filtrosMensajes" role="group" aria-label="Filtrar por estado"></div>
+                <div class="gestion-lista" id="adminCuerpoMensajes"></div>
+                <p id="adminMensajesVacio" class="estado-vacio" hidden>No hay mensajes.</p>
             </section>
 
             <section class="admin-panel" id="panelTestimonios" hidden aria-label="Testimonios">
                 <div class="admin-panel-cabecera">
                     <h1>Testimonios</h1>
-                    <p>Opiniones de clientes: aprobá las que se pueden mostrar.</p>
-                    <div class="admin-panel-herramientas">
-                        <label class="campo-label" for="filtroTestimonios">Estado</label>
-                        <select class="campo-input admin-select-estado" id="filtroTestimonios"><option value="">Todos</option><option value="pending">Pendientes</option><option value="approved">Aprobados</option><option value="rejected">Rechazados</option></select>
-                    </div>
+                    <p>Revisá lo que escriben tus clientes y elegí qué se muestra en el sitio.</p>
                 </div>
-                <div class="admin-tabla-wrap">
-                    <table class="admin-tabla" aria-label="Testimonios">
-                        <thead><tr><th scope="col">Fecha</th><th scope="col">Autor</th><th scope="col">Opinión</th><th scope="col">Estrellas</th><th scope="col">Estado</th></tr></thead>
-                        <tbody id="adminCuerpoTestimonios"></tbody>
-                    </table>
-                    <p id="adminTestimoniosVacio" class="estado-vacio" hidden>No hay registros para mostrar.</p>
-                </div>
+                <div class="gestion-resumen" id="resumenTestimonios"></div>
+                <div class="gestion-filtros" id="filtrosTestimonios" role="group" aria-label="Filtrar por estado"></div>
+                <div class="gestion-grilla" id="adminCuerpoTestimonios"></div>
+                <p id="adminTestimoniosVacio" class="estado-vacio" hidden>No hay testimonios.</p>
             </section>
 
             <section class="admin-panel" id="panelAccesos" hidden aria-label="Accesos">
                 <div class="admin-panel-cabecera">
                     <h1>Accesos</h1>
-                    <p>Personas con cuenta y su rol. Los administradores pueden entrar a este panel.</p>
+                    <p>Quién tiene cuenta y qué puede hacer. Solo los administradores entran a este panel.</p>
                 </div>
-                <div class="admin-tabla-wrap">
-                    <table class="admin-tabla" aria-label="Accesos">
-                        <thead><tr><th scope="col">Nombre</th><th scope="col">Correo</th><th scope="col">Rol</th><th scope="col">Alta</th><th scope="col">Acciones</th></tr></thead>
-                        <tbody id="adminCuerpoAccesos"></tbody>
-                    </table>
-                    <p id="adminAccesosVacio" class="estado-vacio" hidden>No hay registros para mostrar.</p>
-                </div>
+                <div class="gestion-resumen" id="resumenAccesos"></div>
+                <div class="gestion-filtros" id="filtrosAccesos" role="group" aria-label="Filtrar por rol"></div>
+                <div class="gestion-lista gestion-personas" id="adminCuerpoAccesos"></div>
+                <p id="adminAccesosVacio" class="estado-vacio" hidden>No hay usuarios.</p>
             </section>
 
             <section class="admin-panel" id="panelAuditoria" hidden aria-label="Registro de actividad">
