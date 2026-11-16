@@ -25,7 +25,8 @@ const {
 const { crearRouter: crearRouterEventos } = require('./routes/eventos.js');
 const { crearRouter: crearRouterChat } = require('./routes/chat.js');
 
-const ORIGENES_LOCALES = ['http://localhost:5500', 'http://127.0.0.1:5500'];
+/* En local: el frontend viejo (5500) y el nuevo de Vite/React (5173). */
+const ORIGENES_LOCALES = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5500', 'http://127.0.0.1:5500'];
 
 const RUTAS_ESCRITURA = ['/api/contact', '/api/testimonials', '/api/orders', '/api/auth/login', '/api/auth/registro', '/api/chat'];
 
