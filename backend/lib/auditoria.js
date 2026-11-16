@@ -1,7 +1,7 @@
 'use strict';
 
 /* Escribe una entrada de auditoría para cada cambio del admin.
-   Quién, qué, cuándo, resumen del antes y el después. Alimenta "Últimos cambios". */
+   Quién, qué, cuándo, resumen del antes y el después. Alimenta "Registro de actividad". */
 
 async function registrarAuditoria(db, usuario, accion, antes, despues, resumen) {
     await db.collection('auditoria').insertOne({
