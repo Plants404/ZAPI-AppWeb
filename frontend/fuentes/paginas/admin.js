@@ -229,80 +229,136 @@ module.exports = {
                 </div>
             </section>
 
-            <section class="admin-panel" id="panelEstilo" hidden aria-label="Estilo del sitio">
-                <div class="admin-panel-cabecera">
-                    <h1>Estilo del sitio</h1>
-                    <p>Editá los textos, las imágenes y los colores de cada página. Los cambios quedan en borrador hasta que los publiques.</p>
-                </div>
+            <section class="admin-panel editor-estilo" id="panelEstilo" hidden aria-label="Estilo del sitio">
+                <form class="ed-raiz" id="formEstilo" novalidate>
+                    <header class="ed-barra">
+                        <button class="ed-boton-barra ed-volver" id="edVolver" type="button"><span class="material-symbols-outlined" aria-hidden="true">arrow_back</span><span class="ed-oculto-movil">Panel</span></button>
+                        <div class="ed-marca">
+                            <img src="./public/img/logo.svg" alt="" width="30" height="30">
+                            <span class="ed-marca-nombre">ZAPI</span>
+                            <span class="ed-marca-seccion" id="edTituloBarra">Estilo del sitio</span>
+                        </div>
+                        <div class="ed-dispositivos" id="edDispositivos" role="group" aria-label="Tamaño de la vista previa">
+                            <button class="ed-dispositivo activo" type="button" data-dispositivo="escritorio" aria-pressed="true"><span class="material-symbols-outlined" aria-hidden="true">desktop_windows</span><span class="ed-oculto-movil">Escritorio</span></button>
+                            <button class="ed-dispositivo" type="button" data-dispositivo="tablet" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">tablet_mac</span><span class="ed-oculto-movil">Tablet</span></button>
+                            <button class="ed-dispositivo" type="button" data-dispositivo="celular" aria-pressed="false"><span class="material-symbols-outlined" aria-hidden="true">smartphone</span><span class="ed-oculto-movil">Celular</span></button>
+                        </div>
+                        <div class="ed-barra-acciones">
+                            <span class="ed-estado" id="edEstado" role="status" aria-live="polite"><i class="ed-estado-punto" aria-hidden="true"></i><span id="edEstadoTexto">Sin cambios</span></span>
+                            <button class="ed-boton-barra" id="btnRestablecerMarca" type="button" hidden>Restablecer</button>
+                            <button class="ed-boton-barra" id="btnGuardarMarca" type="button" hidden>Guardar borrador</button>
+                            <a class="ed-boton-barra" id="edVerSitio" href="./index.html" target="_blank" rel="noopener">Ver sitio</a>
+                            <button class="ed-boton-primario" id="btnPublicar" type="button">Publicar cambios</button>
+                        </div>
+                    </header>
 
-                <div class="admin-bloque">
-                    <form id="formEstilo" novalidate>
-                        <div class="estilo-pestanas" id="estiloPestanas" role="tablist" aria-label="Páginas del sitio"></div>
+                    <div class="ed-cuerpo" id="edEditor">
+                        <nav class="ed-paginas" id="edPaginas" aria-label="Páginas y secciones"></nav>
 
-                        <div id="estiloPaginas" class="estilo-paginas" aria-live="polite"></div>
+                        <div class="ed-centro">
+                            <div class="ed-navegador">
+                                <div class="ed-navegador-barra">
+                                    <span class="ed-punto"></span><span class="ed-punto"></span><span class="ed-punto"></span>
+                                    <span class="ed-direccion" id="edDireccion">zapivivero.vercel.app / inicio</span>
+                                </div>
+                                <div class="ed-lienzo" id="edLienzo">
+                                    <iframe class="ed-marco" id="edMarco" name="zapi-vista-previa" title="Vista previa de la página" src="about:blank"></iframe>
+                                </div>
+                            </div>
+                        </div>
 
-                        <div id="estiloMarca" class="estilo-paginas" hidden>
-                            <section class="estilo-seccion">
-                                <h2 class="estilo-seccion-titulo">Colores de la marca</h2>
-                                <p class="admin-ayuda">Se aplican a botones, títulos y detalles de todo el sitio.</p>
-                                <div class="admin-campo-grid">
-                                    <div class="admin-campo">
-                                        <label class="campo-label" for="estiloColorPrimario">Color primario</label>
-                                        <input class="campo-input campo-color" id="estiloColorPrimario" name="primario" type="color" value="#1f3a2e">
+                        <aside class="ed-inspector" aria-label="Propiedades de la sección">
+                            <div class="ed-insp-cabecera">
+                                <div class="ed-etiqueta" id="edEtiqueta"></div>
+                                <h2 id="edTituloSeccion"></h2>
+                            </div>
+                            <div class="ed-tabs" id="edTabs" role="tablist" aria-label="Qué editar">
+                                <button class="ed-tab activa" type="button" role="tab" aria-selected="true" data-tab="contenido">Contenido</button>
+                                <button class="ed-tab" type="button" role="tab" aria-selected="false" data-tab="imagenes">Imágenes</button>
+                                <button class="ed-tab" type="button" role="tab" aria-selected="false" data-tab="diseno">Diseño</button>
+                            </div>
+                            <div class="ed-insp-cuerpo" id="edInspector"></div>
+                            <p class="formulario-estado ed-insp-estado" id="estadoEstilo" role="status" aria-live="polite" hidden></p>
+                            <div class="ed-insp-pie">
+                                <button class="ed-boton-sec" id="btnDescartar" type="button">Descartar</button>
+                                <button class="ed-boton-verde" id="btnGuardarBorrador" type="button">Guardar borrador</button>
+                            </div>
+                        </aside>
+                    </div>
+
+                    <div class="ed-cuerpo ed-marca-vista" id="edMarcaVista" hidden>
+                        <div class="ed-marca-controles">
+                            <section class="ed-tarjeta">
+                                <h2>Colores de la marca</h2>
+                                <p class="ed-ayuda">Cada color muestra si el texto blanco se lee bien encima. Si no alcanza, te avisamos antes de publicar.</p>
+                                <div class="ed-colores">
+                                    <div class="ed-color" data-color="primario">
+                                        <label class="ed-color-muestra" for="estiloColorPrimario"><span class="ed-color-contraste" id="contrastePrimario"></span></label>
+                                        <input class="ed-color-input" id="estiloColorPrimario" name="primario" type="color" value="#1f3a2e">
+                                        <div class="ed-color-datos"><strong>Primario</strong><span id="hexPrimario">#1F3A2E · botones, títulos</span><em id="juicioPrimario"></em></div>
                                         <span class="campo-error" id="errorEstiloColorPrimario"></span>
                                     </div>
-                                    <div class="admin-campo">
-                                        <label class="campo-label" for="estiloColorSecundario">Color secundario</label>
-                                        <input class="campo-input campo-color" id="estiloColorSecundario" name="secundario" type="color" value="#3d6b4f">
+                                    <div class="ed-color" data-color="secundario">
+                                        <label class="ed-color-muestra" for="estiloColorSecundario"><span class="ed-color-contraste" id="contrasteSecundario"></span></label>
+                                        <input class="ed-color-input" id="estiloColorSecundario" name="secundario" type="color" value="#3d6b4f">
+                                        <div class="ed-color-datos"><strong>Secundario</strong><span id="hexSecundario">#3D6B4F · hover, íconos</span><em id="juicioSecundario"></em></div>
                                         <span class="campo-error" id="errorEstiloColorSecundario"></span>
                                     </div>
-                                    <div class="admin-campo">
-                                        <label class="campo-label" for="estiloColorAcento">Color acento</label>
-                                        <input class="campo-input campo-color" id="estiloColorAcento" name="acento" type="color" value="#4a7c59">
+                                    <div class="ed-color" data-color="acento">
+                                        <label class="ed-color-muestra" for="estiloColorAcento"><span class="ed-color-contraste" id="contrasteAcento"></span></label>
+                                        <input class="ed-color-input" id="estiloColorAcento" name="acento" type="color" value="#4a7c59">
+                                        <div class="ed-color-datos"><strong>Acento</strong><span id="hexAcento">#4A7C59 · detalles, foco</span><em id="juicioAcento"></em></div>
                                         <span class="campo-error" id="errorEstiloColorAcento"></span>
                                     </div>
                                 </div>
-                                <p class="admin-ayuda" id="estiloContrastes"></p>
-                            </section>
-                        </div>
-
-                        <div id="estiloImagenes" class="estilo-paginas" hidden>
-                            <section class="estilo-seccion">
-                                <h2 class="estilo-seccion-titulo">Biblioteca de imágenes</h2>
-                                <p class="admin-ayuda">Subí fotos una sola vez y usalas donde quieras. Se reducen solas para que el sitio cargue rápido.</p>
-                                <div class="estilo-biblioteca-acciones">
-                                    <button class="boton boton-primario" id="estiloSubirImagen" type="button">Subir imágenes</button>
+                                <div class="ed-paletas" id="edPaletas">
+                                    <span class="ed-paletas-titulo">Paletas listas</span>
+                                    <button class="ed-paleta" type="button" data-paleta="bosque"><span class="ed-paleta-puntos"><i style="background:#1f3a2e"></i><i style="background:#3d6b4f"></i><i style="background:#4a7c59"></i></span>Bosque · actual</button>
+                                    <button class="ed-paleta" type="button" data-paleta="tierra"><span class="ed-paleta-puntos"><i style="background:#2c4a3a"></i><i style="background:#8a5a3c"></i><i style="background:#c98a4b"></i></span>Tierra</button>
+                                    <button class="ed-paleta" type="button" data-paleta="rocio"><span class="ed-paleta-puntos"><i style="background:#1d3b4a"></i><i style="background:#2f6f73"></i><i style="background:#5aa19a"></i></span>Rocío</button>
                                 </div>
-                                <div class="estilo-biblioteca" id="estiloBibliotecaPagina"></div>
+                            </section>
+
+                            <section class="ed-tarjeta">
+                                <h2>Tipografía</h2>
+                                <p class="ed-ayuda">Dos fuentes bien combinadas alcanzan: una para títulos y otra para lectura.</p>
+                                <div class="ed-tipografias" id="edTipografias">
+                                    <button class="ed-tipografia activa" type="button" data-tipografia="bebas-inter" aria-pressed="true">
+                                        <span class="ed-tipografia-titulo ed-tipo-bebas">Plantas con raíz</span>
+                                        <span class="ed-tipografia-texto">Cuidamos cada planta como si fuera propia, de la semilla a tu casa.</span>
+                                        <strong>Bebas Neue + Inter · actual</strong>
+                                    </button>
+                                    <button class="ed-tipografia" type="button" data-tipografia="serif-inter" aria-pressed="false">
+                                        <span class="ed-tipografia-titulo ed-tipo-serif">Plantas con raíz</span>
+                                        <span class="ed-tipografia-texto">Cuidamos cada planta como si fuera propia, de la semilla a tu casa.</span>
+                                        <strong>Serif clásica + Inter</strong>
+                                    </button>
+                                </div>
+                            </section>
+
+                            <section class="ed-tarjeta ed-tarjeta-fila">
+                                <div>
+                                    <h2>Botones y esquinas</h2>
+                                    <p class="ed-ayuda">Un solo estilo en todo el sitio.</p>
+                                </div>
+                                <div class="ed-botones-estilo" id="edBotonesEstilo">
+                                    <button class="ed-forma activa" type="button" data-botones="redondeado" aria-pressed="true">Redondeado</button>
+                                    <button class="ed-forma ed-forma-suave" type="button" data-botones="suave" aria-pressed="false">Suave</button>
+                                    <button class="ed-forma ed-forma-recto" type="button" data-botones="recto" aria-pressed="false">Recto</button>
+                                </div>
                             </section>
                         </div>
 
-                        <p class="formulario-estado" id="estadoEstilo" role="status" aria-live="polite" hidden></p>
-                        <div class="admin-panel-herramientas estilo-herramientas">
-                            <span class="estilo-cambios" id="estiloCambios" aria-live="polite"></span>
-                            <button class="boton boton-primario" id="btnGuardarBorrador" type="button">Guardar borrador</button>
-                            <button class="boton boton-texto" id="btnVistaPrevia" type="button"><span class="material-symbols-outlined" aria-hidden="true">visibility</span> Vista previa</button>
-                            <button class="boton boton-primario" id="btnPublicar" type="button">Publicar</button>
+                        <div class="ed-marca-previa">
+                            <div class="ed-etiqueta">VISTA PREVIA EN VIVO</div>
+                            <div class="ed-lienzo ed-lienzo-marca" id="edLienzoMarca">
+                                <iframe class="ed-marco" id="edMarcoMarca" name="zapi-vista-previa" title="Vista previa con la marca" src="about:blank"></iframe>
+                            </div>
                         </div>
-                    </form>
-                    <input type="file" id="estiloArchivos" accept="image/jpeg,image/png,image/webp" multiple hidden>
-                </div>
+                    </div>
 
-                <div class="admin-bloque">
-                    <div class="admin-panel-cabecera">
-                        <h2>Historial de publicaciones</h2>
-                        <p>Últimas 20 versiones publicadas.</p>
-                    </div>
-                    <div class="admin-tabla-wrap">
-                        <table class="admin-tabla" id="adminTablaHistorial" aria-label="Historial de publicaciones">
-                            <thead>
-                                <tr><th scope="col">Versión</th><th scope="col">Fecha</th><th scope="col">Usuario</th><th scope="col">Productos</th><th scope="col">Título</th><th scope="col">Colores</th><th scope="col">Acciones</th></tr>
-                            </thead>
-                            <tbody id="adminCuerpoHistorial"></tbody>
-                        </table>
-                        <p id="adminHistorialVacio" class="estado-vacio" hidden>No hay versiones publicadas.</p>
-                    </div>
-                </div>
+                    <input type="file" id="estiloArchivos" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                </form>
             </section>
 
             <section class="admin-panel" id="panelAnalitica" hidden aria-label="Analítica de clientes">
@@ -391,27 +447,57 @@ module.exports = {
             </div>
         </dialog>
 
-        <dialog class="admin-dialog" id="dialogoVistaPrevia" aria-labelledby="dialogoVistaPreviaTitulo">
-            <div class="admin-dialog-caja admin-dialog-previa">
-                <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-                <span class="etiqueta">Estilo del sitio</span>
-                <h2 id="dialogoVistaPreviaTitulo">Vista previa</h2>
-                <p class="admin-ayuda" id="vistaPreviaAyuda">Así se vería la página con tus cambios. Todavía no está publicada.</p>
-                <iframe class="admin-previa-marco" id="marcoVistaPrevia" name="zapi-vista-previa" title="Vista previa de la página" src="about:blank"></iframe>
+        <dialog class="ed-dialogo" id="dialogoBiblioteca" aria-labelledby="dialogoBibliotecaTitulo">
+            <div class="ed-modal" role="document">
+                <header class="ed-modal-cabecera">
+                    <div class="ed-modal-titulo">
+                        <div class="ed-etiqueta" id="bibliotecaContexto">BIBLIOTECA</div>
+                        <h2 id="dialogoBibliotecaTitulo">Biblioteca de imágenes</h2>
+                    </div>
+                    <label class="ed-buscar">
+                        <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                        <input id="bibliotecaBuscar" type="search" placeholder="Buscar por nombre" autocomplete="off" aria-label="Buscar imagen por nombre">
+                    </label>
+                    <button class="ed-cerrar" type="button" data-cerrar-biblioteca aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                </header>
+                <div class="ed-modal-cuerpo">
+                    <div class="ed-modal-principal">
+                        <div class="ed-filtros" id="bibliotecaFiltros" role="group" aria-label="Filtrar por tipo"></div>
+                        <div class="ed-zona-subida" id="bibliotecaZona" tabindex="0" role="button" aria-label="Subir imágenes">
+                            <span class="material-symbols-outlined" aria-hidden="true">upload</span>
+                            <div>
+                                <strong>Arrastrá fotos acá o <u>elegí desde tu equipo</u></strong>
+                                <span id="bibliotecaEstado" role="status" aria-live="polite">JPG, PNG o WebP · las reducimos solas para que el sitio cargue rápido</span>
+                            </div>
+                        </div>
+                        <div class="ed-grilla" id="bibliotecaGrilla"></div>
+                    </div>
+                    <aside class="ed-modal-detalle" id="bibliotecaDetalle" aria-label="Detalle de la imagen"></aside>
+                </div>
             </div>
         </dialog>
 
-        <dialog class="admin-dialog" id="dialogoBiblioteca" aria-labelledby="dialogoBibliotecaTitulo">
-            <div class="admin-dialog-caja admin-dialog-ancho">
-                <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-                <span class="etiqueta">Estilo del sitio</span>
-                <h2 id="dialogoBibliotecaTitulo">Elegí una imagen</h2>
-                <p class="admin-ayuda" id="bibliotecaAyuda">Tocá una imagen para usarla, o subí una nueva.</p>
-                <div class="estilo-biblioteca-acciones">
-                    <button class="boton boton-secundario" id="bibliotecaSubir" type="button">Subir imagen nueva</button>
-                    <span class="admin-ayuda" id="bibliotecaEstado" role="status" aria-live="polite"></span>
+        <dialog class="ed-dialogo" id="dialogoHistorial" aria-labelledby="dialogoHistorialTitulo">
+            <div class="ed-modal ed-modal-historial" role="document">
+                <header class="ed-modal-cabecera">
+                    <div class="ed-modal-titulo">
+                        <div class="ed-etiqueta">ESTILO DEL SITIO</div>
+                        <h2 id="dialogoHistorialTitulo">Historial de versiones</h2>
+                    </div>
+                    <button class="ed-cerrar" type="button" data-cerrar-historial aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                </header>
+                <div class="ed-historial-cuerpo">
+                    <p class="ed-ayuda">Últimas 20 versiones publicadas. Restaurar carga la versión como borrador, sin tocar lo publicado.</p>
+                    <div class="admin-tabla-wrap">
+                        <table class="admin-tabla" id="adminTablaHistorial" aria-label="Historial de publicaciones">
+                            <thead>
+                                <tr><th scope="col">Versión</th><th scope="col">Fecha</th><th scope="col">Usuario</th><th scope="col">Productos</th><th scope="col">Título</th><th scope="col">Colores</th><th scope="col">Acciones</th></tr>
+                            </thead>
+                            <tbody id="adminCuerpoHistorial"></tbody>
+                        </table>
+                        <p id="adminHistorialVacio" class="estado-vacio" hidden>No hay versiones publicadas.</p>
+                    </div>
                 </div>
-                <div class="estilo-biblioteca" id="bibliotecaGrilla"></div>
             </div>
         </dialog>
 
