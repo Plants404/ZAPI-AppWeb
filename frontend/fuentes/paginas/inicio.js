@@ -32,7 +32,7 @@ module.exports = {
     <div class="hero-grid">
       <div class="hero-copy">
         <h1>Transformamos espacios con naturaleza.</h1>
-        <p class="hero-lead">En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a traves de soluciones agroecologicas integrales.</p>
+        <p class="hero-lead">En <strong>ZAPI</strong> conectamos a las personas con la naturaleza a través de soluciones agroecológicas integrales.</p>
         <ul class="hero-features hero-beneficios">
             <li><span aria-hidden="true">✓</span><span><strong>Plantas de calidad:</strong> Cuidadosamente seleccionadas.</span></li>
             <li><span aria-hidden="true">✓</span><span><strong>Asesoramiento profesional:</strong> Paso a paso.</span></li>
