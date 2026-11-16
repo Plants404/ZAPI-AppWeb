@@ -56,8 +56,8 @@ module.exports = {
                     <li><a class="admin-menu-enlace" href="#" data-panel="catalogo"><span class="material-symbols-outlined" aria-hidden="true">inventory</span><span class="admin-menu-texto">Catálogo y stock</span></a></li>
                     <li><a class="admin-menu-enlace" href="#" data-panel="estilo"><span class="material-symbols-outlined" aria-hidden="true">palette</span><span class="admin-menu-texto">Estilo del sitio</span></a></li>
                     <li><a class="admin-menu-enlace" href="#" data-panel="analitica"><span class="material-symbols-outlined" aria-hidden="true">bar_chart</span><span class="admin-menu-texto">Analítica de clientes</span></a></li>
-                    <li><a class="admin-menu-enlace" href="#" data-panel="mensajes"><span class="material-symbols-outlined" aria-hidden="true">message</span><span class="admin-menu-texto">Mensajes</span></a></li>
-                    <li><a class="admin-menu-enlace" href="#" data-panel="testimonios"><span class="material-symbols-outlined" aria-hidden="true">rate_review</span><span class="admin-menu-texto">Testimonios</span></a></li>
+                    <li><a class="admin-menu-enlace" href="#" data-panel="mensajes"><span class="material-symbols-outlined" aria-hidden="true">message</span><span class="admin-menu-texto">Mensajes</span><span class="admin-menu-insignia" id="insigniaMensajes" hidden></span></a></li>
+                    <li><a class="admin-menu-enlace" href="#" data-panel="testimonios"><span class="material-symbols-outlined" aria-hidden="true">rate_review</span><span class="admin-menu-texto">Testimonios</span><span class="admin-menu-insignia" id="insigniaTestimonios" hidden></span></a></li>
                     <li><a class="admin-menu-enlace" href="#" data-panel="accesos"><span class="material-symbols-outlined" aria-hidden="true">people</span><span class="admin-menu-texto">Accesos</span></a></li>
                 </ul>
             </div>
@@ -163,37 +163,51 @@ module.exports = {
                 </div>
             </section>
 
-            <section class="admin-panel" id="panelMensajes" hidden aria-label="Mensajes">
-                <div class="admin-panel-cabecera">
-                    <h1>Mensajes</h1>
-                    <p>Consultas que llegan desde el formulario de contacto (últimas 100).</p>
+            <section class="admin-panel gestion-panel" id="panelMensajes" hidden aria-label="Mensajes">
+                <div class="gestion-encabezado">
+                    <div><h1>Mensajes</h1><p>Consultas que llegan desde el formulario de contacto.</p></div>
+                    <div class="gestion-resumen" id="resumenMensajes"></div>
                 </div>
-                <div class="gestion-resumen" id="resumenMensajes"></div>
-                <div class="gestion-filtros" id="filtrosMensajes" role="group" aria-label="Filtrar por estado"></div>
-                <div class="gestion-lista" id="adminCuerpoMensajes"></div>
-                <p id="adminMensajesVacio" class="estado-vacio" hidden>No hay mensajes.</p>
+                <div class="gestion-bandeja">
+                    <section class="gestion-bandeja-lista" aria-label="Lista de mensajes">
+                        <div class="gestion-bandeja-herramientas">
+                            <label class="gestion-buscar"><span class="material-symbols-outlined" aria-hidden="true">search</span><span class="sr-only">Buscar mensajes</span><input type="search" id="buscarMensajes" placeholder="Buscar por nombre o asunto"></label>
+                            <div class="gestion-filtros" id="filtrosMensajes" role="group" aria-label="Filtrar por estado"></div>
+                        </div>
+                        <div id="adminCuerpoMensajes"></div>
+                        <p id="adminMensajesVacio" class="estado-vacio" hidden>No hay mensajes.</p>
+                    </section>
+                    <article class="gestion-detalle" id="detalleMensaje" aria-live="polite"></article>
+                </div>
             </section>
 
-            <section class="admin-panel" id="panelTestimonios" hidden aria-label="Testimonios">
-                <div class="admin-panel-cabecera">
-                    <h1>Testimonios</h1>
-                    <p>Revisá lo que escriben tus clientes y elegí qué se muestra en el sitio.</p>
+            <section class="admin-panel gestion-panel" id="panelTestimonios" hidden aria-label="Testimonios">
+                <div class="gestion-encabezado">
+                    <div><h1>Testimonios</h1><p>Revisá lo que escriben tus clientes y elegí qué se muestra en el sitio.</p></div>
+                    <div class="gestion-resumen" id="resumenTestimonios"></div>
                 </div>
-                <div class="gestion-resumen" id="resumenTestimonios"></div>
                 <div class="gestion-filtros" id="filtrosTestimonios" role="group" aria-label="Filtrar por estado"></div>
                 <div class="gestion-grilla" id="adminCuerpoTestimonios"></div>
                 <p id="adminTestimoniosVacio" class="estado-vacio" hidden>No hay testimonios.</p>
             </section>
 
-            <section class="admin-panel" id="panelAccesos" hidden aria-label="Accesos">
-                <div class="admin-panel-cabecera">
-                    <h1>Accesos</h1>
-                    <p>Quién tiene cuenta y qué puede hacer. Solo los administradores entran a este panel.</p>
+            <section class="admin-panel gestion-panel" id="panelAccesos" hidden aria-label="Accesos">
+                <div class="gestion-encabezado">
+                    <div><h1>Accesos</h1><p>Quién tiene cuenta y qué puede hacer. Solo los administradores entran a este panel.</p></div>
+                    <div class="gestion-resumen" id="resumenAccesos"></div>
                 </div>
-                <div class="gestion-resumen" id="resumenAccesos"></div>
-                <div class="gestion-filtros" id="filtrosAccesos" role="group" aria-label="Filtrar por rol"></div>
-                <div class="gestion-lista gestion-personas" id="adminCuerpoAccesos"></div>
+                <div class="gestion-barra">
+                    <label class="gestion-buscar"><span class="material-symbols-outlined" aria-hidden="true">search</span><span class="sr-only">Buscar personas</span><input type="search" id="buscarAccesos" placeholder="Buscar por nombre o correo"></label>
+                    <div class="gestion-filtros" id="filtrosAccesos" role="group" aria-label="Filtrar por rol"></div>
+                </div>
+                <section class="gestion-tabla" aria-label="Personas con cuenta">
+                    <div class="gestion-tabla-interior">
+                        <div class="gestion-tabla-cabecera"><span>Persona</span><span>Rol</span><span>Alta</span><span>Acciones</span></div>
+                        <div id="adminCuerpoAccesos"></div>
+                    </div>
+                </section>
                 <p id="adminAccesosVacio" class="estado-vacio" hidden>No hay usuarios.</p>
+                <p class="gestion-pie">Cada cambio de rol queda guardado en el Registro de actividad.</p>
             </section>
 
             <section class="admin-panel" id="panelAuditoria" hidden aria-label="Registro de actividad">
