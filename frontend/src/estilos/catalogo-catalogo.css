@@ -451,6 +451,9 @@ background: var(--cream);
 position: absolute;
 inset: 0;
 display: block;
+/* base.css le pone aspect-ratio 2/3 a .tarjeta-imagen: sin esto el enlace
+   queda mas alto que la foto y los beneficios se salen por abajo. */
+aspect-ratio: auto;
 overflow: hidden;
 }
 
@@ -1125,5 +1128,46 @@ display: none;
     .product-card,
     .product-visual img {
         transition: none;
+    }
+}
+
+/* Los beneficios no deben quedar debajo del boton "+" de la foto. */
+.product-beneficios-lista {
+    padding-right: 4.5rem;
+}
+
+/* Ventanas angostas (aunque haya mouse): la foto es chica y no entran los
+   beneficios encima, asi que se muestran como lista debajo, igual que en el celular. */
+@media (max-width: 480px) {
+    .product-beneficios-lista,
+    .product-card:hover .product-beneficios-lista,
+    .product-card:focus-within .product-beneficios-lista {
+        display: none;
+    }
+
+    .product-benefit,
+    .product-card:hover .product-benefit,
+    .product-card:focus-within .product-benefit {
+        display: none;
+    }
+
+    .product-beneficios-tactil {
+        display: grid;
+        gap: .5rem;
+        margin: 0;
+        padding: .25rem 0 0;
+        color: var(--muted-texto);
+        font-size: .86rem;
+        line-height: 1.45;
+    }
+
+    .product-beneficios-tactil li {
+        display: flex;
+        align-items: flex-start;
+        gap: .5rem;
+    }
+
+    .product-beneficios-tactil .benefit-icon {
+        margin-top: .12rem;
     }
 }
