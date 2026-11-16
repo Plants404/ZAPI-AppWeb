@@ -23,6 +23,7 @@ function crearBase(datos) {
                     return { sort() { return this; }, limit(x) { r = r.slice(0, x); return this; }, async toArray() { return r; } };
                 },
                 async findOneAndUpdate(f, { $set }) { const d = items.find(i => coincide(i, f)); if (d) Object.assign(d, $set); return d; },
+                async deleteOne(f) { const k = items.findIndex(i => coincide(i, f)); if (k >= 0) items.splice(k, 1); },
                 async deleteMany(f) { for (let k = items.length - 1; k >= 0; k--) if (coincide(items[k], f)) items.splice(k, 1); }
             };
         }
@@ -93,4 +94,26 @@ test('usuarios: no expone claves, cambia rol y cierra sus sesiones; no permite c
     assert.equal((await pedir(url, `/usuarios/${otro}`, 'PATCH', { rol: 'admin' })).status, 200);
     assert.equal(base.col.users[1].rol, 'admin');
     assert.ok(!base.col.sessions.some(s => s._id === 'o1'));
+});
+
+test('testimonios y usuarios: se pueden eliminar con auditoría; no la propia cuenta', async t => {
+    const idT = new ObjectId();
+    const base = crearBase({
+        sessions: [sesion, { _id: 'o1', userId: String(otro), rol: 'cliente', expiresAt: new Date(Date.now() + 3600000) }],
+        users: [{ _id: yo, email: 'a@zapi.uy', rol: 'admin' }, { _id: otro, email: 'o@zapi.uy', rol: 'cliente' }],
+        testimonials: [{ _id: idT, autor: 'Luis', texto: 'Muy buenas plantas', estrellas: 5, estado: 'pending', createdAt: new Date() }]
+    });
+    const { server, url } = await iniciar(base);
+    t.after(() => server.close());
+
+    assert.equal((await pedir(url, `/testimonios/${idT}`, 'DELETE')).status, 200);
+    assert.equal(base.col.testimonials.length, 0);
+    assert.equal((await pedir(url, `/testimonios/${idT}`, 'DELETE')).status, 404);
+
+    assert.equal((await pedir(url, `/usuarios/${yo}`, 'DELETE')).status, 400);
+    assert.equal((await pedir(url, `/usuarios/${otro}`, 'DELETE')).status, 200);
+    assert.equal(base.col.users.length, 1);
+    assert.equal(base.col.sessions.some(s => s.userId === String(otro)), false);
+    assert.deepEqual(base.col.auditoria.map(a => a.accion), ['testimonio.eliminado', 'usuario.eliminado']);
+    assert.equal((await pedir(url, `/usuarios/${otro}`, 'DELETE', null, null)).status, 401);
 });
