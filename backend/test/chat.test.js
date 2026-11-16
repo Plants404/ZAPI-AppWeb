@@ -56,8 +56,19 @@ test('las instrucciones incluyen el catálogo y las reglas', () => {
         { whatsappVisible: '098 268 560', direccion: 'Montevideo', envioGratis: 2500 }
     );
     assert.match(texto, /Albahaca/);
-    assert.match(texto, /sin stock/);
+    assert.match(texto, /SIN STOCK/);
     assert.match(texto, /no lo inventes/);
+});
+
+test('el catálogo va agrupado por categoría con cuidados y reglas de recomendación', () => {
+    const texto = armarInstrucciones([
+        { nombre: 'Cactus', categoria: 'Plantas de interior', precioBase: 220, stock: 6, descripcion: 'Decorativo.', infoDeVenta: ['Riego: 1 vez cada 15 días'] },
+        { nombre: 'Ruda', categoria: 'Aromáticas', precioBase: 120, stock: 8 },
+        { nombre: 'Suculenta', categoria: 'Plantas de interior', precioBase: 180, stock: 15 }
+    ], { whatsappVisible: '098 268 560', direccion: 'Montevideo', envioGratis: 2500 });
+    assert.match(texto, /\[Plantas de interior\]\n- Cactus[^\n]*Riego: 1 vez cada 15 días[^\n]*\n- Suculenta/);
+    assert.match(texto, /\[Aromáticas\]\n- Ruda/);
+    assert.match(texto, /SOLO productos de la categoría \[Plantas de interior\]/);
 });
 
 test('consultarGemini manda la clave en un encabezado y lee el texto', async () => {
