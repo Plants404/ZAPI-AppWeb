@@ -117,6 +117,7 @@ Para cargar los productos iniciales usá `npm run seed` dentro de `backend/`, y 
 | `frontend/` | `npm run build` | Versión de producción en `dist/` |
 | `frontend/` | `npm run preview` | Sirve localmente la versión compilada |
 | `frontend/` | `npm run lint` | Revisión de código con oxlint |
+| `frontend/` | `npm run lint:iconos` | Verifica que cada ícono Material Symbols usado exista (un nombre inválido se vería como texto) |
 
 ## Pruebas
 
