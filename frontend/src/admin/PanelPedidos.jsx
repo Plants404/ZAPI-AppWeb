@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { cambiarEstadoPedido, obtenerPedidos } from '../api.js'
 import { formatearFecha } from '../utilidades.js'
 import { formatearPrecio } from '../data/negocio.js'
+import { useToasts } from '../estado/toasts.jsx'
 import { useAdmin, useCarga } from './contexto.jsx'
 import DialogoVentaPresencial from './DialogoVentaPresencial.jsx'
 
@@ -11,7 +12,7 @@ const TEXTO_ESTADO = { pendiente: 'Pendiente', confirmado: 'Confirmado', entrega
 const SIGUIENTES = {
   pendiente: ['confirmado', 'cancelado'],
   confirmado: ['entregado', 'cancelado'],
-  entregado: ['cancelado'],
+  entregado: [],
   cancelado: []
 }
 const claseEstado = estado => (TEXTO_ESTADO[estado] ? estado : 'neutral')
@@ -44,6 +45,7 @@ function Paginacion({ pagina, total, cantidad, ir }) {
 
 function PanelPedidos({ activo, busquedaInicial = '' }) {
   const { avisar } = useAdmin()
+  const { confirmarToast } = useToasts()
   const inicial = { ...FILTROS_VACIOS, q: busquedaInicial }
   const [form, setForm] = useState(inicial) // lo que hay escrito en los campos
   const [filtros, setFiltros] = useState(inicial) // lo que se aplicó
@@ -76,7 +78,7 @@ function PanelPedidos({ activo, busquedaInicial = '' }) {
 
   async function cambiarEstado(pedido, estado) {
     if (!estado || estado === pedido.estado) return
-    if (estado === 'cancelado' && !window.confirm(`¿Cancelar el pedido #${pedido.id}? Se devolverá el stock de los productos al catálogo.`)) return
+    if (estado === 'cancelado' && !(await confirmarToast(`¿Cancelar el pedido #${pedido.id}?`, 'Se devolverá el stock de los productos al catálogo.', 'Cancelar pedido'))) return
     try {
       await cambiarEstadoPedido(pedido.id, estado)
       avisar('Estado actualizado', `Pedido #${pedido.id} ahora ${textoEstado(estado)}.`)

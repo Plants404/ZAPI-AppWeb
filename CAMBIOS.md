@@ -70,3 +70,12 @@ La carpeta `_vanilla-original/` (el frontend viejo completo, con sus generadores
 ## Revisión responsive (celular, tablet y PC)
 
 Se midió el desborde horizontal de todas las páginas y paneles del admin en anchos de 320 a 1440 px. Se corrigió la barra superior del admin en celulares angostos, el gráfico de ventas (ahora ocupa el ancho disponible y entran las 8 semanas) y la tabla de Pedidos, que ensanchaba toda la página. No se agregó ninguna función nueva: solo se acomodó lo existente.
+
+## Revisión posterior: pedidos web y limpieza
+
+- El carrito ahora crea el pedido en el servidor (`POST /api/orders`): el stock se descuenta ahí, los errores (sin stock, sesión vencida) se muestran y el carrito solo se vacía si salió bien. El historial local guarda el pedido con el ID que devuelve el servidor y WhatsApp queda como paso final para coordinar.
+- Un pedido entregado ya no se puede cancelar desde el panel (igual que en el backend).
+- Las confirmaciones del panel (cancelar pedido, publicar, descartar) usan el aviso propio en lugar de `window.confirm`. El historial de versiones y las páginas públicas conservan `confirm` por ahora.
+- Se borraron hojas de estilo sin uso (`catalogo.css`, `stylecarrito.css`, `restauracion.css`) y el marcado muerto de la tarjeta recomendada.
+- `.material-symbols-outlined` tiene caja fija para que un ícono que no cargue no desarme el diseño, y `npm run lint:iconos` valida los nombres.
+- Pendiente: unificar los nombres de clase de las tarjetas (`tarjeta-*` junto a `product-*`), por el riesgo de regresiones visuales.

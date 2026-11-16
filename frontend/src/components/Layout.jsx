@@ -27,16 +27,19 @@ function useMenu() {
   useEffect(() => {
     window.clearTimeout(reloj.current)
     if (abierto && movil) {
-      setHojaVisible(true)
-      const cuadro = window.requestAnimationFrame(() => setHojaClase(true))
-      return () => window.cancelAnimationFrame(cuadro)
+      let segundo = 0
+      const primero = window.requestAnimationFrame(() => {
+        setHojaVisible(true)
+        segundo = window.requestAnimationFrame(() => setHojaClase(true))
+      })
+      return () => { window.cancelAnimationFrame(primero); window.cancelAnimationFrame(segundo); setHojaClase(false) }
     }
-    setHojaClase(false)
     reloj.current = window.setTimeout(() => setHojaVisible(false), 250)
     return () => window.clearTimeout(reloj.current)
   }, [abierto, movil])
 
-  useEffect(() => { if (escritorio) setAbierto(false) }, [escritorio])
+  // Al pasar a escritorio se cierra el menú móvil (ajuste de estado durante el render).
+  if (escritorio && abierto) setAbierto(false)
 
   useEffect(() => {
     document.body.classList.toggle('menu-abierto', abierto)

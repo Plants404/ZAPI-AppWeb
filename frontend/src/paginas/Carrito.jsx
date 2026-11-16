@@ -5,8 +5,8 @@ import { useCarrito } from '../estado/carrito.jsx'
 import { useCatalogo, unidadesDeProducto } from '../estado/catalogo.jsx'
 import { useAviso } from '../estado/aviso.jsx'
 import { useInterfaz } from '../estado/interfaz.jsx'
-import { armarPedido, guardarPedido, mensajeDePedido } from '../estado/pedidos.js'
-import { hayClienteConSesion } from '../api.js'
+import { guardarPedido, mensajeDePedido, pedidoDesdeServidor } from '../estado/pedidos.js'
+import { crearPedidoWeb, hayClienteConSesion } from '../api.js'
 import { NEGOCIO, formatearPrecio, textoDeStock, claseDeStock, slug } from '../data/negocio.js'
 import { abrirWhatsApp, limpiarValor, validarCorreo } from '../utilidades.js'
 
@@ -88,25 +88,28 @@ function Carrito() {
     setEnviando(true)
     setEstado({ mensaje: '', tipo: '' })
     try {
-      const pedido = guardarPedido(armarPedido({
-        lineas: lineas.map(l => ({ id: l.id, nombre: l.nombre, precio: l.precio, cantidad: l.cantidad })),
+      // El servidor valida precios, descuenta el stock y devuelve el pedido definitivo.
+      const orden = await crearPedidoWeb({
+        lineas: lineas.map(l => ({ id: l.id, cantidad: l.cantidad })),
         cliente: {
           nombre: limpiarValor(campos.nombre),
           telefono: limpiarValor(campos.telefono),
           email: limpiarValor(campos.email),
           zona: limpiarValor(campos.zona),
           notas: limpiarValor(campos.notas)
-        },
-        subtotal,
-        envio: envio === null ? 0 : envio,
-        total
-      }))
+        }
+      })
+      const pedido = guardarPedido(pedidoDesdeServidor(orden))
       vaciar()
       setCampos(CAMPOS_VACIOS)
       setEstado({ mensaje: 'Pedido ' + pedido.id + ' listo. Abrimos WhatsApp para coordinar la entrega.', tipo: 'ok' })
       abrirWhatsApp(mensajeDePedido(pedido), true)
     } catch (error) {
-      setEstado({ mensaje: error.message || 'No se pudo armar el pedido. Intentá de nuevo.', tipo: 'error' })
+      if (error.status === 401) {
+        setEstado({ mensaje: 'Tu sesión venció. Iniciá sesión de nuevo; tu carrito se mantiene.', tipo: 'error' })
+      } else {
+        setEstado({ mensaje: error.message || 'No se pudo crear el pedido. Intentá de nuevo.', tipo: 'error' })
+      }
     } finally {
       setEnviando(false)
     }

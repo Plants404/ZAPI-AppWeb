@@ -1,3 +1,4 @@
+import { HOJAS } from './estilos/hojas.js'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Raiz from './components/Raiz.jsx'
 import Layout from './components/Layout.jsx'
@@ -25,7 +26,7 @@ function pagina(seccion, titulo, extra = {}) {
     seccion,
     titulo,
     bodyClass: 'pagina-' + seccion,
-    hojas: [...BASE, seccion === 'catalogo' ? 'catalogo-catalogo' : seccion, ...(extra.tienda || []), ...BOT],
+    hojas: [...BASE, seccion === 'catalogo' ? 'catalogo-catalogo' : seccion, ...(extra.tienda || []), ...BOT].filter(h => h in HOJAS),
     ...extra
   }
 }

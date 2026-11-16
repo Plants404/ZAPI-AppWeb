@@ -97,9 +97,9 @@ function Login() {
 
   // Cuando sale bien, a los 1,3 s aparece el corazón.
   useEffect(() => {
-    if (estado !== 'ok') { setCorazon(false); return undefined }
+    if (estado !== 'ok') return undefined
     const t = window.setTimeout(() => setCorazon(true), 1300)
-    return () => window.clearTimeout(t)
+    return () => { window.clearTimeout(t); setCorazon(false) }
   }, [estado])
 
   // Guiños al azar cada tanto.
