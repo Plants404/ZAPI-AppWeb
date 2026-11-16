@@ -111,3 +111,31 @@ test('/api/chat devuelve 502 si Gemini falla', async t => {
     const respuesta = await enviar(url, { mensajes: [{ rol: 'user', texto: 'Hola' }] });
     assert.equal(respuesta.status, 502);
 });
+
+test('consultarGemini prueba el modelo de respaldo si el primero da 404', async () => {
+    const usados = [];
+    const texto = await consultarGemini({
+        apiKey: 'clave-falsa',
+        instrucciones: 'Sos un bot',
+        mensajes: [{ rol: 'user', texto: 'Hola' }],
+        modelo: 'modelo-viejo',
+        fetchImpl: async url => {
+            usados.push(url);
+            if (url.includes('modelo-viejo')) return { ok: false, status: 404, text: async () => 'not found' };
+            return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: 'Listo' }] } }] }) };
+        }
+    });
+    assert.equal(texto, 'Listo');
+    assert.equal(usados.length, 2);
+});
+
+test('consultarGemini no reintenta si el error no es 404', async () => {
+    let llamadas = 0;
+    await assert.rejects(consultarGemini({
+        apiKey: 'clave-falsa',
+        instrucciones: 'x',
+        mensajes: [{ rol: 'user', texto: 'Hola' }],
+        fetchImpl: async () => { llamadas += 1; return { ok: false, status: 403, text: async () => 'clave' }; }
+    }));
+    assert.equal(llamadas, 1);
+});
