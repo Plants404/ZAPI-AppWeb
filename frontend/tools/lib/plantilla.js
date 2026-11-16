@@ -122,6 +122,7 @@ function pie(raiz, archivo) {
                 <span>ZAPI</span>
             </a>
             <p>Plantas, kits y acompañamiento para empezar tu rincón verde.</p>
+            <a class="footer-cta" href="https://wa.me/${NEGOCIO.whatsapp}" target="_blank" rel="noopener">${icono('chat')} Escribinos por WhatsApp</a>
         </div>
         <nav class="footer-nav" aria-label="Paginas del sitio">
             <h2>Navegar</h2>
@@ -132,9 +133,9 @@ function pie(raiz, archivo) {
         </nav>
         <div class="footer-contacto">
             <h2>Contacto</h2>
-            <p>${escapar(NEGOCIO.direccion)}</p>
-            <a href="https://wa.me/${NEGOCIO.whatsapp}" target="_blank" rel="noopener">WhatsApp ${NEGOCIO.whatsappVisible}</a>
-            <a href="${raiz}/contacto.html">Escribinos por correo</a>
+            <p>${icono('location_on')} ${escapar(NEGOCIO.direccion)}</p>
+            <a href="https://wa.me/${NEGOCIO.whatsapp}" target="_blank" rel="noopener">${icono('chat')} WhatsApp ${NEGOCIO.whatsappVisible}</a>
+            <a href="${raiz}/contacto.html">${icono('mail')} Escribinos por correo</a>
         </div>
     </div>
     <p class="footer-legal">ZAPI · Vivero agroecologico · Precios sujetos a disponibilidad.</p>
