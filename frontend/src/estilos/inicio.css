@@ -1,0 +1,240 @@
+/* Portada: hero, destacados y testimonios publicados. */
+
+.hero {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: var(--cream);
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espacio-lg);
+    align-items: center;
+    width: 100%;
+    max-width: 1264px;
+    margin: 0 auto;
+    padding: var(--espacio-lg) 16px;
+}
+
+.hero-copy h1 {
+    max-width: 14ch;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: .95;
+    margin: .4rem 0 1rem;
+    color: var(--forest);
+}
+
+.hero-lead {
+    max-width: 52ch;
+    color: var(--muted);
+    font-size: var(--fs-lg);
+}
+
+.hero-beneficios {
+    display: grid;
+    gap: .55rem;
+    margin: var(--espacio-md) 0;
+}
+
+.hero-beneficios li {
+    display: flex;
+    align-items: flex-start;
+    gap: .55rem;
+    color: var(--forest);
+    font-size: var(--fs-sm);
+}
+
+.hero-beneficios li > span:first-child {
+    color: var(--leaf);
+    font-weight: 700;
+}
+
+.hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espacio-sm);
+    margin-top: var(--espacio-md);
+}
+
+.hero-ctas .boton {
+    width: 100%;
+}
+
+.hero-visual {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    max-height: 78vh;
+    border-radius: var(--radio);
+    object-fit: cover;
+    box-shadow: var(--sombra-md);
+}
+
+.hero-sello {
+    position: absolute;
+    right: var(--espacio-md);
+    bottom: var(--espacio-md);
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    max-width: calc(100% - 2 * var(--espacio-md));
+    padding: .55rem .8rem;
+    border-radius: var(--radio-pill);
+    background: var(--white);
+    color: var(--forest);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    box-shadow: var(--sombra-sm);
+}
+
+.hero-sello .material-symbols-outlined {
+    color: var(--leaf);
+}
+
+.home-products-carousel {
+    max-width: 1264px;
+    margin: 0 auto;
+    padding: var(--espacio-md) 16px var(--espacio-lg);
+}
+
+.carousel-header {
+    margin-bottom: var(--espacio-md);
+}
+
+.carousel-track {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--espacio-sm);
+}
+
+.destacados {
+    padding-top: 0;
+}
+
+.testimonios {
+    padding-top: 0;
+}
+
+.testimonios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--espacio-md);
+}
+
+.opinion {
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    padding: var(--espacio-md);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    box-shadow: var(--sombra-sm);
+}
+
+.opinion blockquote {
+    margin: 0;
+    color: var(--ink);
+}
+
+.opinion-firma {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-top: auto;
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+}
+
+.opinion-firma div {
+    display: grid;
+    line-height: 1.35;
+}
+
+.opinion-firma cite {
+    color: var(--forest);
+    font-style: normal;
+    font-weight: 600;
+}
+
+.opinion-firma span {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+.opinion-avatar {
+    display: grid;
+    flex: 0 0 2.4rem;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    background: var(--sand);
+    color: var(--forest);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+}
+
+.opinion-producto {
+    color: var(--moss);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.opinion-producto:hover {
+    text-decoration: underline;
+}
+
+.testimonios-accion {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--espacio-lg);
+}
+
+@media (min-width: 600px) {
+    .carousel-track {
+        gap: var(--espacio-md);
+    }
+}
+
+@media (min-width: 768px) {
+    .hero-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: var(--espacio-xl);
+        padding: var(--espacio-lg) 24px;
+    }
+
+    .hero-visual {
+        aspect-ratio: 5 / 6;
+        max-height: min(640px, 76vh);
+    }
+
+    .home-products-carousel {
+        padding-right: 24px;
+        padding-left: 24px;
+    }
+
+    .carousel-track {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-grid,
+    .home-products-carousel {
+        padding-right: 32px;
+        padding-left: 32px;
+    }
+
+    .carousel-track {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 600px) {
+    .hero-ctas .boton {
+        width: auto;
+    }
+}

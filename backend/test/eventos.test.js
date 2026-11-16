@@ -658,7 +658,7 @@ test('C10: esPaginaValida acepta rutas públicas conocidas', () => {
 test('C11: admin.js escapa lo que viene de eventos y pedidos al renderizar', () => {
     const fs = require('fs');
     const adminJs = fs.readFileSync(
-        require.resolve('../../frontend/public/js/admin.js'),
+        require.resolve('../../_vanilla-original/public/js/admin.js'),
         'utf8'
     );
     const debeEscapar = [

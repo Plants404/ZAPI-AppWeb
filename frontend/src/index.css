@@ -1,0 +1,6 @@
+/* Estilos compartidos por todo el sitio (los mismos que usaba el sitio viejo).
+   Los de cada página se importan desde su propio componente. */
+@import './estilos/tokens.css';
+@import './estilos/base.css';
+@import './estilos/estructura.css';
+@import './estilos/zapi-bot.css';
