@@ -11,7 +11,7 @@
     width: 100%;
     max-width: var(--ancho);
     margin: 0 auto;
-    padding: 0 16px var(--espacio-xl);
+    padding: var(--espacio-lg) 16px var(--espacio-xl);
 }
 
 .contacto-info {
