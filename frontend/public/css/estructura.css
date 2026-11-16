@@ -473,22 +473,53 @@ main:focus {
 
 .footer-marca p {
     max-width: 34ch;
-    margin-top: .7rem;
+    margin-top: .9rem;
     color: var(--texto-verde-suave);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-md);
+    line-height: 1.6;
+}
+
+.footer-marca .footer-cta {
+    display: inline-flex;
+    font-family: var(--sans);
+    letter-spacing: normal;
+    align-items: center;
+    gap: .5rem;
+    margin-top: 1.1rem;
+    padding: .65rem 1.1rem;
+    border: 1px solid rgba(255, 255, 255, .28);
+    border-radius: 999px;
+    color: var(--white);
+    font-size: var(--fs-md);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color .2s ease, border-color .2s ease;
+}
+
+.footer-marca .footer-cta:hover {
+    border-color: var(--menta);
+    background: rgba(255, 255, 255, .08);
+}
+
+.footer-cta .material-symbols-outlined,
+.footer-contacto .material-symbols-outlined {
+    color: var(--menta);
+    font-size: 1.15rem;
 }
 
 .footer-nav,
 .footer-contacto {
     display: grid;
     align-content: start;
-    gap: .4rem;
+    gap: .6rem;
 }
 
 .footer-nav h2,
 .footer-contacto h2 {
-    margin-bottom: .25rem;
-    color: var(--sand);
+    margin-bottom: .4rem;
+    padding-bottom: .6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .14);
+    color: var(--menta);
     font-family: var(--sans);
     font-size: var(--fs-xs);
     font-weight: 700;
@@ -499,24 +530,26 @@ main:focus {
 .footer-nav a,
 .footer-contacto a,
 .footer-contacto p {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
     color: var(--texto-verde-suave);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-md);
     text-decoration: none;
 }
 
 .footer-nav a:hover,
 .footer-contacto a:hover {
     color: var(--white);
-    text-decoration: underline;
 }
 
 .footer-legal {
     max-width: var(--ancho);
     margin: 0 auto;
     padding: var(--espacio-md);
-    border-top: 1px solid var(--moss);
+    border-top: 1px solid rgba(255, 255, 255, .14);
     color: var(--texto-verde-suave);
-    font-size: var(--fs-xs);
+    font-size: var(--fs-sm);
     text-align: center;
 
     scrollbar-gutter: stable;
