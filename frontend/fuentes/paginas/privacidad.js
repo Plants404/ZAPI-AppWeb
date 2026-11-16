@@ -21,7 +21,7 @@ module.exports = {
     </div>
     <p>ZAPI · Vivero Agroecológico<br>
     Congreso de Abril, Montevideo, Uruguay<br>
-    Contacto: hola@zapi.uy · WhatsApp 098 268 560<br>
+    Contacto: zapi.vivero@gmail.com · WhatsApp 098 268 560<br>
     Sitio: https://zapi.uy</p>
 </section>
 

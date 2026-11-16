@@ -25,7 +25,7 @@
         moneda: "UYU",
         whatsapp: "59898268560",
         whatsappVisible: "098 268 560",
-        email: "hola@zapi.uy",
+        email: "zapi.vivero@gmail.com",
         direccion: "Congreso de Abril, Montevideo, Uruguay",
         horario: "Visitas coordinadas previamente por WhatsApp.",
         envioGratis: 2500,
