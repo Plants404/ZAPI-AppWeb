@@ -2110,3 +2110,21 @@
 .admin-menu-insignia[hidden] {
   display: none;
 }
+
+.gestion-fila-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem;
+}
+
+.gestion-fila .boton.gestion-eliminar-usuario {
+  padding: 0;
+  width: 44px;
+  color: var(--error-strong);
+}
+
+.gestion-acciones .boton.gestion-eliminar {
+  margin-left: auto;
+  color: var(--error-strong);
+}

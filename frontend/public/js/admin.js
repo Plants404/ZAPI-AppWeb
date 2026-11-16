@@ -596,9 +596,10 @@ function pintarTestimonios() {
 
     pintarLista('adminCuerpoTestimonios', 'adminTestimoniosVacio', todos.filter(t => !filtro || t.estado === filtro).map(t => {
         const estrellas = Math.max(0, Math.min(5, Number(t.estrellas) || 0));
-        const acciones = t.estado === 'approved'
+        const eliminar = `<button type="button" class="boton boton-texto gestion-eliminar" data-eliminar-testimonio="${escaparHTML(t.id)}" data-nombre="${escaparHTML(t.autor)}"><span class="material-symbols-outlined" aria-hidden="true">delete</span> Eliminar</button>`;
+        const acciones = (t.estado === 'approved'
             ? `<button type="button" class="boton boton-secundario" data-testimonio="${escaparHTML(t.id)}" data-estado="pending">Quitar del sitio</button>`
-            : `<button type="button" class="boton boton-primario" data-testimonio="${escaparHTML(t.id)}" data-estado="approved">Aprobar y publicar</button>${t.estado === 'rejected' ? '' : `<button type="button" class="boton boton-secundario gestion-rechazar" data-testimonio="${escaparHTML(t.id)}" data-estado="rejected">Rechazar</button>`}`;
+            : `<button type="button" class="boton boton-primario" data-testimonio="${escaparHTML(t.id)}" data-estado="approved">Aprobar y publicar</button>${t.estado === 'rejected' ? '' : `<button type="button" class="boton boton-secundario gestion-rechazar" data-testimonio="${escaparHTML(t.id)}" data-estado="rejected">Rechazar</button>`}`) + eliminar;
 
         return `<article class="gestion-tarjeta gestion-opinion gestion-opinion-${escaparHTML(t.estado)}">
             <div class="gestion-cabecera">
@@ -632,7 +633,8 @@ function pintarAccesos() {
         const esAdmin = u.rol === 'admin';
         const accion = u.esYo
             ? '<span class="gestion-nota">No podés cambiar tu propio rol</span>'
-            : `<button type="button" class="boton ${esAdmin ? 'boton-secundario' : 'boton-secundario resalta'}" data-usuario="${escaparHTML(u.id)}" data-rol="${esAdmin ? 'cliente' : 'admin'}">${esAdmin ? 'Pasar a cliente' : 'Hacer admin'}</button>`;
+            : `<button type="button" class="boton ${esAdmin ? 'boton-secundario' : 'boton-secundario resalta'}" data-usuario="${escaparHTML(u.id)}" data-rol="${esAdmin ? 'cliente' : 'admin'}">${esAdmin ? 'Pasar a cliente' : 'Hacer admin'}</button>
+               <button type="button" class="boton gestion-eliminar-usuario" data-eliminar-usuario="${escaparHTML(u.id)}" data-nombre="${escaparHTML(u.nombre || u.email)}" aria-label="Eliminar a ${escaparHTML(u.nombre || u.email)}"><span class="material-symbols-outlined" aria-hidden="true">delete</span></button>`;
 
         return `<div class="gestion-fila">
             <div class="gestion-persona-info">
@@ -641,7 +643,7 @@ function pintarAccesos() {
             </div>
             <div><span class="gestion-rol ${esAdmin ? 'es-admin' : 'es-cliente'}">${esAdmin ? 'Administrador' : 'Cliente'}</span></div>
             <div class="gestion-fecha">${formatearFecha(u.fecha)}</div>
-            <div>${accion}</div>
+            <div class="gestion-fila-acciones">${accion}</div>
         </div>`;
     }));
 }
@@ -686,6 +688,16 @@ async function cambiarGestion(ruta, cuerpo, recargar, titulo) {
     recargar();
 }
 
+async function eliminarGestion(ruta, recargar, titulo) {
+    try {
+        await fetchJson(`${API_ADMIN}/${ruta}`, { method: 'DELETE' });
+        mostrarAviso(titulo, 'Se eliminó correctamente.');
+    } catch (error) {
+        mostrarAviso('No se pudo eliminar', error.message);
+    }
+    recargar();
+}
+
 function iniciarGestion() {
     const filtros = [
         ['filtrosMensajes', 'mensajes', pintarMensajes],
@@ -719,10 +731,24 @@ function iniciarGestion() {
     cargarTestimonios();
 
     document.getElementById('adminCuerpoTestimonios').addEventListener('click', evento => {
+        const borrar = evento.target.closest('[data-eliminar-testimonio]');
+        if (borrar) {
+            if (window.confirm(`¿Eliminar el testimonio de ${borrar.dataset.nombre}? No se puede deshacer.`)) {
+                eliminarGestion(`testimonios/${borrar.dataset.eliminarTestimonio}`, cargarTestimonios, 'Testimonio eliminado');
+            }
+            return;
+        }
         const boton = evento.target.closest('[data-testimonio]');
         if (boton) cambiarGestion(`testimonios/${boton.dataset.testimonio}`, { estado: boton.dataset.estado }, cargarTestimonios, 'Testimonio actualizado');
     });
     document.getElementById('adminCuerpoAccesos').addEventListener('click', evento => {
+        const borrar = evento.target.closest('[data-eliminar-usuario]');
+        if (borrar) {
+            if (window.confirm(`¿Eliminar a ${borrar.dataset.nombre}? Pierde el acceso y no se puede deshacer.`)) {
+                eliminarGestion(`usuarios/${borrar.dataset.eliminarUsuario}`, cargarAccesos, 'Usuario eliminado');
+            }
+            return;
+        }
         const boton = evento.target.closest('[data-usuario]');
         if (boton) cambiarGestion(`usuarios/${boton.dataset.usuario}`, { rol: boton.dataset.rol }, cargarAccesos, 'Rol actualizado');
     });
