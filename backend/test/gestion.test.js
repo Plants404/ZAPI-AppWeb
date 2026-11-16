@@ -117,3 +117,16 @@ test('testimonios y usuarios: se pueden eliminar con auditoría; no la propia cu
     assert.deepEqual(base.col.auditoria.map(a => a.accion), ['testimonio.eliminado', 'usuario.eliminado']);
     assert.equal((await pedir(url, `/usuarios/${otro}`, 'DELETE', null, null)).status, 401);
 });
+
+test('mensajes: se puede eliminar con auditoría', async t => {
+    const id = new ObjectId();
+    const base = crearBase({ sessions: [sesion], contacts: [{ _id: id, nombre: 'Ana', email: 'a@b.uy', asunto: 'Hola', mensaje: 'Consulta larga', estado: 'new', createdAt: new Date() }] });
+    const { server, url } = await iniciar(base);
+    t.after(() => server.close());
+
+    assert.equal((await pedir(url, `/mensajes/${id}`, 'DELETE')).status, 200);
+    assert.equal(base.col.contacts.length, 0);
+    assert.equal(base.col.auditoria[0].accion, 'mensaje.eliminado');
+    assert.equal((await pedir(url, `/mensajes/${id}`, 'DELETE')).status, 404);
+    assert.equal((await pedir(url, `/mensajes/${id}`, 'DELETE', null, null)).status, 401);
+});

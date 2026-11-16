@@ -60,6 +60,17 @@ function crearRouter(getDatabase) {
         res.json({ ok: true, estado });
     });
 
+    router.delete('/mensajes/:id', admin, async (req, res) => {
+        const db = getDatabase();
+        const _id = idObjeto(req.params.id);
+        const antes = await db.collection('contacts').findOne({ _id });
+        if (!antes) throw new HttpError(404, 'No se encontró el mensaje.');
+        await db.collection('contacts').deleteOne({ _id });
+        await registrarAuditoria(db, req.usuario, 'mensaje.eliminado', { nombre: antes.nombre, asunto: antes.asunto }, null,
+            `Mensaje de ${antes.nombre} eliminado`);
+        res.json({ ok: true });
+    });
+
     /* ----- Testimonios ----- */
     router.get('/testimonios', admin, async (req, res) => {
         const filtro = ESTADOS_TESTIMONIO.includes(req.query.estado) ? { estado: req.query.estado } : {};
