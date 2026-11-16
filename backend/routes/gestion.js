@@ -91,6 +91,17 @@ function crearRouter(getDatabase) {
         res.json({ ok: true, estado });
     });
 
+    router.delete('/testimonios/:id', admin, async (req, res) => {
+        const db = getDatabase();
+        const _id = idObjeto(req.params.id);
+        const antes = await db.collection('testimonials').findOne({ _id });
+        if (!antes) throw new HttpError(404, 'No se encontró el testimonio.');
+        await db.collection('testimonials').deleteOne({ _id });
+        await registrarAuditoria(db, req.usuario, 'testimonio.eliminado', { autor: antes.autor, estado: antes.estado }, null,
+            `Testimonio de ${antes.autor} eliminado`);
+        res.json({ ok: true });
+    });
+
     /* ----- Accesos ----- */
     router.get('/usuarios', admin, async (req, res) => {
         const items = await getDatabase().collection('users')
@@ -124,6 +135,22 @@ function crearRouter(getDatabase) {
         await registrarAuditoria(db, req.usuario, 'usuario.rol', { rol: antes.rol }, { rol },
             `Rol de ${antes.email} cambiado a ${rol}`);
         res.json({ ok: true, rol });
+    });
+
+    router.delete('/usuarios/:id', admin, async (req, res) => {
+        const db = getDatabase();
+        const _id = idObjeto(req.params.id);
+        if (String(_id) === req.usuario.id) {
+            throw new HttpError(400, 'No podés eliminar tu propia cuenta.');
+        }
+        const antes = await db.collection('users').findOne({ _id });
+        if (!antes) throw new HttpError(404, 'No se encontró el usuario.');
+
+        await db.collection('users').deleteOne({ _id });
+        await db.collection('sessions').deleteMany({ userId: String(_id) });
+        await registrarAuditoria(db, req.usuario, 'usuario.eliminado', { email: antes.email, rol: antes.rol }, null,
+            `Usuario ${antes.email} eliminado`);
+        res.json({ ok: true });
     });
 
     return router;
