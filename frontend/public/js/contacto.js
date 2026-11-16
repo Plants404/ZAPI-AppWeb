@@ -1,7 +1,8 @@
 'use strict';
 
-/* Formulario de contacto. Si EmailJS esta configurado se envia por correo;
-   si no, se abre WhatsApp con la consulta precargada. */
+/* Formulario de contacto. La consulta se guarda en el panel (Mensajes) y,
+   si EmailJS esta configurado, tambien se avisa por correo. Si ambas fallan,
+   se abre WhatsApp con la consulta precargada. */
 
 const formularioContacto = document.getElementById('contactoForm');
 
@@ -117,6 +118,20 @@ function mensajeDeContacto(datos) {
     return partes.filter(Boolean).join('\n');
 }
 
+async function guardarConsulta(datos) {
+    try {
+        const respuesta = await fetch(window.urlApi('/api/contact'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datos)
+        });
+
+        return respuesta.ok;
+    } catch {
+        return false;
+    }
+}
+
 async function enviarContacto(evento) {
     evento.preventDefault();
 
@@ -149,23 +164,29 @@ async function enviarContacto(evento) {
     if (textoBoton) textoBoton.textContent = 'Enviando…';
     mostrarEstadoFormulario(estado, '', '');
 
+    /* 1) Se guarda la consulta para verla en el panel (Mensajes).
+       2) Se avisa por correo con EmailJS, si esta configurado.
+       Si no se pudo hacer ninguna de las dos, se abre WhatsApp. */
+    const guardada = await guardarConsulta(datos);
+    let enviadaPorCorreo = false;
+
     try {
-        const configurado = await enviarCorreoEmailJS(NEGOCIO.emailjs.plantillaContacto, {
+        enviadaPorCorreo = await enviarCorreoEmailJS(NEGOCIO.emailjs.plantillaContacto, {
             nombre: datos.nombre,
             email: datos.email,
             telefono: datos.telefono,
             asunto: datos.asunto,
             mensaje: datos.mensaje
         });
-
-        if (configurado) {
-            formularioContacto.reset();
-            actualizarContadorContacto();
-            mostrarConfirmacionContacto();
-            return;
-        }
     } catch {
-        /* Si EmailJS falla o no esta configurado, se abre WhatsApp. */
+        /* EmailJS sin configurar o con error: no frena el envio. */
+    }
+
+    if (guardada || enviadaPorCorreo) {
+        formularioContacto.reset();
+        actualizarContadorContacto();
+        mostrarConfirmacionContacto();
+        return;
     }
 
     abrirWhatsApp(mensajeDeContacto(datos), true);
