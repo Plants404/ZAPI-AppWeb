@@ -678,15 +678,13 @@ function pintarTestimonios() {
             : `<button type="button" class="boton boton-primario" data-testimonio="${escaparHTML(t.id)}" data-estado="approved">Aprobar y publicar</button>${t.estado === 'rejected' ? '' : `<button type="button" class="boton boton-secundario gestion-rechazar" data-testimonio="${escaparHTML(t.id)}" data-estado="rejected">Rechazar</button>`}`) + eliminar;
 
         return `<article class="gestion-tarjeta gestion-opinion gestion-opinion-${escaparHTML(t.estado)}">
-            <div class="gestion-cabecera">
-                <span class="gestion-estrellas" role="img" aria-label="${estrellas} de 5 estrellas">${'★'.repeat(estrellas)}<span class="gestion-estrellas-vacias">${'★'.repeat(5 - estrellas)}</span></span>
-                <span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[t.estado] || 'pendiente'}">${ETIQUETAS_TESTIMONIO[t.estado] || escaparHTML(t.estado)}</span>
-            </div>
-            <p class="gestion-cita">“${escaparHTML(t.texto)}”</p>
             <div class="gestion-autor">
                 <div class="gestion-avatar" aria-hidden="true">${escaparHTML(iniciales(t.autor))}</div>
                 <div><strong>${escaparHTML(t.autor)}</strong><span>${t.lugar ? `${escaparHTML(t.lugar)} · ` : ''}${formatearFecha(t.fecha)}</span></div>
+                <span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[t.estado] || 'pendiente'}">${ETIQUETAS_TESTIMONIO[t.estado] || escaparHTML(t.estado)}</span>
             </div>
+            <span class="gestion-estrellas" role="img" aria-label="${estrellas} de 5 estrellas">${'★'.repeat(estrellas)}<span class="gestion-estrellas-vacias">${'★'.repeat(5 - estrellas)}</span></span>
+            <p class="gestion-cita">“${escaparHTML(t.texto)}”</p>
             <div class="gestion-acciones">${acciones}</div>
         </article>`;
     }));
