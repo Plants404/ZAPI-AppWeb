@@ -460,33 +460,148 @@ function renderAuditoria(entradas) {
 /* ----- Mensajes, testimonios y accesos ----- */
 
 const ETIQUETAS_MENSAJE = { new: 'Nuevo', read: 'Leído', answered: 'Respondido' };
-const ETIQUETAS_TESTIMONIO = { pending: 'Pendiente', approved: 'Aprobado', rejected: 'Rechazado' };
+const ETIQUETAS_TESTIMONIO = { pending: 'Pendiente', approved: 'Publicado', rejected: 'Rechazado' };
 const CLASE_ESTADO_GESTION = { new: 'pendiente', read: 'entregado', answered: 'confirmado', pending: 'pendiente', approved: 'confirmado', rejected: 'cancelado' };
 
-function selectorEstado(etiquetas, actual, atributo, id) {
-    const opciones = Object.entries(etiquetas)
-        .map(([valor, texto]) => `<option value="${valor}"${valor === actual ? ' selected' : ''}>${texto}</option>`).join('');
-    return `<select class="campo-input admin-select-estado" ${atributo}="${escaparHTML(id)}" aria-label="Cambiar estado">${opciones}</select>`;
+const gestion = { mensajes: [], testimonios: [], usuarios: [], filtro: { mensajes: '', testimonios: '', accesos: '' } };
+
+function iniciales(nombre) {
+    return String(nombre || '?').trim().split(/\s+/).slice(0, 2).map(parte => parte[0]).join('').toUpperCase() || '?';
 }
 
-function pintarTabla(cuerpoId, vacioId, filas, vacioHtml) {
+function enlaceWhatsApp(telefono) {
+    let digitos = String(telefono || '').replace(/\D/g, '');
+    if (!digitos) return '';
+    if (digitos.startsWith('0')) digitos = '598' + digitos.slice(1);
+    return 'https://wa.me/' + digitos;
+}
+
+function pintarResumen(id, datos) {
+    document.getElementById(id).innerHTML = datos.map(dato =>
+        `<div class="gestion-dato"><strong class="gestion-dato-valor${dato.alerta ? ' gestion-dato-alerta' : ''}">${dato.valor}</strong><span>${dato.texto}</span></div>`
+    ).join('');
+}
+
+function pintarFiltros(id, opciones, lista, campo, actual) {
+    document.getElementById(id).innerHTML = opciones.map(([valor, texto]) => {
+        const cantidad = valor ? lista.filter(item => item[campo] === valor).length : lista.length;
+        return `<button type="button" class="gestion-chip${valor === actual ? ' activo' : ''}" data-filtro="${valor}" aria-pressed="${valor === actual}">${texto} ${cantidad}</button>`;
+    }).join('');
+}
+
+function pintarLista(cuerpoId, vacioId, filas) {
     document.getElementById(cuerpoId).innerHTML = filas.join('');
     document.getElementById(vacioId).hidden = filas.length > 0;
-    if (vacioHtml) document.getElementById(vacioId).textContent = vacioHtml;
+}
+
+function pintarMensajes() {
+    const todos = gestion.mensajes;
+    const filtro = gestion.filtro.mensajes;
+    const nuevos = todos.filter(m => m.estado === 'new').length;
+    const sinResponder = todos.filter(m => m.estado !== 'answered').length;
+
+    pintarResumen('resumenMensajes', [
+        { valor: nuevos, texto: 'Nuevos', alerta: nuevos > 0 },
+        { valor: sinResponder, texto: 'Sin responder' },
+        { valor: todos.length, texto: 'Total' }
+    ]);
+    pintarFiltros('filtrosMensajes', [['', 'Todos'], ['new', 'Nuevos'], ['read', 'Leídos'], ['answered', 'Respondidos']], todos, 'estado', filtro);
+
+    pintarLista('adminCuerpoMensajes', 'adminMensajesVacio', todos.filter(m => !filtro || m.estado === filtro).map(m => {
+        const whatsapp = enlaceWhatsApp(m.telefono);
+        const asunto = encodeURIComponent('Re: ' + (m.asunto || 'Tu consulta a ZAPI'));
+        const acciones = [
+            `<a class="boton boton-primario" href="mailto:${escaparHTML(m.email)}?subject=${asunto}"><span class="material-symbols-outlined" aria-hidden="true">mail</span> Responder por correo</a>`,
+            whatsapp ? `<a class="boton boton-secundario" href="${whatsapp}" target="_blank" rel="noopener"><span class="material-symbols-outlined" aria-hidden="true">chat</span> WhatsApp</a>` : '',
+            m.estado !== 'answered' ? `<button type="button" class="boton boton-secundario" data-mensaje="${escaparHTML(m.id)}" data-estado="answered"><span class="material-symbols-outlined" aria-hidden="true">check</span> Marcar como respondido</button>` : '',
+            m.estado === 'new' ? `<button type="button" class="boton boton-texto" data-mensaje="${escaparHTML(m.id)}" data-estado="read">Marcar como leído</button>` : ''
+        ].join('');
+
+        return `<article class="gestion-tarjeta${m.estado === 'new' ? ' es-nuevo' : ''}">
+            <div class="gestion-avatar" aria-hidden="true">${escaparHTML(iniciales(m.nombre))}</div>
+            <div class="gestion-cuerpo">
+                <div class="gestion-cabecera">
+                    <h2>${escaparHTML(m.asunto || 'Sin asunto')}</h2>
+                    <span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[m.estado] || 'pendiente'}">${ETIQUETAS_MENSAJE[m.estado] || escaparHTML(m.estado)}</span>
+                </div>
+                <p class="gestion-meta">${escaparHTML(m.nombre)} · <a href="mailto:${escaparHTML(m.email)}">${escaparHTML(m.email)}</a>${m.telefono ? ` · ${escaparHTML(m.telefono)}` : ''} · ${formatearFecha(m.fecha)}</p>
+                <p class="gestion-texto">${escaparHTML(m.mensaje)}</p>
+                <div class="gestion-acciones">${acciones}</div>
+            </div>
+        </article>`;
+    }));
+}
+
+function pintarTestimonios() {
+    const todos = gestion.testimonios;
+    const filtro = gestion.filtro.testimonios;
+    const pendientes = todos.filter(t => t.estado === 'pending').length;
+    const publicados = todos.filter(t => t.estado === 'approved').length;
+    const conEstrellas = todos.filter(t => Number(t.estrellas) > 0);
+    const promedio = conEstrellas.length
+        ? (conEstrellas.reduce((suma, t) => suma + Number(t.estrellas), 0) / conEstrellas.length).toFixed(1).replace('.', ',')
+        : '–';
+
+    pintarResumen('resumenTestimonios', [
+        { valor: pendientes, texto: 'Por revisar', alerta: pendientes > 0 },
+        { valor: publicados, texto: 'Publicados en el sitio' },
+        { valor: promedio, texto: 'Promedio de estrellas' }
+    ]);
+    pintarFiltros('filtrosTestimonios', [['pending', 'Pendientes'], ['approved', 'Aprobados'], ['rejected', 'Rechazados'], ['', 'Todos']], todos, 'estado', filtro);
+
+    pintarLista('adminCuerpoTestimonios', 'adminTestimoniosVacio', todos.filter(t => !filtro || t.estado === filtro).map(t => {
+        const estrellas = Math.max(0, Math.min(5, Number(t.estrellas) || 0));
+        const acciones = t.estado === 'approved'
+            ? `<button type="button" class="boton boton-secundario" data-testimonio="${escaparHTML(t.id)}" data-estado="pending">Quitar del sitio</button>`
+            : `<button type="button" class="boton boton-primario" data-testimonio="${escaparHTML(t.id)}" data-estado="approved">Aprobar y publicar</button>${t.estado === 'rejected' ? '' : `<button type="button" class="boton boton-secundario gestion-rechazar" data-testimonio="${escaparHTML(t.id)}" data-estado="rejected">Rechazar</button>`}`;
+
+        return `<article class="gestion-tarjeta gestion-opinion gestion-opinion-${escaparHTML(t.estado)}">
+            <div class="gestion-cabecera">
+                <span class="gestion-estrellas" role="img" aria-label="${estrellas} de 5 estrellas">${'★'.repeat(estrellas)}<span class="gestion-estrellas-vacias">${'★'.repeat(5 - estrellas)}</span></span>
+                <span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[t.estado] || 'pendiente'}">${ETIQUETAS_TESTIMONIO[t.estado] || escaparHTML(t.estado)}</span>
+            </div>
+            <p class="gestion-cita">“${escaparHTML(t.texto)}”</p>
+            <div class="gestion-autor">
+                <div class="gestion-avatar" aria-hidden="true">${escaparHTML(iniciales(t.autor))}</div>
+                <div><strong>${escaparHTML(t.autor)}</strong><span>${t.lugar ? `${escaparHTML(t.lugar)} · ` : ''}${formatearFecha(t.fecha)}</span></div>
+            </div>
+            <div class="gestion-acciones">${acciones}</div>
+        </article>`;
+    }));
+}
+
+function pintarAccesos() {
+    const todos = gestion.usuarios;
+    const filtro = gestion.filtro.accesos;
+    const admins = todos.filter(u => u.rol === 'admin').length;
+
+    pintarResumen('resumenAccesos', [
+        { valor: admins, texto: 'Administradores' },
+        { valor: todos.length - admins, texto: 'Clientes' }
+    ]);
+    pintarFiltros('filtrosAccesos', [['', 'Todos'], ['admin', 'Administradores'], ['cliente', 'Clientes']], todos, 'rol', filtro);
+
+    pintarLista('adminCuerpoAccesos', 'adminAccesosVacio', todos.filter(u => !filtro || u.rol === filtro).map(u => {
+        const esAdmin = u.rol === 'admin';
+        const accion = u.esYo
+            ? '<span class="gestion-nota">No podés cambiar tu propio rol</span>'
+            : `<button type="button" class="boton boton-secundario" data-usuario="${escaparHTML(u.id)}" data-rol="${esAdmin ? 'cliente' : 'admin'}">${esAdmin ? 'Pasar a cliente' : 'Hacer admin'}</button>`;
+
+        return `<article class="gestion-persona">
+            <div class="gestion-avatar${esAdmin ? ' es-admin' : ''}" aria-hidden="true">${escaparHTML(iniciales(u.nombre || u.email))}</div>
+            <div class="gestion-persona-datos"><strong>${escaparHTML(u.nombre || '-')}${u.esYo ? ' <span class="gestion-vos">vos</span>' : ''}</strong><span>${escaparHTML(u.email)}</span></div>
+            <span class="admin-badge admin-badge-${esAdmin ? 'confirmado' : 'entregado'}">${esAdmin ? 'Administrador' : 'Cliente'}</span>
+            <span class="gestion-fecha">Alta ${formatearFecha(u.fecha)}</span>
+            <div class="gestion-persona-accion">${accion}</div>
+        </article>`;
+    }));
 }
 
 async function cargarMensajes() {
     try {
-        const estado = document.getElementById('filtroMensajes').value;
-        const data = await fetchJson(`${API_ADMIN}/mensajes${estado ? `?estado=${estado}` : ''}`);
-        pintarTabla('adminCuerpoMensajes', 'adminMensajesVacio', (data.mensajes || []).map(m => `
-            <tr>
-                <td>${formatearFecha(m.fecha)}</td>
-                <td>${escaparHTML(m.nombre)}<br><a href="mailto:${escaparHTML(m.email)}">${escaparHTML(m.email)}</a>${m.telefono ? `<br>${escaparHTML(m.telefono)}` : ''}</td>
-                <td>${escaparHTML(m.asunto)}</td>
-                <td class="admin-texto-largo">${escaparHTML(m.mensaje)}</td>
-                <td><span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[m.estado] || 'pendiente'}">${ETIQUETAS_MENSAJE[m.estado] || escaparHTML(m.estado)}</span><br>${selectorEstado(ETIQUETAS_MENSAJE, m.estado, 'data-mensaje', m.id)}</td>
-            </tr>`), 'No hay mensajes.');
+        const data = await fetchJson(`${API_ADMIN}/mensajes`);
+        gestion.mensajes = data.mensajes || [];
+        pintarMensajes();
     } catch (error) {
         mostrarAviso('No se pudieron cargar los mensajes', error.message);
     }
@@ -494,16 +609,9 @@ async function cargarMensajes() {
 
 async function cargarTestimonios() {
     try {
-        const estado = document.getElementById('filtroTestimonios').value;
-        const data = await fetchJson(`${API_ADMIN}/testimonios${estado ? `?estado=${estado}` : ''}`);
-        pintarTabla('adminCuerpoTestimonios', 'adminTestimoniosVacio', (data.testimonios || []).map(t => `
-            <tr>
-                <td>${formatearFecha(t.fecha)}</td>
-                <td>${escaparHTML(t.autor)}${t.lugar ? `<br>${escaparHTML(t.lugar)}` : ''}</td>
-                <td class="admin-texto-largo">${escaparHTML(t.texto)}</td>
-                <td>${'★'.repeat(Number(t.estrellas) || 0)}</td>
-                <td><span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[t.estado] || 'pendiente'}">${ETIQUETAS_TESTIMONIO[t.estado] || escaparHTML(t.estado)}</span><br>${selectorEstado(ETIQUETAS_TESTIMONIO, t.estado, 'data-testimonio', t.id)}</td>
-            </tr>`), 'No hay testimonios.');
+        const data = await fetchJson(`${API_ADMIN}/testimonios`);
+        gestion.testimonios = data.testimonios || [];
+        pintarTestimonios();
     } catch (error) {
         mostrarAviso('No se pudieron cargar los testimonios', error.message);
     }
@@ -512,14 +620,8 @@ async function cargarTestimonios() {
 async function cargarAccesos() {
     try {
         const data = await fetchJson(`${API_ADMIN}/usuarios`);
-        pintarTabla('adminCuerpoAccesos', 'adminAccesosVacio', (data.usuarios || []).map(u => `
-            <tr>
-                <td>${escaparHTML(u.nombre || '-')}${u.esYo ? ' <span class="admin-badge">Vos</span>' : ''}</td>
-                <td>${escaparHTML(u.email)}</td>
-                <td><span class="admin-badge admin-badge-${u.rol === 'admin' ? 'confirmado' : 'entregado'}">${u.rol === 'admin' ? 'Administrador' : 'Cliente'}</span></td>
-                <td>${formatearFecha(u.fecha)}</td>
-                <td>${u.esYo ? '-' : `<select class="campo-input admin-select-estado" data-usuario="${escaparHTML(u.id)}" aria-label="Cambiar rol"><option value="cliente"${u.rol === 'cliente' ? ' selected' : ''}>Cliente</option><option value="admin"${u.rol === 'admin' ? ' selected' : ''}>Administrador</option></select>`}</td>
-            </tr>`), 'No hay usuarios.');
+        gestion.usuarios = data.usuarios || [];
+        pintarAccesos();
     } catch (error) {
         mostrarAviso('No se pudieron cargar los accesos', error.message);
     }
@@ -536,19 +638,33 @@ async function cambiarGestion(ruta, cuerpo, recargar, titulo) {
 }
 
 function iniciarGestion() {
-    document.getElementById('filtroMensajes').addEventListener('change', cargarMensajes);
-    document.getElementById('filtroTestimonios').addEventListener('change', cargarTestimonios);
-    document.getElementById('adminCuerpoMensajes').addEventListener('change', evento => {
-        const select = evento.target.closest('[data-mensaje]');
-        if (select) cambiarGestion(`mensajes/${select.dataset.mensaje}`, { estado: select.value }, cargarMensajes, 'Mensaje actualizado');
+    const filtros = [
+        ['filtrosMensajes', 'mensajes', pintarMensajes],
+        ['filtrosTestimonios', 'testimonios', pintarTestimonios],
+        ['filtrosAccesos', 'accesos', pintarAccesos]
+    ];
+
+    filtros.forEach(([id, clave, pintar]) => {
+        document.getElementById(id).addEventListener('click', evento => {
+            const chip = evento.target.closest('[data-filtro]');
+            if (!chip) return;
+            gestion.filtro[clave] = chip.dataset.filtro;
+            pintar();
+        });
     });
-    document.getElementById('adminCuerpoTestimonios').addEventListener('change', evento => {
-        const select = evento.target.closest('[data-testimonio]');
-        if (select) cambiarGestion(`testimonios/${select.dataset.testimonio}`, { estado: select.value }, cargarTestimonios, 'Testimonio actualizado');
+    gestion.filtro.testimonios = 'pending';
+
+    document.getElementById('adminCuerpoMensajes').addEventListener('click', evento => {
+        const boton = evento.target.closest('[data-mensaje]');
+        if (boton) cambiarGestion(`mensajes/${boton.dataset.mensaje}`, { estado: boton.dataset.estado }, cargarMensajes, 'Mensaje actualizado');
     });
-    document.getElementById('adminCuerpoAccesos').addEventListener('change', evento => {
-        const select = evento.target.closest('[data-usuario]');
-        if (select) cambiarGestion(`usuarios/${select.dataset.usuario}`, { rol: select.value }, cargarAccesos, 'Rol actualizado');
+    document.getElementById('adminCuerpoTestimonios').addEventListener('click', evento => {
+        const boton = evento.target.closest('[data-testimonio]');
+        if (boton) cambiarGestion(`testimonios/${boton.dataset.testimonio}`, { estado: boton.dataset.estado }, cargarTestimonios, 'Testimonio actualizado');
+    });
+    document.getElementById('adminCuerpoAccesos').addEventListener('click', evento => {
+        const boton = evento.target.closest('[data-usuario]');
+        if (boton) cambiarGestion(`usuarios/${boton.dataset.usuario}`, { rol: boton.dataset.rol }, cargarAccesos, 'Rol actualizado');
     });
 }
 
