@@ -213,6 +213,25 @@ function crearRouterAdmin(getDatabase) {
 function crearRouterImagenesAdmin(getDatabase) {
     const router = express.Router();
 
+    /* Biblioteca: las imágenes subidas, de la más nueva a la más vieja. */
+    router.get('/', requerirAdmin(getDatabase), async (req, res) => {
+        const imagenes = await getDatabase().collection('imagenes')
+            .find({}, { projection: { datos: 0 } })
+            .sort({ createdAt: -1 })
+            .limit(200)
+            .toArray();
+
+        res.json({
+            imagenes: imagenes.map(imagen => ({
+                id: String(imagen._id),
+                url: `/api/imagenes/${imagen._id}`,
+                tipo: imagen.tipo,
+                bytes: imagen.bytes,
+                creada: imagen.createdAt
+            }))
+        });
+    });
+
     router.post('/', requerirAdmin(getDatabase),
         express.raw({ type: TIPOS_IMAGEN, limit: MAX_BYTES_IMAGEN }),
         async (req, res) => {
