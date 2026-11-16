@@ -1,3 +1,4 @@
+import { NEGOCIO, formatearPrecio } from '../data/negocio.js'
 import { Link } from 'react-router-dom'
 
 function Nosotros() {
@@ -14,7 +15,7 @@ function Nosotros() {
               <span className="material-symbols-outlined" aria-hidden="true">chat</span> Pedido coordinado por WhatsApp
             </li>
             <li>
-              <span className="material-symbols-outlined" aria-hidden="true">local_shipping</span> Envío gratis desde <span data-envio-gratis=""></span>
+              <span className="material-symbols-outlined" aria-hidden="true">local_shipping</span> Envío gratis desde {formatearPrecio(NEGOCIO.envioGratis)}
             </li>
             <li>
               <span className="material-symbols-outlined" aria-hidden="true">eco</span> Acompañamiento para tu espacio verde

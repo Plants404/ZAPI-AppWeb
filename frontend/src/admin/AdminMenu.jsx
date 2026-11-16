@@ -1,68 +1,35 @@
-function AdminMenu() {
+const ENLACES = [
+  ['resumen', 'dashboard', 'Resumen'],
+  ['auditoria', 'history', 'Registro de actividad'],
+  ['pedidos', 'receipt_long', 'Pedidos y ventas'],
+  ['catalogo', 'inventory', 'Catálogo y stock'],
+  ['estilo', 'palette', 'Estilo del sitio'],
+  ['analitica', 'bar_chart', 'Analítica de clientes'],
+  ['mensajes', 'message', 'Mensajes'],
+  ['testimonios', 'rate_review', 'Testimonios'],
+  ['accesos', 'people', 'Accesos']
+]
+
+// Menú lateral del panel. En escritorio queda fijo; en celular es un cajón que se abre y cierra.
+// "insignias" trae los numeritos (mensajes y testimonios pendientes).
+function AdminMenu({ panel, elegirPanel, abierto, cerrar, insignias = {} }) {
   return (
-      <nav className="admin-sidebar" id="adminSidebar" aria-label="Menú del panel de administración" hidden>
-        <div className="admin-sidebar-fondo" data-cerrar-sidebar="" aria-hidden="true"></div>
+      <nav className={'admin-sidebar' + (abierto ? ' admin-sidebar--abierto' : '')} id="adminSidebar" aria-label="Menú del panel de administración" hidden={!abierto}>
+        <div className="admin-sidebar-fondo" aria-hidden="true" hidden={!abierto} onClick={cerrar}></div>
         <div className="admin-sidebar-caja">
-          <button className="admin-boton-cerrar" type="button" data-cerrar-sidebar="" aria-label="Cerrar menú">
+          <button className="admin-boton-cerrar" type="button" aria-label="Cerrar menú" onClick={cerrar}>
             <span className="material-symbols-outlined" aria-hidden="true">close</span>
           </button>
           <ul className="admin-menu">
-            <li>
-              <a className="admin-menu-enlace admin-menu-enlace-activo" href="#" data-panel="resumen" aria-current="true">
-                <span className="material-symbols-outlined" aria-hidden="true">dashboard</span>
-                <span className="admin-menu-texto">Resumen</span>
-              </a>
-            </li>
-            <li>
-              <a className="admin-menu-enlace" href="#" data-panel="auditoria">
-                <span className="material-symbols-outlined" aria-hidden="true">history</span>
-                <span className="admin-menu-texto">Registro de actividad</span>
-              </a>
-            </li>
-            <li>
-              <a className="admin-menu-enlace" href="#" data-panel="pedidos">
-                <span className="material-symbols-outlined" aria-hidden="true">receipt_long</span>
-                <span className="admin-menu-texto">Pedidos y ventas</span>
-              </a>
-            </li>
-            <li>
-              <a className="admin-menu-enlace" href="#" data-panel="catalogo">
-                <span className="material-symbols-outlined" aria-hidden="true">inventory</span>
-                <span className="admin-menu-texto">Catálogo y stock</span>
-              </a>
-            </li>
-            <li>
-              <a className="admin-menu-enlace" href="#" data-panel="estilo">
-                <span className="material-symbols-outlined" aria-hidden="true">palette</span>
-                <span className="admin-menu-texto">Estilo del sitio</span>
-              </a>
-            </li>
-            <li>
-              <a className="admin-menu-enlace" href="#" data-panel="analitica">
-                <span className="material-symbols-outlined" aria-hidden="true">bar_chart</span>
-                <span className="admin-menu-texto">Analítica de clientes</span>
-              </a>
-            </li>
-            <li>
-              <a className="admin-menu-enlace" href="#" data-panel="mensajes">
-                <span className="material-symbols-outlined" aria-hidden="true">message</span>
-                <span className="admin-menu-texto">Mensajes</span>
-                <span className="admin-menu-insignia" id="insigniaMensajes" hidden></span>
-              </a>
-            </li>
-            <li>
-              <a className="admin-menu-enlace" href="#" data-panel="testimonios">
-                <span className="material-symbols-outlined" aria-hidden="true">rate_review</span>
-                <span className="admin-menu-texto">Testimonios</span>
-                <span className="admin-menu-insignia" id="insigniaTestimonios" hidden></span>
-              </a>
-            </li>
-            <li>
-              <a className="admin-menu-enlace" href="#" data-panel="accesos">
-                <span className="material-symbols-outlined" aria-hidden="true">people</span>
-                <span className="admin-menu-texto">Accesos</span>
-              </a>
-            </li>
+            {ENLACES.map(([id, icono, texto]) => (
+              <li key={id}>
+                <a className={'admin-menu-enlace' + (panel === id ? ' admin-menu-enlace-activo' : '')} href="#" aria-current={panel === id ? 'true' : 'false'} onClick={e => { e.preventDefault(); elegirPanel(id); cerrar() }}>
+                  <span className="material-symbols-outlined" aria-hidden="true">{icono}</span>
+                  <span className="admin-menu-texto">{texto}</span>
+                  {insignias[id] > 0 && <span className="admin-menu-insignia" id={id === 'mensajes' ? 'insigniaMensajes' : 'insigniaTestimonios'}>{insignias[id]}</span>}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </nav>

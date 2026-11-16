@@ -1,6 +1,6 @@
-function PanelMensajes() {
+function PanelMensajes({ activo }) {
   return (
-      <section className="admin-panel gestion-panel" id="panelMensajes" hidden aria-label="Mensajes">
+      <section className="admin-panel gestion-panel" id="panelMensajes" hidden={!activo} aria-label="Mensajes">
         <div className="gestion-encabezado">
           <div>
             <h1>Mensajes</h1>

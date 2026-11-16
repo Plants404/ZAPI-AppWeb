@@ -3,8 +3,11 @@ import ProductoCard from '../components/ProductoCard.jsx'
 import TestimonioCard from '../components/TestimonioCard.jsx'
 import { PRODUCTOS } from '../data/productos.js'
 import { TESTIMONIOS } from '../data/testimonios.js'
+import { useInterfaz } from '../estado/interfaz.jsx'
 
 function Inicio() {
+  const { abrirTestimonio, testimoniosNuevos } = useInterfaz()
+  const testimonios = [...testimoniosNuevos, ...TESTIMONIOS]
   // Los 4 destacados (si no hay ninguno, los primeros 4), como hacía el sitio viejo.
   const destacados = PRODUCTOS.filter(p => p.destacado).slice(0, 4)
   const lista = destacados.length ? destacados : PRODUCTOS.slice(0, 4)
@@ -61,12 +64,12 @@ function Inicio() {
             <p>Historias de quienes ya transformaron sus espacios con ZAPI.</p>
           </div>
           <div className="testimonios-grilla" id="testimoniosLista" role="list" aria-label="Testimonios de clientes">
-            {TESTIMONIOS.length
-                ? TESTIMONIOS.map(t => <TestimonioCard key={t.autor + t.texto} testimonio={t} />)
+            {testimonios.length
+                ? testimonios.map(t => <TestimonioCard key={t.autor + t.texto} testimonio={t} />)
                 : <p className="estado-vacio">Todavía no publicamos opiniones. Si compraste con nosotros, nos encantara leer tu experiencia.</p>}
           </div>
           <div className="testimonios-accion">
-            <button className="btn-testimonio boton boton-secundario" type="button" data-abrir-testimonio="">
+            <button className="btn-testimonio boton boton-secundario" type="button" onClick={() => abrirTestimonio()}>
               <span className="material-symbols-outlined" aria-hidden="true">rate_review</span> Dejar mi opinion
             </button>
           </div>

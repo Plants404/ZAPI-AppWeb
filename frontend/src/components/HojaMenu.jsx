@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import Icono from './Icono.jsx'
+import ContadorCarrito from './ContadorCarrito.jsx'
 
 const ITEMS = [
   ['/', 'home', 'Inicio', 'inicio'],
@@ -11,13 +12,13 @@ const ITEMS = [
 ]
 
 // Menú que sube desde abajo en el celular.
-function HojaMenu({ seccion }) {
+function HojaMenu({ seccion, menu }) {
   return (
-    <div className="bottom-sheet" id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden inert>
+    <div className={'bottom-sheet' + (menu.hojaClase ? ' esta-abierto' : '')} id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden={!menu.hojaVisible} inert={!menu.hojaActiva} onClick={e => { if (e.target === e.currentTarget) menu.cerrar() }}>
       <div className="bottom-sheet-manija" aria-hidden="true"></div>
       <header className="bottom-sheet-cabecera">
         <h2 className="bottom-sheet-titulo">Menú</h2>
-        <button className="bottom-sheet-cerrar" type="button" aria-label="Cerrar menú"><Icono nombre="close" /></button>
+        <button className="bottom-sheet-cerrar" type="button" aria-label="Cerrar menú" onClick={menu.cerrar}><Icono nombre="close" /></button>
       </header>
       <nav className="bottom-sheet-nav" aria-label="Opciones del menú">
         <ul className="bottom-sheet-grilla">
@@ -26,7 +27,7 @@ function HojaMenu({ seccion }) {
               <Link className="bottom-sheet-tarjeta" to={ruta} aria-current={clave === seccion ? 'page' : undefined}>
                 <span className="bottom-sheet-icono"><Icono nombre={simbolo} /></span>
                 <span className="bottom-sheet-etiq">{texto}</span>
-                {clave === 'carrito' && <span className="cart-count" data-cart-count aria-hidden="true">0</span>}
+                {clave === 'carrito' && <ContadorCarrito />}
               </Link>
             </li>
           ))}

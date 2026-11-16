@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { useInterfaz } from '../estado/interfaz.jsx'
+import { useAgregarAlCarrito } from '../estado/agregar.js'
 import { formatearPrecio, textoDeStock, claseDeStock, slug } from '../data/negocio.js'
 
 function unidadesDe(producto) {
@@ -8,6 +10,8 @@ function unidadesDe(producto) {
 
 // Tarjeta de un producto (catálogo e inicio).
 function ProductoCard({ producto }) {
+  const { abrirProducto } = useInterfaz()
+  const [agregar, agregado] = useAgregarAlCarrito()
   const unidades = unidadesDe(producto)
   const agotado = unidades === 0
   const stockVisual = agotado ? 'agotado' : unidades <= 3 ? 'pocas' : ''
@@ -20,7 +24,7 @@ function ProductoCard({ producto }) {
   return (
     <article className={'product-card tarjeta-producto' + (agotado ? ' tarjeta-agotada' : '')} data-id={producto.id}>
       <div className="product-visual">
-        <Link className="product-visual-link tarjeta-imagen" to={ficha} data-abrir-producto={producto.id} aria-label={`Ver ${producto.nombre}`}>
+        <Link className="product-visual-link tarjeta-imagen" to={ficha} onClick={e => { e.preventDefault(); abrirProducto(producto.id) }} aria-label={`Ver ${producto.nombre}`}>
           <img src={fotos[0] || ''} alt={producto.nombre} loading="lazy" width="798" height="1200" />
           <span className={`product-stock-pill stock ${claseDeStock(unidades)} ${stockVisual}`}>{textoDeStock(unidades)}</span>
           <span className="product-beneficios-lista">
@@ -32,13 +36,13 @@ function ProductoCard({ producto }) {
             ))}
           </span>
         </Link>
-        <button className="add-cart boton-agregar" type="button" data-agregar-producto={producto.id} aria-label={etiqueta} disabled={agotado}>
-          <span className="material-symbols-outlined" aria-hidden="true">{agotado ? 'block' : 'add'}</span>
+        <button className={'add-cart boton-agregar' + (agregado ? ' agregado added' : '')} type="button" aria-label={etiqueta} disabled={agotado} onClick={() => agregar(producto.id)}>
+          <span className="material-symbols-outlined" aria-hidden="true">{agotado ? 'block' : agregado ? 'check' : 'add'}</span>
         </button>
       </div>
       <div className="product-body tarjeta-cuerpo">
         <div className="product-heading">
-          <h3 className="product-name"><Link className="product-link" to={ficha} data-abrir-producto={producto.id}>{producto.nombre}</Link></h3>
+          <h3 className="product-name"><Link className="product-link" to={ficha} onClick={e => { e.preventDefault(); abrirProducto(producto.id) }}>{producto.nombre}</Link></h3>
           <div className="product-price"><span className="current">{formatearPrecio(producto.precioBase)}</span></div>
         </div>
         <div className="product-tags"><span className="product-badge">{producto.categoria}</span></div>
