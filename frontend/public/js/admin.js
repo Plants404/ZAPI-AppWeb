@@ -647,6 +647,7 @@ function pintarDetalleMensaje(m) {
             ${whatsapp ? `<a class="boton boton-secundario" href="${whatsapp}" target="_blank" rel="noopener"><span class="material-symbols-outlined" aria-hidden="true">chat</span> Escribir por WhatsApp</a>` : ''}
             ${m.estado !== 'answered' ? `<button type="button" class="boton boton-secundario" data-mensaje="${id}" data-estado="answered"><span class="material-symbols-outlined" aria-hidden="true">check</span> Marcar como respondido</button>` : ''}
             ${m.estado === 'new' ? `<button type="button" class="boton boton-texto" data-mensaje="${id}" data-estado="read">Marcar como leído</button>` : ''}
+            <button type="button" class="boton boton-texto gestion-eliminar" data-eliminar-mensaje="${id}" data-nombre="${escaparHTML(m.nombre)}"><span class="material-symbols-outlined" aria-hidden="true">delete</span> Eliminar</button>
         </div>
         <p class="gestion-pie">Al responder, el estado pasa a «Respondido».</p>`;
 }
@@ -798,7 +799,15 @@ function iniciarGestion() {
         gestion.mensajeActivo = item.dataset.ver;
         pintarMensajes();
     });
-    document.getElementById('detalleMensaje').addEventListener('click', evento => {
+    document.getElementById('detalleMensaje').addEventListener('click', async evento => {
+        const borrar = evento.target.closest('[data-eliminar-mensaje]');
+        if (borrar) {
+            const id = borrar.dataset.eliminarMensaje;
+            if (await confirmarToast('¿Eliminar este mensaje?', `Mensaje de ${borrar.dataset.nombre} · no se puede deshacer.`, 'Eliminar')) {
+                eliminarGestion(`mensajes/${id}`, cargarMensajes, 'Mensaje eliminado');
+            }
+            return;
+        }
         const boton = evento.target.closest('[data-mensaje]');
         if (boton) cambiarGestion(`mensajes/${boton.dataset.mensaje}`, { estado: boton.dataset.estado }, cargarMensajes, 'Mensaje actualizado');
     });
