@@ -18,7 +18,9 @@
 })(typeof self !== 'undefined' ? self : this, function () {
     const texto = (id, etiqueta, selector, max) => ({ id, tipo: 'texto', etiqueta, selector, max: max || 160 });
     const parrafo = (id, etiqueta, selector, max) => ({ id, tipo: 'parrafo', etiqueta, selector, max: max || 400 });
-    const imagen = (id, etiqueta, selector, ayuda) => ({ id, tipo: 'imagen', etiqueta, selector, ayuda: ayuda || '' });
+    const imagen = (id, etiqueta, selector, ayuda, categoria, proporcion) => ({
+        id, tipo: 'imagen', etiqueta, selector, ayuda: ayuda || '', categoria: categoria || 'productos', proporcion: proporcion || [3, 2]
+    });
 
     const tarjetasServicios = [];
     for (let n = 1; n <= 8; n += 1) {
@@ -39,7 +41,7 @@
                         parrafo('texto', 'Texto de apoyo', '.hero-lead', 300),
                         texto('boton', 'Botón principal', '.hero-ctas .boton-primario', 40),
                         texto('boton2', 'Botón secundario', '.hero-ctas .boton-secundario', 40),
-                        imagen('imagen', 'Imagen de portada', '.hero-visual', 'Horizontal, 1600 × 1000 px. Se reduce sola al subirla.')
+                        imagen('imagen', 'Imagen de portada', '.hero-visual', 'Horizontal, 1600 × 1000 px. Se reduce sola al subirla.', 'portadas', [3, 2])
                     ]
                 },
                 {
@@ -122,7 +124,7 @@
                 },
                 {
                     id: 'foto', titulo: 'Foto principal',
-                    campos: [imagen('imagen', 'Foto', '.nosotros-foto img', 'Horizontal, 1200 × 800 px.')]
+                    campos: [imagen('imagen', 'Foto', '.nosotros-foto img', 'Horizontal, 1200 × 800 px.', 'equipo', [3, 2])]
                 },
                 {
                     id: 'pilares', titulo: 'Pilares',

@@ -21,6 +21,27 @@
         if (colores.acento) estilo.setProperty('--leaf', colores.acento);
     }
 
+    const TIPOGRAFIAS = {
+        'bebas-inter': "'Bebas Neue', Georgia, serif",
+        'serif-inter': "Georgia, 'Times New Roman', serif"
+    };
+    const BOTONES = { redondeado: '', suave: '10px', recto: '2px' };
+
+    /* Colores, tipografía de títulos y forma de los botones. */
+    function aplicarEstilo(doc, estilo) {
+        if (!estilo) return;
+        aplicarColores(doc, estilo.colores);
+        const raiz = doc.documentElement.style;
+        if (TIPOGRAFIAS[estilo.tipografia]) {
+            if (estilo.tipografia === 'bebas-inter') raiz.removeProperty('--serif');
+            else raiz.setProperty('--serif', TIPOGRAFIAS[estilo.tipografia]);
+        }
+        if (estilo.botones in BOTONES) {
+            if (BOTONES[estilo.botones]) raiz.setProperty('--radio-pill', BOTONES[estilo.botones]);
+            else raiz.removeProperty('--radio-pill');
+        }
+    }
+
     function aplicarCampo(doc, campo, valor) {
         const elementos = doc.querySelectorAll(campo.selector);
         if (!elementos.length) return;
@@ -57,7 +78,7 @@
     }
 
     /* Lo usa la vista previa del panel con el borrador sin publicar. */
-    window.ZapiEditable = { aplicarContenido, aplicarColores };
+    window.ZapiEditable = { aplicarContenido, aplicarColores, aplicarEstilo, aplicarCampo };
 
     /* Dentro de la vista previa el panel aplica el borrador por su cuenta. */
     if (window.name === 'zapi-vista-previa') return;
@@ -69,7 +90,7 @@
         .then(respuesta => (respuesta.ok ? respuesta.json() : null))
         .then(datos => {
             if (!datos) return;
-            aplicarColores(document, datos.estilo && datos.estilo.colores);
+            aplicarEstilo(document, datos.estilo);
             aplicarContenido(document, pagina.id, datos.contenido);
         })
         .catch(() => { /* Sin servidor, queda la página original. */ });
