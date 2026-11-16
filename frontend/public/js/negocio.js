@@ -31,7 +31,7 @@
         envioGratis: 2500,
         emailjs: Object.freeze({
             servicio: "service_65fes09",
-            plantillaContacto: "template_snbz28r",
+            plantillaContacto: "template_bno641y",
             plantillaTestimonio: "PEGAR_PLANTILLA_TESTIMONIO",
             clavePublica: "svGiYtyfrTzCv-GhG"
         })
