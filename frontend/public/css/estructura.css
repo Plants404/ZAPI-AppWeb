@@ -352,13 +352,17 @@ main:focus {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--espacio-lg);
-    align-items: start;
+    align-items: center;
     width: 100%;
     max-width: none;
     margin: 0;
-    padding: var(--espacio-lg) max(16px, calc((100vw - 1264px) / 2 + 32px));
+    padding: var(--espacio-lg) max(16px, calc((100vw - var(--ancho)) / 2 + 32px));
     background: var(--forest);
     color: var(--cream);
+}
+
+.banner-pagina .etiqueta {
+    color: var(--menta);
 }
 
 .banner-pagina h1 {
@@ -374,20 +378,22 @@ main:focus {
 
 .banner-ventajas {
     display: grid;
-    gap: .65rem;
-    align-content: start;
-    padding: 0;
-    border: 0;
-    background: transparent;
+    gap: .85rem;
+    align-content: center;
+    justify-self: stretch;
+    padding: var(--espacio-md);
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: var(--radio);
+    background: rgba(255, 255, 255, .07);
     box-shadow: none;
 }
 
 .banner-ventajas li {
     display: flex;
-    align-items: flex-start;
-    gap: .55rem;
+    align-items: center;
+    gap: .65rem;
     color: var(--cream);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-base, 1rem);
     font-weight: 500;
 }
 
@@ -533,8 +539,13 @@ main:focus {
     }
 
     .banner-pagina {
-        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-        padding: var(--espacio-xl) max(16px, calc((100vw - 1264px) / 2 + 32px)) var(--espacio-lg);
+        grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+        gap: var(--espacio-xl);
+        padding: var(--espacio-xl) max(16px, calc((100vw - var(--ancho)) / 2 + 32px));
+    }
+
+    .catalog .banner-pagina {
+        padding-inline: 32px;
     }
 
     .seccion-cabecera-fila {
