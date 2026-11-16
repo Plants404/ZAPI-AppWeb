@@ -118,12 +118,16 @@ const ZAPI_FAQ = [
 ];
 
 
+/* Sugerencias rapidas. Las que tienen `pregunta` se le hacen a la IA (con las
+   respuestas fijas como respaldo); las demas usan respuestas fijas al instante. */
 const ZAPI_MENU = [
+    { etiqueta: "Plantas de interior", icono: "potted_plant", clave: "interior",
+        pregunta: "¿Qué plantas de interior tienen? Recomendame las más fáciles de cuidar." },
+    { etiqueta: "Recomendame una planta", icono: "auto_awesome", clave: "recomendar",
+        pregunta: "Quiero que me recomiendes una planta. ¿Qué necesitás saber de mi espacio?" },
     { etiqueta: "Cuidados", icono: "eco", clave: "cuidado" },
     { etiqueta: "Envíos", icono: "local_shipping", clave: "envio" },
-    { etiqueta: "Consultar beneficios", icono: "star", clave: "club" },
-    { etiqueta: "Servicios", icono: "home_repair_service", clave: "servicio" },
-    { etiqueta: "Promociones", icono: "local_offer", clave: "promo" }
+    { etiqueta: "Servicios", icono: "home_repair_service", clave: "servicio" }
 ];
 
 
@@ -676,7 +680,8 @@ function initZapiBot() {
 
         agregarMensaje(
             `¡Hola! 🌿 Soy <strong>${ZAPI_NOMBRE}</strong>, el asistente de ZAPI. ` +
-            "¿En qué te ayudo hoy?",
+            "Puedo recomendarte plantas, contarte cómo cuidarlas y ayudarte con envíos y servicios. " +
+            "¿Qué estás buscando?",
             "bot"
         );
 
@@ -761,7 +766,10 @@ function initZapiBot() {
 
         const item = ZAPI_MENU.find(m => m.clave === clave);
 
-        if (item) responder(item.etiqueta, { usarIA: false });
+        if (!item) return;
+
+        if (item.pregunta) responder(item.pregunta);
+        else responder(item.etiqueta, { usarIA: false });
     });
 
     pintarChips();
