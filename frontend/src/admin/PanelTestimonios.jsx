@@ -1,6 +1,6 @@
-function PanelTestimonios() {
+function PanelTestimonios({ activo }) {
   return (
-      <section className="admin-panel gestion-panel" id="panelTestimonios" hidden aria-label="Testimonios">
+      <section className="admin-panel gestion-panel" id="panelTestimonios" hidden={!activo} aria-label="Testimonios">
         <div className="gestion-encabezado">
           <div>
             <h1>Testimonios</h1>

@@ -695,10 +695,16 @@
     transition: transform .25s ease;
   }
 
+  /* Arreglo de la migración: en celular el cajón nunca volvía a entrar en pantalla. */
+  .admin-sidebar--abierto {
+    transform: translateX(0);
+  }
+
+  /* Arreglo de la migración: el fondo oscuro empieza donde termina el cajón (antes lo tapaba y no dejaba tocar el menú). */
   .admin-sidebar-fondo {
     position: fixed;
     top: 0;
-    left: 0;
+    left: 260px;
     right: 0;
     bottom: 0;
     background: rgba(0,0,0,.3);

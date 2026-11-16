@@ -1,6 +1,6 @@
-function PanelPedidos() {
+function PanelPedidos({ activo }) {
   return (
-      <section className="admin-panel" id="panelPedidos" hidden aria-label="Pedidos y ventas">
+      <section className="admin-panel" id="panelPedidos" hidden={!activo} aria-label="Pedidos y ventas">
         <div className="admin-panel-cabecera">
           <h1>Pedidos y ventas</h1>
           <p>Listado de pedidos con filtros y paginación.</p>

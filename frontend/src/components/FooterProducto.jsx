@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import Icono from './Icono.jsx'
+import ContadorCarrito from './ContadorCarrito.jsx'
 
 // Botón flotante del carrito y pie chico de la ficha de producto.
 function FooterProducto() {
@@ -8,7 +9,7 @@ function FooterProducto() {
       <Link className="cart-link-float" to="/carrito" id="cartLinkFloat">
         <Icono nombre="shopping_bag" />
         <span className="cart-link-text">Ver carrito</span>
-        <span id="cartCountFloat" className="cart-count" data-cart-count>0</span>
+        <ContadorCarrito id="cartCountFloat" />
       </Link>
       <footer className="footer-producto">
         <p>ZAPI</p>
