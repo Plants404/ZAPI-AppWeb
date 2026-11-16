@@ -25,6 +25,15 @@ function colorMarca(valor, campo) {
     return valor.trim();
 }
 
+const TIPOGRAFIAS = ['bebas-inter', 'serif-inter'];
+const BOTONES = ['redondeado', 'suave', 'recto'];
+
+function opcionDeLista(valor, lista, campo) {
+    if (valor === undefined || valor === null || valor === '') return lista[0];
+    if (!lista.includes(valor)) throw new HttpError(400, `El campo ${campo} no es válido.`);
+    return valor;
+}
+
 function validarEstilo(estilo) {
     if (!estilo || typeof estilo !== 'object') {
         throw new HttpError(400, 'El estilo del sitio no es válido.');
@@ -33,6 +42,8 @@ function validarEstilo(estilo) {
         titulo: textoSitio(estilo.titulo, 'titulo'),
         subtitulo: textoSitio(estilo.subtitulo, 'subtitulo'),
         boton: textoSitio(estilo.boton, 'boton'),
+        tipografia: opcionDeLista(estilo.tipografia, TIPOGRAFIAS, 'tipografia'),
+        botones: opcionDeLista(estilo.botones, BOTONES, 'botones'),
         colores: {
             primario: colorMarca(estilo.colores.primario, 'colores.primario'),
             secundario: colorMarca(estilo.colores.secundario, 'colores.secundario'),
@@ -258,7 +269,7 @@ function crearRouterPublicado(getDatabase) {
             'id', 'slug', 'nombre', 'categoria', 'imagen', 'imagenes',
             'descripcion', 'precioBase', 'stock', 'destacado', 'infoDeVenta'
         ];
-        const camposEstilo = ['titulo', 'subtitulo', 'boton'];
+        const camposEstilo = ['titulo', 'subtitulo', 'boton', 'tipografia', 'botones'];
         const coloresPublicos = ['primario', 'secundario', 'acento'];
         const estilo = Object.fromEntries(
             camposEstilo

@@ -50,6 +50,7 @@ const MAX_IMAGENES = 12;
 const MAX_INFO = 8;
 const MAX_BYTES_IMAGEN = 1024 * 1024;
 const TIPOS_IMAGEN = ['image/jpeg', 'image/png', 'image/webp'];
+const CATEGORIAS_IMAGEN = ['portadas', 'productos', 'servicios', 'equipo'];
 const RUTA_IMAGEN = /^(public\/img\/[\w.-]{1,120}|\/api\/imagenes\/[a-f0-9]{24}|https:\/\/[^\s"'<>]{4,480})$/;
 
 function texto(valor, campo, max, { obligatorio = false } = {}) {
@@ -227,6 +228,8 @@ function crearRouterImagenesAdmin(getDatabase) {
                 url: `/api/imagenes/${imagen._id}`,
                 tipo: imagen.tipo,
                 bytes: imagen.bytes,
+                nombre: imagen.nombre || '',
+                categoria: imagen.categoria || 'productos',
                 creada: imagen.createdAt
             }))
         });
@@ -244,14 +247,18 @@ function crearRouterImagenesAdmin(getDatabase) {
             }
 
             const db = getDatabase();
-            const documento = { tipo, datos: req.body, bytes: req.body.length, createdAt: new Date() };
+            const categoria = CATEGORIAS_IMAGEN.includes(req.query.categoria) ? req.query.categoria : 'productos';
+            const nombre = String(req.query.nombre || '').replace(/[^\p{L}\p{N} ._-]/gu, '').trim().slice(0, 80);
+            const documento = {
+                tipo, datos: req.body, bytes: req.body.length, categoria, nombre, createdAt: new Date()
+            };
             const { insertedId } = await db.collection('imagenes').insertOne(documento);
             const id = String(insertedId);
 
             await registrarAuditoria(db, req.usuario, 'imagen.subida', null,
                 { id, tipo, bytes: documento.bytes }, `Imagen subida (${documento.bytes} bytes)`);
 
-            res.status(201).json({ id, url: `/api/imagenes/${id}`, bytes: documento.bytes });
+            res.status(201).json({ id, url: `/api/imagenes/${id}`, bytes: documento.bytes, nombre, categoria });
         });
 
     return router;
