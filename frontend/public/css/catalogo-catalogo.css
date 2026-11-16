@@ -1087,3 +1087,43 @@ display: none;
 }
 
 }
+
+/* Efecto al pasar el mouse por una tarjeta: la foto sigue visible y los
+   beneficios suben desde abajo sobre un degradado. En pantallas tactiles
+   (hover: none) se muestran como lista debajo, sin cambios. */
+.product-beneficios-lista {
+    top: auto;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: .35rem;
+    padding: 3.5rem 1rem 1rem;
+    background: linear-gradient(to top, rgba(22, 44, 34, .94) 0%, rgba(22, 44, 34, .82) 55%, rgba(22, 44, 34, 0) 100%);
+    transform: translateY(14px);
+    transition: opacity .3s ease, transform .35s cubic-bezier(.22, 1, .36, 1);
+    pointer-events: none;
+}
+
+.product-beneficio-item {
+    font-size: .86rem;
+    line-height: 1.4;
+}
+
+@media (hover: hover) {
+    .product-card:hover .product-beneficios-lista,
+    .product-card:focus-within .product-beneficios-lista {
+        transform: translateY(0);
+    }
+
+    .product-card:hover .add-cart,
+    .product-card:focus-within .add-cart {
+        transform: scale(1.08);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .product-beneficios-lista,
+    .product-card,
+    .product-visual img {
+        transition: none;
+    }
+}
