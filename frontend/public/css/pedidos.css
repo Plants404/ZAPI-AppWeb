@@ -1,10 +1,15 @@
 /* Mis pedidos: historial real guardado en el navegador. */
 
-.pedidos-page {
+.pedidos-contenido {
     width: 100%;
     max-width: var(--ancho);
     margin: 0 auto;
     padding: var(--espacio-lg) 16px var(--espacio-xl);
+}
+
+.pedidos-contenido > h2 {
+    margin: 0 0 var(--espacio-md);
+    color: var(--forest);
 }
 
 .pedidos-heading {
@@ -350,7 +355,7 @@
     line-height: 1.5;
 }
 
-.pedidos-page :focus-visible {
+.pedidos-contenido :focus-visible {
     outline: 2px solid var(--leaf);
     outline-offset: 3px;
 }
@@ -368,7 +373,7 @@
 }
 
 @media (min-width: 600px) {
-    .pedidos-page {
+    .pedidos-contenido {
         padding-right: var(--espacio-md);
         padding-left: var(--espacio-md);
     }
@@ -421,7 +426,7 @@
 }
 
 @media (min-width: 1024px) {
-    .pedidos-page {
+    .pedidos-contenido {
         padding-right: 32px;
         padding-left: 32px;
     }

@@ -105,7 +105,7 @@ function hojaMenu(raiz, seccion) {
 }
 
 function pie(raiz, archivo) {
-    if (archivo === 'carrito.html' || archivo === 'pedidos.html') {
+    if (archivo === 'carrito.html') {
         return `<footer class="cart-footer">
     <p>ZAPI · Vivero Agroecológico · Precios sujetos a disponibilidad</p>
     <nav class="cart-footer-nav" aria-label="Paginas del sitio">
@@ -365,7 +365,7 @@ ${jsonLd ? `    ${jsonLd}\n` : ''}</head>
 <body class="pagina-${seccion} ${claseBody}" data-raiz="${raiz}"${bodyAttrs ? ' ' + bodyAttrs : ''}>
 ${cabecera(seccion, raiz, fichaProducto)}
 ${hojaMenu(raiz, seccion)}
-<main id="contenido" tabindex="-1"${archivo === 'pedidos.html' ? ' class="pedidos-page"' : ''}>
+<main id="contenido" tabindex="-1">
 ${contenido}
 </main>
 ${fichaProducto ? `<a class="cart-link-float" href="${raiz}/carrito.html" id="cartLinkFloat">
