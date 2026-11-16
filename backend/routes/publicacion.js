@@ -4,9 +4,10 @@ const express = require('express');
 const { HttpError } = require('../lib/http-error.js');
 const { requerirAdmin } = require('../lib/auth.js');
 const { registrarAuditoria } = require('../lib/auditoria.js');
+const { validarContenido, comprobarImagenes } = require('../lib/contenido.js');
 
 const COLOR_HEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-const LIMITE_TEXTO = 120;
+const LIMITE_TEXTO = 300;
 
 function textoSitio(valor, campo) {
     if (typeof valor !== 'string') throw new HttpError(400, `El campo ${campo} no es válido.`);
@@ -77,6 +78,8 @@ function crearRouter(getDatabase) {
     router.post('/borrador', requerirAdmin(getDatabase), async (req, res) => {
         const db = getDatabase();
         const { estilo, catalogo } = req.body || {};
+        const contenido = validarContenido((req.body || {}).contenido);
+        await comprobarImagenes(db, contenido);
 
         const estiloLimpio = validarEstilo(estilo);
         if (!Array.isArray(catalogo) || catalogo.length === 0) {
@@ -91,6 +94,7 @@ function crearRouter(getDatabase) {
             {
                 $set: {
                     estilo: estiloLimpio,
+                    contenido,
                     catalogo: catalogoLimpio,
                     actualizadoPor: req.usuario,
                     actualizadoEn: new Date()
@@ -125,6 +129,7 @@ function crearRouter(getDatabase) {
             _id: `publicacion-${version}`,
             version,
             estilo: borrador.estilo,
+            contenido: borrador.contenido || {},
             catalogo: borrador.catalogo,
             publicadoPor: {
                 id: req.usuario.id,
@@ -142,6 +147,7 @@ function crearRouter(getDatabase) {
                 $set: {
                     version,
                     estilo: borrador.estilo,
+                    contenido: borrador.contenido || {},
                     catalogo: borrador.catalogo,
                     publicadoPor: snapshot.publicadoPor,
                     publicadoEn: snapshot.publicadoEn
@@ -217,6 +223,7 @@ function crearRouter(getDatabase) {
             {
                 $set: {
                     estilo: entrada.estilo,
+                    contenido: entrada.contenido || {},
                     catalogo: entrada.catalogo,
                     restauradoDe: version,
                     restauradoPor: req.usuario,
@@ -268,6 +275,7 @@ function crearRouterPublicado(getDatabase) {
         res.json({
             version: publicado.version,
             estilo,
+            contenido: publicado.contenido || {},
             catalogo: (publicado.catalogo || [])
                 .filter(producto => producto.active !== false && producto.visible !== false)
                 .map(producto => Object.fromEntries(

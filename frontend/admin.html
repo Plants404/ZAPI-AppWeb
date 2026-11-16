@@ -236,50 +236,60 @@
             <section class="admin-panel" id="panelEstilo" hidden aria-label="Estilo del sitio">
                 <div class="admin-panel-cabecera">
                     <h1>Estilo del sitio</h1>
-                    <p>Personalizá los textos y colores de marca de la portada de ZAPI.</p>
+                    <p>Editá los textos, las imágenes y los colores de cada página. Los cambios quedan en borrador hasta que los publiques.</p>
                 </div>
 
                 <div class="admin-bloque">
                     <form id="formEstilo" novalidate>
-                        <div class="admin-campo">
-                            <label class="campo-label" for="estiloTitulo">Título de la portada <span aria-hidden="true">*</span></label>
-                            <input class="campo-input" id="estiloTitulo" name="titulo" type="text" maxlength="120" required>
-                            <span class="campo-error" id="errorEstiloTitulo"></span>
+                        <div class="estilo-pestanas" id="estiloPestanas" role="tablist" aria-label="Páginas del sitio"></div>
+
+                        <div id="estiloPaginas" class="estilo-paginas" aria-live="polite"></div>
+
+                        <div id="estiloMarca" class="estilo-paginas" hidden>
+                            <section class="estilo-seccion">
+                                <h2 class="estilo-seccion-titulo">Colores de la marca</h2>
+                                <p class="admin-ayuda">Se aplican a botones, títulos y detalles de todo el sitio.</p>
+                                <div class="admin-campo-grid">
+                                    <div class="admin-campo">
+                                        <label class="campo-label" for="estiloColorPrimario">Color primario</label>
+                                        <input class="campo-input campo-color" id="estiloColorPrimario" name="primario" type="color" value="#1f3a2e">
+                                        <span class="campo-error" id="errorEstiloColorPrimario"></span>
+                                    </div>
+                                    <div class="admin-campo">
+                                        <label class="campo-label" for="estiloColorSecundario">Color secundario</label>
+                                        <input class="campo-input campo-color" id="estiloColorSecundario" name="secundario" type="color" value="#3d6b4f">
+                                        <span class="campo-error" id="errorEstiloColorSecundario"></span>
+                                    </div>
+                                    <div class="admin-campo">
+                                        <label class="campo-label" for="estiloColorAcento">Color acento</label>
+                                        <input class="campo-input campo-color" id="estiloColorAcento" name="acento" type="color" value="#4a7c59">
+                                        <span class="campo-error" id="errorEstiloColorAcento"></span>
+                                    </div>
+                                </div>
+                                <p class="admin-ayuda" id="estiloContrastes"></p>
+                            </section>
                         </div>
-                        <div class="admin-campo">
-                            <label class="campo-label" for="estiloSubtitulo">Subtítulo de la portada <span aria-hidden="true">*</span></label>
-                            <input class="campo-input" id="estiloSubtitulo" name="subtitulo" type="text" maxlength="120" required>
-                            <span class="campo-error" id="errorEstiloSubtitulo"></span>
+
+                        <div id="estiloImagenes" class="estilo-paginas" hidden>
+                            <section class="estilo-seccion">
+                                <h2 class="estilo-seccion-titulo">Biblioteca de imágenes</h2>
+                                <p class="admin-ayuda">Subí fotos una sola vez y usalas donde quieras. Se reducen solas para que el sitio cargue rápido.</p>
+                                <div class="estilo-biblioteca-acciones">
+                                    <button class="boton boton-primario" id="estiloSubirImagen" type="button">Subir imágenes</button>
+                                </div>
+                                <div class="estilo-biblioteca" id="estiloBibliotecaPagina"></div>
+                            </section>
                         </div>
-                        <div class="admin-campo">
-                            <label class="campo-label" for="estiloBoton">Texto del botón de portada <span aria-hidden="true">*</span></label>
-                            <input class="campo-input" id="estiloBoton" name="boton" type="text" maxlength="120" required>
-                            <span class="campo-error" id="errorEstiloBoton"></span>
-                        </div>
-                        <div class="admin-campo-grid">
-                            <div class="admin-campo">
-                                <label class="campo-label" for="estiloColorPrimario">Color primario</label>
-                                <input class="campo-input campo-color" id="estiloColorPrimario" name="primario" type="color" value="#1f3a2e">
-                                <span class="campo-error" id="errorEstiloColorPrimario"></span>
-                            </div>
-                            <div class="admin-campo">
-                                <label class="campo-label" for="estiloColorSecundario">Color secundario</label>
-                                <input class="campo-input campo-color" id="estiloColorSecundario" name="secundario" type="color" value="#3d6b4f">
-                                <span class="campo-error" id="errorEstiloColorSecundario"></span>
-                            </div>
-                            <div class="admin-campo">
-                                <label class="campo-label" for="estiloColorAcento">Color acento</label>
-                                <input class="campo-input campo-color" id="estiloColorAcento" name="acento" type="color" value="#4a7c59">
-                                <span class="campo-error" id="errorEstiloColorAcento"></span>
-                            </div>
-                        </div>
+
                         <p class="formulario-estado" id="estadoEstilo" role="status" aria-live="polite" hidden></p>
-                        <div class="admin-panel-herramientas">
+                        <div class="admin-panel-herramientas estilo-herramientas">
+                            <span class="estilo-cambios" id="estiloCambios" aria-live="polite"></span>
                             <button class="boton boton-primario" id="btnGuardarBorrador" type="button">Guardar borrador</button>
                             <button class="boton boton-texto" id="btnVistaPrevia" type="button"><span class="material-symbols-outlined" aria-hidden="true">visibility</span> Vista previa</button>
                             <button class="boton boton-primario" id="btnPublicar" type="button">Publicar</button>
                         </div>
                     </form>
+                    <input type="file" id="estiloArchivos" accept="image/jpeg,image/png,image/webp" multiple hidden>
                 </div>
 
                 <div class="admin-bloque">
@@ -389,9 +399,23 @@
             <div class="admin-dialog-caja admin-dialog-previa">
                 <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
                 <span class="etiqueta">Estilo del sitio</span>
-                <h2 id="dialogoVistaPreviaTitulo">Vista previa de la portada</h2>
-                <p class="admin-ayuda">Así se vería la portada con tus cambios. Todavía no está publicada.</p>
-                <iframe class="admin-previa-marco" id="marcoVistaPrevia" name="zapi-vista-previa" title="Vista previa de la portada" src="about:blank"></iframe>
+                <h2 id="dialogoVistaPreviaTitulo">Vista previa</h2>
+                <p class="admin-ayuda" id="vistaPreviaAyuda">Así se vería la página con tus cambios. Todavía no está publicada.</p>
+                <iframe class="admin-previa-marco" id="marcoVistaPrevia" name="zapi-vista-previa" title="Vista previa de la página" src="about:blank"></iframe>
+            </div>
+        </dialog>
+
+        <dialog class="admin-dialog" id="dialogoBiblioteca" aria-labelledby="dialogoBibliotecaTitulo">
+            <div class="admin-dialog-caja admin-dialog-ancho">
+                <button class="admin-dialog-cerrar" type="button" data-cerrar-dialogo aria-label="Cerrar"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                <span class="etiqueta">Estilo del sitio</span>
+                <h2 id="dialogoBibliotecaTitulo">Elegí una imagen</h2>
+                <p class="admin-ayuda" id="bibliotecaAyuda">Tocá una imagen para usarla, o subí una nueva.</p>
+                <div class="estilo-biblioteca-acciones">
+                    <button class="boton boton-secundario" id="bibliotecaSubir" type="button">Subir imagen nueva</button>
+                    <span class="admin-ayuda" id="bibliotecaEstado" role="status" aria-live="polite"></span>
+                </div>
+                <div class="estilo-biblioteca" id="bibliotecaGrilla"></div>
             </div>
         </dialog>
 
@@ -488,6 +512,7 @@
     <script src="./public/js/pedidos-estado.js" defer></script>
     <script src="./public/js/modal.js" defer></script>
     <script src="./public/js/compat-restauracion.js" defer></script>
+    <script src="./public/js/esquema-editable.js" defer></script>
     <script src="./public/js/admin.js" defer></script>
 </body>
 </html>

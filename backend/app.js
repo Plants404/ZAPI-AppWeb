@@ -110,7 +110,7 @@ async function crearApp(opciones = {}) {
 
         next();
     });
-    app.use(express.json({ limit: '32kb', strict: true }));
+    app.use(express.json({ limit: '96kb', strict: true }));
 
     app.use((req, res, next) => {
         const esEscritura = req.method === 'POST' && RUTAS_ESCRITURA.some(ruta => req.originalUrl.startsWith(ruta));
