@@ -19,7 +19,7 @@ const PRODUCTOS = [
         stock: 12,
         destacado: true,
         infoDeVenta: [
-            "Mata de 20 cm lista para plantar",
+            "Plantala hoy y tené albahaca fresca por más de 8 semanas",
             "Rinde más de 8 semanas de cosecha continua",
             "Incluye guía de cuidados digital"
         ]
@@ -38,7 +38,7 @@ const PRODUCTOS = [
         stock: 8,
         destacado: false,
         infoDeVenta: [
-            "Resiembra: hasta 4 cortes por planta",
+            "Hasta 4 cortes por planta: una compra, cosecha tras cosecha",
             "Cultivo 100% agroecológico",
             "Incluye guía de cuidados digital"
         ]
@@ -65,7 +65,7 @@ const PRODUCTOS = [
         stock: 15,
         destacado: true,
         infoDeVenta: [
-            "Viene en maceta cerámica",
+            "Ya viene en maceta cerámica, lista para lucir en tu casa",
             "Riego: 1 vez cada 15 días",
             "Ideal para principiantes"
         ]
@@ -88,7 +88,7 @@ const PRODUCTOS = [
         stock: 6,
         destacado: true,
         infoDeVenta: [
-            "Viene en maceta cerámica",
+            "Casi sin cuidados y en maceta cerámica: la vas a querer en cada rincón",
             "Soporta largos períodos sin riego",
             "Purifica el aire de tu hogar"
         ]
@@ -108,7 +108,7 @@ const PRODUCTOS = [
         stock: 10,
         destacado: false,
         infoDeVenta: [
-            "Pack de 6 variedades surtidas",
+            "6 variedades para armar tu rincón verde, con 30% de ahorro",
             "30% más económico que por unidad",
             "Incluye caja de regalo"
         ]
@@ -127,7 +127,7 @@ const PRODUCTOS = [
         stock: 4,
         destacado: false,
         infoDeVenta: [
-            "Viene en maceta decorativa",
+            "En maceta decorativa y con hojas rojas, crema y verde: puro color",
             "Hojas rojas, crema y verde",
             "Incluye guía de cuidados digital"
         ]
@@ -150,7 +150,7 @@ const PRODUCTOS = [
         stock: 5,
         destacado: true,
         infoDeVenta: [
-            "Semillas, sustrato y macetas para empezar",
+            "Todo en un kit para empezar tu huerta hoy mismo",
             "Guía de cultivo paso a paso",
             "Embalaje reciclable, sin plástico de un solo uso"
         ]

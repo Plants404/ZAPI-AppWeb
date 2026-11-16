@@ -56,6 +56,21 @@ export function armarPedido(datos) {
   }
 }
 
+// Convierte el pedido que devuelve el servidor al formato del historial local.
+export function pedidoDesdeServidor(orden) {
+  const envio = orden.envio === null || orden.envio === undefined ? 0 : orden.envio
+  return {
+    id: orden.id,
+    fecha: new Date(orden.fecha).toISOString(),
+    estado: orden.estado || 'pendiente',
+    cliente: armarPedido({ cliente: orden.cliente, lineas: [], subtotal: 0, envio: 0 }).cliente,
+    lineas: orden.lineas.map(l => ({ id: l.id, nombre: l.nombre, precio: l.precio, cantidad: l.cantidad })),
+    subtotal: orden.subtotal,
+    envio,
+    total: orden.total
+  }
+}
+
 export const textoEstadoPedido = estado => ESTADOS_PEDIDO[estado] || ESTADOS_PEDIDO.pendiente
 
 export function eliminarPedido(id) {

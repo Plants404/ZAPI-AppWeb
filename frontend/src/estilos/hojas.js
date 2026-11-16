@@ -7,7 +7,6 @@ import hoja_base from './base.css?inline'
 import hoja_carrito from './carrito.css?inline'
 import hoja_catalogoCatalogo from './catalogo-catalogo.css?inline'
 import hoja_catalogoModal from './catalogo-modal.css?inline'
-import hoja_catalogo from './catalogo.css?inline'
 import hoja_contacto from './contacto.css?inline'
 import hoja_estilosProducto from './estilos-producto.css?inline'
 import hoja_estructura from './estructura.css?inline'
@@ -16,9 +15,7 @@ import hoja_login from './login.css?inline'
 import hoja_nosotros from './nosotros.css?inline'
 import hoja_pedidos from './pedidos.css?inline'
 import hoja_producto from './producto.css?inline'
-import hoja_restauracion from './restauracion.css?inline'
 import hoja_servicios from './servicios.css?inline'
-import hoja_stylecarrito from './stylecarrito.css?inline'
 import hoja_styles from './styles.css?inline'
 import hoja_tokens from './tokens.css?inline'
 import hoja_zapiBot from './zapi-bot.css?inline'
@@ -31,7 +28,6 @@ export const HOJAS = {
   'carrito': hoja_carrito,
   'catalogo-catalogo': hoja_catalogoCatalogo,
   'catalogo-modal': hoja_catalogoModal,
-  'catalogo': hoja_catalogo,
   'contacto': hoja_contacto,
   'estilos-producto': hoja_estilosProducto,
   'estructura': hoja_estructura,
@@ -40,9 +36,7 @@ export const HOJAS = {
   'nosotros': hoja_nosotros,
   'pedidos': hoja_pedidos,
   'producto': hoja_producto,
-  'restauracion': hoja_restauracion,
   'servicios': hoja_servicios,
-  'stylecarrito': hoja_stylecarrito,
   'styles': hoja_styles,
   'tokens': hoja_tokens,
   'zapi-bot': hoja_zapiBot,

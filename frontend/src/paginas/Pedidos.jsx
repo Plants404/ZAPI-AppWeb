@@ -64,7 +64,7 @@ function Pedidos() {
                     <div className="pedido-resumen pedido-total"><span>Total</span><strong>{formatearPrecio(pedido.total)}</strong></div>
                     <div className="pedido-acciones">
                       <button className="boton boton-primario" type="button" onClick={() => abrirWhatsApp(mensajeDePedido(pedido), true)}>
-                        <span className="material-symbols-outlined" aria-hidden="true">whatsapp</span> Reenviar por WhatsApp
+                        <span className="material-symbols-outlined" aria-hidden="true">chat</span> Reenviar por WhatsApp
                       </button>
                       <button className="boton boton-texto" type="button" onClick={() => eliminar(pedido.id)}>
                         <span className="material-symbols-outlined" aria-hidden="true">delete</span> Eliminar del historial
