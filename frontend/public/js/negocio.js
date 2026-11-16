@@ -33,7 +33,7 @@
             servicio: "service_65fes09",
             plantillaContacto: "template_isjvupl",
             plantillaTestimonio: "PEGAR_PLANTILLA_TESTIMONIO",
-            clavePublica: "PEGAR_CLAVE_PUBLICA"
+            clavePublica: "svGiYtyfrTzCv-GhG"
         })
     });
 
