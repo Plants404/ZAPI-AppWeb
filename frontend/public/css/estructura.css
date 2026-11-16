@@ -545,7 +545,8 @@ main:focus {
     }
 
     .catalog .banner-pagina {
-        padding-inline: 32px;
+        width: 100vw;
+        margin-inline: calc(50% - 50vw);
     }
 
     .seccion-cabecera-fila {
