@@ -103,10 +103,16 @@ function crearRouter(getDatabase) {
         /* Pedidos por confirmar. */
         const pedidosPorConfirmar = pedidos.filter(p => p.estado === 'pendiente').length;
 
-        /* Conversión: pedidos confirmados / visitantes únicos. */
-        const visitantesUnicos = 0; /* Se actualiza con la entrega de analítica de clientes. */
+        /* Visitantes únicos: sesiones distintas con alguna vista en los últimos 30 días. */
+        const desde = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const vistas = await db.collection('eventos')
+            .find({ tipo: 'vista_de_pagina', timestamp: { $gte: desde } }, { projection: { idSesion: 1 } })
+            .toArray();
+        const visitantesUnicos = new Set(vistas.map(e => e.idSesion)).size;
+
+        /* Conversión: pedidos confirmados o entregados / visitantes únicos. */
         const conversion = visitantesUnicos
-            ? pedidos.filter(p => p.estado === 'confirmado').length / visitantesUnicos
+            ? validos.filter(p => new Date(p.fecha) >= desde).length / visitantesUnicos
             : null;
 
         res.json({
@@ -197,16 +203,20 @@ function crearRouter(getDatabase) {
                 slug: p.slug,
                 nombre: p.nombre,
                 categoria: p.categoria,
+                imagen: p.imagen || '',
+                imagenes: Array.isArray(p.imagenes) ? p.imagenes : [],
+                descripcion: p.descripcion || '',
+                infoDeVenta: Array.isArray(p.infoDeVenta) ? p.infoDeVenta : [],
                 precioBase: p.precioBase,
                 stock: p.stock,
                 active: !!p.active,
-                visible: !!p.visible,
+                visible: p.visible !== false,
                 destacado: !!p.destacado
             }))
         });
     });
 
-    /* Últimos cambios: lectura de auditoría (solo admin). */
+    /* Registro de actividad: lectura de auditoría (solo admin). */
     router.get('/auditoria', requerirAdmin(getDatabase), async (req, res) => {
         const db = getDatabase();
         const entradas = await db.collection('auditoria')

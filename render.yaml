@@ -3,8 +3,9 @@ services:
     name: zapi-backend
     runtime: node
     plan: free
+    rootDir: backend
     buildCommand: npm ci
-    startCommand: npm run backend
+    startCommand: npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
@@ -18,4 +19,6 @@ services:
       - key: TRUST_PROXY
         value: "1"
       - key: CRON_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
         sync: false

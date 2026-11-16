@@ -26,6 +26,25 @@ async function conEntorno(valores, ejecutar) {
     }
 }
 
+/* Sesión de cliente válida para los pedidos: la compra exige haber iniciado sesión. */
+const COOKIE_CLIENTE = 'sessionId=sesion-cliente';
+
+function sesionesFalsas() {
+    return {
+        async findOne(filtro) {
+            if (filtro._id !== 'sesion-cliente') return null;
+            return {
+                _id: 'sesion-cliente',
+                userId: 'cliente-1',
+                email: 'ana@example.com',
+                rol: 'cliente',
+                nombre: 'Ana',
+                expiresAt: new Date(Date.now() + 3600 * 1000)
+            };
+        }
+    };
+}
+
 function crearBaseFalsa() {
     const productos = [
         { id: 1, slug: 'albahaca', nombre: 'Albahaca', precioBase: 150, stock: 12, active: true }
@@ -108,6 +127,8 @@ function crearBaseFalsa() {
                     }
                 };
             }
+            if (nombre === 'sessions') return sesionesFalsas();
+            if (nombre === 'auditoria') return { async insertOne() { return { insertedId: 'auditoria-falsa' }; } };
             throw new Error(`Colección inesperada: ${nombre}`);
         }
     };
@@ -193,7 +214,7 @@ test('el pedido usa los precios de MongoDB, no los enviados por el cliente', asy
 
     const response = await fetch(`http://127.0.0.1:${server.address().port}/api/orders`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Cookie: COOKIE_CLIENTE },
         body: JSON.stringify({
             cliente: { nombre: 'Ana', telefono: '098 123 456' },
             lineas: [{ id: 1, cantidad: 2, precio: 1, nombre: 'Producto falso' }],
@@ -206,7 +227,7 @@ test('el pedido usa los precios de MongoDB, no los enviados por el cliente', asy
     assert.equal(order.lineas[0].precio, 150);
     assert.equal(order.subtotal, 300);
     assert.equal(order.lineas[0].nombre, 'Albahaca');
-    assert.equal(order.historial[0].usuario, 'sistema');
+    assert.equal(order.historial[0].usuario, 'cliente-1');
 });
 
 test('contacto se guarda y devuelve solo una confirmación pública', async t => {
@@ -229,7 +250,7 @@ test('contacto se guarda y devuelve solo una confirmación pública', async t =>
     assert.deepEqual(Object.keys(await response.json()).sort(), ['id', 'message']);
 });
 
-test('solo publica testimonios aprobados y recibe nuevos como pendientes', async t => {
+test('solo publica testimonios aprobados y publica los nuevos al instante', async t => {
     const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
     t.after(() => server.close());
     await new Promise(resolve => server.once('listening', resolve));
@@ -313,6 +334,8 @@ function crearBaseFalsaConStock() {
                 };
             }
             if (nombre === 'limites') return limitesDe(this);
+            if (nombre === 'sessions') return sesionesFalsas();
+            if (nombre === 'auditoria') return { async insertOne() { return { insertedId: 'auditoria-falsa' }; } };
             throw new Error(`Colección inesperada: ${nombre}`);
         },
         obtenerStock() {
@@ -336,10 +359,10 @@ test('dos pedidos por el ultimo stock no venden de mas', async t => {
     };
 
     const primero = await fetch(url, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo)
+        method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: COOKIE_CLIENTE }, body: JSON.stringify(cuerpo)
     });
     const segundo = await fetch(url, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo)
+        method: 'POST', headers: { 'Content-Type': 'application/json', Cookie: COOKIE_CLIENTE }, body: JSON.stringify(cuerpo)
     });
 
     const estados = [primero.status, segundo.status].sort();
@@ -401,6 +424,8 @@ test('el rollback devuelve el stock cuando una linea falla', async t => {
                 };
             }
             if (nombre === 'limites') return limitesDe(this);
+            if (nombre === 'sessions') return sesionesFalsas();
+            if (nombre === 'auditoria') return { async insertOne() { return { insertedId: 'auditoria-falsa' }; } };
             throw new Error(`Colección inesperada: ${nombre}`);
         }
     };
@@ -412,7 +437,7 @@ test('el rollback devuelve el stock cuando una linea falla', async t => {
 
     const respuesta = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Cookie: COOKIE_CLIENTE },
         body: JSON.stringify({
             cliente: { nombre: 'Ana', telefono: '098 123 456' },
             lineas: [
@@ -524,7 +549,7 @@ test('CORS exige orígenes válidos en producción y usa localhost en desarrollo
         VERCEL: undefined,
         FRONTEND_ORIGINS: ''
     }, async () => {
-        assert.deepEqual(validarOrigenes(), ['http://localhost:5500', 'http://127.0.0.1:5500']);
+        assert.deepEqual(validarOrigenes(), ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5500', 'http://127.0.0.1:5500']);
     });
 });
 
@@ -580,4 +605,21 @@ test('auth y admin envían Cache-Control no-store', async t => {
     assert.equal(admin.status, 401);
     assert.equal(auth.headers.get('cache-control'), 'no-store');
     assert.equal(admin.headers.get('cache-control'), 'no-store');
+});
+
+test('crear un pedido exige haber iniciado sesión', async t => {
+    const server = http.createServer(await crearApp({ getDatabase: crearBaseFalsa })).listen(0);
+    t.after(() => server.close());
+    await new Promise(resolve => server.once('listening', resolve));
+
+    const response = await fetch(`http://127.0.0.1:${server.address().port}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            cliente: { nombre: 'Ana', telefono: '098 123 456' },
+            lineas: [{ id: 1, cantidad: 1 }]
+        })
+    });
+
+    assert.equal(response.status, 401);
 });
