@@ -5,7 +5,11 @@
 
 const { HttpError } = require('./http-error.js');
 
-const MODELO_POR_DEFECTO = 'gemini-2.5-flash-lite';
+/* Los alias "-latest" apuntan siempre al modelo vigente, asi que no se
+   rompen cuando Google retira una version. Si el primero no existe (404),
+   se prueba el siguiente. */
+const MODELOS_POR_DEFECTO = ['gemini-flash-lite-latest', 'gemini-flash-latest'];
+const MODELO_POR_DEFECTO = MODELOS_POR_DEFECTO[0];
 const MAX_MENSAJES = 8;
 const MAX_LARGO_MENSAJE = 500;
 const MAX_PRODUCTOS_EN_PROMPT = 60;
@@ -69,10 +73,10 @@ function armarInstrucciones(productos, negocio) {
     ].join('\n');
 }
 
-/* Llama a la API de Gemini y devuelve el texto de la respuesta. */
-async function consultarGemini({ instrucciones, mensajes, apiKey, modelo, fetchImpl = fetch }) {
+/* Llama a la API de Gemini con un modelo y devuelve el texto. */
+async function consultarModelo({ instrucciones, mensajes, apiKey, modelo, fetchImpl }) {
     const url = 'https://generativelanguage.googleapis.com/v1beta/models/'
-        + `${encodeURIComponent(modelo || MODELO_POR_DEFECTO)}:generateContent`;
+        + `${encodeURIComponent(modelo)}:generateContent`;
 
     const respuesta = await fetchImpl(url, {
         method: 'POST',
@@ -89,7 +93,11 @@ async function consultarGemini({ instrucciones, mensajes, apiKey, modelo, fetchI
     });
 
     if (!respuesta.ok) {
-        throw new HttpError(502, `Gemini respondió ${respuesta.status}.`);
+        let detalle = '';
+        try { detalle = (await respuesta.text()).slice(0, 200); } catch { /* sin cuerpo */ }
+        const error = new HttpError(502, `Gemini respondió ${respuesta.status} (${modelo}): ${detalle}`);
+        error.estadoGemini = respuesta.status;
+        throw error;
     }
 
     const datos = await respuesta.json();
@@ -100,6 +108,23 @@ async function consultarGemini({ instrucciones, mensajes, apiKey, modelo, fetchI
     if (!texto) throw new HttpError(502, 'Gemini no devolvió texto.');
 
     return texto;
+}
+
+/* Prueba el modelo pedido y, si no existe (404), los de respaldo. */
+async function consultarGemini({ instrucciones, mensajes, apiKey, modelo, fetchImpl = fetch }) {
+    const candidatos = [...new Set([modelo, ...MODELOS_POR_DEFECTO].filter(Boolean))];
+    let ultimoError;
+
+    for (const candidato of candidatos) {
+        try {
+            return await consultarModelo({ instrucciones, mensajes, apiKey, modelo: candidato, fetchImpl });
+        } catch (error) {
+            ultimoError = error;
+            if (error.estadoGemini !== 404) throw error;
+        }
+    }
+
+    throw ultimoError;
 }
 
 module.exports = { validarMensajes, armarInstrucciones, consultarGemini, MODELO_POR_DEFECTO };
