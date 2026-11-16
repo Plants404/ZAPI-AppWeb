@@ -126,7 +126,16 @@ function avisarAgregado(boton, producto) {
 
     boton.classList.add("agregado");
     boton.classList.add("added");
-    boton.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">check</span> ¡Agregado!';
+
+    /* Los botones redondos de las tarjetas solo tienen un icono: ahi se muestra
+       solo el tilde, porque el texto no entra. El aviso flotante dice el resto. */
+    const iconoOriginal = boton.querySelector(".material-symbols-outlined");
+    const soloIcono = Boolean(iconoOriginal)
+        && boton.textContent.replace(iconoOriginal.textContent, "").trim() === "";
+
+    boton.innerHTML = soloIcono
+        ? '<span class="material-symbols-outlined" aria-hidden="true">check</span>'
+        : '<span class="material-symbols-outlined" aria-hidden="true">check</span> ¡Agregado!';
 
     window.clearTimeout(boton.dataset.reloj);
 
