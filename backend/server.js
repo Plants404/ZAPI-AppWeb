@@ -2,9 +2,28 @@
 
 const { crearApp } = require('./app.js');
 const { closeDatabase, connectDatabase } = require('./db.js');
+const { PRODUCTOS } = require('../frontend/datos/catalogo.js');
+const { construirOperacionesProductos } = require('./seed.js');
+
+/* Si la base está vacía (primer arranque o base nueva), carga el catálogo
+   del sitio para que el panel y la tienda tengan productos desde el inicio. */
+async function cargarCatalogoInicial(db) {
+    try {
+        const productos = db.collection('products');
+        if (await productos.countDocuments({}, { limit: 1 }) > 0) return;
+
+        await productos.createIndex({ id: 1 }, { unique: true });
+        await productos.createIndex({ slug: 1 }, { unique: true });
+        const resultado = await productos.bulkWrite(construirOperacionesProductos(PRODUCTOS, new Date()));
+        console.log(`Catálogo inicial cargado: ${resultado.upsertedCount} productos.`);
+    } catch (error) {
+        console.error('No se pudo cargar el catálogo inicial:', error.message);
+    }
+}
 
 async function startServer() {
-    await connectDatabase();
+    const db = await connectDatabase();
+    await cargarCatalogoInicial(db);
 
     const port = Number(process.env.PORT) || 5501;
     const host = process.env.HOST || '0.0.0.0';
