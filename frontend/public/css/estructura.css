@@ -264,6 +264,25 @@
     display: none;
 }
 
+/* Insignia del carrito: circulo rojo con el numero en blanco. */
+.cart-count.con-productos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 1.4rem;
+    height: 1.4rem;
+    padding: 0 .25rem;
+    border: 2px solid var(--cream);
+    border-radius: 999px;
+    background: var(--error-strong);
+    color: var(--white);
+    font-size: .72rem;
+    font-weight: 700;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(193, 74, 60, .45);
+}
+
 .cart-count.pop {
     animation: contador-pop .35s ease;
 }
