@@ -19,7 +19,9 @@
 }
 
 .hero-copy h1 {
-    max-width: 13ch;
+    max-width: 14ch;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: .95;
     margin: .4rem 0 1rem;
     color: var(--forest);
 }
@@ -62,7 +64,8 @@
 
 .hero-visual {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 4 / 3;
+    max-height: 78vh;
     border-radius: var(--radio);
     object-fit: cover;
     box-shadow: var(--sombra-md);
@@ -198,9 +201,14 @@
 
 @media (min-width: 768px) {
     .hero-grid {
-        grid-template-columns: minmax(0, 1fr) minmax(0, .85fr);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: var(--espacio-xl);
-        padding: var(--espacio-xl) 24px;
+        padding: var(--espacio-lg) 24px;
+    }
+
+    .hero-visual {
+        aspect-ratio: 5 / 6;
+        max-height: min(640px, 76vh);
     }
 
     .home-products-carousel {
