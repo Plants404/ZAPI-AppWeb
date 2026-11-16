@@ -8,7 +8,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--espacio-md);
-    padding-top: 0;
+    padding-top: var(--espacio-lg);
 }
 
 .nosotros-copy {
@@ -97,21 +97,36 @@
 }
 
 .pilares-grid .material-symbols-outlined {
-    color: var(--leaf);
-    font-size: 1.8rem;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: .35rem;
+    border-radius: 50%;
+    background: var(--sand);
+    color: var(--forest);
+    font-size: 1.6rem;
 }
 
 .razones-grid article > span {
-    color: var(--borde);
+    color: var(--leaf);
     font-family: var(--serif);
     font-size: var(--fs-2xl);
     line-height: 1;
 }
 
 .pilares-grid p,
-.razones-grid p {
+.razones-grid p,
+.persona p {
     color: var(--muted);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-md);
+    line-height: 1.55;
+}
+
+.panel p,
+.panel li {
+    font-size: var(--fs-md-lg);
+    line-height: 1.6;
 }
 
 .persona {
@@ -127,10 +142,11 @@
 
 .persona-avatar {
     display: grid;
-    flex: 0 0 3rem;
+    flex: 0 0 4rem;
     place-items: center;
-    width: 3rem;
-    height: 3rem;
+    width: 4rem;
+    height: 4rem;
+    font-size: var(--fs-lg);
     border-radius: 50%;
     background: var(--sand);
     color: var(--forest);
@@ -142,22 +158,19 @@
 }
 
 .persona-rol {
+    margin-bottom: .35rem;
     color: var(--moss);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-md);
     font-weight: 600;
 }
 
-.persona p {
-    color: var(--muted);
-    font-size: var(--fs-sm);
-}
 
 .nosotros-ubicacion {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--espacio-lg);
     align-items: center;
-    padding-top: 0;
+    padding-top: var(--espacio-md);
 }
 
 .ubicacion-info {
