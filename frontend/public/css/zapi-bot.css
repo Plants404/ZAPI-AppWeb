@@ -1437,22 +1437,17 @@
 }
 
 .zapi-chips {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: .4rem;
-    padding: .45rem .9rem;
-    scrollbar-width: none;
-}
-
-.zapi-chips::-webkit-scrollbar {
-    display: none;
+    flex-wrap: wrap;
+    overflow: visible;
+    gap: .35rem;
+    padding: .5rem .9rem;
 }
 
 .zapi-chip {
-    flex: 0 0 auto;
-    min-height: 36px;
-    padding: .3rem .75rem;
-    font-size: .85rem;
+    flex: 0 1 auto;
+    min-height: 34px;
+    padding: .25rem .7rem;
+    font-size: .82rem;
 }
 
 .zapi-humano {
