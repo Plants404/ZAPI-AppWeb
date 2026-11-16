@@ -23,10 +23,11 @@ const {
     crearRouterPublicado
 } = require('./routes/publicacion.js');
 const { crearRouter: crearRouterEventos } = require('./routes/eventos.js');
+const { crearRouter: crearRouterChat } = require('./routes/chat.js');
 
 const ORIGENES_LOCALES = ['http://localhost:5500', 'http://127.0.0.1:5500'];
 
-const RUTAS_ESCRITURA = ['/api/contact', '/api/testimonials', '/api/orders', '/api/auth/login', '/api/auth/registro'];
+const RUTAS_ESCRITURA = ['/api/contact', '/api/testimonials', '/api/orders', '/api/auth/login', '/api/auth/registro', '/api/chat'];
 
 function esProduccion() {
     return process.env.NODE_ENV === 'production' || process.env.VERCEL !== undefined;
@@ -118,6 +119,7 @@ async function crearApp(opciones = {}) {
             let politica = 'contacto';
             if (req.originalUrl.startsWith('/api/testimonials')) politica = 'testimonios';
             if (req.originalUrl.startsWith('/api/orders')) politica = 'pedidos';
+            if (req.originalUrl.startsWith('/api/chat')) politica = 'chat';
             if (req.originalUrl.startsWith('/api/auth/login')) politica = 'login';
             if (req.originalUrl.startsWith('/api/auth/registro')) politica = 'registro';
             return verificarLimite(db, politica, req.ip).then(({ permitido, retryAfter }) => {
@@ -187,6 +189,7 @@ async function crearApp(opciones = {}) {
     app.use('/api/products', crearRouterProductos(obtenerBase));
     app.use('/api/orders', crearRouterPedidos(obtenerBase));
     app.use('/api', crearRouterEnvios(obtenerBase));
+    app.use('/api', crearRouterChat(obtenerBase, { consultar: opciones.consultarChat }));
     app.use('/api', crearRouterEventos(obtenerBase));
     app.use('/api', (req, res, next) => next(new HttpError(404, 'Ruta de API no encontrada.')));
 

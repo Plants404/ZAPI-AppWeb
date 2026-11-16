@@ -174,6 +174,10 @@ el mismo origen de Vercel, incluidas las cookies de sesión del administrador.
    `NODE_ENV=production` y `TRUST_PROXY=1`. Configura `CRON_SECRET` con un
    secreto aleatorio largo (por ejemplo `openssl rand -hex 32`); protege
    `/api/depurar` y `/api/diagnostico-ip`.
+   Para el chatbot con IA (Gemini), crea una clave en Google AI Studio y
+   guardala en Render como `GEMINI_API_KEY` (solo en el servidor, nunca en el
+   frontend). `GEMINI_MODEL` es opcional; sin clave el chat usa las respuestas
+   fijas de Brotecito.
 3. En Vercel, conecta el repositorio con **Root Directory** en la raíz. El
    build corre `npm run vercel-build` y publica `frontend/`. Configura:
 
