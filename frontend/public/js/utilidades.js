@@ -178,7 +178,13 @@ async function enviarCorreoEmailJS(plantilla, parametros) {
         })
     });
 
-    if (!respuesta.ok) throw new Error("No se pudo enviar el correo");
+    if (!respuesta.ok) {
+        let detalle = "";
+
+        try { detalle = (await respuesta.text()).slice(0, 300); } catch { /* sin cuerpo */ }
+
+        throw new Error("EmailJS " + respuesta.status + ": " + (detalle || "No se pudo enviar el correo"));
+    }
 
     return true;
 }

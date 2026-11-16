@@ -178,8 +178,10 @@ async function enviarContacto(evento) {
             asunto: datos.asunto,
             mensaje: datos.mensaje
         });
-    } catch {
-        /* EmailJS sin configurar o con error: no frena el envio. */
+    } catch (error) {
+        /* EmailJS sin configurar o con error: no frena el envio, pero deja
+           el motivo en la consola para poder corregirlo. */
+        console.warn('[ZAPI] No se pudo enviar el correo:', error && error.message);
     }
 
     if (guardada || enviadaPorCorreo) {
