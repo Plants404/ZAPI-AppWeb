@@ -6,7 +6,7 @@
 
 const { ObjectId } = require('mongodb');
 const { HttpError } = require('./http-error.js');
-const esquema = require('../../frontend/public/js/esquema-editable.js');
+const esquema = require('../compartido/esquema-editable.js');
 
 const ID_IMAGEN = /^[a-f0-9]{24}$/;
 const LIMITE_ALT = 160;

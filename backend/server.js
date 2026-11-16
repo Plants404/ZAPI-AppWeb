@@ -2,7 +2,7 @@
 
 const { crearApp } = require('./app.js');
 const { closeDatabase, connectDatabase } = require('./db.js');
-const { PRODUCTOS } = require('../frontend/datos/catalogo.js');
+const { PRODUCTOS } = require('./compartido/catalogo.js');
 const { construirOperacionesProductos } = require('./seed.js');
 const { cargarDemo } = require('./seed-demo.js');
 

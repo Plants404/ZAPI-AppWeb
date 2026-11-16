@@ -3,7 +3,7 @@
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');
 const { validarMensajes, armarInstrucciones, consultarGemini, MODELO_POR_DEFECTO } = require('../lib/chat.js');
-const { NEGOCIO } = require('../../frontend/public/js/negocio.js');
+const { NEGOCIO } = require('../compartido/negocio.js');
 
 function crearRouter(getDatabase, { consultar = consultarGemini } = {}) {
     const router = express.Router();

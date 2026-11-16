@@ -1,0 +1,35 @@
+{
+  "name": "zapi-backend",
+  "version": "3.0.0",
+  "private": true,
+  "description": "API Express + MongoDB (Atlas) de ZAPI.",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --watch server.js",
+    "start": "node --env-file-if-exists=.env server.js",
+    "conectar": "node --env-file-if-exists=.env conectar.js",
+    "seed": "node --env-file-if-exists=.env seed.js",
+    "crear-admin": "node --env-file-if-exists=.env crear-admin.js",
+    "demo": "node --env-file-if-exists=.env seed-demo.js",
+    "depurar": "node --env-file-if-exists=.env depurar.js",
+    "indices": "node --env-file-if-exists=.env indices.js",
+    "probar:cors": "node probar-cors.js",
+    "probar:limiter": "node --env-file-if-exists=.env probar-limiter.js",
+    "probar:flujo": "node --env-file-if-exists=.env probar-flujo.js",
+    "test": "node --test \"test/*.test.js\"",
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.1.0",
+    "mongodb": "^6.17.0",
+    "mongoose": "^9.12.1"
+  },
+  "devDependencies": {
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0"
+  },
+  "main": "server.js"
+}

@@ -1,6 +1,6 @@
 'use strict';
 
-const { PRODUCTOS } = require('../frontend/datos/catalogo.js');
+const { PRODUCTOS } = require('./compartido/catalogo.js');
 const { closeDatabase, connectDatabase } = require('./db.js');
 
 function construirOperacionesProductos(productos, ahora) {
