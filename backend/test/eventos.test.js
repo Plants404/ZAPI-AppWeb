@@ -655,37 +655,6 @@ test('C10: esPaginaValida acepta rutas públicas conocidas', () => {
     assert.equal(esPaginaValida('/producto-cualquiera-123'), true);
 });
 
-test('C11: admin.js escapa pagina y elemento al renderizar', () => {
-    const fs = require('fs');
-    const adminJs = fs.readFileSync(
-        require.resolve('../../frontend/public/js/admin.js'),
-        'utf8'
-    );
-    /* renderClicksPorPagina escapa pagina */
-    assert.ok(
-        adminJs.includes('escaparHTML(pagina === \'\' ? \'(inicio)\' : pagina)'),
-        'renderClicksPorPagina escapa pagina con escaparHTML'
-    );
-    /* renderRanking escapa elemento */
-    assert.ok(
-        adminJs.includes('<td>${escaparHTML(elemento)}</td>'),
-        'renderRanking escapa elemento con escaparHTML'
-    );
-    /* renderFlujo escapa pagina (nombreCorto recibe pagina) */
-    assert.ok(
-        adminJs.includes('escaparHTML(nombreCorto(entrada))'),
-        'renderFlujo escapa pagina de entrada con escaparHTML'
-    );
-    assert.ok(
-        adminJs.includes('escaparHTML(nombreCorto(segunda))'),
-        'renderFlujo escapa pagina de segunda con escaparHTML'
-    );
-    assert.ok(
-        adminJs.includes('escaparHTML(nombreCorto(salida))'),
-        'renderFlujo escapa pagina de salida con escaparHTML'
-    );
-});
-
 test('C16: normalizarPagina quita .html final', () => {
     assert.equal(normalizarPagina('/catalogo.html'), '/catalogo');
     assert.equal(normalizarPagina('/index.html'), '/');

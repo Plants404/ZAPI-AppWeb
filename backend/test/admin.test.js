@@ -49,7 +49,7 @@ function coincide(item, filtro) {
     return true;
 }
 
-function crearBaseFalsa({ orders = [], products = [], sessions = [], users = [] } = {}) {
+function crearBaseFalsa({ orders = [], products = [], sessions = [], users = [], eventos = [] } = {}) {
     return {
         async command() {
             return { ok: 1 };
@@ -59,6 +59,7 @@ function crearBaseFalsa({ orders = [], products = [], sessions = [], users = [] 
                 : nombre === 'products' ? products
                 : nombre === 'sessions' ? sessions
                 : nombre === 'users' ? users
+                : nombre === 'eventos' ? eventos
                 : [];
 
             return {
@@ -296,4 +297,46 @@ test('productos con sesión de admin incluye productos inactivos', async t => {
     assert.ok(inactivo);
     assert.equal(inactivo.active, false);
     assert.equal(inactivo.stock, 0);
+});
+
+test('resumen calcula visitantes únicos y conversión desde la analítica', async t => {
+    const ahora = new Date();
+    const base = crearBaseFalsa({
+        orders: [
+            { id: 1, fecha: ahora, estado: 'entregado', canal: 'web', cliente: { nombre: 'Ana' }, lineas: [], total: 1000 }
+        ],
+        eventos: [
+            { tipo: 'vista_de_pagina', idSesion: 's1', timestamp: ahora },
+            { tipo: 'vista_de_pagina', idSesion: 's1', timestamp: ahora },
+            { tipo: 'vista_de_pagina', idSesion: 's2', timestamp: ahora },
+            { tipo: 'vista_de_pagina', idSesion: 's3', timestamp: ahora },
+            { tipo: 'vista_de_pagina', idSesion: 's4', timestamp: ahora }
+        ]
+    });
+    base.collection('sessions').insertOne(sesion('admin-1', 'admin'));
+    const { server, url } = await iniciar(base);
+    t.after(() => server.close());
+
+    const datos = await (await fetchAdmin(url, '/resumen', 'admin-1')).json();
+    assert.equal(datos.visitantesUnicos, 4);
+    assert.equal(datos.conversion, 0.25);
+});
+
+test('analítica y clientes responden con datos calculados para el admin', async t => {
+    const ahora = new Date();
+    const base = crearBaseFalsa({
+        orders: [{ id: 1, fecha: ahora, estado: 'entregado', canal: 'web', total: 500, cliente: { nombre: 'Ana', telefono: '099111222' }, lineas: [{ id: 'a', nombre: 'Albahaca', cantidad: 1 }] }],
+        eventos: [{ tipo: 'vista_de_pagina', idSesion: 's1', pagina: '/', dispositivo: 'movil', timestamp: ahora }]
+    });
+    base.collection('sessions').insertOne(sesion('admin-1', 'admin'));
+    const { server, url } = await iniciar(base);
+    t.after(() => server.close());
+
+    const analitica = await (await fetch(`${url}/api/admin/analitica?dias=7`, { headers: { Cookie: 'sessionId=admin-1' } })).json();
+    assert.equal(analitica.dias, 7);
+    assert.equal(analitica.indicadores.actual.visitas, 1);
+    const clientes = await (await fetch(`${url}/api/admin/clientes`, { headers: { Cookie: 'sessionId=admin-1' } })).json();
+    assert.equal(clientes.segmentos.todos, 1);
+    const sinSesion = await fetch(`${url}/api/admin/clientes`);
+    assert.equal(sinSesion.status, 401);
 });

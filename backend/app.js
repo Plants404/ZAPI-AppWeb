@@ -7,21 +7,28 @@ const { HttpError } = require('./lib/http-error.js');
 const { verificarLimite } = require('./lib/limiter.js');
 const { depurarPedidos } = require('./depurar.js');
 const { crearRouter: crearRouterProductos } = require('./routes/products.js');
-const { crearRouterAdmin: crearRouterAdminProductos } = require('./routes/products.js');
+const {
+    crearRouterAdmin: crearRouterAdminProductos,
+    crearRouterImagenesAdmin,
+    crearRouterImagenes
+} = require('./routes/products.js');
 const { crearRouter: crearRouterPedidos } = require('./routes/orders.js');
 const { crearRouter: crearRouterEnvios } = require('./routes/submissions.js');
 const { crearRouter: crearRouterAuth } = require('./routes/auth.js');
 const { crearRouter: crearRouterAdmin } = require('./routes/admin.js');
+const { crearRouter: crearRouterGestion } = require('./routes/gestion.js');
 const { crearRouterAdmin: crearRouterAdminOperaciones } = require('./routes/orders.js');
 const {
     crearRouter: crearRouterPublicacion,
     crearRouterPublicado
 } = require('./routes/publicacion.js');
 const { crearRouter: crearRouterEventos } = require('./routes/eventos.js');
+const { crearRouter: crearRouterChat } = require('./routes/chat.js');
 
-const ORIGENES_LOCALES = ['http://localhost:5500', 'http://127.0.0.1:5500'];
+/* En local: el frontend viejo (5500) y el nuevo de Vite/React (5173). */
+const ORIGENES_LOCALES = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5500', 'http://127.0.0.1:5500'];
 
-const RUTAS_ESCRITURA = ['/api/contact', '/api/testimonials', '/api/orders', '/api/auth/login', '/api/auth/registro'];
+const RUTAS_ESCRITURA = ['/api/contact', '/api/testimonials', '/api/orders', '/api/auth/login', '/api/auth/registro', '/api/chat'];
 
 function esProduccion() {
     return process.env.NODE_ENV === 'production' || process.env.VERCEL !== undefined;
@@ -105,7 +112,7 @@ async function crearApp(opciones = {}) {
 
         next();
     });
-    app.use(express.json({ limit: '32kb', strict: true }));
+    app.use(express.json({ limit: '96kb', strict: true }));
 
     app.use((req, res, next) => {
         const esEscritura = req.method === 'POST' && RUTAS_ESCRITURA.some(ruta => req.originalUrl.startsWith(ruta));
@@ -113,6 +120,7 @@ async function crearApp(opciones = {}) {
             let politica = 'contacto';
             if (req.originalUrl.startsWith('/api/testimonials')) politica = 'testimonios';
             if (req.originalUrl.startsWith('/api/orders')) politica = 'pedidos';
+            if (req.originalUrl.startsWith('/api/chat')) politica = 'chat';
             if (req.originalUrl.startsWith('/api/auth/login')) politica = 'login';
             if (req.originalUrl.startsWith('/api/auth/registro')) politica = 'registro';
             return verificarLimite(db, politica, req.ip).then(({ permitido, retryAfter }) => {
@@ -173,12 +181,16 @@ async function crearApp(opciones = {}) {
     app.use('/api/auth', crearRouterAuth(obtenerBase));
     app.use('/api/admin', crearRouterAdmin(obtenerBase));
     app.use('/api/admin', crearRouterAdminOperaciones(obtenerBase));
-    app.use('/api/admin/products', crearRouterAdminProductos(obtenerBase));
+    app.use('/api/admin', crearRouterGestion(obtenerBase));
+    app.use('/api/admin/productos', crearRouterAdminProductos(obtenerBase));
+    app.use('/api/admin/imagenes', crearRouterImagenesAdmin(obtenerBase));
+    app.use('/api/imagenes', crearRouterImagenes(obtenerBase));
     app.use('/api/admin/publicacion', crearRouterPublicacion(obtenerBase));
     app.use('/api', crearRouterPublicado(obtenerBase));
     app.use('/api/products', crearRouterProductos(obtenerBase));
     app.use('/api/orders', crearRouterPedidos(obtenerBase));
     app.use('/api', crearRouterEnvios(obtenerBase));
+    app.use('/api', crearRouterChat(obtenerBase, { consultar: opciones.consultarChat }));
     app.use('/api', crearRouterEventos(obtenerBase));
     app.use('/api', (req, res, next) => next(new HttpError(404, 'Ruta de API no encontrada.')));
 

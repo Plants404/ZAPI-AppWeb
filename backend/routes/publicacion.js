@@ -4,9 +4,10 @@ const express = require('express');
 const { HttpError } = require('../lib/http-error.js');
 const { requerirAdmin } = require('../lib/auth.js');
 const { registrarAuditoria } = require('../lib/auditoria.js');
+const { validarContenido, comprobarImagenes } = require('../lib/contenido.js');
 
 const COLOR_HEX = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
-const LIMITE_TEXTO = 120;
+const LIMITE_TEXTO = 300;
 
 function textoSitio(valor, campo) {
     if (typeof valor !== 'string') throw new HttpError(400, `El campo ${campo} no es válido.`);
@@ -24,6 +25,15 @@ function colorMarca(valor, campo) {
     return valor.trim();
 }
 
+const TIPOGRAFIAS = ['bebas-inter', 'serif-inter'];
+const BOTONES = ['redondeado', 'suave', 'recto'];
+
+function opcionDeLista(valor, lista, campo) {
+    if (valor === undefined || valor === null || valor === '') return lista[0];
+    if (!lista.includes(valor)) throw new HttpError(400, `El campo ${campo} no es válido.`);
+    return valor;
+}
+
 function validarEstilo(estilo) {
     if (!estilo || typeof estilo !== 'object') {
         throw new HttpError(400, 'El estilo del sitio no es válido.');
@@ -32,6 +42,8 @@ function validarEstilo(estilo) {
         titulo: textoSitio(estilo.titulo, 'titulo'),
         subtitulo: textoSitio(estilo.subtitulo, 'subtitulo'),
         boton: textoSitio(estilo.boton, 'boton'),
+        tipografia: opcionDeLista(estilo.tipografia, TIPOGRAFIAS, 'tipografia'),
+        botones: opcionDeLista(estilo.botones, BOTONES, 'botones'),
         colores: {
             primario: colorMarca(estilo.colores.primario, 'colores.primario'),
             secundario: colorMarca(estilo.colores.secundario, 'colores.secundario'),
@@ -52,7 +64,7 @@ function clonarProducto(p) {
         precioBase: p.precioBase,
         stock: p.stock,
         active: !!p.active,
-        visible: !!p.visible,
+        visible: p.visible !== false,
         destacado: !!p.destacado,
         infoDeVenta: p.infoDeVenta || ''
     };
@@ -77,6 +89,8 @@ function crearRouter(getDatabase) {
     router.post('/borrador', requerirAdmin(getDatabase), async (req, res) => {
         const db = getDatabase();
         const { estilo, catalogo } = req.body || {};
+        const contenido = validarContenido((req.body || {}).contenido);
+        await comprobarImagenes(db, contenido);
 
         const estiloLimpio = validarEstilo(estilo);
         if (!Array.isArray(catalogo) || catalogo.length === 0) {
@@ -91,6 +105,7 @@ function crearRouter(getDatabase) {
             {
                 $set: {
                     estilo: estiloLimpio,
+                    contenido,
                     catalogo: catalogoLimpio,
                     actualizadoPor: req.usuario,
                     actualizadoEn: new Date()
@@ -114,6 +129,9 @@ function crearRouter(getDatabase) {
         if (!borrador) {
             throw new HttpError(400, 'No hay borrador para publicar.');
         }
+        if (!(borrador.catalogo || []).some(p => p.active !== false && p.visible !== false)) {
+            throw new HttpError(400, 'El borrador no tiene productos activos y visibles.');
+        }
 
         const publicadoActual = await db.collection('configuracionPublicada').findOne({ _id: 'publicado' });
         const version = (publicadoActual && publicadoActual.version) ? publicadoActual.version + 1 : 1;
@@ -122,6 +140,7 @@ function crearRouter(getDatabase) {
             _id: `publicacion-${version}`,
             version,
             estilo: borrador.estilo,
+            contenido: borrador.contenido || {},
             catalogo: borrador.catalogo,
             publicadoPor: {
                 id: req.usuario.id,
@@ -139,6 +158,7 @@ function crearRouter(getDatabase) {
                 $set: {
                     version,
                     estilo: borrador.estilo,
+                    contenido: borrador.contenido || {},
                     catalogo: borrador.catalogo,
                     publicadoPor: snapshot.publicadoPor,
                     publicadoEn: snapshot.publicadoEn
@@ -214,6 +234,7 @@ function crearRouter(getDatabase) {
             {
                 $set: {
                     estilo: entrada.estilo,
+                    contenido: entrada.contenido || {},
                     catalogo: entrada.catalogo,
                     restauradoDe: version,
                     restauradoPor: req.usuario,
@@ -248,7 +269,7 @@ function crearRouterPublicado(getDatabase) {
             'id', 'slug', 'nombre', 'categoria', 'imagen', 'imagenes',
             'descripcion', 'precioBase', 'stock', 'destacado', 'infoDeVenta'
         ];
-        const camposEstilo = ['titulo', 'subtitulo', 'boton'];
+        const camposEstilo = ['titulo', 'subtitulo', 'boton', 'tipografia', 'botones'];
         const coloresPublicos = ['primario', 'secundario', 'acento'];
         const estilo = Object.fromEntries(
             camposEstilo
@@ -265,6 +286,7 @@ function crearRouterPublicado(getDatabase) {
         res.json({
             version: publicado.version,
             estilo,
+            contenido: publicado.contenido || {},
             catalogo: (publicado.catalogo || [])
                 .filter(producto => producto.active !== false && producto.visible !== false)
                 .map(producto => Object.fromEntries(

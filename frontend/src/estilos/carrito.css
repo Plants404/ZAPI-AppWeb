@@ -1,0 +1,331 @@
+/* Carrito: productos, progreso de envío y resumen de compra. */
+
+.carrito-pagina {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espacio-lg);
+    align-items: start;
+    width: 100%;
+    max-width: var(--ancho);
+    margin: 0 auto;
+    padding: var(--espacio-lg) 16px var(--espacio-xl);
+}
+
+.carrito-contenido {
+    display: grid;
+    gap: var(--espacio-md);
+    min-width: 0;
+}
+
+.carrito-cabecera {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: var(--espacio-xs);
+}
+
+.carrito-cabecera h1 {
+    margin-top: .2rem;
+}
+
+.carrito-items {
+    display: grid;
+    gap: var(--espacio-sm);
+}
+
+.linea-carrito {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: var(--espacio-sm);
+    align-items: center;
+    min-width: 0;
+    padding: var(--espacio-sm);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    box-shadow: var(--sombra-sm);
+}
+
+.linea-foto {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    border-radius: 8px;
+    background: var(--sand);
+}
+
+.linea-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.linea-datos {
+    display: grid;
+    gap: .15rem;
+    min-width: 0;
+}
+
+.linea-datos h2 {
+    overflow-wrap: anywhere;
+    font-size: var(--fs-xl);
+}
+
+.linea-acciones {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    justify-items: start;
+    gap: var(--espacio-xs);
+    min-width: 0;
+}
+
+.control-cantidad {
+    display: inline-flex;
+    align-items: center;
+    gap: .15rem;
+    padding: .15rem;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-pill);
+    background: var(--cream);
+}
+
+.boton-cantidad {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--forest);
+    cursor: pointer;
+    transition: background-color .2s ease;
+}
+
+.boton-cantidad:hover:not([disabled]) {
+    background: var(--sand);
+}
+
+.boton-cantidad[disabled] {
+    cursor: not-allowed;
+    opacity: .45;
+}
+
+.cantidad-valor {
+    min-width: 1.6rem;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    text-align: center;
+}
+
+.linea-total {
+    display: grid;
+    justify-items: end;
+    color: var(--forest);
+}
+
+.linea-total small {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+.linea-quitar {
+    color: var(--error);
+}
+
+.recomendaciones {
+    padding-top: var(--espacio-md);
+}
+
+.carrito-resumen {
+    display: grid;
+    gap: var(--espacio-sm);
+    min-width: 0;
+    padding: var(--espacio-md);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    background: var(--white);
+    box-shadow: var(--sombra-sm);
+}
+
+.resumen-cabecera h2 {
+    margin-top: .2rem;
+}
+
+.envio-progreso {
+    display: grid;
+    gap: .3rem;
+}
+
+.envio-progreso p {
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+.envio-barra {
+    overflow: hidden;
+    height: .55rem;
+    border-radius: var(--radio-pill);
+    background: var(--sand);
+}
+
+.envio-barra span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--leaf);
+    transition: width .25s ease;
+}
+
+.envio-nota {
+    font-size: var(--fs-xs);
+}
+
+.resumen-lineas {
+    display: grid;
+    gap: .3rem;
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+    font-size: var(--fs-sm);
+}
+
+.resumen-lineas div,
+.resumen-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--espacio-sm);
+}
+
+.resumen-lineas span {
+    color: var(--muted);
+}
+
+.resumen-total {
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+    color: var(--forest);
+    font-weight: 700;
+}
+
+.resumen-total strong {
+    font-size: var(--fs-xl);
+}
+
+.resumen-total small {
+    display: block;
+    color: var(--muted);
+    font-size: var(--fs-xs);
+    font-weight: 400;
+    text-align: right;
+}
+
+.checkout-form {
+    display: grid;
+    gap: .15rem;
+    padding-top: var(--espacio-sm);
+    border-top: 1px solid var(--borde);
+}
+
+.checkout-form h2 {
+    margin-bottom: .3rem;
+    font-family: var(--sans);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.checkout-form .boton {
+    margin-top: var(--espacio-sm);
+}
+
+.resumen-nota {
+    display: flex;
+    align-items: flex-start;
+    gap: .4rem;
+    color: var(--muted);
+    font-size: var(--fs-xs);
+}
+
+.resumen-nota .material-symbols-outlined {
+    flex: 0 0 auto;
+    color: var(--leaf);
+}
+
+@media (min-width: 600px) {
+    .carrito-pagina {
+        padding-right: var(--espacio-md);
+        padding-left: var(--espacio-md);
+    }
+
+    .carrito-cabecera {
+        align-items: flex-end;
+        flex-direction: row;
+        justify-content: space-between;
+        gap: var(--espacio-md);
+    }
+
+    .linea-carrito {
+        grid-template-columns: 76px minmax(0, 1fr) auto;
+    }
+
+    .linea-acciones {
+        grid-column: auto;
+        grid-template-columns: minmax(0, 1fr) auto;
+        justify-items: end;
+    }
+
+    .control-cantidad {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 1024px) {
+    .carrito-pagina {
+        grid-template-columns: minmax(0, 1.5fr) minmax(300px, .9fr);
+        padding-right: 32px;
+        padding-left: 32px;
+    }
+
+    .carrito-resumen {
+        position: sticky;
+        top: calc(var(--header-alto) + var(--espacio-md));
+    }
+}
+
+/* Recomendaciones del carrito: pie con precio y botón dentro de la tarjeta,
+   sin que el botón empuje al precio fuera del borde. */
+#recommendationsList .tarjeta-pie {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--espacio-sm);
+    padding: var(--espacio-sm) var(--espacio-md) var(--espacio-md);
+}
+
+#recommendationsList .tarjeta-pie .product-price {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+#recommendationsList .tarjeta-pie .boton-agregar {
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+    padding: .6rem .9rem;
+    white-space: nowrap;
+}
+
+/* Recomendaciones: tarjetas más compactas (foto apaisada en vez de vertical). */
+#recommendationsList .tarjeta-imagen {
+    aspect-ratio: 4 / 3;
+}
+
+#recommendationsList .tarjeta-cuerpo {
+    gap: .3rem;
+    padding: var(--espacio-sm) var(--espacio-md) 0;
+}

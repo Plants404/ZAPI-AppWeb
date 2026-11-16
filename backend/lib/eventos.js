@@ -24,6 +24,7 @@ const PAGINA_MAX_LONGITUD = 200;
 
 const { esRutaPublicaConocida, normalizarRuta } = require('./paginas-publicas.js');
 
+const PRODUCTO_ID_REGEX = /^[A-Za-z0-9_-]{1,80}$/;
 const UUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
 const ID_SESION_REGEX = /^[A-Za-z0-9-]{8,64}$/;
 
@@ -96,7 +97,7 @@ function normalizarEvento(datos) {
         throw new Error('Dispositivo no válido.');
     }
 
-    return {
+    const evento = {
         tipo,
         idSesion,
         pagina: paginaNormalizada,
@@ -104,6 +105,12 @@ function normalizarEvento(datos) {
         dispositivo,
         timestamp: new Date()
     };
+
+    /* Qué producto se agregó al carrito: solo el identificador, sin datos personales. */
+    if (tipo === 'agregar_al_carrito' && typeof datos.productoId === 'string' && PRODUCTO_ID_REGEX.test(datos.productoId.trim())) {
+        evento.productoId = datos.productoId.trim();
+    }
+    return evento;
 }
 
 function normalizarPagina(pagina) {

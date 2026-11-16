@@ -10,6 +10,10 @@ const {
     esTipoValido,
     normalizarEvento
 } = require('../lib/eventos.js');
+const { calcularAnalitica, calcularClientes } = require('../lib/analitica.js');
+
+const PERIODOS_VALIDOS = [7, 30, 90];
+const DIA_MS = 24 * 60 * 60 * 1000;
 
 function crearRouter(getDatabase) {
     const router = express.Router();
@@ -74,6 +78,43 @@ function crearRouter(getDatabase) {
             porTipo,
             tipos: TIPOS_EVENTO
         });
+    });
+
+    /* Resumen de analítica ya calculado: período actual contra el anterior. */
+    router.get('/admin/analitica', requerirAdmin(getDatabase), async (req, res) => {
+        const db = getDatabase();
+        const pedido = Number(req.query.dias);
+        const dias = PERIODOS_VALIDOS.includes(pedido) ? pedido : 30;
+        const ahora = new Date();
+        const desde = new Date(ahora.getTime() - 2 * dias * DIA_MS);
+
+        const eventos = await db.collection('eventos')
+            .find({ timestamp: { $gte: desde } }, { projection: { _id: 0, ttl: 0 } })
+            .limit(100000)
+            .toArray();
+        const pedidos = await db.collection('orders')
+            .find({ fecha: { $gte: new Date(ahora.getTime() - dias * DIA_MS) } })
+            .limit(5000)
+            .toArray();
+        const validos = pedidos.filter(p => p.estado !== 'cancelado');
+
+        const ids = new Set();
+        for (const evento of eventos) if (evento.productoId) ids.add(evento.productoId);
+        const nombres = new Map();
+        if (ids.size) {
+            const buscados = [...ids, ...[...ids].filter(id => /^\d+$/.test(id)).map(Number)];
+            const productos = await db.collection('products').find({ id: { $in: buscados } }).toArray();
+            for (const producto of productos) nombres.set(String(producto.id), producto.nombre);
+        }
+
+        res.json(calcularAnalitica({ eventos, pedidos: validos, nombres, dias, ahora }));
+    });
+
+    /* Clientes con pedidos: segmentos, fichas y promedios. */
+    router.get('/admin/clientes', requerirAdmin(getDatabase), async (req, res) => {
+        const db = getDatabase();
+        const pedidos = await db.collection('orders').find({}).limit(5000).toArray();
+        res.json(calcularClientes(pedidos, new Date()));
     });
 
     return router;
