@@ -1417,3 +1417,45 @@
     }
 
 }
+
+/* ==========================================================================
+   Mas lugar para leer: los botones rapidos van en UNA sola fila con scroll
+   horizontal, el aviso "hablar con el equipo" es mas bajo y la zona de
+   mensajes se reserva un minimo de alto. Va al final para ganar a las reglas
+   por alto de pantalla anteriores.
+   ========================================================================== */
+.zapi-messages {
+    min-height: 40%;
+    padding: 1rem;
+    gap: .65rem;
+}
+
+.zapi-msg {
+    max-width: 92%;
+    font-size: 1rem;
+    line-height: 1.55;
+}
+
+.zapi-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: .4rem;
+    padding: .45rem .9rem;
+    scrollbar-width: none;
+}
+
+.zapi-chips::-webkit-scrollbar {
+    display: none;
+}
+
+.zapi-chip {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: .3rem .75rem;
+    font-size: .85rem;
+}
+
+.zapi-humano {
+    padding: .3rem .9rem;
+    font-size: .75rem;
+}
