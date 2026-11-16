@@ -54,7 +54,7 @@ function Catalogo() {
               <span aria-hidden="true">✓</span>Stock actualizado
             </li>
             <li>
-              <span aria-hidden="true">✓</span>Envío gratis desde {formatearPrecio(NEGOCIO.envioGratis)}
+              <span aria-hidden="true">✓</span>Envío gratis desde <span data-envio-gratis>{formatearPrecio(NEGOCIO.envioGratis)}</span>
             </li>
           </ul>
         </div>

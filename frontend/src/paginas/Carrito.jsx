@@ -201,7 +201,7 @@ function Carrito() {
           <div className="shipping-progress-track envio-barra" id="shippingProgress" role="progressbar" aria-label="Progreso hacia el envío gratis" aria-valuemin="0" aria-valuemax={envioGratis} aria-valuenow={progreso} aria-valuetext={subtotal >= envioGratis ? 'Envío gratis alcanzado' : formatearPrecio(faltante) + ' para alcanzar el envío gratis'} hidden={!hayLineas}>
             <span className="shipping-progress-fill" id="shippingProgressFill" style={{ width: porcentaje + '%' }}></span>
           </div>
-          <p className="shipping-threshold-note envio-nota">Envío gratis desde {formatearPrecio(NEGOCIO.envioGratis)}</p>
+          <p className="shipping-threshold-note envio-nota">Envío gratis desde <span data-envio-gratis>{formatearPrecio(NEGOCIO.envioGratis)}</span></p>
         </div>
 
         <div className="summary-lines resumen-lineas">

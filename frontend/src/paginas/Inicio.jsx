@@ -4,17 +4,18 @@ import ProductoCard from '../components/ProductoCard.jsx'
 import TestimonioCard from '../components/TestimonioCard.jsx'
 import { EstadoCatalogo, useCatalogo } from '../estado/catalogo.jsx'
 import { obtenerTestimonios } from '../api.js'
+import { TESTIMONIOS } from '../data/testimonios.js'
 import { useInterfaz } from '../estado/interfaz.jsx'
 
 function Inicio() {
   const { abrirTestimonio, testimoniosNuevos } = useInterfaz()
   const { productos, cargando, error, recargar } = useCatalogo()
-  const [publicados, setPublicados] = useState([])
+  const [publicados, setPublicados] = useState(TESTIMONIOS)
 
-  // Las opiniones publicadas vienen de la API. Si falla, la sección queda vacía.
+  // Las opiniones publicadas vienen de la API. Si no hay ninguna o falla, quedan los de ejemplo, como antes.
   useEffect(() => {
     let vigente = true
-    obtenerTestimonios().then(lista => { if (vigente) setPublicados(lista) }).catch(() => {})
+    obtenerTestimonios().then(lista => { if (vigente && lista.length) setPublicados(lista) }).catch(() => {})
     return () => { vigente = false }
   }, [])
 

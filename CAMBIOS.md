@@ -34,14 +34,20 @@ pero no se usa: todo va con el driver oficial de MongoDB.
 El carrito del sitio sigue armándose en el navegador y se envía por WhatsApp; la
 ruta `POST /api/orders` existe y la usa el panel para registrar ventas
 presenciales, pero el sitio público no la usa. El pie de la página del carrito
-quedó sin estilos, igual que en la versión original. Los datos estáticos
-(`data/productos.js` y `data/testimonios.js`) se eliminaron porque ahora todo sale
-de la API.
+quedó sin estilos, igual que en la versión original. Los productos
+estáticos (`data/productos.js`) se eliminaron porque ahora salen de la API. Los
+seis testimonios de ejemplo (`data/testimonios.js`) se conservaron: el Inicio los
+muestra, con el lugar y el producto, mientras la API no tenga opiniones publicadas,
+tal como hacía el sitio viejo.
 
 La analítica manda las vistas como `/producto-<slug>` (así las conoce el servidor)
 aunque en React la ruta sea `/producto/<slug>`, y no cuenta nada en modo cliente,
 en la vista previa del editor ni dentro de `/admin`. En el panel, el menú lateral
 en celular se corrigió con ajustes de CSS para que el cajón se abra y cierre bien.
+
+## Comparación visual con el sitio original
+
+Se sacaron capturas de las 11 páginas del sitio y de los 8 paneles del admin (en escritorio de 1440 px y celular de 390 px), más seis estados con interacción (ficha en ventana, formulario de opinión, producto agregado al carrito, menú del celular, búsqueda), todo con los mismos datos simulados. El sitio público quedó idéntico píxel a píxel. En el admin la única diferencia es la paginación de Pedidos, que a propósito muestra las páginas reales (ver abajo).
 
 ## Bugs y dudas encontrados
 

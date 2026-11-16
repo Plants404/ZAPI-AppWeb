@@ -262,7 +262,7 @@ function Login() {
 
   return (
     <>
-      <Estilos hojas={['tokens', 'styles', 'login', 'zapi-bot', 'restauracion']} />
+      <Estilos hojas={['login']} />
       <Link className="volver" to="/">Volver al inicio</Link>
       <main className="wrap">
         <div id="shake" ref={caja}>

@@ -17,7 +17,7 @@ function ChatbotZapi() {
   const [abierto, setAbierto] = useState(false)
   const [mensajes, setMensajes] = useState([]) // { tipo: 'user' | 'bot', texto, html }
   const [escribiendo, setEscribiendo] = useState(false)
-  const [insignia, setInsignia] = useState(false)
+  const [insignia, setInsignia] = useState(true) // el globito rojo "1": se ve desde el principio y se va al cerrar el chat
   const [texto, setTexto] = useState('')
   const contenedor = useRef(null)
   const lista = useRef(null)
@@ -27,12 +27,6 @@ function ChatbotZapi() {
   const iniciado = useRef(false)
   const historialIA = useRef([])
   const timers = useRef([])
-
-  // El globito rojo "1" aparece a los 3 s.
-  useEffect(() => {
-    const t = window.setTimeout(() => setInsignia(true), 3000)
-    return () => window.clearTimeout(t)
-  }, [])
 
   useEffect(() => () => timers.current.forEach(window.clearTimeout), [])
 
@@ -148,7 +142,7 @@ function ChatbotZapi() {
       <button ref={botonAbrir} className="zapi-toggle" id="zapiToggle" type="button" aria-label={etiqueta} aria-expanded={abierto} onClick={() => (abierto ? cerrar() : abrir())}>
         <span className="material-symbols-outlined zapi-chat-icon">forum</span>
         <span className="material-symbols-outlined zapi-close">close</span>
-        <span className="zapi-badge" id="zapiBadge" style={{ display: insignia ? 'grid' : undefined }}>{insignia ? '1' : ''}</span>
+        <span className="zapi-badge" id="zapiBadge" style={insignia ? undefined : { display: 'none' }}>{insignia ? '1' : ''}</span>
       </button>
       <section className={'zapi-panel' + (abierto ? ' open' : '')} id="zapiPanel" role="dialog" aria-label={`Chat con ${ZAPI_NOMBRE}`} aria-modal="false">
         <header className="zapi-header">

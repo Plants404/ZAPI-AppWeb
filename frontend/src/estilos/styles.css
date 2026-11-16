@@ -3816,7 +3816,6 @@ body.con-testimonio-abierto {
   inset: 0;
   background: rgba(31, 58, 46, .58);
   backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
 }
 
 .testimonio-caja {

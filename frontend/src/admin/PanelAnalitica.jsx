@@ -141,7 +141,7 @@ function conclusiones(datos) {
   return lista
 }
 
-function LineaVisitas({ datos, comparar }) {
+function LineaVisitas({ datos, comparar, parte }) {
   const actual = datos.serie.visitas
   const previa = datos.serie.visitasPrevias
   const hayPrevia = comparar && previa.some(valor => valor > 0)
@@ -150,12 +150,16 @@ function LineaVisitas({ datos, comparar }) {
     const n = serie.length
     return 'M' + serie.map((valor, i) => `${n > 1 ? (i / (n - 1)) * 640 : 320} ${190 - (valor / maximo) * 170}`).join(' L')
   }
-  return (
-    <>
+  if (parte === 'leyenda') {
+    return (
       <div className="an-leyenda" id="anLeyenda">
         <span><i className="an-linea-solida"></i>Últimos {datos.dias} días</span>
         {hayPrevia && <span><i className="an-linea-punteada"></i>Anteriores {datos.dias}</span>}
       </div>
+    )
+  }
+  return (
+    <>
       <div id="anLinea">
         <svg viewBox="0 0 640 200" width="100%" height="200" role="img" aria-label={`Línea de visitas diarias de los últimos ${datos.dias} días`} preserveAspectRatio="none">
           <g stroke="#ece6d6" strokeWidth="1"><line x1="0" y1="40" x2="640" y2="40" /><line x1="0" y1="90" x2="640" y2="90" /><line x1="0" y1="140" x2="640" y2="140" /><line x1="0" y1="190" x2="640" y2="190" /></g>
@@ -220,8 +224,9 @@ function Resumen({ datos, comparar }) {
         <section className="an-tarjeta an-doble" aria-labelledby="anTituloVisitas">
           <div className="an-tarjeta-cabecera">
             <h2 id="anTituloVisitas">Visitas por día</h2>
-            <LineaVisitas datos={datos} comparar={comparar} />
+            <LineaVisitas datos={datos} comparar={comparar} parte="leyenda" />
           </div>
+          <LineaVisitas datos={datos} comparar={comparar} parte="grafico" />
         </section>
         <section className="an-tarjeta" aria-labelledby="anTituloDisp">
           <h2 id="anTituloDisp">Celular y computadora</h2>
