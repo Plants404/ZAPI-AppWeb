@@ -118,7 +118,7 @@ export function resolverImagen(ruta) {
 
 // Pide algo a la API y devuelve el JSON. Si falla, lanza un Error con el mensaje.
 // En las llamadas del panel (no públicas) un 401 manda al login, como hacía el panel viejo.
-export async function pedirJson(ruta, { metodo = 'GET', cuerpo, publico = false } = {}) {
+export async function pedirJson(ruta, { metodo = 'GET', cuerpo, publico = false, irAlLogin = !publico } = {}) {
   const opciones = { method: metodo, headers: { Accept: 'application/json' } }
   if (!publico) opciones.credentials = 'include'
   if (cuerpo !== undefined) {
@@ -131,7 +131,7 @@ export async function pedirJson(ruta, { metodo = 'GET', cuerpo, publico = false 
   } catch {
     throw new Error('No hay conexión con el servidor.')
   }
-  if (respuesta.status === 401 && !publico) {
+  if (respuesta.status === 401 && irAlLogin) {
     window.location.href = '/login?volver=/admin'
     throw new Error('Sesión requerida. Iniciá sesión para continuar.')
   }
@@ -152,6 +152,12 @@ export async function pedirJson(ruta, { metodo = 'GET', cuerpo, publico = false 
 /* ---------- Sitio público ---------- */
 
 // Catálogo vivo (con las imágenes ya resueltas).
+// Pedido web del cliente: el servidor descuenta el stock y devuelve el pedido con su id definitivo.
+export async function crearPedidoWeb(datos) {
+  const { order } = await pedirJson('/api/orders', { metodo: 'POST', cuerpo: datos, irAlLogin: false })
+  return order
+}
+
 export async function obtenerProductos() {
   const { products } = await pedirJson('/api/products', { publico: true })
   return (products || []).map(p => ({

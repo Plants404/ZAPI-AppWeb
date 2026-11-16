@@ -123,6 +123,12 @@ ul {
 }
 
 .material-symbols-outlined {
+    display: inline-block;
+    /* Caja fija: si la fuente no cargara o el nombre fuera inválido, el texto no desarma el diseño. */
+    width: 1em;
+    height: 1em;
+    overflow: hidden;
+    white-space: nowrap;
     font-size: 1.2em;
     line-height: 1;
     vertical-align: middle;

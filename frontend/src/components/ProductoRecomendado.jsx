@@ -19,11 +19,6 @@ function ProductoRecomendado({ producto }) {
       <Link className="recommendation-image tarjeta-imagen" to={ficha} onClick={abrir} aria-label={`Ver ${producto.nombre}`}>
         <img src={producto.imagen} alt={producto.nombre} loading="lazy" width="798" height="1200" />
         <span className={`product-stock-pill stock ${claseDeStock(unidades)} ${stockVisual}`}>{textoDeStock(unidades)}</span>
-        <span className="recommendation-beneficios-lista">
-          {(producto.infoDeVenta || []).map(item => (
-            <span className="product-beneficio-item" key={item}><span className="material-symbols-outlined" aria-hidden="true">check_circle</span><span>{item}</span></span>
-          ))}
-        </span>
       </Link>
       <div className="recommendation-info tarjeta-cuerpo">
         <h3 className="product-name"><Link className="product-link recommendation-link" to={ficha} onClick={abrir}>{producto.nombre}</Link></h3>

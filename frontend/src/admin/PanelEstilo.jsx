@@ -5,6 +5,7 @@ import { buscarPagina, paginas } from '../esquema-editable.js'
 import { RUTA_DE_PAGINA } from '../sitioEditable.js'
 import { NOMBRE_VISTA_PREVIA } from '../estado/sitio.js'
 import { limpiarValor } from '../utilidades.js'
+import { useToasts } from '../estado/toasts.jsx'
 import { useAdmin, useCarga } from './contexto.jsx'
 import DialogoBiblioteca from './DialogoBiblioteca.jsx'
 import DialogoHistorial from './DialogoHistorial.jsx'
@@ -102,6 +103,7 @@ function CampoImagen({ pagina, seccion, campo, original, guardado, cambiar, eleg
 
 function Editor({ inicial, alSalir, alRecargar }) {
   const { avisar } = useAdmin()
+  const { confirmarToast } = useToasts()
   const [contenido, setContenido] = useState(() => (inicial.borrador ? copiar(inicial.borrador.contenido || {}) : copiar(inicial.publicado.contenido)))
   const [marca, setMarca] = useState(() => {
     const origen = inicial.borrador || inicial.publicado
@@ -314,7 +316,7 @@ function Editor({ inicial, alSalir, alRecargar }) {
     const error = colorInvalido()
     if (error) { setEstado({ texto: error, tipo: 'error' }); return }
     const n = cambios
-    if (!window.confirm(n ? `¿Publicar ${n} ${n === 1 ? 'cambio' : 'cambios'}? Se van a ver enseguida en el sitio.` : '¿Publicar esta versión del sitio?')) return
+    if (!(await confirmarToast(n ? `¿Publicar ${n} ${n === 1 ? 'cambio' : 'cambios'}?` : '¿Publicar esta versión del sitio?', 'Se van a ver enseguida en el sitio.', 'Publicar'))) return
     setOcupado('publicar')
     try {
       await enviarBorrador()
@@ -328,8 +330,8 @@ function Editor({ inicial, alSalir, alRecargar }) {
     }
   }
 
-  function descartar() {
-    if (window.confirm('¿Descartar los cambios sin guardar y volver al último borrador?')) alRecargar()
+  async function descartar() {
+    if (await confirmarToast('¿Descartar los cambios sin guardar?', 'Se vuelve al último borrador.', 'Descartar')) alRecargar()
   }
 
   function usarImagen(id, alt) {
