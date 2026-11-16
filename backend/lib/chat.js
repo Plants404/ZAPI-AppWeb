@@ -38,19 +38,36 @@ function validarMensajes(cuerpo) {
     return mensajes;
 }
 
-function lineaDeProducto(producto, formatear) {
-    const stock = Number(producto.stock) > 0 ? `${producto.stock} en stock` : 'sin stock';
-    return `- ${producto.nombre} (${producto.categoria || 'sin categoría'}): ${formatear(producto.precioBase)}, ${stock}`;
+function lineaDeProducto(producto) {
+    const stock = Number(producto.stock) > 0 ? `${producto.stock} en stock` : 'SIN STOCK';
+    const cuidados = Array.isArray(producto.infoDeVenta) && producto.infoDeVenta.length
+        ? ` Datos: ${producto.infoDeVenta.join('; ')}.` : '';
+    const descripcion = producto.descripcion ? ` ${producto.descripcion}` : '';
+    return `- ${producto.nombre}: ${precioUy(producto.precioBase)}, ${stock}.${descripcion}${cuidados}`;
 }
 
 function precioUy(valor) {
     return `$ ${Number(valor || 0).toLocaleString('es-UY')}`;
 }
 
+/* Agrupa el catalogo por categoria (las "etiquetas" del catalogo). */
+function catalogoPorCategoria(productos) {
+    const grupos = new Map();
+
+    for (const producto of productos.slice(0, MAX_PRODUCTOS_EN_PROMPT)) {
+        const categoria = producto.categoria || 'Sin categoría';
+        if (!grupos.has(categoria)) grupos.set(categoria, []);
+        grupos.get(categoria).push(lineaDeProducto(producto));
+    }
+
+    if (grupos.size === 0) return '(catálogo vacío)';
+
+    return [...grupos].map(([categoria, lineas]) => `[${categoria}]\n${lineas.join('\n')}`).join('\n\n');
+}
+
 /* El "prompt de sistema": le explica a la IA quién es y qué sabe. */
 function armarInstrucciones(productos, negocio) {
-    const catalogo = productos.slice(0, MAX_PRODUCTOS_EN_PROMPT)
-        .map(producto => lineaDeProducto(producto, precioUy)).join('\n') || '(catálogo vacío)';
+    const catalogo = catalogoPorCategoria(productos);
 
     return [
         'Sos Brotecito, el asistente virtual de ZAPI, un vivero agroecológico de Montevideo, Uruguay.',
@@ -61,6 +78,15 @@ function armarInstrucciones(productos, negocio) {
         'no lo inventes: decí que lo confirme el equipo por WhatsApp.',
         'No des consejos médicos ni veterinarios. No pidas datos personales ni contraseñas.',
         'Respondé en texto simple, sin markdown ni listas con símbolos.',
+        '',
+        'CÓMO RECOMENDAR',
+        '- El catálogo está agrupado por categoría entre corchetes, igual que las etiquetas del sitio.',
+        '- Si piden plantas de interior (o para adentro de casa, departamento, living, oficina),',
+        '  recomendá SOLO productos de la categoría [Plantas de interior]. Lo mismo con otras categorías',
+        '  (por ejemplo [Aromáticas] para aromáticas o huerta).',
+        '- Mencioná 1 a 3 productos con su precio y por qué sirven (cuidados o facilidad), usando sus datos.',
+        '- No recomiendes productos SIN STOCK; si el que piden no tiene stock, ofrecé otro de la misma categoría.',
+        '- Si preguntan por luz, riego o experiencia, usá esos datos para elegir.',
         '',
         'DATOS DEL NEGOCIO',
         `- WhatsApp: ${negocio.whatsappVisible}`,
