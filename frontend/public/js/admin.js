@@ -64,6 +64,81 @@ function mostrarAviso(titulo, mensaje) {
     aviso.hidden = false;
 }
 
+/* Toasts: avisos flotantes que se van solos; la confirmación espera una respuesta. */
+function zonaToasts() {
+    let zona = document.getElementById('adminToasts');
+    if (!zona) {
+        zona = document.createElement('div');
+        zona.id = 'adminToasts';
+        zona.className = 'admin-toasts';
+        zona.setAttribute('role', 'status');
+        zona.setAttribute('aria-live', 'polite');
+        document.body.appendChild(zona);
+    }
+    return zona;
+}
+
+function textoSeguro(mensaje) {
+    const texto = String(mensaje || '');
+    if (/<\s*(!doctype|html)/i.test(texto)) return 'El servidor no respondió. Probá de nuevo en unos segundos.';
+    return texto.length > 140 ? texto.slice(0, 140) + '…' : texto;
+}
+
+function mostrarToast(titulo, mensaje, tipo = 'ok') {
+    const toast = document.createElement('div');
+    toast.className = `admin-toast admin-toast-${tipo}`;
+    const icono = document.createElement('span');
+    icono.className = 'material-symbols-outlined';
+    icono.setAttribute('aria-hidden', 'true');
+    icono.textContent = tipo === 'error' ? 'error' : 'check_circle';
+    const cuerpo = document.createElement('div');
+    const fuerte = document.createElement('strong');
+    fuerte.textContent = titulo;
+    cuerpo.appendChild(fuerte);
+    if (mensaje) {
+        const detalle = document.createElement('span');
+        detalle.textContent = textoSeguro(mensaje);
+        cuerpo.appendChild(detalle);
+    }
+    toast.append(icono, cuerpo);
+    zonaToasts().appendChild(toast);
+    setTimeout(() => toast.remove(), tipo === 'error' ? 6000 : 3500);
+}
+
+function confirmarToast(titulo, mensaje, accion) {
+    return new Promise(resolver => {
+        const toast = document.createElement('div');
+        toast.className = 'admin-toast admin-toast-peligro';
+        toast.setAttribute('role', 'alertdialog');
+        toast.setAttribute('aria-label', titulo);
+        const cuerpo = document.createElement('div');
+        const fuerte = document.createElement('strong');
+        fuerte.textContent = titulo;
+        const detalle = document.createElement('span');
+        detalle.textContent = mensaje;
+        cuerpo.append(fuerte, detalle);
+        const botones = document.createElement('div');
+        botones.className = 'admin-toast-botones';
+        const cancelar = document.createElement('button');
+        cancelar.type = 'button';
+        cancelar.className = 'admin-toast-cancelar';
+        cancelar.textContent = 'Cancelar';
+        const confirmar = document.createElement('button');
+        confirmar.type = 'button';
+        confirmar.className = 'admin-toast-confirmar';
+        confirmar.textContent = accion;
+        botones.append(cancelar, confirmar);
+        toast.append(cuerpo, botones);
+
+        const cerrar = respuesta => { toast.remove(); resolver(respuesta); };
+        cancelar.addEventListener('click', () => cerrar(false));
+        confirmar.addEventListener('click', () => cerrar(true));
+        toast.addEventListener('keydown', evento => { if (evento.key === 'Escape') cerrar(false); });
+        zonaToasts().appendChild(toast);
+        cancelar.focus();
+    });
+}
+
 function cerrarAviso() {
     const aviso = document.getElementById('adminAviso');
     if (aviso) aviso.hidden = true;
@@ -681,9 +756,9 @@ async function cargarAccesos() {
 async function cambiarGestion(ruta, cuerpo, recargar, titulo) {
     try {
         await fetchJson(`${API_ADMIN}/${ruta}`, { method: 'PATCH', body: JSON.stringify(cuerpo) });
-        mostrarAviso(titulo, 'El cambio se guardó correctamente.');
+        mostrarToast(titulo, 'El cambio se guardó correctamente.');
     } catch (error) {
-        mostrarAviso('No se pudo guardar', error.message);
+        mostrarToast('No se pudo guardar', error.message, 'error');
     }
     recargar();
 }
@@ -691,9 +766,9 @@ async function cambiarGestion(ruta, cuerpo, recargar, titulo) {
 async function eliminarGestion(ruta, recargar, titulo) {
     try {
         await fetchJson(`${API_ADMIN}/${ruta}`, { method: 'DELETE' });
-        mostrarAviso(titulo, 'Se eliminó correctamente.');
+        mostrarToast(titulo, 'Se eliminó correctamente.');
     } catch (error) {
-        mostrarAviso('No se pudo eliminar', error.message);
+        mostrarToast('No se pudo eliminar', error.message, 'error');
     }
     recargar();
 }
@@ -730,22 +805,24 @@ function iniciarGestion() {
     cargarMensajes();
     cargarTestimonios();
 
-    document.getElementById('adminCuerpoTestimonios').addEventListener('click', evento => {
+    document.getElementById('adminCuerpoTestimonios').addEventListener('click', async evento => {
         const borrar = evento.target.closest('[data-eliminar-testimonio]');
         if (borrar) {
-            if (window.confirm(`¿Eliminar el testimonio de ${borrar.dataset.nombre}? No se puede deshacer.`)) {
-                eliminarGestion(`testimonios/${borrar.dataset.eliminarTestimonio}`, cargarTestimonios, 'Testimonio eliminado');
+            const id = borrar.dataset.eliminarTestimonio;
+            if (await confirmarToast('¿Eliminar este testimonio?', `Testimonio de ${borrar.dataset.nombre} · no se puede deshacer.`, 'Eliminar')) {
+                eliminarGestion(`testimonios/${id}`, cargarTestimonios, 'Testimonio eliminado');
             }
             return;
         }
         const boton = evento.target.closest('[data-testimonio]');
         if (boton) cambiarGestion(`testimonios/${boton.dataset.testimonio}`, { estado: boton.dataset.estado }, cargarTestimonios, 'Testimonio actualizado');
     });
-    document.getElementById('adminCuerpoAccesos').addEventListener('click', evento => {
+    document.getElementById('adminCuerpoAccesos').addEventListener('click', async evento => {
         const borrar = evento.target.closest('[data-eliminar-usuario]');
         if (borrar) {
-            if (window.confirm(`¿Eliminar a ${borrar.dataset.nombre}? Pierde el acceso y no se puede deshacer.`)) {
-                eliminarGestion(`usuarios/${borrar.dataset.eliminarUsuario}`, cargarAccesos, 'Usuario eliminado');
+            const id = borrar.dataset.eliminarUsuario;
+            if (await confirmarToast(`¿Eliminar a ${borrar.dataset.nombre}?`, 'Pierde el acceso y no se puede deshacer.', 'Eliminar')) {
+                eliminarGestion(`usuarios/${id}`, cargarAccesos, 'Usuario eliminado');
             }
             return;
         }
