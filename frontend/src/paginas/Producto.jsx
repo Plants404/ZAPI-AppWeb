@@ -47,9 +47,9 @@ function Ficha({ producto, productos }) {
           <img className="producto-principal" id="productoImagen" src={imagenes[foto] || ''} alt={`${producto.nombre}, foto ${foto + 1} de ${imagenes.length}`} loading="lazy" width="798" height="1200" />
           {imagenes.length > 1 && (
             <div className="producto-miniaturas" id="productoMiniaturas">
-              {imagenes.map((foto, i) => (
-                <button key={foto} className={'producto-miniatura' + (i === foto ? ' activa' : '')} type="button" aria-label={`Ver foto ${i + 1} de ${imagenes.length}`} aria-current={i === foto ? 'true' : 'false'} onClick={() => setFoto(i)}>
-                  <img src={foto} alt="" loading="lazy" />
+              {imagenes.map((miniatura, i) => (
+                <button key={miniatura} className={'producto-miniatura' + (i === foto ? ' activa' : '')} type="button" aria-label={`Ver foto ${i + 1} de ${imagenes.length}`} aria-current={i === foto ? 'true' : 'false'} onClick={() => setFoto(i)}>
+                  <img src={miniatura} alt="" loading="lazy" />
                 </button>
               ))}
             </div>
