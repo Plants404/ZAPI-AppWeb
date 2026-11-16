@@ -226,7 +226,12 @@ function htmlTarjetaProducto(producto, raiz, recomendacion = false) {
         : '<span class="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> <span>Agregar</span>';
 
     if (!recomendacion) {
-        const beneficios = producto.infoDeVenta || [];
+        /* Si el producto no tiene datos de venta (los productos nuevos del panel
+           nacen sin ellos), se usa la descripcion para no dejar la tarjeta vacia. */
+        const datosDeVenta = Array.isArray(producto.infoDeVenta) ? producto.infoDeVenta.filter(Boolean) : [];
+        const beneficios = datosDeVenta.length
+            ? datosDeVenta
+            : [producto.descripcion].filter(Boolean);
         const listaBeneficios = beneficios.map(item => `<span class="product-beneficio-item"><span class="material-symbols-outlined" aria-hidden="true">check_circle</span><span>${escaparHTML(item)}</span></span>`).join("");
         const beneficiosTactiles = beneficios.map(item => `<li><span class="benefit-icon" aria-hidden="true">✓</span><span>${escaparHTML(item)}</span></li>`).join("");
         const etiquetaBoton = agotado

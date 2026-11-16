@@ -426,7 +426,7 @@ min-width: 0;
 transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
 .product-card:hover {
 transform: translateY(-6px);
 box-shadow: var(--product-hover-shadow);
@@ -462,7 +462,7 @@ object-position: center;
 transition: transform .5s ease;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
 .product-card:hover .product-visual img {
 transform: scale(1.06);
 }
@@ -789,7 +789,7 @@ transform: none;
 box-shadow: none;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
 .product-card:hover .product-beneficios-lista,
 .product-card:focus-within .product-beneficios-lista {
 opacity: 1;
@@ -801,7 +801,7 @@ display: none;
 }
 }
 
-@media (hover: none) {
+@media (hover: none) and (any-hover: none) {
 .product-beneficios-lista {
 display: none;
 }
@@ -1108,7 +1108,7 @@ display: none;
     line-height: 1.4;
 }
 
-@media (hover: hover) {
+@media (hover: hover), (any-hover: hover) {
     .product-card:hover .product-beneficios-lista,
     .product-card:focus-within .product-beneficios-lista {
         transform: translateY(0);
