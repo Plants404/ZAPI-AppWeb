@@ -133,7 +133,10 @@ function generarEventos(ahora = new Date(), sesiones = 70) {
         }
         if (r() < 0.38) {
             const pagina = visitadas.find(p => p.startsWith('/producto-')) || '/catalogo';
+            const slug = pagina.startsWith('/producto-') ? pagina.slice(10) : null;
+            const producto = PRODUCTOS.find(p => p.slug === slug) || PRODUCTOS[Math.floor(r() * PRODUCTOS.length)];
             evento('agregar_al_carrito', idSesion, pagina, 'add-cart', dispositivo, t);
+            eventos[eventos.length - 1].productoId = String(producto.id);
             t += 15000;
             if (r() < 0.55) {
                 evento('inicio_de_pedido', idSesion, '/carrito', 'boton-confirmar-pedido', dispositivo, t);

@@ -655,35 +655,24 @@ test('C10: esPaginaValida acepta rutas públicas conocidas', () => {
     assert.equal(esPaginaValida('/producto-cualquiera-123'), true);
 });
 
-test('C11: admin.js escapa pagina y elemento al renderizar', () => {
+test('C11: admin.js escapa lo que viene de eventos y pedidos al renderizar', () => {
     const fs = require('fs');
     const adminJs = fs.readFileSync(
         require.resolve('../../frontend/public/js/admin.js'),
         'utf8'
     );
-    /* renderClicksPorPagina escapa pagina */
-    assert.ok(
-        adminJs.includes('escaparHTML(pagina === \'\' ? \'(inicio)\' : pagina)'),
-        'renderClicksPorPagina escapa pagina con escaparHTML'
-    );
-    /* renderRanking escapa elemento */
-    assert.ok(
-        adminJs.includes('<td>${escaparHTML(elemento)}</td>'),
-        'renderRanking escapa elemento con escaparHTML'
-    );
-    /* renderFlujo escapa pagina (nombreCorto recibe pagina) */
-    assert.ok(
-        adminJs.includes('escaparHTML(nombreCorto(entrada))'),
-        'renderFlujo escapa pagina de entrada con escaparHTML'
-    );
-    assert.ok(
-        adminJs.includes('escaparHTML(nombreCorto(segunda))'),
-        'renderFlujo escapa pagina de segunda con escaparHTML'
-    );
-    assert.ok(
-        adminJs.includes('escaparHTML(nombreCorto(salida))'),
-        'renderFlujo escapa pagina de salida con escaparHTML'
-    );
+    const debeEscapar = [
+        ['páginas', 'escaparHTML(nombreDePagina(p.pagina))'],
+        ['productos', 'escaparHTML(p.nombre)'],
+        ['clientes', 'escaparHTML(c.nombre)'],
+        ['id de cliente', 'data-cliente="${escaparHTML(c.id)}"'],
+        ['ficha', 'escaparHTML(cliente.nombre)'],
+        ['zona', 'escaparHTML(cliente.zona)'],
+        ['favoritos', 'escaparHTML(f)']
+    ];
+    for (const [que, codigo] of debeEscapar) {
+        assert.ok(adminJs.includes(codigo), `la analítica escapa ${que} con escaparHTML`);
+    }
 });
 
 test('C16: normalizarPagina quita .html final', () => {
