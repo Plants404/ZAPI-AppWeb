@@ -735,6 +735,68 @@ ul {
     margin-top: var(--espacio-sm);
 }
 
+.testimonio-campo {
+    display: grid;
+    gap: .35rem;
+    margin-bottom: .75rem;
+}
+
+.testimonio-titulo {
+    padding-right: 2.5rem;
+}
+
+.testimonio-cerrar-x {
+    background: var(--sand);
+    color: var(--forest);
+}
+
+.testimonio-cerrar-x:hover {
+    background: var(--borde);
+}
+
+.testimonio-acciones {
+    display: flex;
+    align-items: stretch;
+    gap: .6rem;
+    margin-top: var(--espacio-sm);
+}
+
+.testimonio-acciones .boton-bloque {
+    flex: 1 1 auto;
+    width: auto;
+    margin-top: 0;
+}
+
+.testimonio-btn-secundario {
+    flex: 0 0 auto;
+    min-height: 46px;
+    padding: 0 1.25rem;
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+    background: var(--white);
+    color: var(--forest);
+    font: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+}
+
+.testimonio-btn-secundario:hover {
+    border-color: var(--leaf);
+    background: var(--sand);
+}
+
+.testimonio-btn-secundario:focus-visible {
+    outline: 2px solid var(--leaf);
+    outline-offset: 2px;
+}
+
+.testimonio-acciones .boton-primario:disabled {
+    opacity: .6;
+    cursor: default;
+}
+
 /* ==========================================================================
    Tablet y mejoras para pantallas medias (min-width: 769px)
    ========================================================================== */
@@ -956,4 +1018,8 @@ ul {
 
 @media (min-width: 1024px) {
     .testimonios-grilla { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.testimonio-campo .campo-error:empty {
+    display: none;
 }
