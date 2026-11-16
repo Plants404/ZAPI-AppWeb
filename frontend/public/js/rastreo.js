@@ -30,9 +30,10 @@
         return ELEMENTOS_VALIDOS.includes(elemento);
     }
 
-    function enviar(tipo, elemento) {
+    function enviar(tipo, elemento, productoId) {
         if (!esElementoValido(elemento)) return;
         const evento = { tipo, idSesion, pagina, elemento: elemento || null, dispositivo };
+        if (productoId) evento.productoId = productoId;
         fetch(endpoint, {
             method: 'POST',
             keepalive: true,
@@ -52,7 +53,7 @@
         if (href.startsWith('https://wa.me')) return enviar('clic_a_whatsapp', 'whatsapp');
         if (boton.id === 'whatsappButton' || /confirmar pedido/i.test(texto))
             return enviar('inicio_de_pedido', 'boton-confirmar-pedido');
-        if (boton.classList.contains('add-cart')) return enviar('agregar_al_carrito', 'add-cart');
+        if (boton.classList.contains('add-cart')) return enviar('agregar_al_carrito', 'add-cart', boton.dataset.agregarProducto || '');
         if (boton.classList.contains('boton-primario') || boton.classList.contains('boton-secundario'))
             return enviar('clic_elemento_clave', boton.classList.contains('boton-primario') ? 'boton-primario' : 'boton-secundario');
     });

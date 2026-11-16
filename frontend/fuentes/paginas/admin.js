@@ -361,54 +361,105 @@ module.exports = {
                 </form>
             </section>
 
-            <section class="admin-panel" id="panelAnalitica" hidden aria-label="Analítica de clientes">
-                <div class="admin-panel-cabecera">
-                    <h1>Analítica de clientes</h1>
-                    <p>Eventos anónimos de navegación del sitio público. Sin direcciones IP ni datos personales.</p>
-                </div>
-
-                <div class="admin-bloque">
-                    <h2>Embudo de compra</h2>
-                    <div class="admin-embudo" id="adminEmbudo"></div>
-                    <p id="adminEmbudoVacio" class="estado-vacio" hidden>No hay eventos de embudo registrados.</p>
-                </div>
-
-                <div class="admin-bloque admin-flujo">
-                    <h2>Flujo de navegación</h2>
-                    <div id="adminFlujoSVG" role="img" aria-label="Flujo de navegación"></div>
-                    <p id="adminFlujoVacio" class="estado-vacio" hidden>No hay datos de navegación para mostrar.</p>
-                </div>
-
-                <div class="admin-metricas-grid">
-                    <div class="admin-bloque">
-                        <h2>Mapa de clics por página</h2>
-                        <div class="admin-tabla-wrap">
-                            <table class="admin-tabla" id="adminTablaClicksPagina" aria-label="Clics en elemento clave por página">
-                                <thead>
-                                    <tr><th scope="col">Página</th><th class="admin-numero" scope="col">Clics en elemento clave</th></tr>
-                                </thead>
-                                <tbody id="adminCuerpoClicksPagina"></tbody>
-                            </table>
-                            <p id="adminClicksPaginaVacio" class="estado-vacio" hidden>No hay clics registrados por página.</p>
-                        </div>
+            <section class="admin-panel an-panel" id="panelAnalitica" hidden aria-label="Analítica de clientes">
+                <header class="an-cabecera">
+                    <div class="an-cabecera-texto">
+                        <div class="an-etiqueta" id="anEtiqueta">ANALÍTICA DE CLIENTES · RESUMEN</div>
+                        <h1 id="anTitulo">Cómo se mueven tus clientes</h1>
                     </div>
-                    <div class="admin-bloque">
-                        <h2>Ranking de elementos</h2>
-                        <div class="admin-tabla-wrap">
-                            <table class="admin-tabla" id="adminTablaRanking" aria-label="Elementos más clickeados">
-                                <thead>
-                                    <tr><th scope="col">Elemento</th><th class="admin-numero" scope="col">Clics</th><th scope="col">Tipo</th></tr>
-                                </thead>
-                                <tbody id="adminCuerpoRanking"></tbody>
-                            </table>
-                            <p id="adminRankingVacio" class="estado-vacio" hidden>No hay elementos clickeados.</p>
-                        </div>
+                    <div class="an-periodo" id="anPeriodo" role="group" aria-label="Período">
+                        <button type="button" data-dias="7" aria-pressed="false">7 días</button>
+                        <button type="button" data-dias="30" aria-pressed="true">30 días</button>
+                        <button type="button" data-dias="90" aria-pressed="false">90 días</button>
+                    </div>
+                    <button class="an-boton" id="anComparar" type="button" aria-pressed="true">Comparar con el período anterior</button>
+                    <button class="an-boton an-boton-oscuro" id="anCsv" type="button">Descargar CSV</button>
+                </header>
+
+                <div class="an-vistas" id="anVistas" role="tablist" aria-label="Secciones de la analítica">
+                    <button class="an-vista-tab activa" type="button" role="tab" aria-selected="true" data-vista="resumen">Resumen</button>
+                    <button class="an-vista-tab" type="button" role="tab" aria-selected="false" data-vista="clientes">Clientes</button>
+                    <button class="an-vista-tab" type="button" role="tab" aria-selected="false" data-vista="productos">Productos y horarios</button>
+                </div>
+
+                <p class="an-nota" id="anNota">Eventos anónimos del sitio: sin IP ni datos personales. Se conservan 90 días.</p>
+
+                <div class="an-vista" id="anResumen">
+                    <section class="an-kpis" id="anKpis" aria-label="Indicadores"></section>
+                    <div class="an-fila">
+                        <section class="an-tarjeta an-grande" aria-labelledby="anTituloEmbudo">
+                            <div class="an-tarjeta-cabecera"><h2 id="anTituloEmbudo">Embudo de compra</h2><span>Cuántos siguen en cada paso y dónde se van</span></div>
+                            <div class="an-embudo" id="anEmbudo"></div>
+                            <div class="an-callout an-callout-ambar" id="anPerdida" hidden></div>
+                        </section>
+                        <section class="an-tarjeta an-oscura" aria-labelledby="anTituloMirar">
+                            <div>
+                                <h2 id="anTituloMirar">Lo que conviene mirar</h2>
+                                <p>Lectura automática en lenguaje simple, sin tener que interpretar gráficos.</p>
+                            </div>
+                            <div class="an-insights" id="anInsights"></div>
+                            <span class="an-pie">Se calcula con los eventos que ya guarda el sitio.</span>
+                        </section>
+                    </div>
+                    <div class="an-fila">
+                        <section class="an-tarjeta an-doble" aria-labelledby="anTituloVisitas">
+                            <div class="an-tarjeta-cabecera">
+                                <h2 id="anTituloVisitas">Visitas por día</h2>
+                                <div class="an-leyenda" id="anLeyenda"></div>
+                            </div>
+                            <div id="anLinea"></div>
+                        </section>
+                        <section class="an-tarjeta" aria-labelledby="anTituloDisp">
+                            <h2 id="anTituloDisp">Celular y computadora</h2>
+                            <div class="an-dispositivos" id="anDispositivos"></div>
+                        </section>
                     </div>
                 </div>
 
-                <div class="admin-bloque">
-                    <h2>Reparto por dispositivo</h2>
-                    <div class="admin-dispositivos" id="adminDispositivos"></div>
+                <div class="an-vista" id="anClientes" hidden>
+                    <section class="an-kpis" id="anClientesKpis" aria-label="Resumen de clientes"></section>
+                    <div class="an-fila an-fila-arriba">
+                        <section class="an-tarjeta an-lista" aria-labelledby="anTituloClientes">
+                            <div class="an-lista-cabecera">
+                                <h2 id="anTituloClientes">Clientes</h2>
+                                <div class="an-segmentos" id="anSegmentos" role="group" aria-label="Segmento"></div>
+                            </div>
+                            <div class="an-tabla-wrap">
+                                <table class="an-tabla" aria-label="Clientes con pedidos">
+                                    <thead><tr><th scope="col">CLIENTE</th><th scope="col">PEDIDOS</th><th scope="col">TOTAL</th><th scope="col">ÚLTIMA COMPRA</th><th scope="col">ESTADO</th></tr></thead>
+                                    <tbody id="anCuerpoClientes"></tbody>
+                                </table>
+                            </div>
+                            <p class="estado-vacio" id="anClientesVacio" hidden>No hay clientes en este segmento.</p>
+                        </section>
+                        <aside class="an-tarjeta an-ficha" id="anFicha" aria-label="Detalle del cliente"></aside>
+                    </div>
+                </div>
+
+                <div class="an-vista" id="anProductos" hidden>
+                    <div class="an-fila">
+                        <section class="an-tarjeta an-grande" aria-labelledby="anTituloProductos">
+                            <h2 id="anTituloProductos">Productos: interés contra compra</h2>
+                            <div class="an-leyenda an-leyenda-fila"><span><i class="an-cuadro an-cuadro-claro"></i>Agregados al carrito</span><span><i class="an-cuadro an-cuadro-oscuro"></i>Pedidos</span></div>
+                            <div class="an-productos" id="anListaProductos"></div>
+                            <div class="an-callout an-callout-ambar" id="anParaMirar" hidden></div>
+                        </section>
+                        <section class="an-tarjeta" aria-labelledby="anTituloHorarios">
+                            <h2 id="anTituloHorarios">Cuándo entran más</h2>
+                            <div id="anHorarios"></div>
+                            <div class="an-callout an-callout-arena" id="anPico" hidden></div>
+                        </section>
+                    </div>
+                    <section class="an-tarjeta an-lista" aria-labelledby="anTituloPaginas">
+                        <div class="an-lista-cabecera"><h2 id="anTituloPaginas">Páginas: qué rinde y qué no</h2></div>
+                        <div class="an-tabla-wrap">
+                            <table class="an-tabla" aria-label="Rendimiento por página">
+                                <thead><tr><th scope="col">PÁGINA</th><th scope="col">VISITAS</th><th scope="col">CLICS EN BOTONES CLAVE</th><th scope="col">SIGUEN AL PASO SIGUIENTE</th></tr></thead>
+                                <tbody id="anCuerpoPaginas"></tbody>
+                            </table>
+                        </div>
+                        <p class="estado-vacio" id="anPaginasVacio" hidden>Todavía no hay visitas registradas en este período.</p>
+                    </section>
                 </div>
             </section>
         </main>
