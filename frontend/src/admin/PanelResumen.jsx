@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { obtenerResumen } from '../api.js'
 import { formatearPrecio, textoDeStock, claseDeStock } from '../data/negocio.js'
 import { useCarga } from './contexto.jsx'
@@ -21,18 +22,32 @@ function Tarjetas({ datos }) {
 }
 
 // Gráfico de barras: ventas web y presencial por semana.
-function Grafico({ semanas }) {
+// En pantallas angostas el dibujo toma el ancho real del contenedor (así entran las 8 semanas sin recortar y el texto no se achica).
+function Grafico({ semanas, contenedor }) {
+  const [medido, setMedido] = useState(720)
+  useEffect(() => {
+    const el = contenedor.current
+    if (!el) return undefined
+    const medir = () => setMedido(Math.round(el.clientWidth) || 720)
+    medir()
+    if (!window.ResizeObserver) return undefined
+    const observador = new ResizeObserver(medir)
+    observador.observe(el)
+    return () => observador.disconnect()
+  }, [contenedor])
+  const ancho = medido >= 560 ? 720 : Math.max(medido, 260)
   const altoMax = 130
   const baseY = 170
   const maxValor = Math.max(1, ...semanas.map(s => Number(s.web || 0) + Number(s.presencial || 0)))
-  const grupoAncho = (700 - 40) / semanas.length
+  const grupoAncho = (ancho - 20 - 40) / semanas.length
+  const barra = Math.max(6, Math.min(16, Math.floor((grupoAncho - 6) / 2)))
   return (
-    <svg className="admin-grafico" id="adminGraficoSVG" aria-label="Ventas por semana y canal" role="img" viewBox="0 0 720 210">
+    <svg className="admin-grafico" id="adminGraficoSVG" aria-label="Ventas por semana y canal" role="img" viewBox={`0 0 ${ancho} 210`}>
       {[0, 1, 2, 3, 4].map(i => {
         const y = baseY - (altoMax * i / 4)
         return (
           <g key={i}>
-            <line x1="36" y1={y} x2="700" y2={y} className="admin-grafico-linea"></line>
+            <line x1="36" y1={y} x2={ancho - 20} y2={y} className="admin-grafico-linea"></line>
             <text x="28" y={y + 4} className="admin-grafico-eje">{Math.round((maxValor * i) / 4)}</text>
           </g>
         )
@@ -45,8 +60,8 @@ function Grafico({ semanas }) {
         const alturaPre = (presencial / maxValor) * altoMax
         return (
           <g key={semana.semana || indice}>
-            <rect x={xCentro - 20} y={baseY - alturaWeb} width="16" height={alturaWeb} className="admin-barra admin-barra-web"><title>{'Web: ' + formatearPrecio(web)}</title></rect>
-            <rect x={xCentro + 2} y={baseY - alturaPre} width="16" height={alturaPre} className="admin-barra admin-barra-pre"><title>{'Presencial: ' + formatearPrecio(presencial)}</title></rect>
+            <rect x={xCentro - barra - 4} y={baseY - alturaWeb} width={barra} height={alturaWeb} className="admin-barra admin-barra-web"><title>{'Web: ' + formatearPrecio(web)}</title></rect>
+            <rect x={xCentro + 2} y={baseY - alturaPre} width={barra} height={alturaPre} className="admin-barra admin-barra-pre"><title>{'Presencial: ' + formatearPrecio(presencial)}</title></rect>
             <text x={xCentro} y={baseY + 22} className="admin-grafico-etiqueta" textAnchor="middle">{String(semana.semana || '').replace(/.*-W/, 'W')}</text>
           </g>
         )
@@ -57,6 +72,7 @@ function Grafico({ semanas }) {
 
 function PanelResumen({ activo }) {
   const { datos, cargando } = useCarga(obtenerResumen, 'No se pudo cargar el resumen', activo)
+  const contenedor = useRef(null)
   const semanas = datos && datos.ventasPorSemana
   const stockBajo = (datos && datos.stockBajo) || []
   return (
@@ -69,8 +85,8 @@ function PanelResumen({ activo }) {
       <div className="admin-tarjetas" id="adminTarjetas">{datos && <Tarjetas datos={datos} />}</div>
       <div className="admin-bloque">
         <h2>Ventas por semana (últimas 8 semanas)</h2>
-        <div className="admin-grafico-wrap">
-          {datos && semanas && semanas.length > 0 && <Grafico semanas={semanas} />}
+        <div className="admin-grafico-wrap" ref={contenedor}>
+          {datos && semanas && semanas.length > 0 && <Grafico semanas={semanas} contenedor={contenedor} />}
           <p id="adminGraficoVacio" className="estado-vacio" hidden={!datos || (semanas && semanas.length > 0)}>No hay datos de ventas para mostrar.</p>
         </div>
       </div>

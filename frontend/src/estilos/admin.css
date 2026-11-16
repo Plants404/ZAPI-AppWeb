@@ -378,7 +378,6 @@
   width: 100%;
   height: auto;
   max-height: 16rem;
-  min-width: 30rem;
 }
 
 .admin-grafico-linea {
@@ -408,6 +407,8 @@
 /* Tablas */
 .admin-tabla-wrap {
   overflow-x: auto;
+  max-width: 100%;
+  contain: paint; /* la tabla ancha se desplaza dentro de su caja y no agranda la página */
 }
 
 .admin-tabla {
@@ -769,6 +770,37 @@
   .admin-marca-sub,
   .admin-modo-texto {
     display: none;
+  }
+
+  .admin-topbar-inicio,
+  .admin-marca {
+    min-width: 0;
+  }
+
+  .admin-topbar-centro {
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .admin-marca-titulo {
+    font-size: var(--fs-2xl, 1.5rem);
+  }
+
+  .admin-select {
+    max-width: 8.5rem;
+    padding-inline: .5rem;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Celulares angostos (hasta 420 px): queda solo el logo para que entren el modo y los botones */
+@media (max-width: 420px) {
+  .admin-marca-titulo {
+    display: none;
+  }
+
+  .admin-select {
+    max-width: 7rem;
   }
 }
 
@@ -1400,7 +1432,7 @@
 .an-segmentos button span { color: var(--an-suave); }
 .an-segmentos button[aria-pressed='true'] { background: var(--an-bosque); border-color: var(--an-bosque); color: #fff; }
 .an-segmentos button[aria-pressed='true'] span { color: #cfe0d4; }
-.an-tabla-wrap { overflow-x: auto; }
+.an-tabla-wrap { overflow-x: auto; max-width: 100%; contain: paint; }
 .an-tabla { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 13.5px; }
 .an-tabla thead tr { background: var(--an-arena); text-align: left; }
 .an-tabla th { padding: 10px 12px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--an-suave); text-align: left; }
