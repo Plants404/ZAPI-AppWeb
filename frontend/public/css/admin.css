@@ -1744,3 +1744,369 @@
 .estado-vacio {
   margin-bottom: var(--espacio-md);
 }
+
+/* ----- Versión final: igual al mockup ----- */
+.gestion-panel {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.gestion-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-md);
+  margin-bottom: var(--espacio-md);
+}
+
+.gestion-encabezado h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 2.25rem;
+  color: var(--forest);
+}
+
+.gestion-encabezado p {
+  margin: .4rem 0 0;
+  color: var(--texto-suave);
+}
+
+.gestion-panel .gestion-resumen,
+.gestion-panel .gestion-filtros,
+.gestion-panel .gestion-grilla,
+.gestion-panel .gestion-lista {
+  margin-inline: 0;
+}
+
+.gestion-encabezado .gestion-resumen {
+  margin: 0;
+}
+
+.gestion-panel .estado-vacio {
+  margin-bottom: 0;
+}
+
+.gestion-panel .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.gestion-buscar {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex: 1 1 16rem;
+  padding: 0 .75rem;
+  background: var(--cream);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+}
+
+.gestion-buscar input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  outline: none;
+}
+
+.gestion-panel .gestion-filtros {
+  margin-bottom: 0;
+}
+
+/* Mensajes: bandeja */
+.gestion-bandeja {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-md);
+  align-items: flex-start;
+}
+
+.gestion-bandeja-lista {
+  flex: 1 1 22rem;
+  max-width: 29rem;
+  background: var(--white);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.gestion-bandeja-herramientas {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.gestion-bandeja-herramientas .gestion-buscar {
+  flex: 0 0 auto;
+}
+
+.gestion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  width: 100%;
+  padding: 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--borde);
+  border-left: 4px solid transparent;
+  background: var(--white);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gestion-item:hover {
+  background: var(--forest-bg);
+}
+
+.gestion-item.activo {
+  background: var(--menta);
+  border-left-color: var(--moss);
+}
+
+.gestion-item .gestion-avatar.es-nuevo {
+  background: var(--moss);
+  color: var(--white);
+}
+
+.gestion-item-texto {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+}
+
+.gestion-item-linea {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.gestion-item-linea span {
+  font-size: .75rem;
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+.gestion-item-asunto {
+  font-size: var(--fs-sm);
+}
+
+.gestion-item-asunto.es-nuevo {
+  font-weight: 600;
+}
+
+.gestion-item-vista {
+  font-size: .8rem;
+  color: var(--texto-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gestion-punto {
+  flex: 0 0 .65rem;
+  width: .65rem;
+  height: .65rem;
+  margin-top: .4rem;
+  border-radius: 50%;
+  background: var(--error-strong);
+}
+
+.gestion-mini-estado {
+  align-self: flex-start;
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  background: var(--menta);
+  color: var(--forest);
+  font-size: .75rem;
+  white-space: nowrap;
+}
+
+.gestion-detalle {
+  flex: 999 1 24rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding: 1.75rem;
+  background: var(--white);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+}
+
+.gestion-detalle-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gestion-detalle-cabecera > div:nth-child(2) {
+  flex: 1 1 14rem;
+}
+
+.gestion-detalle h2 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  color: var(--forest);
+}
+
+.gestion-avatar.grande {
+  flex: 0 0 3.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  background: var(--moss);
+  color: var(--white);
+  font-size: 1.25rem;
+}
+
+.gestion-detalle .gestion-texto {
+  padding: 1.25rem;
+  font-size: 1rem;
+}
+
+.gestion-pie {
+  margin-top: .75rem;
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--texto-suave);
+}
+
+.gestion-detalle .gestion-pie {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--borde);
+}
+
+/* Accesos: tabla */
+.gestion-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: var(--espacio-md);
+}
+
+.gestion-barra .gestion-buscar {
+  max-width: 26rem;
+  background: var(--white);
+}
+
+.gestion-tabla {
+  background: var(--white);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  overflow-x: auto;
+}
+
+.gestion-tabla-interior {
+  min-width: 40rem;
+}
+
+.gestion-tabla-cabecera,
+.gestion-fila {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1.2fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+}
+
+.gestion-tabla-cabecera {
+  padding-block: .85rem;
+  background: var(--forest-bg);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.gestion-fila {
+  border-top: 1px solid var(--borde);
+}
+
+.gestion-fila:hover {
+  background: var(--cream);
+}
+
+.gestion-persona-info {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  min-width: 0;
+}
+
+.gestion-persona-datos span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.gestion-rol {
+  display: inline-block;
+  padding: .25rem .75rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+.gestion-rol.es-admin {
+  background: var(--forest);
+  color: var(--white);
+}
+
+.gestion-rol.es-cliente {
+  background: var(--menta);
+  color: var(--forest);
+}
+
+.gestion-fila .boton {
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.gestion-fila .boton.resalta {
+  border-color: var(--moss);
+  color: var(--forest);
+  font-weight: 600;
+}
+
+/* Menú: contador de pendientes */
+.admin-menu-insignia {
+  margin-left: auto;
+  min-width: 1.4rem;
+  padding: .05rem .5rem;
+  border-radius: 999px;
+  background: var(--menta);
+  color: var(--forest);
+  font-size: .75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.admin-menu-enlace-activo .admin-menu-insignia {
+  background: var(--white);
+}
+
+.admin-menu-insignia[hidden] {
+  display: none;
+}

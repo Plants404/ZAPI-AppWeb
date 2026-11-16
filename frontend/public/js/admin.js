@@ -463,7 +463,7 @@ const ETIQUETAS_MENSAJE = { new: 'Nuevo', read: 'Leído', answered: 'Respondido'
 const ETIQUETAS_TESTIMONIO = { pending: 'Pendiente', approved: 'Publicado', rejected: 'Rechazado' };
 const CLASE_ESTADO_GESTION = { new: 'pendiente', read: 'entregado', answered: 'confirmado', pending: 'pendiente', approved: 'confirmado', rejected: 'cancelado' };
 
-const gestion = { mensajes: [], testimonios: [], usuarios: [], filtro: { mensajes: '', testimonios: '', accesos: '' } };
+const gestion = { mensajes: [], testimonios: [], usuarios: [], mensajeActivo: '', filtro: { mensajes: '', testimonios: '', accesos: '' } };
 
 function iniciales(nombre) {
     return String(nombre || '?').trim().split(/\s+/).slice(0, 2).map(parte => parte[0]).join('').toUpperCase() || '?';
@@ -494,9 +494,28 @@ function pintarLista(cuerpoId, vacioId, filas) {
     document.getElementById(vacioId).hidden = filas.length > 0;
 }
 
+function fechaCorta(fecha) {
+    const f = new Date(fecha);
+    const hoy = new Date();
+    if (f.toDateString() === hoy.toDateString()) return 'Hoy ' + f.toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });
+    return f.toLocaleDateString('es-UY', { day: 'numeric', month: 'short' });
+}
+
+function pintarInsignias() {
+    const nuevos = gestion.mensajes.filter(m => m.estado === 'new').length;
+    const pendientes = gestion.testimonios.filter(t => t.estado === 'pending').length;
+    [['insigniaMensajes', nuevos], ['insigniaTestimonios', pendientes]].forEach(([id, cantidad]) => {
+        const insignia = document.getElementById(id);
+        if (!insignia) return;
+        insignia.textContent = cantidad;
+        insignia.hidden = cantidad === 0;
+    });
+}
+
 function pintarMensajes() {
     const todos = gestion.mensajes;
     const filtro = gestion.filtro.mensajes;
+    const buscado = document.getElementById('buscarMensajes').value.trim().toLowerCase();
     const nuevos = todos.filter(m => m.estado === 'new').length;
     const sinResponder = todos.filter(m => m.estado !== 'answered').length;
 
@@ -506,30 +525,55 @@ function pintarMensajes() {
         { valor: todos.length, texto: 'Total' }
     ]);
     pintarFiltros('filtrosMensajes', [['', 'Todos'], ['new', 'Nuevos'], ['read', 'Leídos'], ['answered', 'Respondidos']], todos, 'estado', filtro);
+    pintarInsignias();
 
-    pintarLista('adminCuerpoMensajes', 'adminMensajesVacio', todos.filter(m => !filtro || m.estado === filtro).map(m => {
-        const whatsapp = enlaceWhatsApp(m.telefono);
-        const asunto = encodeURIComponent('Re: ' + (m.asunto || 'Tu consulta a ZAPI'));
-        const acciones = [
-            `<a class="boton boton-primario" href="mailto:${escaparHTML(m.email)}?subject=${asunto}"><span class="material-symbols-outlined" aria-hidden="true">mail</span> Responder por correo</a>`,
-            whatsapp ? `<a class="boton boton-secundario" href="${whatsapp}" target="_blank" rel="noopener"><span class="material-symbols-outlined" aria-hidden="true">chat</span> WhatsApp</a>` : '',
-            m.estado !== 'answered' ? `<button type="button" class="boton boton-secundario" data-mensaje="${escaparHTML(m.id)}" data-estado="answered"><span class="material-symbols-outlined" aria-hidden="true">check</span> Marcar como respondido</button>` : '',
-            m.estado === 'new' ? `<button type="button" class="boton boton-texto" data-mensaje="${escaparHTML(m.id)}" data-estado="read">Marcar como leído</button>` : ''
-        ].join('');
+    const visibles = todos.filter(m => (!filtro || m.estado === filtro)
+        && (!buscado || `${m.nombre} ${m.asunto} ${m.email}`.toLowerCase().includes(buscado)));
+    if (!visibles.some(m => m.id === gestion.mensajeActivo)) gestion.mensajeActivo = visibles[0] ? visibles[0].id : '';
 
-        return `<article class="gestion-tarjeta${m.estado === 'new' ? ' es-nuevo' : ''}">
-            <div class="gestion-avatar" aria-hidden="true">${escaparHTML(iniciales(m.nombre))}</div>
-            <div class="gestion-cuerpo">
-                <div class="gestion-cabecera">
-                    <h2>${escaparHTML(m.asunto || 'Sin asunto')}</h2>
-                    <span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[m.estado] || 'pendiente'}">${ETIQUETAS_MENSAJE[m.estado] || escaparHTML(m.estado)}</span>
-                </div>
-                <p class="gestion-meta">${escaparHTML(m.nombre)} · <a href="mailto:${escaparHTML(m.email)}">${escaparHTML(m.email)}</a>${m.telefono ? ` · ${escaparHTML(m.telefono)}` : ''} · ${formatearFecha(m.fecha)}</p>
-                <p class="gestion-texto">${escaparHTML(m.mensaje)}</p>
-                <div class="gestion-acciones">${acciones}</div>
+    pintarLista('adminCuerpoMensajes', 'adminMensajesVacio', visibles.map(m => `
+        <button type="button" class="gestion-item${m.id === gestion.mensajeActivo ? ' activo' : ''}" data-ver="${escaparHTML(m.id)}" aria-current="${m.id === gestion.mensajeActivo}">
+            <span class="gestion-avatar${m.estado === 'new' ? ' es-nuevo' : ''}" aria-hidden="true">${escaparHTML(iniciales(m.nombre))}</span>
+            <span class="gestion-item-texto">
+                <span class="gestion-item-linea"><strong>${escaparHTML(m.nombre)}</strong><span>${escaparHTML(fechaCorta(m.fecha))}</span></span>
+                <span class="gestion-item-asunto${m.estado === 'new' ? ' es-nuevo' : ''}">${escaparHTML(m.asunto || 'Sin asunto')}</span>
+                <span class="gestion-item-vista">${escaparHTML(m.mensaje)}</span>
+            </span>
+            ${m.estado === 'new' ? '<span class="gestion-punto" aria-label="Nuevo"></span>' : ''}
+            ${m.estado === 'answered' ? '<span class="gestion-mini-estado">Respondido</span>' : ''}
+        </button>`));
+
+    pintarDetalleMensaje(visibles.find(m => m.id === gestion.mensajeActivo));
+}
+
+function pintarDetalleMensaje(m) {
+    const detalle = document.getElementById('detalleMensaje');
+    if (!m) {
+        detalle.innerHTML = '<p class="estado-vacio">Elegí un mensaje de la lista para leerlo.</p>';
+        return;
+    }
+    const whatsapp = enlaceWhatsApp(m.telefono);
+    const asunto = encodeURIComponent('Re: ' + (m.asunto || 'Tu consulta a ZAPI'));
+    const id = escaparHTML(m.id);
+
+    detalle.innerHTML = `
+        <div class="gestion-detalle-cabecera">
+            <div class="gestion-avatar grande" aria-hidden="true">${escaparHTML(iniciales(m.nombre))}</div>
+            <div>
+                <h2>${escaparHTML(m.asunto || 'Sin asunto')}</h2>
+                <p class="gestion-meta">${escaparHTML(m.nombre)} · <a href="mailto:${escaparHTML(m.email)}">${escaparHTML(m.email)}</a>${m.telefono ? ` · ${escaparHTML(m.telefono)}` : ''}</p>
             </div>
-        </article>`;
-    }));
+            <span class="admin-badge admin-badge-${CLASE_ESTADO_GESTION[m.estado] || 'pendiente'}">${ETIQUETAS_MENSAJE[m.estado] || escaparHTML(m.estado)}</span>
+        </div>
+        <p class="gestion-meta">Recibido el ${formatearFecha(m.fecha)} · desde el formulario de contacto</p>
+        <p class="gestion-texto">${escaparHTML(m.mensaje)}</p>
+        <div class="gestion-acciones">
+            <a class="boton boton-primario" href="mailto:${escaparHTML(m.email)}?subject=${asunto}"><span class="material-symbols-outlined" aria-hidden="true">mail</span> Responder por correo</a>
+            ${whatsapp ? `<a class="boton boton-secundario" href="${whatsapp}" target="_blank" rel="noopener"><span class="material-symbols-outlined" aria-hidden="true">chat</span> Escribir por WhatsApp</a>` : ''}
+            ${m.estado !== 'answered' ? `<button type="button" class="boton boton-secundario" data-mensaje="${id}" data-estado="answered"><span class="material-symbols-outlined" aria-hidden="true">check</span> Marcar como respondido</button>` : ''}
+            ${m.estado === 'new' ? `<button type="button" class="boton boton-texto" data-mensaje="${id}" data-estado="read">Marcar como leído</button>` : ''}
+        </div>
+        <p class="gestion-pie">Al responder, el estado pasa a «Respondido».</p>`;
 }
 
 function pintarTestimonios() {
@@ -547,6 +591,7 @@ function pintarTestimonios() {
         { valor: publicados, texto: 'Publicados en el sitio' },
         { valor: promedio, texto: 'Promedio de estrellas' }
     ]);
+    pintarInsignias();
     pintarFiltros('filtrosTestimonios', [['pending', 'Pendientes'], ['approved', 'Aprobados'], ['rejected', 'Rechazados'], ['', 'Todos']], todos, 'estado', filtro);
 
     pintarLista('adminCuerpoTestimonios', 'adminTestimoniosVacio', todos.filter(t => !filtro || t.estado === filtro).map(t => {
@@ -573,6 +618,7 @@ function pintarTestimonios() {
 function pintarAccesos() {
     const todos = gestion.usuarios;
     const filtro = gestion.filtro.accesos;
+    const buscado = document.getElementById('buscarAccesos').value.trim().toLowerCase();
     const admins = todos.filter(u => u.rol === 'admin').length;
 
     pintarResumen('resumenAccesos', [
@@ -581,19 +627,22 @@ function pintarAccesos() {
     ]);
     pintarFiltros('filtrosAccesos', [['', 'Todos'], ['admin', 'Administradores'], ['cliente', 'Clientes']], todos, 'rol', filtro);
 
-    pintarLista('adminCuerpoAccesos', 'adminAccesosVacio', todos.filter(u => !filtro || u.rol === filtro).map(u => {
+    pintarLista('adminCuerpoAccesos', 'adminAccesosVacio', todos.filter(u => (!filtro || u.rol === filtro)
+        && (!buscado || `${u.nombre} ${u.email}`.toLowerCase().includes(buscado))).map(u => {
         const esAdmin = u.rol === 'admin';
         const accion = u.esYo
             ? '<span class="gestion-nota">No podés cambiar tu propio rol</span>'
-            : `<button type="button" class="boton boton-secundario" data-usuario="${escaparHTML(u.id)}" data-rol="${esAdmin ? 'cliente' : 'admin'}">${esAdmin ? 'Pasar a cliente' : 'Hacer admin'}</button>`;
+            : `<button type="button" class="boton ${esAdmin ? 'boton-secundario' : 'boton-secundario resalta'}" data-usuario="${escaparHTML(u.id)}" data-rol="${esAdmin ? 'cliente' : 'admin'}">${esAdmin ? 'Pasar a cliente' : 'Hacer admin'}</button>`;
 
-        return `<article class="gestion-persona">
-            <div class="gestion-avatar${esAdmin ? ' es-admin' : ''}" aria-hidden="true">${escaparHTML(iniciales(u.nombre || u.email))}</div>
-            <div class="gestion-persona-datos"><strong>${escaparHTML(u.nombre || '-')}${u.esYo ? ' <span class="gestion-vos">vos</span>' : ''}</strong><span>${escaparHTML(u.email)}</span></div>
-            <span class="admin-badge admin-badge-${esAdmin ? 'confirmado' : 'entregado'}">${esAdmin ? 'Administrador' : 'Cliente'}</span>
-            <span class="gestion-fecha">Alta ${formatearFecha(u.fecha)}</span>
-            <div class="gestion-persona-accion">${accion}</div>
-        </article>`;
+        return `<div class="gestion-fila">
+            <div class="gestion-persona-info">
+                <div class="gestion-avatar${esAdmin ? ' es-admin' : ''}" aria-hidden="true">${escaparHTML(iniciales(u.nombre || u.email))}</div>
+                <div class="gestion-persona-datos"><strong>${escaparHTML(u.nombre || '-')}${u.esYo ? ' <span class="gestion-vos">(vos)</span>' : ''}</strong><span>${escaparHTML(u.email)}</span></div>
+            </div>
+            <div><span class="gestion-rol ${esAdmin ? 'es-admin' : 'es-cliente'}">${esAdmin ? 'Administrador' : 'Cliente'}</span></div>
+            <div class="gestion-fecha">${formatearFecha(u.fecha)}</div>
+            <div>${accion}</div>
+        </div>`;
     }));
 }
 
@@ -654,10 +703,21 @@ function iniciarGestion() {
     });
     gestion.filtro.testimonios = 'pending';
 
+    document.getElementById('buscarMensajes').addEventListener('input', pintarMensajes);
+    document.getElementById('buscarAccesos').addEventListener('input', pintarAccesos);
     document.getElementById('adminCuerpoMensajes').addEventListener('click', evento => {
+        const item = evento.target.closest('[data-ver]');
+        if (!item) return;
+        gestion.mensajeActivo = item.dataset.ver;
+        pintarMensajes();
+    });
+    document.getElementById('detalleMensaje').addEventListener('click', evento => {
         const boton = evento.target.closest('[data-mensaje]');
         if (boton) cambiarGestion(`mensajes/${boton.dataset.mensaje}`, { estado: boton.dataset.estado }, cargarMensajes, 'Mensaje actualizado');
     });
+    cargarMensajes();
+    cargarTestimonios();
+
     document.getElementById('adminCuerpoTestimonios').addEventListener('click', evento => {
         const boton = evento.target.closest('[data-testimonio]');
         if (boton) cambiarGestion(`testimonios/${boton.dataset.testimonio}`, { estado: boton.dataset.estado }, cargarTestimonios, 'Testimonio actualizado');
