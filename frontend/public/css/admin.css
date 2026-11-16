@@ -1645,9 +1645,11 @@
 
 .gestion-cita {
   margin: 0;
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 1.05rem;
   line-height: 1.6;
+  text-transform: none;
+  letter-spacing: normal;
   overflow-wrap: anywhere;
 }
 
@@ -2207,4 +2209,10 @@
   border-color: var(--error-strong);
   background: var(--error-strong);
   color: var(--white);
+}
+
+.gestion-detalle h2,
+.gestion-cabecera h2 {
+  text-transform: none;
+  letter-spacing: normal;
 }
