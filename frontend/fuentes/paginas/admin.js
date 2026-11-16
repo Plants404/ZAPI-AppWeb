@@ -51,7 +51,7 @@ module.exports = {
                 </button>
                 <ul class="admin-menu">
                     <li><a class="admin-menu-enlace admin-menu-enlace-activo" href="#" data-panel="resumen" aria-current="true"><span class="material-symbols-outlined" aria-hidden="true">dashboard</span><span class="admin-menu-texto">Resumen</span></a></li>
-                    <li><a class="admin-menu-enlace" href="#" data-panel="auditoria"><span class="material-symbols-outlined" aria-hidden="true">history</span><span class="admin-menu-texto">Últimos cambios</span></a></li>
+                    <li><a class="admin-menu-enlace" href="#" data-panel="auditoria"><span class="material-symbols-outlined" aria-hidden="true">history</span><span class="admin-menu-texto">Registro de actividad</span></a></li>
                     <li><a class="admin-menu-enlace" href="#" data-panel="pedidos"><span class="material-symbols-outlined" aria-hidden="true">receipt_long</span><span class="admin-menu-texto">Pedidos y ventas</span></a></li>
                     <li><a class="admin-menu-enlace" href="#" data-panel="catalogo"><span class="material-symbols-outlined" aria-hidden="true">inventory</span><span class="admin-menu-texto">Catálogo y stock</span></a></li>
                     <li><a class="admin-menu-enlace" href="#" data-panel="estilo"><span class="material-symbols-outlined" aria-hidden="true">palette</span><span class="admin-menu-texto">Estilo del sitio</span></a></li>
@@ -213,9 +213,9 @@ module.exports = {
                 </div>
             </section>
 
-            <section class="admin-panel" id="panelAuditoria" hidden aria-label="Últimos cambios">
+            <section class="admin-panel" id="panelAuditoria" hidden aria-label="Registro de actividad">
                 <div class="admin-panel-cabecera">
-                    <h1>Últimos cambios</h1>
+                    <h1>Registro de actividad</h1>
                     <p>Historial de acciones de administración (últimas 20 entradas).</p>
                 </div>
                 <div class="admin-tabla-wrap">

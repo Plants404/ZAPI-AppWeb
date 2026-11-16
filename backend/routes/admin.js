@@ -216,7 +216,7 @@ function crearRouter(getDatabase) {
         });
     });
 
-    /* Últimos cambios: lectura de auditoría (solo admin). */
+    /* Registro de actividad: lectura de auditoría (solo admin). */
     router.get('/auditoria', requerirAdmin(getDatabase), async (req, res) => {
         const db = getDatabase();
         const entradas = await db.collection('auditoria')
