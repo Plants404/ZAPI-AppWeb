@@ -1,6 +1,6 @@
-function PanelCatalogo() {
+function PanelCatalogo({ activo }) {
   return (
-      <section className="admin-panel" id="panelCatalogo" hidden aria-label="Catálogo y stock">
+      <section className="admin-panel" id="panelCatalogo" hidden={!activo} aria-label="Catálogo y stock">
         <div className="admin-panel-cabecera">
           <h1>Catálogo y stock</h1>
           <p>Todos los productos, incluidos los inactivos.</p>

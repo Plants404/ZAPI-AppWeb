@@ -1,6 +1,6 @@
-function PanelAnalitica() {
+function PanelAnalitica({ activo }) {
   return (
-      <section className="admin-panel an-panel" id="panelAnalitica" hidden aria-label="Analítica de clientes">
+      <section className="admin-panel an-panel" id="panelAnalitica" hidden={!activo} aria-label="Analítica de clientes">
         <header className="an-cabecera">
           <div className="an-cabecera-texto">
             <div className="an-etiqueta" id="anEtiqueta">ANALÍTICA DE CLIENTES · RESUMEN</div>

@@ -1,6 +1,6 @@
-function PanelAuditoria() {
+function PanelAuditoria({ activo }) {
   return (
-      <section className="admin-panel" id="panelAuditoria" hidden aria-label="Registro de actividad">
+      <section className="admin-panel" id="panelAuditoria" hidden={!activo} aria-label="Registro de actividad">
         <div className="admin-panel-cabecera">
           <h1>Registro de actividad</h1>
           <p>Historial de acciones de administración (últimas 20 entradas).</p>

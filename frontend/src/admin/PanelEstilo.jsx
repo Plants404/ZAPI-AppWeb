@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 
-function PanelEstilo() {
+function PanelEstilo({ activo }) {
   return (
-      <section className="admin-panel editor-estilo" id="panelEstilo" hidden aria-label="Estilo del sitio">
+      <section className="admin-panel editor-estilo" id="panelEstilo" hidden={!activo} aria-label="Estilo del sitio">
         <form className="ed-raiz" id="formEstilo" noValidate>
           <header className="ed-barra">
             <button className="ed-boton-barra ed-volver" id="edVolver" type="button">

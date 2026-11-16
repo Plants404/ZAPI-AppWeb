@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { useAgregarAlCarrito } from '../estado/agregar.js'
 import { PRODUCTOS } from '../data/productos.js'
 import { NEGOCIO, formatearPrecio, textoDeStock, claseDeStock, slug } from '../data/negocio.js'
 import NoEncontrada from './NoEncontrada.jsx'
@@ -13,7 +15,13 @@ const unidadesDe = p => {
 function Producto() {
   const { slug: pedido } = useParams()
   const producto = PRODUCTOS.find(p => slugDe(p) === pedido)
-  if (!producto) return <NoEncontrada />
+  // La "key" hace que al pasar de un producto a otro la ficha empiece de cero (foto 1).
+  return producto ? <Ficha key={producto.id} producto={producto} /> : <NoEncontrada />
+}
+
+function Ficha({ producto }) {
+  const [foto, setFoto] = useState(0)
+  const [agregar, agregado] = useAgregarAlCarrito()
 
   const unidades = unidadesDe(producto)
   const agotado = unidades === 0
@@ -37,11 +45,11 @@ function Producto() {
       </nav>
       <article className="producto">
         <div className="producto-galeria">
-          <img className="producto-principal" id="productoImagen" src={imagenes[0] || ''} alt={producto.nombre} loading="lazy" width="798" height="1200" />
+          <img className="producto-principal" id="productoImagen" src={imagenes[foto] || ''} alt={`${producto.nombre}, foto ${foto + 1} de ${imagenes.length}`} loading="lazy" width="798" height="1200" />
           {imagenes.length > 1 && (
             <div className="producto-miniaturas" id="productoMiniaturas">
               {imagenes.map((foto, i) => (
-                <button key={foto} className={'producto-miniatura' + (i === 0 ? ' activa' : '')} type="button" data-indice-foto={i} aria-label={`Ver foto ${i + 1} de ${imagenes.length}`} aria-current={i === 0 ? 'true' : 'false'}>
+                <button key={foto} className={'producto-miniatura' + (i === foto ? ' activa' : '')} type="button" aria-label={`Ver foto ${i + 1} de ${imagenes.length}`} aria-current={i === foto ? 'true' : 'false'} onClick={() => setFoto(i)}>
                   <img src={foto} alt="" loading="lazy" />
                 </button>
               ))}
@@ -60,10 +68,12 @@ function Producto() {
             ))}
           </ul>
           <div className="producto-acciones">
-            <button className="agregar" id="productoAgregar" data-agregar-producto={producto.id} type="button" disabled={agotado}>
+            <button className={'agregar' + (agregado ? ' agregado added' : '')} id="productoAgregar" type="button" disabled={agotado} onClick={() => agregar(producto.id)}>
               {agotado
                 ? <><span className="material-symbols-outlined" aria-hidden="true">block</span> Sin stock</>
-                : <><span className="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito</>}
+                : agregado
+                  ? <><span className="material-symbols-outlined" aria-hidden="true">check</span> ¡Agregado!</>
+                  : <><span className="material-symbols-outlined" aria-hidden="true">add_shopping_cart</span> Agregar al carrito</>}
             </button>
             <a className="whatsapp boton boton-whatsapp boton-bloque" id="productoWhatsapp" href={whatsappUrl} target="_blank" rel="noopener">
               <span className="material-symbols-outlined" aria-hidden="true">chat</span> Consultar por WhatsApp

@@ -1,6 +1,6 @@
-function PanelResumen() {
+function PanelResumen({ activo }) {
   return (
-      <section className="admin-panel" id="panelResumen" aria-label="Resumen">
+      <section className="admin-panel" id="panelResumen" hidden={!activo} aria-label="Resumen">
         <div className="admin-panel-cabecera">
           <h1>Resumen</h1>
           <p>Datos de solo lectura del panel de administración.</p>
