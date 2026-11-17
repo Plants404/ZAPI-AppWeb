@@ -89,7 +89,7 @@
 .priv-bloque{
     scroll-margin-top: 96px;
     padding: clamp(20px, 4vw, 32px);
-    border-radius: 20px;
+    border-radius: var(--radius);
     background: var(--white, #fff);
     border: 1px solid var(--sand);
     box-shadow: 0 1px 2px rgba(31, 58, 46, .04);
@@ -156,7 +156,7 @@
 }
 .priv-datos div{
     padding: 12px 14px;
-    border-radius: 14px;
+    border-radius: var(--radius);
     background: var(--cream);
 }
 .priv-datos dt{
@@ -177,7 +177,7 @@
 .priv-tabla-caja{
     margin: 4px 0 16px;
     border: 1px solid var(--sand);
-    border-radius: 14px;
+    border-radius: var(--radius);
     overflow: hidden;
 }
 .priv-tabla{
@@ -218,7 +218,7 @@
 }
 .priv-tarjetas article{
     padding: 16px 18px;
-    border-radius: 14px;
+    border-radius: var(--radius);
     background: var(--cream);
 }
 .priv-tarjetas h3{ margin-top: 0; }
@@ -229,7 +229,7 @@
     .priv-indice{
         position: static;
         padding: 14px 16px;
-        border-radius: 16px;
+        border-radius: var(--radius);
         background: var(--white, #fff);
         border: 1px solid var(--sand);
     }
@@ -247,7 +247,7 @@
         display: inline-flex;
         align-items: center;
         border: 1px solid var(--sand);
-        border-radius: 999px;
+        border-radius: var(--radio-etiqueta);
         background: var(--cream);
     }
     .priv-indice a[aria-current="true"]{

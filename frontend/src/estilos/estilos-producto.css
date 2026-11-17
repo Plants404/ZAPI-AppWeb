@@ -82,7 +82,7 @@
 
     border: 2px solid var(--borde-input);
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
 }
 
@@ -475,7 +475,7 @@ main {
 
     border: 2px solid transparent;
 
-    border-radius: .75rem;
+    border-radius: var(--radius);
 
     overflow: hidden;
 
@@ -770,7 +770,7 @@ main {
 
     background: var(--white);
 
-    border-radius: 1rem;
+    border-radius: var(--radius);
 
     text-decoration: none;
 
@@ -786,7 +786,7 @@ main {
 
     object-fit: cover;
 
-    border-radius: .75rem;
+    border-radius: var(--radius);
 
 }
 
