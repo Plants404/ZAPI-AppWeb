@@ -118,7 +118,7 @@ export function resolverImagen(ruta) {
 
 // Pide algo a la API y devuelve el JSON. Si falla, lanza un Error con el mensaje.
 // En las llamadas del panel (no públicas) un 401 manda al login, como hacía el panel viejo.
-export async function pedirJson(ruta, { metodo = 'GET', cuerpo, publico = false, irAlLogin = !publico } = {}) {
+async function pedirJson(ruta, { metodo = 'GET', cuerpo, publico = false, irAlLogin = !publico } = {}) {
   const opciones = { method: metodo, headers: { Accept: 'application/json' } }
   if (!publico) opciones.credentials = 'include'
   if (cuerpo !== undefined) {

@@ -226,16 +226,6 @@
   color: var(--white);
 }
 
-.admin-menu-enlace .admin-chip {
-  margin-left: auto;
-  font-size: .7rem;
-  padding: .15rem .5rem;
-  border-radius: var(--radius-pill);
-  background: var(--white-overlay-soft);
-  color: var(--texto-verde-suave);
-  font-weight: 600;
-}
-
 .admin-main {
   flex: 1;
   padding: var(--espacio-md);
@@ -293,7 +283,6 @@
   gap: .5rem;
 }
 
-.admin-tarjeta .admin-tarjeta-titulo,
 .admin-tarjeta .admin-tarjeta-label {
   font-size: var(--fs-xs);
   color: var(--texto-suave);
@@ -346,7 +335,6 @@
   gap: .5rem;
 }
 
-.admin-tarjeta .admin-tarjeta-titulo,
 .admin-tarjeta .admin-tarjeta-label {
   font-size: var(--fs-xs);
   color: var(--texto-suave);
@@ -579,26 +567,6 @@
 }
 
 /* Mensajes flotantes */
-.admin-aviso-caja {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  padding: var(--espacio-sm);
-  background: var(--estado-vacio-bg, rgba(0,0,0,.05));
-  border: 1px solid var(--borde);
-  border-radius: var(--radius);
-  margin-bottom: var(--espacio-sm);
-}
-
-.admin-aviso-titulo {
-  font-weight: 600;
-  color: var(--texto);
-}
-
-.admin-aviso-mensaje {
-  color: var(--texto-suave);
-  font-size: var(--fs-sm);
-}
 
 /* Filtros de pedidos */
 .admin-filtros {
@@ -619,18 +587,6 @@
 }
 
 /* Estilo del sitio: colores de marca */
-.admin-campo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: var(--espacio-md);
-}
-
-.campo-input.campo-color {
-  width: 100%;
-  height: 2.75rem;
-  padding: .2rem;
-  cursor: pointer;
-}
 
 /* Insignias de estado y de acción */
 .admin-badge {
@@ -973,12 +929,6 @@
   margin-bottom: var(--espacio-sm);
 }
 
-.admin-texto-largo {
-  max-width: 28rem;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
 /* Barra superior: acceso al sitio y cierre de sesión */
 .admin-boton-barra {
   display: inline-flex;
@@ -1016,10 +966,6 @@
 }
 
 /* Vista previa de la portada */
-.admin-dialog-previa {
-  max-width: 72rem;
-  width: 94%;
-}
 
 /* ============================================================================
    Estilo del sitio: editor a pantalla completa
@@ -1533,12 +1479,6 @@
   font-weight: 600;
 }
 
-.gestion-lista {
-  display: flex;
-  flex-direction: column;
-  gap: var(--espacio-sm);
-}
-
 .gestion-grilla {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
@@ -1573,28 +1513,6 @@
 .gestion-avatar.es-admin {
   background: var(--moss);
   color: var(--white);
-}
-
-.gestion-cuerpo {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-}
-
-.gestion-cabecera {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: .5rem;
-}
-
-.gestion-cabecera h2 {
-  margin: 0;
-  font-size: 1.15rem;
-  color: var(--forest);
 }
 
 .gestion-meta {
@@ -1710,16 +1628,6 @@
 }
 
 /* Accesos */
-.gestion-persona {
-  display: grid;
-  grid-template-columns: auto minmax(0, 2fr) auto auto auto;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-  background: var(--white);
-  border: 1px solid var(--borde);
-  border-radius: 16px;
-}
 
 .gestion-persona-datos strong,
 .gestion-persona-datos span {
@@ -1739,24 +1647,10 @@
   font-weight: 400;
 }
 
-.gestion-persona .boton {
-  min-height: 44px;
-  padding: 0 1.1rem;
-  border: 1px solid var(--moss);
-  border-radius: 999px;
-  background: var(--white);
-  color: var(--forest);
-  font-weight: 600;
-}
-
 @media (max-width: 768px) {
-  .gestion-persona {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
+  
 
-  .gestion-persona .admin-badge,
-  .gestion-fecha,
-  .gestion-persona-accion {
+  .gestion-fecha{
     grid-column: 2;
     justify-self: start;
   }
@@ -1770,7 +1664,6 @@
 
 .gestion-resumen,
 .gestion-filtros,
-.gestion-lista,
 .gestion-grilla {
   margin-inline: var(--espacio-md);
 }
@@ -1779,7 +1672,6 @@
   margin-top: var(--espacio-md);
 }
 
-.gestion-lista,
 .gestion-grilla,
 .estado-vacio {
   margin-bottom: var(--espacio-md);
@@ -1816,8 +1708,7 @@
 
 .gestion-panel .gestion-resumen,
 .gestion-panel .gestion-filtros,
-.gestion-panel .gestion-grilla,
-.gestion-panel .gestion-lista {
+.gestion-panel .gestion-grilla{
   margin-inline: 0;
 }
 
@@ -2249,8 +2140,7 @@
   color: var(--white);
 }
 
-.gestion-detalle h2,
-.gestion-cabecera h2 {
+.gestion-detalle h2{
   text-transform: none;
   letter-spacing: normal;
 }

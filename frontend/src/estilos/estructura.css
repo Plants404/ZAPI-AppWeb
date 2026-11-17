@@ -29,16 +29,6 @@
     backdrop-filter: blur(8px);
 }
 
-.header-inner {
-    display: flex;
-    align-items: center;
-    gap: var(--espacio-sm);
-    max-width: var(--ancho);
-    min-height: var(--header-alto);
-    margin: 0 auto;
-    padding: 0 var(--espacio-sm);
-}
-
 .site-header .logo {
     grid-area: brand;
     display: inline-flex;
@@ -75,25 +65,6 @@
 .marca img {
     width: auto;
     height: 44px;
-}
-
-.marca-texto {
-    display: grid;
-    line-height: 1.1;
-}
-
-.marca-texto strong {
-    font-family: var(--serif);
-    font-size: var(--fs-xl);
-    font-weight: 400;
-    letter-spacing: .18em;
-}
-
-.marca-texto small {
-    color: var(--muted);
-    font-size: .6rem;
-    letter-spacing: .12em;
-    text-transform: uppercase;
 }
 
 /* Botón menú: visible en móvil. En desktop se oculta. */
@@ -358,15 +329,6 @@ main:focus {
     color: var(--muted);
 }
 
-.seccion-cabecera-fila {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: var(--espacio-md);
-    max-width: none;
-}
-
 .banner-pagina {
     display: grid;
     grid-template-columns: 1fr;
@@ -614,10 +576,7 @@ main:focus {
         margin-inline: calc(50% - 50vw);
     }
 
-    .seccion-cabecera-fila {
-        flex-direction: row;
-        align-items: flex-end;
-    }
+    
 
     .footer-inner {
         grid-template-columns: 1.3fr 1.2fr 1fr;

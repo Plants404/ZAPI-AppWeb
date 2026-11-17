@@ -35,7 +35,7 @@ function leerGuardado() {
   }
 }
 
-export function calcularTotales(lineas) {
+function calcularTotales(lineas) {
   const subtotal = lineas.reduce((suma, l) => suma + l.precio * l.cantidad, 0)
   const envio = lineas.length === 0 || subtotal >= NEGOCIO.envioGratis ? 0 : null
   return { subtotal, envio, total: envio === null ? subtotal : subtotal + envio }

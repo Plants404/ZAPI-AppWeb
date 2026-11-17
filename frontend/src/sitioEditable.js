@@ -11,7 +11,7 @@ const TIPOGRAFIAS = {
 }
 const BOTONES = { redondeado: '', suave: '10px', recto: '2px' }
 
-export function aplicarColores(doc, colores) {
+function aplicarColores(doc, colores) {
   if (!colores) return
   const estilo = doc.documentElement.style
   if (colores.primario) estilo.setProperty('--forest', colores.primario)
@@ -34,7 +34,7 @@ export function aplicarEstilo(doc, estilo) {
   }
 }
 
-export function aplicarCampo(doc, campo, valor) {
+function aplicarCampo(doc, campo, valor) {
   const elementos = doc.querySelectorAll(campo.selector)
   if (!elementos.length) return
 
@@ -83,7 +83,7 @@ export const RUTA_DE_PAGINA = Object.fromEntries(Object.entries(PAGINA_DE_RUTA).
 
 /* Versión "en vivo" para la vista previa del editor: guarda el original de cada
    elemento antes de cambiarlo, así se puede volver atrás cuando se quita un cambio. */
-export function aplicarCampoVivo(doc, campo, guardado) {
+function aplicarCampoVivo(doc, campo, guardado) {
   doc.querySelectorAll(campo.selector).forEach(el => {
     if (campo.tipo === 'imagen') {
       if (el.tagName !== 'IMG') return
