@@ -1,5 +1,7 @@
 'use strict';
 
+/* Rutas de pedidos: alta con descuento atómico de stock y cambio de estado. */
+
 const { randomUUID } = require('node:crypto');
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');

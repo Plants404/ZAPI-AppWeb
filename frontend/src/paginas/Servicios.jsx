@@ -1,3 +1,4 @@
+// Página "Servicios": lo que ofrece el vivero además de plantas.
 import { Link } from 'react-router-dom'
 
 function Servicios() {

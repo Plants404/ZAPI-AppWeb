@@ -1,5 +1,7 @@
 'use strict';
 
+/* Rutas de publicación: borrador y versión publicada del contenido editable del sitio. */
+
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');
 const { requerirAdmin } = require('../lib/auth.js');

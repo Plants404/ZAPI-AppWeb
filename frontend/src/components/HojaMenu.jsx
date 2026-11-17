@@ -1,3 +1,4 @@
+// Menú desplegable para celular (hoja inferior con los enlaces del sitio).
 import { Link } from 'react-router-dom'
 import Icono from './Icono.jsx'
 import ContadorCarrito from './ContadorCarrito.jsx'

@@ -1,3 +1,4 @@
+// Punto de entrada: monta React con los proveedores de estado.
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

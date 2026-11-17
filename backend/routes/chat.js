@@ -1,5 +1,7 @@
 'use strict';
 
+/* Ruta del chat con IA ("Brotecito") con límite de uso. */
+
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');
 const { validarMensajes, armarInstrucciones, consultarGemini, MODELO_POR_DEFECTO } = require('../lib/chat.js');

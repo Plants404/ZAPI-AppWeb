@@ -1,3 +1,4 @@
+// Panel "Catálogo": alta, edición, stock y orden de los productos.
 import { useCallback, useState } from 'react'
 import { obtenerProductosAdmin, resolverImagen } from '../api.js'
 import { formatearPrecio, textoDeStock, claseDeStock } from '../data/negocio.js'

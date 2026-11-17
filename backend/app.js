@@ -1,5 +1,7 @@
 'use strict';
 
+/* Arma la aplicación Express: seguridad, límites de uso y rutas. */
+
 const express = require('express');
 const crypto = require('crypto');
 const { getDatabase } = require('./db.js');

@@ -1,5 +1,7 @@
 'use strict';
 
+/* Validación y limpieza de los datos que llegan del cliente. */
+
 const { HttpError } = require('./http-error.js');
 
 function objeto(datos) {

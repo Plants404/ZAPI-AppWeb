@@ -1,5 +1,7 @@
 'use strict';
 
+/* Prueba manual del flujo completo contra una API en marcha (registro, pedido, panel). */
+
 const { randomInt, randomUUID } = require('node:crypto');
 const http = require('node:http');
 const { once } = require('node:events');

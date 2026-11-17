@@ -1,5 +1,7 @@
 'use strict';
 
+/* Carga los productos iniciales sin pisar los que ya existen. */
+
 const { PRODUCTOS } = require('./compartido/catalogo.js');
 const { closeDatabase, connectDatabase } = require('./db.js');
 
