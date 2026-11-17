@@ -122,7 +122,7 @@ function Privacidad() {
 
           <section className="priv-bloque" id="conservacion" aria-labelledby="t-conservacion">
             <h2 id="t-conservacion">Conservación y tus derechos</h2>
-            <p>Lo que queda en tu navegador lo borrás vos cuando quieras. Las consultas y opiniones guardadas en nuestro sistema se eliminan automáticamente al año, y las conversaciones de WhatsApp las conservamos hasta 1 año, salvo que nos pidas eliminarlas antes.</p>
+            <p>Lo que queda en tu navegador lo borrás vos cuando quieras. Las consultas y las opiniones rechazadas se eliminan automáticamente al año. En los pedidos, al año se borran tus datos personales (nombre, teléfono, correo, zona y notas) y se conservan solo montos, fechas y productos para estadísticas del negocio. Las conversaciones de WhatsApp las conservamos hasta 1 año, salvo que nos pidas eliminarlas antes.</p>
             <p>Podés pedirnos acceso, corrección o eliminación de tus datos escribiendo a <a href="mailto:zapi.vivero@gmail.com">zapi.vivero@gmail.com</a> o por WhatsApp al 098 268 560.</p>
           </section>
         </div>
