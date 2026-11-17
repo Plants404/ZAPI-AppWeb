@@ -321,7 +321,7 @@ ul {
     align-items: center;
     width: fit-content;
     padding: .18rem .55rem;
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-etiqueta);
     font-size: var(--fs-xs);
     font-weight: 700;
     line-height: 1.5;
@@ -643,7 +643,7 @@ ul {
     right: .5rem;
     bottom: .5rem;
     padding: .15rem .5rem;
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-etiqueta);
     background: var(--forest-overlay-counter);
     color: var(--white);
     font-size: var(--fs-xs);

@@ -165,7 +165,7 @@
     min-height: 44px;
     padding: .5rem 2.5rem .5rem 2.2rem;
     border: 1px solid var(--borde);
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-boton);
     background: var(--white);
     color: var(--ink);
     font-size: var(--fs-sm);
@@ -619,7 +619,7 @@ main:focus {
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
-    border-radius: 24px 24px 0 0;
+    border-radius: var(--radius) var(--radius) 0 0;
     background: var(--cream);
     box-shadow: var(--sombra-lg);
     transform: translateY(100%);
