@@ -106,7 +106,7 @@
 
     cursor: pointer;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
 }
 
@@ -130,7 +130,7 @@
 
     border: 2px solid var(--borde-input);
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
 }
 
@@ -240,7 +240,7 @@
 
     padding: .8rem 1rem;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
     background: var(--leaf);
 
@@ -665,7 +665,7 @@ main {
 
     border: none;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
     font: inherit;
 
@@ -697,7 +697,7 @@ main {
 
     background: #0a7b6e;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
     font-weight: 600;
 

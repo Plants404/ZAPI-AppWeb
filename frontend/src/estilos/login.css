@@ -1,6 +1,7 @@
 
 
 :root{
+  --radio-boton: 10px;
     --forest: #1f3a2e;
     --moss:   #3d6b4f;
     --sage:   #8fae91;
@@ -189,7 +190,7 @@ input:focus-visible{
 button.go{
     width: 100%;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
     background: var(--forest);
     color: var(--cream);
     font: 600 16px var(--sans);
@@ -243,7 +244,7 @@ button.link:focus-visible{
     align-items: center;
     justify-content: center;
     padding: .7rem 1.5rem;
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
     border: 1.5px solid var(--forest);
     background: var(--forest);
     color: var(--cream);
@@ -341,13 +342,13 @@ body::after{
     gap: 4px;
     padding: 4px;
     margin: 0 0 18px;
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
     background: var(--cream);
     border: 1px solid var(--sand);
 }
 .tab{
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
     padding: 10px 12px;
     background: transparent;
     color: var(--muted-texto);

@@ -87,7 +87,7 @@
     gap: .15rem;
     padding: .15rem;
     border: 1px solid var(--borde);
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-boton);
     background: var(--cream);
 }
 

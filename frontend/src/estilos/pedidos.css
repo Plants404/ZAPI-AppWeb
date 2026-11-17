@@ -21,7 +21,7 @@
     gap: .5rem;
     padding: .65rem 1rem;
     border: 1px solid var(--forest);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radio-boton);
     font-family: var(--sans);
     font-size: var(--fs-md);
     font-weight: 600;
