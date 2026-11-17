@@ -49,12 +49,6 @@ body{
     overflow-x: hidden;
 }
 
-.wrap{
-    width: min(100%, 420px);
-    text-align: center;
-}
-
-
 :root{
     --login-tinte: color-mix(in srgb, var(--forest) 8%, var(--cream));
     --login-halo:  color-mix(in srgb, var(--sage)  55%, transparent);
@@ -240,13 +234,6 @@ button.link:focus-visible{
     border-radius: 6px;
 }
 
-.tag{
-    margin: 16px 0 0;
-    text-align: center;
-    font-size: 12px;
-    color: var(--muted);
-}
-
 .volver{
     position: fixed;
     top: max(16px, env(safe-area-inset-top));
@@ -306,7 +293,6 @@ button.link:focus-visible{
         margin-top: 1.5rem;
     }
 }
-
 
 /* ===== Mejoras de estética del acceso ===== */
 
@@ -543,7 +529,6 @@ button.go:disabled{
 .err:empty{ display: none; }
 .f{ margin-bottom: 12px; }
 
-
 /* ===== Composición dividida: panel verde con el personaje + formulario ===== */
 
 body{
@@ -710,8 +695,6 @@ body{
     margin-bottom: 10px;
 }
 .campos-registro .legal{ order: 7; grid-column: 1 / -1; margin: 0 0 12px; }
-
-.tag{ display: none; }
 
 /* Alto reducido (notebooks): todo entra en la pantalla */
 @media (max-height: 760px){

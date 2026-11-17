@@ -36,7 +36,7 @@ export function guardarPedido(pedido) {
   return pedido
 }
 
-export function armarPedido(datos) {
+function armarPedido(datos) {
   const cliente = datos.cliente || {}
   return {
     id: '',

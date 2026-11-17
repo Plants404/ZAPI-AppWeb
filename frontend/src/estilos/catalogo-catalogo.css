@@ -1,9 +1,6 @@
 /* Archivo generado. No editar a mano.
    Fuente: catalogo.css   Generar: node tools/extraer-modal-css.js */
 
-
-
-
 .catalog {
 width: 100%;
 margin: 0 auto;
@@ -61,10 +58,6 @@ margin: 0 0 .35rem;
 
 /* "Vivo" late: un resplandor verde suave y lento da la idea de
 algo que respira. Se apaga con prefers-reduced-motion. */
-.catalog-title-acento {
-color: var(--leaf);
-animation: catalogoLatido 4.5s ease-in-out infinite;
-}
 
 .catalog-lead {
 font-size: clamp(1.02rem, 1.6vw, 1.2rem);
@@ -75,60 +68,6 @@ margin: 0;
 }
 
 /* Aviso pasivo -> bloque de autoridad y alivio de friccion. */
-.catalog-trust {
-align-self: end;
-min-width: 0;
-background: var(--white);
-border-radius: var(--radius);
-border-left: 3px solid var(--leaf);
-box-shadow: var(--shadow-sm);
-padding: 1.3rem 1.4rem;
-transition: transform .3s ease, box-shadow .3s ease;
-}
-
-.catalog-trust:hover {
-transform: translateY(-4px);
-box-shadow: var(--shadow-md);
-}
-
-.catalog-trust-title {
-font-size: .72rem;
-font-weight: 700;
-text-transform: uppercase;
-letter-spacing: .18em;
-color: var(--moss);
-margin: 0 0 .85rem;
-}
-
-.catalog-trust ul {
-list-style: none;
-margin: 0;
-padding: 0;
-display: grid;
-gap: .65rem;
-}
-
-.catalog-trust li {
-display: flex;
-align-items: center;
-gap: .6rem;
-font-size: .92rem;
-font-weight: 500;
-color: var(--ink);
-margin: 0;
-}
-
-.catalog-trust .material-symbols-outlined {
-font-size: 1.15rem;
-color: var(--leaf);
-flex-shrink: 0;
-transition: transform .25s ease, color .25s ease;
-}
-
-.catalog-trust li:hover .material-symbols-outlined {
-transform: scale(1.1);
-color: var(--moss);
-}
 
 /* Entrada escalonada: sello, luego titulo y bajada, luego la
 tarjeta deslizandose desde la derecha, y por ultimo los
@@ -138,7 +77,6 @@ tarjeta siga funcionando. */
 .catalog-eyebrow,
 .catalog-title,
 .catalog-lead,
-.catalog-trust,
 .catalog-filterbar {
 animation-duration: .6s;
 animation-timing-function: cubic-bezier(.22, 1, .36, 1);
@@ -148,7 +86,7 @@ animation-fill-mode: backwards;
 .catalog-eyebrow { animation-name: catalogoEntrada; animation-delay: 0s; }
 .catalog-title { animation-name: catalogoEntrada; animation-delay: .15s; }
 .catalog-lead { animation-name: catalogoEntrada; animation-delay: .15s; }
-.catalog-trust { animation-name: catalogoEntradaDerecha; animation-delay: .3s; }
+
 .catalog-filterbar { animation-name: catalogoEntrada; animation-delay: .45s; }
 
 /* Barra de filtros: un unico bloque, identico en todos los
@@ -348,58 +286,16 @@ align-items: end;
 .catalog-eyebrow,
 .catalog-title,
 .catalog-lead,
-.catalog-trust,
-.catalog-filterbar,
-.catalog-title-acento {
+.catalog-filterbar{
 animation: none;
 }
 
-.catalog-trust,
 .catalog-filter-indicator,
-.catalog-filter,
-.catalog-trust .material-symbols-outlined {
+.catalog-filter{
 transition: none;
 }
 
-.catalog-trust:hover {
-transform: none;
 }
-}
-
-.catalog-empty {
-width: 100%;
-text-align: center;
-padding: 2rem 0;
-color: var(--moss);
-font-weight: 500;
-}
-
-.catalog-empty-clear {
-display: block;
-margin: 1rem auto 0;
-padding: .5rem 1.2rem;
-font-family: inherit;
-font-size: .95rem;
-font-weight: 500;
-color: var(--forest);
-background: var(--white);
-border: 1px solid var(--moss-border-soft);
-border-radius: 999px;
-cursor: pointer;
-}
-
-.catalog-empty-clear:hover {
-background: var(--leaf);
-border-color: var(--leaf);
-color: var(--white);
-}
-
-.catalog-empty-clear:focus-visible {
-outline: 2px solid var(--leaf);
-outline-offset: 3px;
-}
-
-
 
 /* Con auto-fill las pistas vacias se conservan: al filtrar y
 quedar pocas tarjetas (p. ej. Kits con una sola), estas
@@ -576,31 +472,6 @@ background: var(--error-bg);
 color: var(--error);
 }
 
-.catalog-trust li {
-display: flex;
-align-items: center;
-gap: .75rem;
-padding: clamp(1.5rem, 3.5vw, 2.1rem);
-border: 1px solid var(--borde);
-border-radius: calc(var(--radius) + 2px);
-box-shadow: var(--shadow-sm);
-background: var(--white);
-margin-bottom: 1rem;
-}
-
-.catalog-trust li .material-symbols-outlined {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-width: 52px;
-height: 52px;
-border-radius: 14px;
-background: var(--trust-icon-bg);
-color: var(--moss);
-font-size: 1.3rem;
-flex-shrink: 0;
-}
-
 .product-body {
 padding: .85rem;
 display: flex;
@@ -715,22 +586,6 @@ background: var(--moss);
 font-size: 1.35rem;
 }
 
-.product-footer {
-display: flex;
-flex-direction: column;
-gap: .85rem;
-padding: 1rem 1.25rem 1.25rem;
-border-top: 1px solid var(--forest-border-soft);
-background: linear-gradient(180deg, var(--cream-clear) 0%, var(--cream-veil) 100%);
-}
-
-.product-precio-cta {
-display: flex;
-justify-content: space-between;
-align-items: center;
-width: 100%;
-}
-
 .product-price {
 display: flex;
 flex: 0 0 auto;
@@ -746,38 +601,6 @@ font-weight: 700;
 letter-spacing: .03em;
 color: var(--forest);
 }
-
-.product-price .since {
-font-size: .75rem;
-color: var(--muted-texto);
-}
-
-.btn-ver-detalle {
-font-size: .94rem;
-font-weight: 600;
-color: var(--forest);
-text-decoration: underline;
-text-decoration-color: var(--forest);
-text-underline-offset: 3px;
-background: none;
-border: 0;
-padding: 0;
-margin: 0;
-cursor: pointer;
-}
-
-.btn-ver-detalle:hover {
-color: var(--moss);
-}
-
-.btn-ver-detalle:focus-visible {
-outline: 2px solid var(--leaf-texto);
-outline-offset: 3px;
-border-radius: 4px;
-}
-
-
-
 
 .add-cart:disabled {
 background: var(--sand);
@@ -889,7 +712,6 @@ text-shadow: var(--image-text-shadow);
 
 }
 
-
 .cart-link-float {
 
 position: fixed;
@@ -930,7 +752,6 @@ transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
 
 }
 
-
 .cart-link-float .cart-link-text {
 
 display: none;
@@ -963,13 +784,6 @@ font-size: 21px;
 
 }
 
-
-.cart-link-float.animado .material-symbols-outlined {
-
-animation: cartWiggle .6s ease;
-
-}
-
 @keyframes cartWiggle {
 
 0%, 100% { transform: rotate(0) scale(1); }
@@ -995,30 +809,7 @@ padding: 0 .35rem;
 transition: transform .3s ease, background .5s ease, color .35s ease;
 }
 
-
 .cart-count.con-productos {
-background: var(--error-strong);
-color: var(--white);
-}
-
-
-.cart-count.cart-count-header {
-position: absolute;
-top: -.15rem;
-right: -.8rem;
-min-width: 1.15rem;
-height: 1.15rem;
-padding: 0 .3rem;
-font-size: .68rem;
-font-weight: 700;
-background: var(--white);
-color: var(--leaf);
-border: 2px solid var(--white);
-display: none;
-}
-
-.cart-count.cart-count-header.con-productos {
-display: inline-flex;
 background: var(--error-strong);
 color: var(--white);
 }
@@ -1026,13 +817,6 @@ color: var(--white);
 .cart-count.pop {
 
 animation: countPop .45s ease;
-
-}
-
-
-.cart-count.destello {
-
-animation: destelloContador .75s ease;
 
 }
 
@@ -1075,7 +859,6 @@ display: inline;
 }
 
 }
-
 
 /* En tablet y escritorio el carrito vive en el header: el boton
 flotante "Ver carrito" solo queda visible en movil estricto. */

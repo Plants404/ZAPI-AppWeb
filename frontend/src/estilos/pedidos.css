@@ -12,36 +12,6 @@
     color: var(--forest);
 }
 
-.pedidos-heading {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--espacio-md);
-    margin-bottom: var(--espacio-lg);
-}
-
-.pedidos-heading-copy {
-    min-width: 0;
-}
-
-.pedidos-heading h1 {
-    margin: 0;
-    color: var(--ink);
-    font-family: var(--serif);
-    font-size: clamp(2.25rem, 8vw, 3.25rem);
-    font-weight: 400;
-    line-height: 1;
-}
-
-.pedidos-heading p {
-    max-width: 60ch;
-    margin: .65rem 0 0;
-    color: var(--muted-texto);
-    font-family: var(--sans);
-    font-size: var(--fs-md);
-    line-height: 1.5;
-}
-
 .pedidos-explorar,
 .pedidos-boton {
     display: inline-flex;
@@ -378,11 +348,7 @@
         padding-left: var(--espacio-md);
     }
 
-    .pedidos-heading {
-        flex-direction: row;
-        align-items: flex-end;
-        justify-content: space-between;
-    }
+    
 
     .pedidos-explorar {
         width: auto;
