@@ -77,11 +77,6 @@ function celdasPico(horarios, cantidad) {
   return celdas.sort((x, y) => y.valor - x.valor).slice(0, cantidad)
 }
 
-function franjaDelDia(bloque) {
-  const hora = 8 + bloque * 2
-  return hora < 12 ? 'a la mañana' : hora < 19 ? 'a la tarde' : 'a la noche'
-}
-
 /* ----- Resumen ----- */
 
 function Embudo({ datos }) {
@@ -93,8 +88,6 @@ function Embudo({ datos }) {
     { texto: 'Iniciaron el pedido', valor: pedidos, color: '#4a7c59', minimo: 60 },
     { texto: 'Escribieron por WhatsApp', valor: whatsapp, color: '#b7791f', minimo: 56 }
   ]
-  const caeCarrito = 1 - carrito / visitas
-  const caePedido = carrito ? 1 - pedidos / carrito : 0
   return (
     <>
       <div className="an-embudo" id="anEmbudo">
@@ -109,37 +102,8 @@ function Embudo({ datos }) {
           )
         })}
       </div>
-      <div className="an-callout an-callout-ambar" id="anPerdida">
-        <strong>Mayor pérdida:</strong>
-        <span>{caeCarrito >= caePedido
-          ? `de cada 100 personas que miran, ${Math.round(caeCarrito * 100)} no agregan nada al carrito. Ahí está el margen más grande.`
-          : `de cada 100 personas que agregan al carrito, ${Math.round(caePedido * 100)} no inician el pedido. Ahí está el margen más grande.`}</span>
-      </div>
     </>
   )
-}
-
-function conclusiones(datos) {
-  const lista = []
-  const { movil, computadora } = datos.dispositivos
-  if (movil.sesiones && computadora.sesiones) {
-    const [mayor, menor, nMayor, nMenor] = movil.sesiones >= computadora.sesiones
-      ? [movil, computadora, 'celular', 'computadora'] : [computadora, movil, 'computadora', 'celular']
-    const texto = `${mayor.porcentaje} % de las entradas, ${mayor.conversion} % de pedidos contra ${menor.conversion} % en ${nMenor}.`
-    lista.push(mayor.conversion < menor.conversion
-      ? { titulo: `El ${nMayor} trae más visitas, pero convierte menos.`, texto }
-      : { titulo: `El ${nMayor} trae más visitas y convierte igual o mejor.`, texto })
-  }
-  const pico = celdasPico(datos.horarios, 1)[0]
-  if (pico) lista.push({ titulo: `Los ${DIAS_PLURAL[pico.dia]} ${franjaDelDia(pico.bloque)} es el mejor momento.`, texto: 'Conviene tener stock y responder rápido en ese horario.' })
-  const { actual, previo } = datos.indicadores
-  if (previo.pedidos) {
-    const cambio = Math.round(((actual.pedidos - previo.pedidos) / previo.pedidos) * 100)
-    if (cambio < 0) lista.push({ titulo: `Pedidos iniciados bajó ${Math.abs(cambio)} %.`, texto: 'Revisá si el paso de confirmar pedido se entiende bien.' })
-    else if (cambio > 0) lista.push({ titulo: `Pedidos iniciados subió ${cambio} %.`, texto: 'Lo que cambiaste en el período está funcionando.' })
-    else lista.push({ titulo: 'Pedidos iniciados se mantiene estable.', texto: 'Igual que en el período anterior.' })
-  }
-  return lista
 }
 
 function LineaVisitas({ datos, comparar, parte }) {
@@ -191,7 +155,6 @@ function Resumen({ datos, comparar }) {
   const dVisitas = textoDelta(comparar, a.visitas, p.visitas)
   const dCarrito = textoDelta(comparar, a.carrito, p.carrito)
   const dPedidos = textoDelta(comparar, a.pedidos, p.pedidos)
-  const lista = conclusiones(datos)
   return (
     <div className="an-vista" id="anResumen">
       <section className="an-kpis" id="anKpis" aria-label="Indicadores">
@@ -207,18 +170,6 @@ function Resumen({ datos, comparar }) {
             <span>Cuántos siguen en cada paso y dónde se van</span>
           </div>
           <Embudo datos={datos} />
-        </section>
-        <section className="an-tarjeta an-oscura" aria-labelledby="anTituloMirar">
-          <div>
-            <h2 id="anTituloMirar">Lo que conviene mirar</h2>
-            <p>Lectura automática en lenguaje simple, sin tener que interpretar gráficos.</p>
-          </div>
-          <div className="an-insights" id="anInsights">
-            {lista.length
-              ? lista.map(item => <div className="an-insight" key={item.titulo}><strong>{item.titulo}</strong> {item.texto}</div>)
-              : <div className="an-insight">Todavía no hay datos suficientes para sacar conclusiones. Aparecen a medida que entran visitas.</div>}
-          </div>
-          <span className="an-pie">Se calcula con los eventos que ya guarda el sitio.</span>
         </section>
       </div>
       <div className="an-fila">
