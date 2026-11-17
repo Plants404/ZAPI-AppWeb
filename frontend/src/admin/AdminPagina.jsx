@@ -11,7 +11,6 @@ import PanelMensajes from './PanelMensajes.jsx'
 import PanelTestimonios from './PanelTestimonios.jsx'
 import PanelAccesos from './PanelAccesos.jsx'
 import PanelAuditoria from './PanelAuditoria.jsx'
-import PanelEstilo from './PanelEstilo.jsx'
 import PanelAnalitica from './PanelAnalitica.jsx'
 import { ToastsProvider } from '../estado/toasts.jsx'
 import { obtenerMensajes, obtenerSesion, obtenerTestimoniosAdmin } from '../api.js'
@@ -89,7 +88,6 @@ function AdminContenido({ aviso, setAviso }) {
           <PanelTestimonios activo={panel === 'testimonios'} carga={testimonios} />
           <PanelAccesos activo={panel === 'accesos'} />
           <PanelAuditoria activo={panel === 'auditoria'} />
-          <PanelEstilo activo={panel === 'estilo'} irAPanel={elegirPanel} />
           <PanelAnalitica activo={panel === 'analitica'} />
         </main>
       </div>
