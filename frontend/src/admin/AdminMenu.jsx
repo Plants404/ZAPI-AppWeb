@@ -4,7 +4,6 @@ const ENLACES = [
   ['auditoria', 'history', 'Registro de actividad'],
   ['pedidos', 'receipt_long', 'Pedidos y ventas'],
   ['catalogo', 'inventory', 'Catálogo y stock'],
-  ['estilo', 'palette', 'Estilo del sitio'],
   ['analitica', 'bar_chart', 'Analítica de clientes'],
   ['mensajes', 'message', 'Mensajes'],
   ['testimonios', 'rate_review', 'Testimonios'],

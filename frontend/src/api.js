@@ -231,29 +231,3 @@ export async function subirImagenAdmin(blob) {
   if (!respuesta.ok) throw new Error('Error ' + respuesta.status)
   return respuesta.json()
 }
-
-/* ---------- Estilo del sitio (borrador, publicación, historial, biblioteca de imágenes) ---------- */
-
-export const obtenerBorrador = () => pedirJson(ADMIN + '/publicacion/borrador')
-export const guardarBorradorApi = datos => pedirJson(ADMIN + '/publicacion/borrador', { metodo: 'POST', cuerpo: datos })
-export const publicarBorrador = () => pedirJson(ADMIN + '/publicacion/publicar', { metodo: 'POST' })
-export const obtenerHistorial = () => pedirJson(ADMIN + '/publicacion/historial')
-export const restaurarVersionApi = version => pedirJson(ADMIN + '/publicacion/restaurar/' + version, { metodo: 'POST' })
-export const obtenerImagenes = () => pedirJson(ADMIN + '/imagenes')
-
-// Sube una imagen a la biblioteca (con categoría y nombre). Devuelve los datos de la imagen (incluye "id").
-export async function subirImagenBiblioteca(blob, nombre, categoria) {
-  let respuesta
-  try {
-    respuesta = await fetch(urlApi('/api/admin/imagenes?' + consulta({ categoria, nombre })), {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'image/jpeg', Accept: 'application/json' },
-      body: blob
-    })
-  } catch {
-    throw new Error('No hay conexión con el servidor.')
-  }
-  if (!respuesta.ok) throw new Error('Error ' + respuesta.status)
-  return respuesta.json()
-}
