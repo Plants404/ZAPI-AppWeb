@@ -47,4 +47,4 @@ function esRutaPublicaConocida(ruta) {
     return false;
 }
 
-module.exports = { PAGINAS_ESTATICAS, esRutaPublicaConocida, normalizarRuta };
+module.exports = { esRutaPublicaConocida, normalizarRuta };

@@ -283,4 +283,4 @@ function crearRouterImagenes(getDatabase) {
     return router;
 }
 
-module.exports = { crearRouter, crearRouterAdmin, crearRouterImagenesAdmin, crearRouterImagenes, validarProducto };
+module.exports = { crearRouter, crearRouterAdmin, crearRouterImagenesAdmin, crearRouterImagenes };

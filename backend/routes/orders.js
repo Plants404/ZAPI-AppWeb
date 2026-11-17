@@ -6,11 +6,11 @@ const { HttpError } = require('../lib/http-error.js');
 const { validarPedido } = require('../lib/validation.js');
 const { requerirAdmin, requerirSesion } = require('../lib/auth.js');
 const { registrarAuditoria } = require('../lib/auditoria.js');
+const { NEGOCIO } = require('../compartido/negocio.js');
 
 const ESTADOS_VALIDOS = ['pendiente', 'confirmado', 'entregado', 'cancelado'];
 const CANAL_WEB = 'web';
 const CANAL_PRESENCIAL = 'presencial';
-const ENVIO_GRATIS_DESDE = 2500;
 
 function historialInicial(usuario) {
     return [{
@@ -62,7 +62,7 @@ async function crearPedido(db, { cliente, cantidades, canal, usuario }) {
     }
 
     const subtotal = lineas.reduce((total, linea) => total + linea.precio * linea.cantidad, 0);
-    const envio = subtotal >= ENVIO_GRATIS_DESDE ? 0 : null;
+    const envio = subtotal >= NEGOCIO.envioGratis ? 0 : null;
     const ahora = new Date();
     const pedido = {
         id: `ZAPI-${randomUUID()}`,

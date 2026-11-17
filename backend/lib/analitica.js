@@ -264,4 +264,4 @@ function calcularClientes(pedidos, ahora = new Date()) {
     };
 }
 
-module.exports = { calcularAnalitica, calcularClientes, claveCliente, DIAS_INACTIVO };
+module.exports = { calcularAnalitica, calcularClientes };
