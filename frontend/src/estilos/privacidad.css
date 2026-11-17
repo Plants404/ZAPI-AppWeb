@@ -1,0 +1,284 @@
+/* Privacidad y cookies: banner, índice lateral y bloques de lectura. */
+
+.priv-hero{
+    background: var(--forest);
+    color: var(--cream);
+    padding: clamp(40px, 7vw, 72px) max(20px, env(safe-area-inset-right)) clamp(36px, 6vw, 60px) max(20px, env(safe-area-inset-left));
+}
+.priv-hero-interno{
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.priv-hero .etiqueta{ color: var(--texto-verde-suave); }
+.priv-hero h1{
+    margin: 8px 0 12px;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(34px, 6vw, 56px);
+    color: var(--cream);
+    letter-spacing: .04em;
+    line-height: 1.05;
+    text-wrap: balance;
+}
+.priv-hero p{
+    margin: 0;
+    max-width: 56ch;
+    font-size: clamp(15px, 2vw, 17px);
+    line-height: 1.6;
+    color: #dbe6dc;
+}
+
+.priv-layout{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(24px, 5vw, 48px) max(20px, env(safe-area-inset-right)) clamp(40px, 8vw, 80px) max(20px, env(safe-area-inset-left));
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: clamp(24px, 5vw, 56px);
+    align-items: start;
+}
+
+/* Índice */
+.priv-indice{
+    position: sticky;
+    top: 96px;
+}
+.priv-indice-titulo{
+    margin: 0 0 10px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted-texto, #5b6058);
+}
+.priv-indice ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+    border-left: 2px solid var(--sand);
+}
+.priv-indice a{
+    display: block;
+    padding: 9px 14px;
+    margin-left: -2px;
+    border-left: 2px solid transparent;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+.priv-indice a:hover{ color: var(--leaf); }
+.priv-indice a[aria-current="true"]{
+    border-left-color: var(--leaf);
+    color: var(--forest);
+    font-weight: 700;
+}
+.priv-indice a:focus-visible{
+    outline: 2px solid var(--leaf);
+    outline-offset: 2px;
+}
+
+/* Contenido */
+.priv-contenido{
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+}
+.priv-bloque{
+    scroll-margin-top: 96px;
+    padding: clamp(20px, 4vw, 32px);
+    border-radius: 20px;
+    background: var(--white, #fff);
+    border: 1px solid var(--sand);
+    box-shadow: 0 1px 2px rgba(31, 58, 46, .04);
+}
+.priv-bloque h2{
+    margin: 0 0 14px;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(26px, 4vw, 34px);
+    letter-spacing: .04em;
+    line-height: 1.1;
+    color: var(--forest);
+}
+.priv-bloque h3{
+    margin: 18px 0 8px;
+    font-family: var(--sans, 'Inter', system-ui, sans-serif);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--forest);
+}
+.priv-bloque p,
+.priv-lista{
+    margin: 0 0 12px;
+    max-width: 68ch;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+}
+.priv-bloque > :last-child{ margin-bottom: 0; }
+.priv-bloque a{
+    color: var(--leaf-texto);
+    font-weight: 600;
+    text-underline-offset: 3px;
+}
+.priv-bloque a:hover{ color: var(--forest); }
+
+.priv-lista{
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+}
+.priv-lista li{
+    position: relative;
+    padding-left: 22px;
+}
+.priv-lista li::before{
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: .65em;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--leaf);
+}
+
+/* Datos del responsable */
+.priv-datos{
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+.priv-datos div{
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--cream);
+}
+.priv-datos dt{
+    margin: 0 0 2px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted-texto, #5b6058);
+}
+.priv-datos dd{
+    margin: 0;
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+/* Tabla de cookies */
+.priv-tabla-caja{
+    margin: 4px 0 16px;
+    border: 1px solid var(--sand);
+    border-radius: 14px;
+    overflow: hidden;
+}
+.priv-tabla{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.priv-tabla th,
+.priv-tabla td{
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: top;
+}
+.priv-tabla thead th{
+    background: var(--cream);
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted-texto, #5b6058);
+}
+.priv-tabla tbody tr + tr > *{ border-top: 1px solid var(--sand); }
+.priv-tabla tbody th{ font-weight: 600; }
+.priv-tabla code{
+    padding: 2px 7px;
+    border-radius: 6px;
+    background: var(--cream);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px;
+    color: var(--forest);
+}
+
+/* Pedidos y consultas */
+.priv-tarjetas{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+.priv-tarjetas article{
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: var(--cream);
+}
+.priv-tarjetas h3{ margin-top: 0; }
+.priv-tarjetas p{ font-size: 14px; line-height: 1.65; }
+
+@media (max-width: 860px){
+    .priv-layout{ grid-template-columns: minmax(0, 1fr); }
+    .priv-indice{
+        position: static;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: var(--white, #fff);
+        border: 1px solid var(--sand);
+    }
+    .priv-indice ul{
+        border-left: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .priv-indice a{
+        margin: 0;
+        padding: 8px 14px;
+        min-height: 40px;
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--sand);
+        border-radius: 999px;
+        background: var(--cream);
+    }
+    .priv-indice a[aria-current="true"]{
+        background: var(--forest);
+        border-color: var(--forest);
+        color: var(--cream);
+    }
+}
+
+/* Tabla en celular: cada fila pasa a ser una tarjeta */
+@media (max-width: 640px){
+    .priv-tabla thead{
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+    }
+    .priv-tabla,
+    .priv-tabla tbody,
+    .priv-tabla tr,
+    .priv-tabla th,
+    .priv-tabla td{ display: block; }
+    .priv-tabla tbody tr{ padding: 12px 14px; }
+    .priv-tabla tbody tr + tr{ border-top: 1px solid var(--sand); }
+    .priv-tabla tbody tr + tr > *{ border-top: 0; }
+    .priv-tabla th,
+    .priv-tabla td{ padding: 2px 0; }
+    .priv-tabla td::before{
+        content: attr(data-etiqueta) ": ";
+        font-weight: 600;
+        color: var(--forest);
+    }
+}

@@ -542,3 +542,199 @@ button.go:disabled{
 /* Sin mensaje de error no se reserva espacio: formulario más compacto. */
 .err:empty{ display: none; }
 .f{ margin-bottom: 12px; }
+
+
+/* ===== Composición dividida: panel verde con el personaje + formulario ===== */
+
+body{
+    display: block;
+    padding: 0;
+    min-height: 100dvh;
+    overflow-x: hidden;
+}
+
+.login-pagina{
+    display: grid;
+    grid-template-columns: minmax(380px, 5fr) 7fr;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.login-lado{
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--forest);
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 2.4vh, 22px);
+    padding: clamp(64px, 11vh, 96px) clamp(24px, 4vw, 56px) clamp(24px, 5vh, 48px);
+}
+.login-lado::before,
+.login-lado::after{
+    content: "";
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.login-lado::before{
+    width: 420px;
+    height: 420px;
+    left: -140px;
+    top: -150px;
+    background: var(--moss);
+    opacity: .45;
+}
+.login-lado::after{
+    width: 360px;
+    height: 360px;
+    right: -120px;
+    bottom: -130px;
+    background: var(--sage);
+    opacity: .18;
+}
+
+/* El enlace de volver vive dentro del panel */
+.login-lado .volver{
+    position: absolute;
+    top: max(20px, env(safe-area-inset-top));
+    left: max(24px, env(safe-area-inset-left));
+    padding: 0;
+    min-height: 44px;
+    gap: 10px;
+    border: 0;
+    background: none;
+    font-size: 14px;
+}
+.login-lado .volver:hover,
+.login-lado .volver:focus-visible{
+    background: none;
+    transform: none;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+.login-lado .volver img{ width: 32px; height: 32px; }
+
+.login-lado .head{
+    width: clamp(120px, 36vh, 280px);
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.lado-texto{
+    text-align: center;
+    max-width: 380px;
+}
+.lado-titulo{
+    margin: 0 0 8px;
+    font-family: var(--serif);
+    font-size: clamp(30px, 5.4vh, 46px);
+    letter-spacing: .05em;
+    line-height: 1.05;
+}
+.lado-bajada{
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: #dbe6dc;
+}
+.lado-lista{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+    text-align: left;
+    font-size: 14px;
+    color: #dbe6dc;
+}
+.lado-lista li{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.lado-lista li::before{
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--sage);
+    flex-shrink: 0;
+}
+
+.login-formulario{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(20px, 4vh, 40px) clamp(20px, 5vw, 56px);
+}
+.login-formulario .card{
+    width: 100%;
+    max-width: 420px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+}
+.login-pagina:has(.campos-registro) .login-formulario .card{ max-width: 560px; }
+
+.login-formulario h1{ text-align: left; margin-bottom: 4px; }
+.login-formulario .msg{
+    text-align: left;
+    margin-bottom: 14px;
+    min-height: 0;
+}
+.tabs{ background: var(--sand); border-color: transparent; margin-bottom: 16px; }
+.tab{ min-height: 44px; padding-block: 0; }
+
+.campos{ display: block; }
+.campos-registro{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 14px;
+}
+.campos-registro .registro-extra{ display: contents; }
+.campos-registro #fn{ order: 1; }
+.campos-registro .f:nth-of-type(2){ order: 2; }
+.campos-registro .f:nth-of-type(3){ order: 3; }
+.campos-registro #fp2{ order: 4; }
+.campos-registro .fuerza{ order: 5; grid-column: 1 / -1; }
+.campos-registro .reqs{
+    order: 6;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    margin-bottom: 10px;
+}
+.campos-registro .legal{ order: 7; grid-column: 1 / -1; margin: 0 0 12px; }
+
+.tag{ display: none; }
+
+/* Alto reducido (notebooks): todo entra en la pantalla */
+@media (max-height: 760px){
+    .login-formulario{ padding-block: 16px; }
+    .f{ margin-bottom: 6px; }
+    .campo input{ padding-block: 11px; }
+    button.go{ padding: 12px; }
+    .tabs{ margin-bottom: 12px; }
+    .login-formulario .msg{ margin-bottom: 8px; }
+    .lado-bajada{ display: none; }
+}
+
+/* Celular / ventana angosta: el panel pasa arriba como cabecera */
+@media (max-width: 860px){
+    .login-pagina{ grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .login-lado{
+        padding: 72px 24px 22px;
+        border-radius: 0 0 32px 32px;
+        gap: 4px;
+    }
+    .login-lado .head{ width: clamp(110px, 24vh, 160px); }
+    .lado-texto{ display: none; }
+    .login-formulario{ align-items: flex-start; padding: 22px 24px 28px; }
+    .campos-registro{ display: block; }
+    .campos-registro .registro-extra{ display: block; }
+}
