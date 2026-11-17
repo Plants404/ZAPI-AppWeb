@@ -1,3 +1,4 @@
+// Panel "Mensajes": consultas recibidas por el formulario de contacto.
 import { useState } from 'react'
 import { formatearFecha } from '../utilidades.js'
 import { Filtros, ResumenDatos, enlaceWhatsApp, fechaCorta, iniciales, useAccionesGestion } from './gestion.jsx'

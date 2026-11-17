@@ -1,5 +1,7 @@
 'use strict';
 
+/* Rutas de sesión: registro, ingreso, salida y usuario actual. */
+
 const { randomUUID } = require('node:crypto');
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');

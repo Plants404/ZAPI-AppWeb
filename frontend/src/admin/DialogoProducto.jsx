@@ -1,3 +1,4 @@
+// Diálogo del panel para crear o editar un producto (datos, imágenes e info de venta).
 import { useState } from 'react'
 import { crearProductoAdmin, editarProductoAdmin, resolverImagen, subirImagenAdmin } from '../api.js'
 import { limpiarValor } from '../utilidades.js'
