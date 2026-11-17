@@ -10,7 +10,7 @@ gap: .5rem;
 padding: .7rem 1.1rem;
 min-height: 48px;
 flex: 0 0 auto;
-border-radius: 14px;
+border-radius: var(--radius);
 border: 0;
 background: var(--forest);
 color: var(--cream);
@@ -283,7 +283,7 @@ z-index: 2;
 
 padding: .25rem .6rem;
 
-border-radius: 999px;
+border-radius: var(--radio-etiqueta);
 
 background: var(--forest-overlay-modal-counter);
 
@@ -381,7 +381,7 @@ align-self: flex-start;
 
 padding: .3rem .7rem;
 
-border-radius: 999px;
+border-radius: var(--radio-etiqueta);
 
 background: var(--leaf-wash);
 

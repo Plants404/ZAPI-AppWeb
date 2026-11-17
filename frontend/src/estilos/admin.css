@@ -99,7 +99,7 @@
 
 .admin-marca-sub {
   padding: .15rem .5rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radio-etiqueta);
   background: var(--menta);
   color: var(--leaf-texto);
   font-size: var(--fs-xs);
@@ -592,7 +592,7 @@
 .admin-badge {
   display: inline-block;
   padding: .15rem .6rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radio-etiqueta);
   font-size: var(--fs-xs);
   font-weight: 600;
   white-space: nowrap;
@@ -819,7 +819,7 @@
   top: .35rem;
   left: .35rem;
   padding: .1rem .5rem;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radio-etiqueta);
   background: var(--moss);
   color: var(--white);
   font-size: var(--fs-xs);
@@ -1015,7 +1015,7 @@
 .an-nota { margin: 0; max-width: 760px; font-size: 13px; line-height: 1.5; color: var(--an-suave); }
 
 .an-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-.an-kpi { display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; background: #fff; border: 1px solid var(--an-borde); border-radius: 16px; }
+.an-kpi { display: flex; flex-direction: column; gap: 6px; padding: 16px 18px; background: #fff; border: 1px solid var(--an-borde); border-radius: var(--radius); }
 .an-kpi-titulo { font-size: 12.5px; font-weight: 600; color: var(--an-suave); }
 .an-kpi-valor { font-family: 'Bebas Neue', sans-serif; font-size: 42px; line-height: 1; color: var(--an-bosque); }
 .an-kpi-pie { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; font-weight: 700; }
@@ -1023,7 +1023,7 @@
 
 .an-fila { display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch; }
 .an-fila-arriba { align-items: flex-start; }
-.an-tarjeta { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px 22px; background: #fff; border: 1px solid var(--an-borde); border-radius: 16px; }
+.an-tarjeta { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 14px; padding: 20px 22px; background: #fff; border: 1px solid var(--an-borde); border-radius: var(--radius); }
 .an-tarjeta h2 { margin: 0; font-family: 'Inter', system-ui, sans-serif; font-size: 17px; font-weight: 700; color: var(--an-bosque); }
 .an-grande { flex: 1 1 560px; }
 .an-doble { flex: 2 1 560px; }
@@ -1098,7 +1098,7 @@
 .an-tabla td { padding: 12px; }
 .an-fila-cliente { cursor: pointer; }
 .an-fila-cliente:hover, .an-fila-cliente.elegido { background: #f3f8f4; }
-.an-estado { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.an-estado { display: inline-block; padding: 3px 10px; border-radius: var(--radio-etiqueta); font-size: 12px; font-weight: 700; }
 .an-estado-recurrente { background: #e6f0e9; color: #1f5a3a; }
 .an-estado-nuevo { background: #eef1f7; color: #2c4470; }
 .an-estado-inactivo { background: #fbf3e2; color: #7a4f0c; }
@@ -1119,7 +1119,7 @@
 .an-ficha-cifras span { font-size: 11.5px; color: var(--an-suave); }
 .an-ficha h3 { margin: 0 0 8px; font-family: 'Inter', system-ui, sans-serif; font-size: 13px; font-weight: 700; }
 .an-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.an-chips span { padding: 5px 12px; border-radius: 999px; background: #e6f0e9; color: #1f5a3a; font-size: 12.5px; font-weight: 600; }
+.an-chips span { padding: 5px 12px; border-radius: var(--radio-etiqueta); background: #e6f0e9; color: #1f5a3a; font-size: 12.5px; font-weight: 600; }
 .an-ultimos { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
 .an-ultimos li { display: flex; justify-content: space-between; padding: 8px 10px; border-radius: 10px; background: var(--an-crema); }
 .an-ficha-acciones { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
@@ -1174,7 +1174,7 @@
   min-height: 44px;
   padding: 0 1.1rem;
   border: 1px solid var(--borde);
-  border-radius: 999px;
+  border-radius: var(--radio-etiqueta);
   background: var(--white);
   color: var(--ink);
   font: inherit;
@@ -1201,7 +1201,7 @@
   padding: 1.25rem;
   background: var(--white);
   border: 1px solid var(--borde);
-  border-radius: 16px;
+  border-radius: var(--radius);
 }
 
 .gestion-tarjeta.es-nuevo {
@@ -1476,7 +1476,7 @@
   max-width: 29rem;
   background: var(--white);
   border: 1px solid var(--borde);
-  border-radius: 16px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -1569,7 +1569,7 @@
 .gestion-mini-estado {
   align-self: flex-start;
   padding: .1rem .5rem;
-  border-radius: 999px;
+  border-radius: var(--radio-etiqueta);
   background: var(--menta);
   color: var(--forest);
   font-size: .75rem;
@@ -1585,7 +1585,7 @@
   padding: 1.75rem;
   background: var(--white);
   border: 1px solid var(--borde);
-  border-radius: 16px;
+  border-radius: var(--radius);
 }
 
 .gestion-detalle-cabecera {
@@ -1650,7 +1650,7 @@
 .gestion-tabla {
   background: var(--white);
   border: 1px solid var(--borde);
-  border-radius: 16px;
+  border-radius: var(--radius);
   overflow-x: auto;
 }
 
@@ -1700,7 +1700,7 @@
 .gestion-rol {
   display: inline-block;
   padding: .25rem .75rem;
-  border-radius: 999px;
+  border-radius: var(--radio-etiqueta);
   font-size: .8rem;
   font-weight: 600;
 }

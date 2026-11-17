@@ -1,7 +1,7 @@
 
 
 :root{
-  --radio-boton: 10px;
+  --radio-boton: 8px;
     --forest: #1f3a2e;
     --moss:   #3d6b4f;
     --sage:   #8fae91;
@@ -115,7 +115,7 @@ body{
 
 .card{
     background: var(--white);
-    border-radius: 26px;
+    border-radius: var(--radius);
     padding: 26px 24px 24px;
     box-shadow: var(--shadow-md);
     text-align: left;
