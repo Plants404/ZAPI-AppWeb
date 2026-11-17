@@ -82,7 +82,7 @@
 
     border: 2px solid var(--borde-input);
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
 }
 
@@ -106,7 +106,7 @@
 
     cursor: pointer;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
 }
 
@@ -130,7 +130,7 @@
 
     border: 2px solid var(--borde-input);
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
 }
 
@@ -240,7 +240,7 @@
 
     padding: .8rem 1rem;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
     background: var(--leaf);
 
@@ -475,7 +475,7 @@ main {
 
     border: 2px solid transparent;
 
-    border-radius: .75rem;
+    border-radius: var(--radius);
 
     overflow: hidden;
 
@@ -665,7 +665,7 @@ main {
 
     border: none;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
     font: inherit;
 
@@ -697,7 +697,7 @@ main {
 
     background: #0a7b6e;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
     font-weight: 600;
 
@@ -770,7 +770,7 @@ main {
 
     background: var(--white);
 
-    border-radius: 1rem;
+    border-radius: var(--radius);
 
     text-decoration: none;
 
@@ -786,7 +786,7 @@ main {
 
     object-fit: cover;
 
-    border-radius: .75rem;
+    border-radius: var(--radius);
 
 }
 

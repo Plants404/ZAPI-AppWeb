@@ -111,55 +111,6 @@
     color: var(--ink);
 }
 
-.opinion-firma {
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    margin-top: auto;
-    padding-top: var(--espacio-sm);
-    border-top: 1px solid var(--borde);
-}
-
-.opinion-firma div {
-    display: grid;
-    line-height: 1.35;
-}
-
-.opinion-firma cite {
-    color: var(--forest);
-    font-style: normal;
-    font-weight: 600;
-}
-
-.opinion-firma span {
-    color: var(--muted);
-    font-size: var(--fs-xs);
-}
-
-.opinion-avatar {
-    display: grid;
-    flex: 0 0 2.4rem;
-    place-items: center;
-    width: 2.4rem;
-    height: 2.4rem;
-    border-radius: 50%;
-    background: var(--sand);
-    color: var(--forest);
-    font-size: var(--fs-sm);
-    font-weight: 700;
-}
-
-.opinion-producto {
-    color: var(--moss);
-    font-size: var(--fs-xs);
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.opinion-producto:hover {
-    text-decoration: underline;
-}
-
 .testimonios-accion {
     display: flex;
     justify-content: center;

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useBloquearScroll } from '../utilidades.js'
 
 /* Abre y cierra un <dialog> nativo según "abierto" y bloquea el scroll de la página de fondo. */
-export function useModal(abierto) {
+function useModal(abierto) {
   const dialogo = useRef(null)
   useBloquearScroll(abierto)
   useEffect(() => {

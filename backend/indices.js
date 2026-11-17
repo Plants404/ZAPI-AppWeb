@@ -19,7 +19,6 @@ const INDICES = [
     { coleccion: 'users', clave: { email: 1 }, opciones: { unique: true } },
     { coleccion: 'sessions', clave: { expiresAt: 1 }, opciones: { expireAfterSeconds: 0 } },
     { coleccion: 'auditoria', clave: { createdAt: -1 }, opciones: {} },
-    { coleccion: 'publicaciones', clave: { version: 1 }, opciones: { unique: true } },
     { coleccion: 'eventos', clave: { ttl: 1 }, opciones: { expireAfterSeconds: 0 } },
     { coleccion: 'eventos', clave: { timestamp: -1 }, opciones: {} },
     { coleccion: 'limites', clave: { clave: 1 }, opciones: { unique: true } },

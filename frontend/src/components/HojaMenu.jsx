@@ -15,7 +15,8 @@ const ITEMS = [
 
 // Menú que sube desde abajo en el celular.
 function HojaMenu({ seccion, menu }) {
-  const cuenta = datosDeCuenta(useSesion().sesion)
+  const { sesion, salir } = useSesion()
+  const cuenta = datosDeCuenta(sesion)
   return (
     <div className={'bottom-sheet' + (menu.hojaClase ? ' esta-abierto' : '')} id="hojaMenu" role="dialog" aria-modal="true" aria-label="Menú principal" hidden={!menu.hojaVisible} inert={!menu.hojaActiva} onClick={e => { if (e.target === e.currentTarget) menu.cerrar() }}>
       <div className="bottom-sheet-manija" aria-hidden="true"></div>
@@ -43,6 +44,7 @@ function HojaMenu({ seccion, menu }) {
         {cuenta
           ? <Link to={cuenta.destino} className="bottom-sheet-ingresar con-sesion">{cuenta.esAdmin ? 'Ir al panel' : 'Mi cuenta · ' + cuenta.nombre}</Link>
           : <Link to="/login" className="bottom-sheet-ingresar" data-auth-no-sesion>Ingresar</Link>}
+        {cuenta && <button type="button" className="bottom-sheet-salir" onClick={salir}><Icono nombre="logout" /> Cerrar sesión</button>}
       </div>
     </div>
   )

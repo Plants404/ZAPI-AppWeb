@@ -50,7 +50,7 @@ const router = createBrowserRouter([
           {
             path: '/producto/:slug',
             element: <Producto />,
-            handle: { seccion: 'producto', titulo: 'Producto | ZAPI Vivero Agroecológico', bodyClass: 'pagina-producto', ficha: true, hojas: ['styles', 'tokens', 'base', 'estructura', 'estilos-producto', 'zapi-bot', 'ajustes-estilo'] }
+            handle: { seccion: 'producto', titulo: 'Producto | ZAPI Vivero Agroecológico', bodyClass: 'pagina-producto', ficha: true, hojas: ['styles', 'tokens', 'base', 'estructura', 'estilos-producto', 'zapi-bot', 'ajustes-comunes'] }
           }
         ]
       },

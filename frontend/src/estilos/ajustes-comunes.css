@@ -1,4 +1,4 @@
-/* Keep the reference modal styles on the current native dialog element. */
+/* Ajustes comunes: diálogos nativos (modal de producto y de testimonio), buscador oculto en el carrito y aviso de la ficha de producto. */
 dialog.modal-producto:not([open]) {
     display: none;
 }

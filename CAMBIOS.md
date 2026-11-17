@@ -26,9 +26,7 @@ aparecieron en el camino. Está escrito para leerlo sin ser experto.
 
 El backend conserva su estructura de archivos sueltos (no tiene carpeta `src/`) y
 escucha en el puerto 5501. La carpeta `backend/compartido/` guarda copias del
-catálogo, los datos del negocio y el esquema editable; el sitio React tiene su
-propia versión del esquema en `frontend/src/esquema-editable.js`, así que si se
-cambia uno hay que cambiar el otro. Mongoose está en las dependencias del backend
+catálogo y de los datos del negocio. Mongoose está en las dependencias del backend
 pero no se usa: todo va con el driver oficial de MongoDB.
 
 El carrito del sitio sigue armándose en el navegador y se envía por WhatsApp; la
@@ -79,3 +77,7 @@ Se midió el desborde horizontal de todas las páginas y paneles del admin en an
 - Se borraron hojas de estilo sin uso (`catalogo.css`, `stylecarrito.css`, `restauracion.css`) y el marcado muerto de la tarjeta recomendada.
 - `.material-symbols-outlined` tiene caja fija para que un ícono que no cargue no desarme el diseño, y `npm run lint:iconos` valida los nombres.
 - Clases de las tarjetas: no son dos sistemas en competencia sino capas. `tarjeta-producto/imagen/cuerpo/pie` (en `base.css`) es la estructura compartida; `product-*` y `recommendation-*` son las variantes de cada pantalla (catálogo y carrito). Renombrarlas no mejora nada visible y arriesga romper estilos, así que se dejó así. Regla para tocar tarjetas: lo estructural va en `tarjeta-*`; lo propio de una pantalla va en su clase, y si una clase de pantalla choca con una estructural (como pasó con `aspect-ratio`), se anula explícitamente en la de pantalla.
+
+## Limpieza del editor de estilo
+
+Se quitó del panel la sección "Estilo de página" (editor, borradores, historial y restauración). El sitio público sigue leyendo y aplicando lo que ya estaba publicado (`GET /api/publicado`), pero ya no hay forma de editarlo desde el panel. Por eso se borraron las rutas de borrador, publicar, historial y restaurar, el código de vista previa y sus pruebas (quedan 147). Las menciones anteriores a ese editor en este documento son historia de cómo se hizo la migración.

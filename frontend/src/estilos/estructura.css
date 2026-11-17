@@ -165,7 +165,7 @@
     min-height: 44px;
     padding: .5rem 2.5rem .5rem 2.2rem;
     border: 1px solid var(--borde);
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-boton);
     background: var(--white);
     color: var(--ink);
     font-size: var(--fs-sm);
@@ -469,7 +469,7 @@ main:focus {
     margin-top: 1.1rem;
     padding: .6rem 1.1rem;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
     background: var(--menta);
     color: var(--forest);
     font-size: .9rem;
@@ -619,7 +619,7 @@ main:focus {
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
-    border-radius: 24px 24px 0 0;
+    border-radius: var(--radius) var(--radius) 0 0;
     background: var(--cream);
     box-shadow: var(--sombra-lg);
     transform: translateY(100%);
@@ -718,7 +718,7 @@ main:focus {
 }
 
 .bottom-sheet-ingresar {
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-boton);
     background: var(--forest);
     color: var(--cream);
 }
@@ -815,4 +815,30 @@ main:focus {
     .bottom-sheet {
         display: none;
     }
+}
+
+/* "Cerrar sesión" del menú de celular, debajo del botón de cuenta. */
+.bottom-sheet-salir {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    width: 100%;
+    min-height: 44px;
+    margin-top: .5rem;
+    border: 1px solid rgba(31, 58, 46, .25);
+    border-radius: var(--radio-boton);
+    background: transparent;
+    color: var(--forest);
+    font: 600 .95rem var(--sans);
+    cursor: pointer;
+}
+
+.bottom-sheet-salir:hover {
+    background: rgba(31, 58, 46, .06);
+}
+
+.bottom-sheet-salir:focus-visible {
+    outline: 3px solid var(--leaf);
+    outline-offset: 2px;
 }

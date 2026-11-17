@@ -207,7 +207,7 @@
 
     padding: 0 6px;
 
-    border-radius: 999px;
+    border-radius: var(--radio-etiqueta);
 
     background: #c23a3d;
 
@@ -251,7 +251,7 @@
 
     background: var(--cream);
 
-    border-radius: 20px;
+    border-radius: var(--radius);
 
     border: 1px solid rgba(31, 58, 46, .1);
 
@@ -756,7 +756,7 @@
 
     padding: .8rem 1rem;
 
-    border-radius: 18px;
+    border-radius: var(--radius);
 
     font-size: 1rem;
 
@@ -886,7 +886,7 @@
 
     background: var(--white);
 
-    border-radius: 16px;
+    border-radius: var(--radius);
 
     border-bottom-left-radius: 5px;
 
@@ -954,7 +954,7 @@
 
     align-items: center;
 
-    border-radius: 999px;
+    border-radius: var(--radio-etiqueta);
 
     background: var(--white);
 
@@ -1068,7 +1068,7 @@
 
     padding: .8rem 1.1rem;
 
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
 
     border: 1px solid rgba(31, 58, 46, .18);
 
@@ -1221,7 +1221,7 @@
 
         max-height: calc(100vh - var(--zapi-top-offset) - 20px);
 
-        border-radius: 20px;
+        border-radius: var(--radius);
 
     }
 
@@ -1473,4 +1473,36 @@
 
 .zapi-header-accion:hover {
     background: rgba(255, 255, 255, .24);
+}
+
+/* Panel con poca altura: sólo los mensajes se achican (y hacen scroll);
+   encabezado, chips, enlace y campo de texto conservan su tamaño.
+   Sin esto el contenido se desbordaba y el encabezado quedaba cortado. */
+.zapi-header,
+.zapi-chips,
+.zapi-humano,
+.zapi-input-area {
+    flex-shrink: 0;
+}
+
+.zapi-messages {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+@media (max-height: 760px) {
+    .zapi-chips {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .zapi-chips::-webkit-scrollbar {
+        display: none;
+    }
+
+    .zapi-chips > * {
+        flex-shrink: 0;
+    }
 }

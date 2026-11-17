@@ -75,7 +75,7 @@
   --sans: 'Inter', system-ui, -apple-system, sans-serif;
 
   /* Radios */
-  --radius: 14px;
+  --radius: 10px;
   --radius-pill: 999px;
 
   /* Sombras */
@@ -109,6 +109,8 @@
   --espacio-xl: 2rem;
   --radio: var(--radius);
   --radio-pill: var(--radius-pill);
+  --radio-boton: 8px;
+  --radio-etiqueta: 6px;
   --muted: var(--muted-texto);
   --sombra-sm: var(--shadow-sm);
   --sombra-md: var(--shadow-md);

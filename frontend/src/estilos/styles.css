@@ -371,7 +371,7 @@ header.menu-abierto::before {
   color: var(--ink);
   background: var(--white);
   border: 1px solid var(--borde);
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   -webkit-appearance: none;
   appearance: none;
   transition: border-color .2s ease, box-shadow .2s ease;
@@ -482,7 +482,7 @@ header.menu-abierto::before {
   width: 100%;
   max-width: 100vw;
   background: var(--cream);
-  border-radius: 28px 28px 0 0;
+  border-radius: var(--radius) var(--radius) 0 0;
   padding-top: 10px;
   padding-right: max(16px, env(safe-area-inset-right));
   padding-bottom: max(20px, env(safe-area-inset-bottom));
@@ -512,7 +512,7 @@ header.menu-abierto::before {
     width: min(480px, calc(100vw - 1.5rem));
     max-width: calc(100vw - 1.5rem);
     transform: translate(-50%, 100%);
-    border-radius: 24px;
+    border-radius: var(--radius);
   }
 
   .bottom-sheet.esta-abierto {
@@ -609,7 +609,7 @@ header.menu-abierto::before {
   padding: 14px 10px;
   background: var(--white);
   border: 1px solid var(--borde);
-  border-radius: 18px;
+  border-radius: var(--radius);
   text-decoration: none;
   color: var(--ink);
   box-sizing: border-box;
@@ -619,7 +619,7 @@ header.menu-abierto::before {
 .bottom-sheet-tarjeta:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 3px;
-  border-radius: 18px;
+  border-radius: var(--radius);
 }
 
 .bottom-sheet-icono {
@@ -703,7 +703,7 @@ header.menu-abierto::before {
   width: 100%;
   min-height: 52px;
   padding: 0 16px;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   background: var(--forest);
   color: var(--cream);
   font-weight: 600;
@@ -1022,7 +1022,7 @@ html.menu-abierto {
        coincide con el de las tarjetas del catálogo. */
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    border-radius: 18px;
+    border-radius: var(--radius);
   }
 }
 
@@ -1262,7 +1262,7 @@ html.menu-abierto {
   display: inline-block;
   padding: .95rem 1.9rem;
   margin: .35rem .5rem .35rem 0;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   font-size: .95rem;
   font-weight: 500;
   letter-spacing: .02em;
@@ -1400,7 +1400,7 @@ html.menu-abierto {
   gap: 1.5rem;
   background: var(--white);
   border: 1px solid rgba(31, 58, 46, .08);
-  border-radius: calc(var(--radius) + 4px);
+  border-radius: var(--radius);
   padding: clamp(1.5rem, 3.5vw, 2.25rem);
   box-shadow: var(--shadow-sm);
 }
@@ -1464,7 +1464,7 @@ html.menu-abierto {
   gap: .5rem;
   min-height: 46px;
   padding: 0 1.5rem;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   border: 1.5px solid var(--forest);
   background: transparent;
   color: var(--forest);
@@ -1495,134 +1495,12 @@ html.menu-abierto {
   }
 }
 
-.opinion-slide {
-  container-type: inline-size;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1.5rem 1.15rem;
-  background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  min-height: 260px;
-}
-
-@container (min-width: 320px) {
-  .opinion-slide {
-    gap: 1.25rem;
-    padding: 2rem 1.75rem;
-  }
-}
-
 .estrellas {
   display: inline-flex;
   gap: .15rem;
   font-size: 1.2rem;
   line-height: 1;
   color: var(--leaf-texto);
-}
-
-.opinion-texto {
-  margin: 0;
-}
-
-.opinion-texto p {
-  font-family: var(--serif);
-  font-size: clamp(1rem, 6.5cqw, 1.55rem);
-  line-height: 1.5;
-  color: var(--forest);
-  margin: 0;
-}
-
-.opinion-texto p::before {
-  content: "\201C";
-}
-
-.opinion-texto p::after {
-  content: "\201D";
-}
-
-.opinion-firma {
-  display: flex;
-  align-items: center;
-  gap: .85rem;
-  text-align: left;
-}
-
-.opinion-avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
-  border-radius: 50%;
-  background: var(--forest);
-  color: var(--cream);
-  font-family: var(--sans);
-  font-size: .95rem;
-  font-weight: 600;
-  letter-spacing: .04em;
-}
-
-.opinion-autor {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.4;
-}
-
-.opinion-nombre {
-  font-family: var(--sans);
-  font-style: normal;
-  font-weight: 600;
-  color: var(--forest);
-}
-
-.opinion-meta {
-  font-family: var(--sans);
-  font-size: .85rem;
-  color: var(--muted-texto);
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-}
-
-.opinion-fecha::before {
-  content: "\00B7";
-  margin-right: .5rem;
-}
-
-.opinion-producto {
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  margin-top: .25rem;
-  padding: .35rem .75rem;
-  font-family: var(--sans);
-  font-size: .8rem;
-  font-weight: 500;
-  color: var(--forest);
-  background: var(--cream);
-  border: 1px solid var(--sage);
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background .2s ease, border-color .2s ease;
-}
-
-.opinion-producto:hover {
-  background: var(--sand);
-  border-color: var(--moss);
-}
-
-.opinion-producto:focus-visible {
-  outline: 3px solid var(--moss);
-  outline-offset: 2px;
-}
-
-.opinion-producto .material-symbols-outlined {
-  font-size: 1rem;
 }
 
 .contacto {
@@ -1644,7 +1522,7 @@ html.menu-abierto {
   background: rgba(74, 124, 89, .10);
   border: 1px solid rgba(74, 124, 89, .35);
   padding: .4rem 1rem;
-  border-radius: 999px;
+  border-radius: var(--radio-etiqueta);
   margin-bottom: 1.25rem;
 }
 
@@ -2223,7 +2101,7 @@ body.con-testimonio-abierto {
 .testimonio-btn-secundario {
   width: 100%;
   min-height: 46px;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   font: inherit;
   font-size: .95rem;
   font-weight: 600;
@@ -2458,7 +2336,7 @@ footer:not(.pedido-pie) {
   text-decoration: none;
   background: none;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   text-align: left;
   cursor: pointer;
   transition: background .25s ease, transform .2s ease, box-shadow .2s ease;
@@ -2649,7 +2527,7 @@ footer:not(.pedido-pie) {
 .contacto-card {
   background-color: #FFFFFF !important;
   border: 1px solid #E2DECB !important;
-  border-radius: 16px !important;
+  border-radius: var(--radius) !important;
   padding: 36px 40px !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
 }

@@ -87,7 +87,7 @@
     gap: .15rem;
     padding: .15rem;
     border: 1px solid var(--borde);
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-boton);
     background: var(--cream);
 }
 
@@ -328,4 +328,31 @@
 #recommendationsList .tarjeta-cuerpo {
     gap: .3rem;
     padding: var(--espacio-sm) var(--espacio-md) 0;
+}
+
+/* Pie compacto del carrito. El padding inferior deja libre el botón flotante del chat. */
+.cart-footer {
+  padding: 1.5rem 1rem 5.5rem;
+  background: var(--forest);
+  color: var(--cream);
+  text-align: center;
+}
+
+.cart-footer p {
+  margin: 0;
+  color: inherit;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+}
+
+.cart-footer-nav {
+  margin-top: .5rem;
+}
+
+.cart-footer-nav a {
+  color: inherit;
+  font-family: var(--sans);
+  font-size: var(--fs-sm);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }

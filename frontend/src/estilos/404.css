@@ -1,6 +1,7 @@
 
 
 :root{
+  --radio-boton: 8px;
     --forest: #1f3a2e;
     --moss:   #3d6b4f;
     --sage:   #8fae91;
@@ -220,7 +221,7 @@ body{
     display: inline-block;
     margin-top: 1.7rem;
     padding: .95rem 1.9rem;
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
     background: var(--forest);
     color: var(--cream);
     font-family: var(--sans);

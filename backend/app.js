@@ -22,10 +22,7 @@ const { crearRouter: crearRouterEnvios } = require('./routes/submissions.js');
 const { crearRouter: crearRouterAuth } = require('./routes/auth.js');
 const { crearRouter: crearRouterAdmin } = require('./routes/admin.js');
 const { crearRouter: crearRouterGestion } = require('./routes/gestion.js');
-const {
-    crearRouter: crearRouterPublicacion,
-    crearRouterPublicado
-} = require('./routes/publicacion.js');
+const { crearRouterPublicado } = require('./routes/publicacion.js');
 const { crearRouter: crearRouterEventos } = require('./routes/eventos.js');
 const { crearRouter: crearRouterChat } = require('./routes/chat.js');
 
@@ -189,7 +186,6 @@ async function crearApp(opciones = {}) {
     app.use('/api/admin/productos', crearRouterAdminProductos(obtenerBase));
     app.use('/api/admin/imagenes', crearRouterImagenesAdmin(obtenerBase));
     app.use('/api/imagenes', crearRouterImagenes(obtenerBase));
-    app.use('/api/admin/publicacion', crearRouterPublicacion(obtenerBase));
     app.use('/api', crearRouterPublicado(obtenerBase));
     app.use('/api/products', crearRouterProductos(obtenerBase));
     app.use('/api/orders', crearRouterPedidos(obtenerBase));

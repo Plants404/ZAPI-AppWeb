@@ -2,7 +2,7 @@
    mientras la página que la usa está en pantalla, como en el sitio viejo. */
 import hoja_404 from './404.css?inline'
 import hoja_admin from './admin.css?inline'
-import hoja_ajustesEstilo from './ajustes-estilo.css?inline'
+import hoja_ajustesComunes from './ajustes-comunes.css?inline'
 import hoja_base from './base.css?inline'
 import hoja_carrito from './carrito.css?inline'
 import hoja_catalogoCatalogo from './catalogo-catalogo.css?inline'
@@ -23,7 +23,7 @@ import hoja_zapiBot from './zapi-bot.css?inline'
 export const HOJAS = {
   '404': hoja_404,
   'admin': hoja_admin,
-  'ajustes-estilo': hoja_ajustesEstilo,
+  'ajustes-comunes': hoja_ajustesComunes,
   'base': hoja_base,
   'carrito': hoja_carrito,
   'catalogo-catalogo': hoja_catalogoCatalogo,

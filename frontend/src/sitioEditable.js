@@ -77,38 +77,3 @@ export const PAGINA_DE_RUTA = {
   '/contacto': 'contacto',
   '/carrito': 'carrito'
 }
-
-// Id de página editable → ruta del sitio (la usa el editor para cargar la vista previa).
-
-/* Versión "en vivo" para la vista previa del editor: guarda el original de cada
-   elemento antes de cambiarlo, así se puede volver atrás cuando se quita un cambio. */
-function aplicarCampoVivo(doc, campo, guardado) {
-  doc.querySelectorAll(campo.selector).forEach(el => {
-    if (campo.tipo === 'imagen') {
-      if (el.tagName !== 'IMG') return
-      if (!el.dataset.zapiOriginal) el.dataset.zapiOriginal = JSON.stringify({ src: el.getAttribute('src') || '', srcset: el.getAttribute('srcset') || '', alt: el.alt || '' })
-      const base = JSON.parse(el.dataset.zapiOriginal)
-      if (guardado && guardado.id) {
-        el.removeAttribute('srcset')
-        el.src = urlApi('/api/imagenes/' + guardado.id)
-        el.alt = guardado.alt || ''
-      } else {
-        el.src = base.src
-        if (base.srcset) el.setAttribute('srcset', base.srcset)
-        el.alt = base.alt
-      }
-    } else {
-      if (el.dataset.zapiOriginal === undefined) el.dataset.zapiOriginal = el.textContent
-      el.textContent = typeof guardado === 'string' ? guardado : el.dataset.zapiOriginal
-    }
-  })
-}
-
-export function aplicarContenidoVivo(doc, paginaId, contenido) {
-  const pagina = buscarPagina(paginaId)
-  if (!pagina) return
-  const deLaPagina = (contenido && contenido[paginaId]) || {}
-  pagina.secciones.forEach(seccion => seccion.campos.forEach(campo => {
-    aplicarCampoVivo(doc, campo, deLaPagina[seccion.id] && deLaPagina[seccion.id][campo.id])
-  }))
-}

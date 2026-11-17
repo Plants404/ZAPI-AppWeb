@@ -6,7 +6,7 @@ Sitio publicado: https://zapivivero.vercel.app
 
 ## Qué incluye
 
-El sitio público tiene inicio, catálogo con ficha de producto, carrito y pedidos, servicios, nosotros, contacto, política de privacidad y un chat con asistente (opcional, usa Gemini). El panel de administración, en `/admin`, ofrece resumen de ventas con gráfico semanal, gestión de pedidos y ventas presenciales, catálogo con control de stock, bandeja de mensajes, moderación de testimonios, analítica de visitas, auditoría de acciones, gestión de accesos y un editor del estilo y los textos del sitio con vista previa en vivo, borradores, historial y restauración de versiones. El diseño es responsive y se probó desde 320 px (celulares) hasta pantallas de escritorio.
+El sitio público tiene inicio, catálogo con ficha de producto, carrito y pedidos, servicios, nosotros, contacto, política de privacidad y un chat con asistente (opcional, usa Gemini). El panel de administración, en `/admin`, ofrece resumen de ventas con gráfico semanal, gestión de pedidos y ventas presenciales, catálogo con control de stock, bandeja de mensajes, moderación de testimonios, analítica de visitas, auditoría de acciones, y gestión de accesos. El diseño es responsive y se probó desde 320 px (celulares) hasta pantallas de escritorio.
 
 ## Arquitectura
 
@@ -46,7 +46,7 @@ backend/
   server.js         arranque del servidor
   app.js            fábrica de la app: middleware y montaje de rutas
   db.js, conectar.js, indices.js   conexión e índices de MongoDB
-  routes/           endpoints (auth, productos, pedidos, admin, publicación, chat…)
+  routes/           endpoints (auth, productos, pedidos, admin, chat…)
   lib/              validación, sesiones, analítica, auditoría, contenido, límites
   compartido/       catálogo, datos del negocio y esquema editable
   test/             pruebas de la API

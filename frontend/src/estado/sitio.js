@@ -3,10 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { enviarEvento, obtenerPublicado } from '../api.js'
-import { PAGINA_DE_RUTA, aplicarContenido, aplicarContenidoVivo, aplicarEstilo } from '../sitioEditable.js'
-
-export const NOMBRE_VISTA_PREVIA = 'zapi-vista-previa'
-const esVistaPrevia = () => window.name === NOMBRE_VISTA_PREVIA
+import { PAGINA_DE_RUTA, aplicarContenido, aplicarEstilo } from '../sitioEditable.js'
 
 // ¿Se está viendo el sitio como cliente desde el panel? Devuelve la ruta para volver, o null.
 export function destinoModoCliente() {
@@ -16,22 +13,12 @@ export function destinoModoCliente() {
   return null
 }
 
-/* Pide lo publicado y lo aplica a la página actual. Dentro de la vista previa
-   del panel no pide nada: el panel manda el borrador con postMessage. */
+/* Pide lo publicado y lo aplica a la página actual. */
 export function useSitioEditable() {
   const { pathname } = useLocation()
   const [datos, setDatos] = useState(null)
 
   useEffect(() => {
-    if (esVistaPrevia()) {
-      const alRecibir = e => {
-        if (e.origin !== window.location.origin || !e.data || e.data.tipo !== 'zapi-borrador') return
-        setDatos({ estilo: e.data.estilo, contenido: e.data.contenido, vivo: true })
-      }
-      window.addEventListener('message', alRecibir)
-      window.parent.postMessage({ tipo: 'zapi-vista-lista' }, window.location.origin)
-      return () => window.removeEventListener('message', alRecibir)
-    }
     let vigente = true
     obtenerPublicado().then(d => { if (vigente && d) setDatos(d) }).catch(() => { /* queda la página original */ })
     return () => { vigente = false }
@@ -42,8 +29,7 @@ export function useSitioEditable() {
     aplicarEstilo(document, datos.estilo)
     const id = PAGINA_DE_RUTA[pathname]
     if (!id) return
-    if (datos.vivo) aplicarContenidoVivo(document, id, datos.contenido)
-    else aplicarContenido(document, id, datos.contenido)
+    aplicarContenido(document, id, datos.contenido)
   }, [datos, pathname])
 }
 
@@ -53,7 +39,7 @@ export function useRastreo() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    if (esVistaPrevia() || destinoModoCliente() || pathname.startsWith('/admin')) return undefined
+    if (destinoModoCliente() || pathname.startsWith('/admin')) return undefined
 
     let idSesion = null
     try { idSesion = sessionStorage.getItem('zapiSesion') } catch { /* sin almacenamiento */ }
