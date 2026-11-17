@@ -589,9 +589,11 @@ box-shadow: none;
 opacity: 1;
 }
 
+/* visibility y no display: la tarjeta conserva su alto al pasar el mouse.
+   Con display:none se achicaba, el mouse quedaba afuera y parpadeaba. */
 .product-card:hover .product-benefit,
 .product-card:focus-within .product-benefit {
-display: none;
+visibility: hidden;
 }
 }
 
