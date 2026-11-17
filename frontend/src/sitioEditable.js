@@ -79,7 +79,6 @@ export const PAGINA_DE_RUTA = {
 }
 
 // Id de página editable → ruta del sitio (la usa el editor para cargar la vista previa).
-export const RUTA_DE_PAGINA = Object.fromEntries(Object.entries(PAGINA_DE_RUTA).map(([ruta, id]) => [id, ruta]))
 
 /* Versión "en vivo" para la vista previa del editor: guarda el original de cada
    elemento antes de cambiarlo, así se puede volver atrás cuando se quita un cambio. */

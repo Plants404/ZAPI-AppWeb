@@ -181,15 +181,4 @@ function buscarPagina(id) {
     return paginas.find(pagina => pagina.id === id) || null;
 }
 
-function buscarPaginaPorArchivo(archivo) {
-    const nombre = (archivo || '').split('/').pop() || 'index.html';
-    return paginas.find(pagina => pagina.archivo === nombre) || null;
-}
-
-function buscarCampo(paginaId, seccionId, campoId) {
-    const pagina = buscarPagina(paginaId);
-    const seccion = pagina && pagina.secciones.find(s => s.id === seccionId);
-    return (seccion && seccion.campos.find(c => c.id === campoId)) || null;
-}
-
-export { paginas, buscarPagina, buscarPaginaPorArchivo, buscarCampo }
+export { buscarPagina }
