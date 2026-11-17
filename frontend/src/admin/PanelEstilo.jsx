@@ -1,3 +1,4 @@
+// Panel "Estilo": edita colores, textos e imágenes del sitio con vista previa en vivo.
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { obtenerBorrador, obtenerImagenes, obtenerProductosAdmin, obtenerPublicado, guardarBorradorApi, publicarBorrador, resolverImagen } from '../api.js'

@@ -1,3 +1,4 @@
+// Panel "Pedidos": lista con filtros, detalle y cambio de estado de cada pedido.
 import { useCallback, useState } from 'react'
 import { cambiarEstadoPedido, obtenerPedidos } from '../api.js'
 import { formatearFecha } from '../utilidades.js'

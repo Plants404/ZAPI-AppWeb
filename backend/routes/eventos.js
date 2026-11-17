@@ -1,5 +1,7 @@
 'use strict';
 
+/* Ruta que recibe los eventos de uso del sitio. */
+
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');
 const { requerirAdmin } = require('../lib/auth.js');

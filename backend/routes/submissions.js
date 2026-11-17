@@ -1,5 +1,7 @@
 'use strict';
 
+/* Rutas de contacto y testimonios enviados desde el sitio. */
+
 const { randomUUID } = require('node:crypto');
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');

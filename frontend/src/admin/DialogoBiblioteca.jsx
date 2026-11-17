@@ -1,3 +1,4 @@
+// Diálogo de la biblioteca de imágenes: subir, buscar y elegir fotos.
 import { useEffect, useRef, useState } from 'react'
 import { obtenerImagenes, resolverImagen, subirImagenBiblioteca } from '../api.js'
 import { buscarCampo, buscarPagina } from '../esquema-editable.js'

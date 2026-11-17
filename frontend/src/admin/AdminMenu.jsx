@@ -1,3 +1,4 @@
+// Menú lateral del panel de administración.
 const ENLACES = [
   ['resumen', 'dashboard', 'Resumen'],
   ['auditoria', 'history', 'Registro de actividad'],

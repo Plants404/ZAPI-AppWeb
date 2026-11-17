@@ -1,3 +1,4 @@
+// Panel "Auditoría": registro de las acciones hechas en el panel.
 import { obtenerAuditoria } from '../api.js'
 import { formatearFecha } from '../utilidades.js'
 import { useCarga } from './contexto.jsx'

@@ -1,5 +1,7 @@
 'use strict';
 
+/* Rutas del panel: resumen, analítica y datos de gestión. */
+
 const express = require('express');
 const { HttpError } = require('../lib/http-error.js');
 const { requerirAdmin } = require('../lib/auth.js');

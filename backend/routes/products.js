@@ -1,5 +1,7 @@
 'use strict';
 
+/* Rutas de productos e imágenes: lectura pública y administración. */
+
 const express = require('express');
 const { ObjectId } = require('mongodb');
 const { HttpError } = require('../lib/http-error.js');
