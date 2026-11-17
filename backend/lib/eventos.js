@@ -119,14 +119,10 @@ function normalizarPagina(pagina) {
 
 module.exports = {
     TIPOS_EVENTO,
-    ELEMENTOS_VALIDOS,
-    DISPOSITIVOS_VALIDOS,
     TTL_DIAS,
     esTipoValido,
-    esElementoValido,
     esPaginaValida,
     esIdSesionValido,
-    esDispositivoValido,
     normalizarEvento,
     normalizarPagina
 };
