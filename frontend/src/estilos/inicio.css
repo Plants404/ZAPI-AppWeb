@@ -71,27 +71,6 @@
     box-shadow: var(--sombra-md);
 }
 
-.hero-sello {
-    position: absolute;
-    right: var(--espacio-md);
-    bottom: var(--espacio-md);
-    display: inline-flex;
-    align-items: center;
-    gap: .4rem;
-    max-width: calc(100% - 2 * var(--espacio-md));
-    padding: .55rem .8rem;
-    border-radius: var(--radio-pill);
-    background: var(--white);
-    color: var(--forest);
-    font-size: var(--fs-sm);
-    font-weight: 600;
-    box-shadow: var(--sombra-sm);
-}
-
-.hero-sello .material-symbols-outlined {
-    color: var(--leaf);
-}
-
 .home-products-carousel {
     max-width: 1264px;
     margin: 0 auto;
@@ -114,12 +93,6 @@
 
 .testimonios {
     padding-top: 0;
-}
-
-.testimonios-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--espacio-md);
 }
 
 .opinion {

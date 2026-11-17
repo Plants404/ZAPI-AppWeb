@@ -4,7 +4,7 @@ import { NEGOCIO, formatearPrecio } from './negocio.js'
 
 export const ZAPI_NOMBRE = 'Brotecito'
 
-export const ZAPI_FAQ = [
+const ZAPI_FAQ = [
 
     {
         claves: ["horario", "horarios", "abren", "cierran", "atencion", "atención", "cuando", "dias", "días"],
@@ -137,7 +137,7 @@ export const ZAPI_MENU = [
 
 const ZAPI_DIACRITICOS = new RegExp("[\\u0300-\\u036f]", "g");
 
-export function normalizar(texto) {
+function normalizar(texto) {
     return texto
         .toLowerCase()
         .normalize("NFD")

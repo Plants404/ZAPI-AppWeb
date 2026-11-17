@@ -75,13 +75,6 @@ opacity: 1;
 
 }
 
-
-.modal-producto.cerrando {
-
-pointer-events: none;
-
-}
-
 .modal-fondo {
 
 position: absolute;
@@ -91,7 +84,6 @@ inset: 0;
 background: var(--modal-overlay);
 
 backdrop-filter: blur(4px);
-
 
 }
 
@@ -114,7 +106,6 @@ border-radius: var(--radius) var(--radius) 0 0;
 box-shadow: var(--shadow-lg);
 
 overflow: hidden;
-
 
 }
 
@@ -169,7 +160,6 @@ transform: rotate(90deg);
 font-size: 1.3rem;
 
 }
-
 
 .modal-carrusel {
 
@@ -367,18 +357,6 @@ border-color: var(--leaf);
 
 }
 
-
-.modal-carrusel.sin-carrusel .carrusel-flecha,
-
-.modal-carrusel.sin-carrusel .carrusel-contador,
-
-.modal-carrusel.sin-carrusel .carrusel-miniaturas {
-
-display: none;
-
-}
-
-
 .modal-detalle {
 
 display: flex;
@@ -517,67 +495,6 @@ color: var(--forest);
 
 }
 
-.modal-precio .since {
-
-font-size: .75rem;
-
-color: var(--muted);
-
-}
-
-.modal-stock {
-
-display: inline-flex;
-
-align-items: center;
-
-gap: .45rem;
-
-margin-bottom: 1.1rem;
-
-font-size: .9rem;
-
-font-weight: 600;
-
-color: var(--leaf-texto);
-
-}
-
-.modal-stock::before {
-
-content: "";
-
-width: .55rem;
-
-height: .55rem;
-
-border-radius: 50%;
-
-background: currentColor;
-
-flex: 0 0 auto;
-
-}
-
-.modal-stock.pocas {
-
-color: var(--earth);
-
-}
-
-.modal-stock.agotado {
-
-color: var(--error);
-
-}
-
-.modal-stock:empty,
-.modal-stock[hidden] {
-
-display: none;
-
-}
-
 .modal-agregar {
 
 position: sticky;
@@ -593,7 +510,6 @@ margin-top: 1.2rem;
 box-shadow: var(--modal-sticky-shadow);
 
 }
-
 
 .modal-ficha {
 
@@ -619,7 +535,6 @@ color: var(--moss);
 
 }
 
-
 .modal-producto :focus-visible {
 
 outline: 2px solid var(--leaf);
@@ -627,8 +542,6 @@ outline: 2px solid var(--leaf);
 outline-offset: 2px;
 
 }
-
-
 
 @media (min-width: 768px) {
 
@@ -692,7 +605,6 @@ box-shadow: none;
 
 }
 
-
 @media (prefers-reduced-motion: reduce) {
 
 .modal-producto,
@@ -738,7 +650,6 @@ transform: none;
 }
 
 }
-
 
 /* El <dialog> nativo ocupa toda la ventana (como el diseño original): el fondo
    oscuro cubre la pantalla, la ficha queda centrada y no aparece barra de
