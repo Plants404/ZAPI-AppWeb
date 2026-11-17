@@ -903,7 +903,7 @@
   width: 2.25rem;
   height: 2.25rem;
   border: none;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radio-boton);
   background: transparent;
   color: var(--texto-suave);
   cursor: pointer;
@@ -937,7 +937,7 @@
   min-height: 2.5rem;
   padding: 0 .85rem;
   border: 1px solid var(--borde);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radio-boton);
   background: var(--white);
   color: var(--forest);
   font: inherit;
@@ -1002,7 +1002,7 @@
 .an-periodo button[aria-pressed='true'] { background: #fff; font-weight: 700; color: var(--an-bosque); box-shadow: 0 1px 3px rgba(31, 58, 46, 0.18); }
 .an-boton, .an-boton-verde {
   display: inline-flex; align-items: center; justify-content: center; padding: 9px 14px;
-  border: 1px solid var(--an-borde-fuerte); border-radius: 999px; background: #fff; color: var(--an-bosque);
+  border: 1px solid var(--an-borde-fuerte); border-radius: var(--radio-boton); background: #fff; color: var(--an-bosque);
   font: 600 13px 'Inter', system-ui, sans-serif; text-decoration: none; cursor: pointer;
 }
 .an-boton[aria-pressed='false'] { color: var(--an-suave); }
@@ -1084,7 +1084,7 @@
 .an-lista-cabecera { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid var(--an-borde); }
 .an-lista-cabecera h2 { margin-right: auto; }
 .an-segmentos { display: flex; flex-wrap: wrap; gap: 6px; }
-.an-segmentos button { padding: 7px 14px; border: 1px solid var(--an-borde-fuerte); border-radius: 999px; background: #fff; color: var(--an-tinta); font: 600 13px 'Inter', system-ui, sans-serif; cursor: pointer; }
+.an-segmentos button { padding: 7px 14px; border: 1px solid var(--an-borde-fuerte); border-radius: var(--radio-boton); background: #fff; color: var(--an-tinta); font: 600 13px 'Inter', system-ui, sans-serif; cursor: pointer; }
 .an-segmentos button span { color: var(--an-suave); }
 .an-segmentos button[aria-pressed='true'] { background: var(--an-bosque); border-color: var(--an-bosque); color: #fff; }
 .an-segmentos button[aria-pressed='true'] span { color: #cfe0d4; }
@@ -1254,7 +1254,7 @@
   min-height: 44px;
   padding: 0 1.1rem;
   border: 1px solid var(--moss);
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   font-weight: 600;
 }
 
@@ -1835,7 +1835,7 @@
   min-height: 44px;
   padding: 0 1rem;
   border: 1px solid var(--borde);
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   background: var(--white);
   color: var(--ink);
   font: inherit;

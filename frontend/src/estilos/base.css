@@ -152,7 +152,7 @@ ul {
     min-height: 44px;
     padding: .7rem 1.25rem;
     border: 1px solid transparent;
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-boton);
     font-size: var(--fs-sm);
     font-weight: 600;
     line-height: 1.2;
@@ -483,7 +483,7 @@ ul {
     gap: .35rem;
     padding: .5rem .8rem;
     border: 0;
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-boton);
     background: var(--forest);
     color: var(--white);
     font-size: var(--fs-xs);
@@ -778,7 +778,7 @@ ul {
     min-height: 46px;
     padding: 0 1.25rem;
     border: 1px solid var(--borde);
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
     background: var(--white);
     color: var(--forest);
     font: inherit;

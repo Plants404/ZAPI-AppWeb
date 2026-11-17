@@ -109,6 +109,7 @@
   --espacio-xl: 2rem;
   --radio: var(--radius);
   --radio-pill: var(--radius-pill);
+  --radio-boton: 10px;
   --muted: var(--muted-texto);
   --sombra-sm: var(--shadow-sm);
   --sombra-md: var(--shadow-md);

@@ -703,7 +703,7 @@ header.menu-abierto::before {
   width: 100%;
   min-height: 52px;
   padding: 0 16px;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   background: var(--forest);
   color: var(--cream);
   font-weight: 600;
@@ -1262,7 +1262,7 @@ html.menu-abierto {
   display: inline-block;
   padding: .95rem 1.9rem;
   margin: .35rem .5rem .35rem 0;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   font-size: .95rem;
   font-weight: 500;
   letter-spacing: .02em;
@@ -1464,7 +1464,7 @@ html.menu-abierto {
   gap: .5rem;
   min-height: 46px;
   padding: 0 1.5rem;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   border: 1.5px solid var(--forest);
   background: transparent;
   color: var(--forest);
@@ -2223,7 +2223,7 @@ body.con-testimonio-abierto {
 .testimonio-btn-secundario {
   width: 100%;
   min-height: 46px;
-  border-radius: 999px;
+  border-radius: var(--radio-boton);
   font: inherit;
   font-size: .95rem;
   font-weight: 600;

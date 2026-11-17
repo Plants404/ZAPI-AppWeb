@@ -469,7 +469,7 @@ main:focus {
     margin-top: 1.1rem;
     padding: .6rem 1.1rem;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radio-boton);
     background: var(--menta);
     color: var(--forest);
     font-size: .9rem;
@@ -718,7 +718,7 @@ main:focus {
 }
 
 .bottom-sheet-ingresar {
-    border-radius: var(--radio-pill);
+    border-radius: var(--radio-boton);
     background: var(--forest);
     color: var(--cream);
 }
