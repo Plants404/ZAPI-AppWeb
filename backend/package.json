@@ -22,10 +22,8 @@
     "node": "24.x"
   },
   "dependencies": {
-    "dotenv": "^18.0.10",
     "express": "^5.1.0",
-    "mongodb": "^6.17.0",
-    "mongoose": "^9.12.1"
+    "mongodb": "^6.17.0"
   },
   "devDependencies": {
     "eslint": "^10.12.0",

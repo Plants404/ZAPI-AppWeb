@@ -6,18 +6,20 @@ const { getDatabase } = require('./db.js');
 const { HttpError } = require('./lib/http-error.js');
 const { verificarLimite } = require('./lib/limiter.js');
 const { depurarPedidos } = require('./depurar.js');
-const { crearRouter: crearRouterProductos } = require('./routes/products.js');
 const {
+    crearRouter: crearRouterProductos,
     crearRouterAdmin: crearRouterAdminProductos,
     crearRouterImagenesAdmin,
     crearRouterImagenes
 } = require('./routes/products.js');
-const { crearRouter: crearRouterPedidos } = require('./routes/orders.js');
+const {
+    crearRouter: crearRouterPedidos,
+    crearRouterAdmin: crearRouterAdminOperaciones
+} = require('./routes/orders.js');
 const { crearRouter: crearRouterEnvios } = require('./routes/submissions.js');
 const { crearRouter: crearRouterAuth } = require('./routes/auth.js');
 const { crearRouter: crearRouterAdmin } = require('./routes/admin.js');
 const { crearRouter: crearRouterGestion } = require('./routes/gestion.js');
-const { crearRouterAdmin: crearRouterAdminOperaciones } = require('./routes/orders.js');
 const {
     crearRouter: crearRouterPublicacion,
     crearRouterPublicado
