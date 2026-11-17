@@ -40,7 +40,7 @@ color: var(--menta);
 background: transparent;
 border: 1px solid var(--moss);
 padding: .4rem .95rem;
-border-radius: var(--radius-pill);
+border-radius: var(--radio-etiqueta);
 margin-bottom: 1.35rem;
 }
 
@@ -103,7 +103,10 @@ gap: .5rem;
 width: 100%;
 max-width: none;
 margin: 0 0 1.5rem;
-padding: 0;
+padding: 0 1.25rem;
+background: var(--white);
+border: 1px solid var(--borde);
+border-radius: var(--radius);
 box-sizing: border-box;
 }
 
@@ -171,20 +174,15 @@ white-space: nowrap;
 border: 0;
 }
 
-/* Riel de filtros: una sola fila; si no entra, se desliza en
-horizontal (patron movil habitual de chips). */
+/* Filtro por categoría: pestañas de texto con la cantidad de productos y una
+línea bajo la activa. Si no entran, se deslizan en horizontal. */
 .catalog-filters {
-position: relative;
 display: flex;
 flex: 1 1 36rem;
 min-width: 0;
 flex-wrap: nowrap;
-gap: .4rem;
-padding: .35rem;
-background: var(--white);
-border: 1px solid var(--borde);
-border-radius: var(--radio-boton);
-box-shadow: var(--shadow-sm);
+align-items: flex-end;
+gap: 1.75rem;
 overflow-x: auto;
 scrollbar-width: none;
 }
@@ -193,52 +191,30 @@ scrollbar-width: none;
 display: none;
 }
 
-/* Pastilla que se desliza detras del filtro activo. La ubica
-catalogo.js segun el boton seleccionado. */
-.catalog-filter-indicator {
-position: absolute;
-top: 0;
-left: 0;
-z-index: 0;
-border-radius: var(--radio-boton);
-background: var(--forest);
-box-shadow: var(--filter-indicator-shadow);
-pointer-events: none;
-opacity: 0;
-transition: transform .35s cubic-bezier(.22, 1, .36, 1),
-width .35s cubic-bezier(.22, 1, .36, 1),
-height .2s ease, opacity .25s ease;
-}
-
-/* Chips: transparentes sobre el riel blanco; el relleno lo pone
-la pastilla deslizante. */
 .catalog-filter {
-position: relative;
-z-index: 1;
 flex: 0 0 auto;
 display: inline-flex;
-align-items: center;
-justify-content: center;
+align-items: baseline;
+gap: .4rem;
+min-height: 56px;
+padding: 1.1rem 0 .9rem;
 border: 0;
+border-bottom: 3px solid transparent;
 background: transparent;
-color: var(--ink);
-min-height: 44px;
-min-width: 44px;
-padding: .5rem 1.15rem;
-border-radius: var(--radio-boton);
-font-size: .95rem;
+color: var(--muted-texto);
+font-size: 1rem;
 font-weight: 500;
 white-space: nowrap;
-transition: all .25s ease;
+transition: color .2s ease, border-color .2s ease;
+}
+
+.catalog-filter small {
+font-size: .75rem;
+font-weight: 500;
 }
 
 .catalog-filter:not(.activo):hover {
-background: var(--leaf-wash);
 color: var(--leaf-texto);
-}
-
-.catalog-filter:active {
-transform: scale(.96);
 }
 
 .catalog-filter:focus-visible {
@@ -246,17 +222,10 @@ outline: 2px solid var(--leaf-texto);
 outline-offset: 2px;
 }
 
-/* Si la pastilla esta colocada, el chip activo se vuelve
-transparente y el relleno lo pone la pastilla. Si no (JS
-recien cargando), el chip se pinta solo: nunca queda
-texto blanco sobre blanco. */
 .catalog-filter.activo {
-background: var(--forest);
-color: var(--white);
-}
-
-.catalog-filters.con-indicador .catalog-filter.activo {
-background: transparent;
+color: var(--forest);
+font-weight: 700;
+border-bottom-color: var(--forest);
 }
 
 @keyframes catalogoEntrada {
@@ -290,7 +259,6 @@ align-items: end;
 animation: none;
 }
 
-.catalog-filter-indicator,
 .catalog-filter{
 transition: none;
 }
@@ -432,7 +400,7 @@ min-width: 0;
 overflow-wrap: anywhere;
 box-sizing: border-box;
 padding: 4px 10px;
-border-radius: 999px;
+border-radius: var(--radio-etiqueta);
 border: 1px solid var(--leaf-border-soft);
 background: var(--leaf-wash-soft);
 color: var(--leaf-texto);
@@ -450,7 +418,7 @@ max-width: 100%;
 white-space: nowrap;
 box-sizing: border-box;
 padding: 4px 10px;
-border-radius: 999px;
+border-radius: var(--radio-etiqueta);
 border: 1px solid transparent;
 font-size: .72rem;
 font-weight: 600;
