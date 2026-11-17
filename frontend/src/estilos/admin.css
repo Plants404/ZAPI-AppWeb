@@ -1029,12 +1029,6 @@
 .an-doble { flex: 2 1 560px; }
 .an-tarjeta-cabecera { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px; }
 .an-tarjeta-cabecera span { font-size: 12.5px; color: var(--an-suave); }
-.an-oscura { background: var(--an-bosque); border-color: var(--an-bosque); color: #fff; }
-.an-oscura h2 { color: #fff; }
-.an-oscura p { margin: 4px 0 0; font-size: 12.5px; line-height: 1.5; color: #cfe0d4; }
-.an-insights { display: flex; flex-direction: column; gap: 10px; }
-.an-insight { padding: 12px 14px; border-radius: 12px; background: rgba(255, 255, 255, 0.1); font-size: 13px; line-height: 1.5; }
-.an-pie { margin-top: auto; font-size: 11.5px; color: #cfe0d4; }
 
 .an-embudo { display: flex; flex-direction: column; gap: 10px; }
 .an-paso { display: flex; align-items: center; gap: 12px; }
