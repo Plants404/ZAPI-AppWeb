@@ -1,5 +1,5 @@
 import { NEGOCIO, formatearPrecio } from '../data/negocio.js'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { filtrarProductos } from '../data/buscar.js'
 import ProductoCard from '../components/ProductoCard.jsx'
@@ -12,24 +12,15 @@ function Catalogo() {
   const busqueda = (params.get('q') || '').trim()
   const [categoria, setCategoria] = useState('')
   const [orden, setOrden] = useState('recomendados')
-  const barra = useRef(null)
-  const [indicador, setIndicador] = useState(null)
 
   const visibles = filtrarProductos(productos, { categoria, busqueda })
   if (orden === 'precio-asc') visibles.sort((a, b) => a.precioBase - b.precioBase)
   else if (orden === 'precio-desc') visibles.sort((a, b) => b.precioBase - a.precioBase)
   else if (orden === 'nombre') visibles.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'))
 
-  // La "píldora" que se desliza detrás del filtro activo: se mide el botón activo.
-  useLayoutEffect(() => {
-    const medir = () => {
-      const activo = barra.current?.querySelector('.catalog-filter.activo')
-      if (activo) setIndicador({ width: activo.offsetWidth, height: activo.offsetHeight, transform: `translateX(${activo.offsetLeft}px)`, opacity: 1 })
-    }
-    medir()
-    window.addEventListener('resize', medir)
-    return () => window.removeEventListener('resize', medir)
-  }, [categoria])
+  // Cantidad de productos de cada categoría (respeta la búsqueda de la cabecera).
+  const porBusqueda = filtrarProductos(productos, { categoria: '', busqueda })
+  const cantidad = valor => (valor ? porBusqueda.filter(p => p.categoria === valor).length : porBusqueda.length)
 
   function elegir(nueva, evento) {
     setCategoria(nueva)
@@ -61,13 +52,12 @@ function Catalogo() {
         <div className="catalog-container">
           <div className="catalog-filterbar">
             <span className="catalog-filterbar-label" id="catalogFiltersLabel">Explorá por categoría</span>
-            <div className={'catalog-filters catalogo-filtros' + (indicador ? ' con-indicador' : '')} id="catalogFilters" role="group" aria-labelledby="catalogFiltersLabel" ref={barra}>
+            <div className={'catalog-filters catalogo-filtros'} id="catalogFilters" role="group" aria-labelledby="catalogFiltersLabel">
               {['', ...categorias].map(valor => (
                 <button key={valor || 'todas'} className={'catalog-filter catalogo-filtro' + (valor === categoria ? ' activo' : '')} type="button" aria-pressed={valor === categoria} onClick={e => elegir(valor, e)}>
-                  {valor || 'Todas'}
+                  {valor || 'Todas'}<small>{cantidad(valor)}</small>
                 </button>
               ))}
-              <span className="catalog-filter-indicator" id="catalogFilterIndicator" aria-hidden="true" style={indicador || undefined}></span>
             </div>
             <div className="catalog-toolbar">
               <p className="catalog-count" id="catalogCount" aria-live="polite">{cargando ? 'Cargando…' : visibles.length === 1 ? '1 producto' : visibles.length + ' productos'}</p>
