@@ -263,9 +263,12 @@ function Login() {
   return (
     <>
       <Estilos hojas={['login']} />
-      <Link className="volver" to="/">Volver al inicio</Link>
-      <main className="wrap">
-        <div id="shake" ref={caja}>
+      <main className="login-pagina">
+        <section className="login-lado">
+          <Link className="volver" to="/" aria-label="ZAPI Vivero, volver al inicio">
+            <img src="/img/logo.svg" alt="" width="32" height="32" />
+            <span>ZAPI Vivero</span>
+          </Link>
           <div className="head" id="hd" ref={cabeza} data-state={estado} data-face={cara} data-peek={estado === 'hide' && espiar ? '' : undefined} role="img" aria-label="Personaje con un brote en la cabeza">
             <div className="tilt" id="tilt" style={{ '--r': inclinacion.r + 'deg', '--tx': inclinacion.tx + '%' }}>
               <div className="pp" id="pp" ref={pp}>
@@ -277,6 +280,25 @@ function Login() {
               </div>
             </div>
           </div>
+          <div className="lado-texto">
+            {registro ? (
+              <>
+                <p className="lado-titulo">Con tu cuenta, todo más fácil</p>
+                <ul className="lado-lista">
+                  <li>Seguís tus pedidos en un solo lugar</li>
+                  <li>Comprás más rápido, sin repetir tus datos</li>
+                  <li>Tus pedidos quedan guardados</li>
+                </ul>
+              </>
+            ) : (
+              <>
+                <p className="lado-titulo">Pequeños brotes, grandes sueños</p>
+                <p className="lado-bajada">Seguí tus pedidos, repetí compras y recibí consejos de cuidado para tus plantas.</p>
+              </>
+            )}
+          </div>
+        </section>
+        <div className="login-formulario" id="shake" ref={caja}>
           <form className="card" id="f" noValidate onSubmit={enviar}>
             <div className="tabs" role="tablist" aria-label="Elegí una opción">
               <button className="tab" id="tabLogin" type="button" role="tab" aria-selected={!registro} aria-controls="f" onClick={() => cambiarModo('login')}>Ingresar</button>
@@ -284,6 +306,7 @@ function Login() {
             </div>
             <h1 id="titulo">{registro ? 'Creá tu cuenta' : 'Bienvenido'}</h1>
             <p className="msg" id="msg" aria-live="polite">{mensaje}</p>
+            <div className={'campos' + (registro ? ' campos-registro' : '')}>
             <div className="f" id="fn" hidden={!registro}>
               <label htmlFor="n">Nombre</label>
               <div className="campo">
@@ -331,8 +354,8 @@ function Login() {
               </div>
               <p className="legal">Al crear tu cuenta aceptás nuestra <Link to="/privacidad">política de privacidad</Link>. Con tu cuenta seguís tus pedidos y comprás más rápido.</p>
             </div>
+            </div>
             <button className="go" id="go" type="submit" disabled={enviando}>{registro ? 'Crear cuenta' : 'Ingresar'}</button>
-            <p className="tag">Pequeños brotes, grandes sueños</p>
           </form>
         </div>
       </main>
