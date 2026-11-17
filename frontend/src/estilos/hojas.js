@@ -14,6 +14,7 @@ import hoja_inicio from './inicio.css?inline'
 import hoja_login from './login.css?inline'
 import hoja_nosotros from './nosotros.css?inline'
 import hoja_pedidos from './pedidos.css?inline'
+import hoja_privacidad from './privacidad.css?inline'
 import hoja_producto from './producto.css?inline'
 import hoja_servicios from './servicios.css?inline'
 import hoja_styles from './styles.css?inline'
@@ -35,6 +36,7 @@ export const HOJAS = {
   'login': hoja_login,
   'nosotros': hoja_nosotros,
   'pedidos': hoja_pedidos,
+  'privacidad': hoja_privacidad,
   'producto': hoja_producto,
   'servicios': hoja_servicios,
   'styles': hoja_styles,
