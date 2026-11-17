@@ -19,7 +19,7 @@ const PRODUCTOS = [
         stock: 12,
         destacado: true,
         infoDeVenta: [
-            "Plantala hoy y tené albahaca fresca por más de 8 semanas",
+            "Una mata de 20 cm lista para plantar hoy mismo",
             "Rinde más de 8 semanas de cosecha continua",
             "Incluye guía de cuidados digital"
         ]
@@ -108,7 +108,7 @@ const PRODUCTOS = [
         stock: 10,
         destacado: false,
         infoDeVenta: [
-            "6 variedades para armar tu rincón verde, con 30% de ahorro",
+            "6 variedades para armar tu rincón verde",
             "30% más económico que por unidad",
             "Incluye caja de regalo"
         ]
@@ -127,7 +127,7 @@ const PRODUCTOS = [
         stock: 4,
         destacado: false,
         infoDeVenta: [
-            "En maceta decorativa y con hojas rojas, crema y verde: puro color",
+            "En maceta decorativa: un toque de color para tu casa",
             "Hojas rojas, crema y verde",
             "Incluye guía de cuidados digital"
         ]
