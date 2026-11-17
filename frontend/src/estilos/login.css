@@ -542,3 +542,36 @@ button.go:disabled{
 /* Sin mensaje de error no se reserva espacio: formulario más compacto. */
 .err:empty{ display: none; }
 .f{ margin-bottom: 12px; }
+
+
+/* Pantallas bajas (notebooks, ventanas chicas): la composición se compacta
+   para que el acceso entre en la pantalla sin necesidad de scroll. */
+@media (max-height: 820px){
+    body{
+        padding-block: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-bottom));
+    }
+    .head{
+        width: clamp(110px, 24vh, 300px);
+        margin-bottom: 6px;
+    }
+    .card{
+        padding: 16px 24px 16px;
+    }
+    h1{ font-size: clamp(30px, 5vh, 40px); }
+    .msg{ margin-bottom: 10px; min-height: 0; }
+    .tabs{ margin-bottom: 12px; }
+    .tab{ padding: 8px 12px; }
+    .f{ margin-bottom: 8px; }
+    .campo input{ padding-block: 10px; }
+    button.go{ padding: 11px; }
+    .swap{ margin-top: 10px; }
+    .tag{ margin-top: 10px; }
+}
+
+@media (max-height: 640px){
+    .head{ width: clamp(90px, 20vh, 300px); }
+    .card{ padding: 12px 22px 12px; }
+    .msg{ margin-bottom: 6px; font-size: 13px; }
+    .tabs{ margin-bottom: 8px; }
+    .tag{ display: none; }
+}
