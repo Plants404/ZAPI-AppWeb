@@ -157,6 +157,4 @@ const PRODUCTOS = [
     }
 ];
 
-const CATEGORIAS = [...new Set(PRODUCTOS.map(producto => producto.categoria))];
-
-module.exports = { PRODUCTOS, CATEGORIAS };
+module.exports = { PRODUCTOS };

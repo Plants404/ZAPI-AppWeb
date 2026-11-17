@@ -1,5 +1,7 @@
 'use strict';
 
+/* Rutas de productos e imágenes: lectura pública y administración. */
+
 const express = require('express');
 const { ObjectId } = require('mongodb');
 const { HttpError } = require('../lib/http-error.js');
@@ -283,4 +285,4 @@ function crearRouterImagenes(getDatabase) {
     return router;
 }
 
-module.exports = { crearRouter, crearRouterAdmin, crearRouterImagenesAdmin, crearRouterImagenes, validarProducto };
+module.exports = { crearRouter, crearRouterAdmin, crearRouterImagenesAdmin, crearRouterImagenes };

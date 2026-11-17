@@ -1,3 +1,4 @@
+// Página de inicio: portada, destacados, servicios y testimonios.
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ProductoCard from '../components/ProductoCard.jsx'

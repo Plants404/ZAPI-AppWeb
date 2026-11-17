@@ -1,3 +1,4 @@
+// Panel "Resumen": tarjetas de ventas, conversión y stock bajo.
 import { useEffect, useRef, useState } from 'react'
 import { obtenerResumen } from '../api.js'
 import { formatearPrecio, textoDeStock, claseDeStock } from '../data/negocio.js'

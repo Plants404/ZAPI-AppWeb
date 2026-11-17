@@ -1,3 +1,4 @@
+// Página 404 para direcciones que no existen.
 import { Link } from 'react-router-dom'
 import Estilos from '../components/Estilos.jsx'
 

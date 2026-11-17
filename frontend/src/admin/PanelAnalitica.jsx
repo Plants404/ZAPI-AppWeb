@@ -1,3 +1,4 @@
+// Panel "Analítica": clientes, productos y horarios a partir de los eventos del sitio.
 import { useState } from 'react'
 import { obtenerAnalitica, obtenerClientes } from '../api.js'
 import { formatearPrecio } from '../data/negocio.js'

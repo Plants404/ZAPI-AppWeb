@@ -147,10 +147,6 @@ section>* {
   }
 }
 
-.services-view {
-  padding: clamp(4.5rem, 9vw, 7.5rem) 1.25rem;
-}
-
 @media (prefers-reduced-motion: reduce) {
 
   .section {
@@ -172,7 +168,6 @@ section>* {
   align-items: center;
   gap: .5rem;
 }
-
 
 .visually-hidden {
   position: absolute;
@@ -232,7 +227,6 @@ header img {
   order: 2;
 }
 
-
 .nav-toggle {
   order: 1;
   position: relative;
@@ -275,35 +269,6 @@ header img {
 .nav-toggle:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 3px;
-}
-
-.header-admin {
-  order: 2;
-  position: relative;
-  z-index: 70;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0 10px;
-  background: none;
-  border: 1px solid rgba(31, 58, 46, .12);
-  border-radius: 10px;
-  flex-shrink: 0;
-  color: var(--forest);
-  text-decoration: none;
-  font-size: 1.25rem;
-}
-
-.header-admin:hover {
-  background: rgba(74, 124, 89, .12);
-}
-
-.header-admin:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-  border-radius: 10px;
 }
 
 /* Acceso directo al carrito para la barra movil: hamburguesa a la
@@ -374,30 +339,10 @@ header img {
    aqui (carga en todas las paginas) y no en el CSS del catalogo: sin
    esta regla, las paginas sin ese CSS mostraban el "0" junto al saludo
    cuando el carrito estaba vacio. */
-.cart-count.cart-count-header {
-  display: none;
-}
 
 /* Insignia circular roja con texto blanco junto al saludo. Mismos
    valores que el CSS del catalogo (que carga despues y gana los
    empates alla): el diseno queda identico en todas las paginas. */
-.cart-count.cart-count-header.con-productos {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: -.15rem;
-  right: -.8rem;
-  min-width: 1.15rem;
-  height: 1.15rem;
-  padding: 0 .3rem;
-  font-size: .68rem;
-  font-weight: 700;
-  border-radius: 999px;
-  border: 2px solid var(--white);
-  background: #c14a3c;
-  color: var(--white);
-}
 
 header.menu-abierto {
   z-index: 220;
@@ -406,7 +351,6 @@ header.menu-abierto {
 header.menu-abierto::before {
   opacity: 0;
 }
-
 
 .header-search {
   order: 4;
@@ -487,8 +431,6 @@ header.menu-abierto::before {
   outline: 2px solid var(--leaf);
   outline-offset: 2px;
 }
-
-
 
 .nav-bar {
   position: fixed;
@@ -742,37 +684,6 @@ header.menu-abierto::before {
   margin-top: auto;
 }
 
-.bottom-sheet-fila-cuenta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--white);
-  border: 1px solid var(--borde);
-  border-radius: 18px;
-}
-
-.bottom-sheet-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--forest);
-  color: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 18px;
-  flex-shrink: 0;
-}
-
-.bottom-sheet-hola {
-  font-weight: 700;
-  color: var(--ink);
-  flex: 1;
-  min-width: 0;
-}
-
 .bottom-sheet-pedidos {
   color: var(--leaf-texto);
   font-weight: 700;
@@ -783,30 +694,6 @@ header.menu-abierto::before {
 
 .bottom-sheet-pedidos:hover {
   text-decoration: underline;
-}
-
-.bottom-sheet-salir {
-  width: 100%;
-  text-align: center;
-  padding: 0 16px;
-  height: 44px;
-  background: none;
-  border: none;
-  color: var(--muted-texto);
-  font-weight: 600;
-  font-family: inherit;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-.bottom-sheet-salir:hover {
-  color: var(--forest);
-}
-
-.bottom-sheet-salir:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-  border-radius: 8px;
 }
 
 .bottom-sheet-ingresar {
@@ -830,26 +717,15 @@ header.menu-abierto::before {
 }
 
 /* Bloque de cuenta vs Ingresar de la hoja, controlado por estado de auth */
-.bottom-sheet-fila-cuenta,
-.bottom-sheet-salir {
-  display: none;
-}
+
 .bottom-sheet-ingresar {
   display: none;
 }
 
-html[data-cuentas="si"] .bottom-sheet-fila-cuenta {
-  display: flex !important;
-}
-html[data-cuentas="si"] .bottom-sheet-salir {
-  display: block !important;
-}
 html[data-cuentas="no"] .bottom-sheet-ingresar {
   display: flex !important;
 }
 
-html[data-cuentas="off"] .bottom-sheet-fila-cuenta,
-html[data-cuentas="off"] .bottom-sheet-salir,
 html[data-cuentas="off"] .bottom-sheet-ingresar {
   display: none !important;
 }
@@ -867,19 +743,11 @@ html[data-cuentas="off"] .bottom-sheet-fila-pedidos {
   }
 
   /* Ocultar elementos del drawer que ya no existen en móvil */
-  .nav-bar .nav-usuario,
-  .nav-bar .nav-cuenta {
-    display: none !important;
-  }
+  
 }
 
 /* Bloqueo de scroll: html y body para que afecte al viewport */
 html.menu-abierto {
-  overflow: hidden;
-  scrollbar-gutter: stable;
-}
-
-body.no-scroll {
   overflow: hidden;
   scrollbar-gutter: stable;
 }
@@ -941,94 +809,6 @@ body.no-scroll {
   border-radius: 4px;
 }
 
-.nav-cuenta {
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  flex-wrap: wrap;
-  padding: .8rem 0;
-}
-.nav-usuario {
-  position: relative;
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: .25rem .5rem;
-  width: 100%;
-}
-
-.nav-usuario-boton {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  font-family: inherit;
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--forest);
-  background: none;
-  border: none;
-  padding: .8rem 0;
-  cursor: pointer;
-  text-align: left;
-}
-
-.nav-usuario-boton:hover {
-  color: var(--moss);
-}
-
-.nav-usuario-boton:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-  border-radius: 8px;
-}
-
-.nav-usuario-nombre {
-  font-weight: 600;
-  color: var(--forest);
-}
-
-.nav-usuario-menu {
-  flex-basis: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: .25rem;
-  padding: .25rem 0 0;
-}
-
-.nav-usuario-menu[hidden] {
-  display: none;
-}
-
-.nav-bar .nav-usuario-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .75rem;
-  width: 100%;
-  font-family: inherit;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--ink);
-  background: none;
-  border: none;
-  padding: .6rem;
-  border-radius: 8px;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.nav-bar .nav-usuario-item:hover {
-  background: var(--sand);
-  color: var(--forest);
-}
-
-.nav-bar .nav-usuario-item:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 2px;
-}
-
 /* Header completo y persistente en tablet y desktop: flex pegajoso al
    tope, sin espacios vacios. El buscador, la navegacion y los accesos
    de cuenta/carrito no se ocultan ni colapsan en estos anchos. */
@@ -1051,9 +831,7 @@ body.no-scroll {
     padding-top: 8.5rem;
   }
 
-  .nav-cuenta {
-    margin: 0 0 1.4rem;
-  }
+  
 }
 
 /* Solo en movil estricto queda visible unicamente el toggle (X) con el
@@ -1093,73 +871,18 @@ body.no-scroll {
   display: none;
 }
 
-.nav-salir {
-  font-family: inherit;
-  font-size: .95rem;
-  font-weight: 500;
-  color: var(--muted-texto);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.nav-salir:hover {
-  color: var(--forest);
-}
-
-.nav-salir:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-html[data-cuentas="si"] .nav-ingresar {
-  display: none !important;
-}
-html[data-cuentas="no"] .nav-usuario {
-  display: none !important;
-}
-html[data-cuentas="si"] .nav-usuario {
-  display: inline-flex !important;
-}
-
-html[data-cuentas="off"] .nav-bar .nav-usuario,
-html[data-cuentas="off"] .nav-bar .nav-cta,
-html[data-cuentas="off"] .nav-bar .nav-ingresar {
-  display: none !important;
-}
-html[data-cuentas="off"] .nav-bar .nav-suelto-carrito,
-html[data-cuentas="off"] .nav-bar .nav-suelto-pedidos {
-  display: flex !important;
-}
-html[data-cuentas="si"] .nav-bar .nav-suelto-carrito,
-html[data-cuentas="si"] .nav-bar .nav-suelto-pedidos,
-html[data-cuentas="no"] .nav-bar .nav-suelto-carrito,
-html[data-cuentas="no"] .nav-bar .nav-suelto-pedidos {
-  display: none !important;
-}
-
 /* En tablet y escritorio el carrito vive en la barra superior: ocultamos
    por completo el boton flotante inferior (y su contador) para que no se
    duplique ni estorbe el contenido. Solo queda visible en movil estricto. */
 @media (min-width: 768px) {
 
   .cart-link-float,
-  .floating-cart-btn,
   #cartLinkFloat,
   #floating-cart,
   #cartCountFloat {
     display: none !important;
   }
 }
-
-body.no-scroll {
-  overflow: hidden;
-}
-
 
 .hero {
   display: grid;
@@ -1169,7 +892,6 @@ body.no-scroll {
   padding-top: 3rem;
   padding-bottom: 4rem;
 }
-
 
 .hero img {
   grid-row: 2;
@@ -1204,7 +926,6 @@ body.no-scroll {
 /* Jerarquia del bloque de texto del hero: todos los bloques comparten
    el mismo eje izquierdo, sin sangrias ni margenes desiguales. */
 .hero-lead,
-.hero-description,
 .hero-features {
   text-align: left;
   margin-left: 0;
@@ -1247,13 +968,6 @@ body.no-scroll {
   left: 0;
   color: var(--leaf-texto);
   font-weight: 700;
-}
-
-.hero-description {
-  font-size: .95rem;
-  line-height: 1.7;
-  color: var(--muted-texto);
-  margin-bottom: 2rem;
 }
 
 /* Estructura de Inicio: la seccion apila en columna y el bloque hero
@@ -1446,170 +1160,21 @@ body.no-scroll {
   box-shadow: none;
 }
 
-#inicio .carousel-nav-btn {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  margin: 0;
-  border: none;
-  border-radius: 50%;
-  background: var(--forest);
-  color: var(--white);
-  font-size: 1.5rem;
-  line-height: 1;
-  box-shadow: none;
-  cursor: pointer;
-  z-index: 10;
-  transition: background-color .2s ease;
-}
-
-#inicio .carousel-nav-btn:hover {
-  background: var(--moss);
-  color: var(--white);
-  transform: none;
-  box-shadow: none;
-}
-
-#inicio .carousel-nav-btn:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-}
-
-#inicio .carousel-nav-btn:disabled {
-  opacity: .35;
-  cursor: default;
-}
-
 @media (prefers-reduced-motion: reduce) {
   #inicio .carousel-track {
     scroll-behavior: auto;
   }
 }
 
-
 /* Override directo sobre el header de servicios */
-#servicios .service-header,
-.zapi-hero-banner {
-  background-color: #1E3A2B !important;
-  color: #F4F1EA !important;
-  padding: 40px 48px !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  gap: 32px !important;
-  border-radius: 16px !important;
-  margin-bottom: 32px !important;
-}
 
 /* Columna Izquierda */
-.zapi-hero-content {
-  flex: 1 1 55% !important;
-  max-width: 600px !important;
-}
-
-.zapi-hero-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 20px !important;
-  padding: 4px 12px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: #F4F1EA !important;
-  margin-bottom: 16px !important;
-  text-transform: uppercase !important;
-}
-
-.zapi-hero-title {
-  font-size: 38px !important;
-  font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  color: #F4F1EA !important;
-  margin: 0 0 12px 0 !important;
-  line-height: 1.1 !important;
-}
-
-.zapi-hero-description {
-  font-size: 15px !important;
-  line-height: 1.5 !important;
-  color: rgba(244, 241, 234, 0.9) !important;
-  margin: 0 !important;
-}
 
 /* Divisor Vertical */
-.zapi-hero-divider {
-  width: 1px !important;
-  height: 110px !important;
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  flex-shrink: 0 !important;
-}
 
 /* Columna Derecha (Cómo Trabajamos) */
-.zapi-hero-trust {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 14px !important;
-  flex: 1 1 40% !important;
-}
-
-.zapi-hero-trust-heading {
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 1px !important;
-  color: rgba(244, 241, 234, 0.7) !important;
-  margin-bottom: 4px !important;
-}
-
-.zapi-hero-trust-item {
-  display: flex !important;
-  align-items: flex-start !important;
-  gap: 12px !important;
-  font-size: 14px !important;
-  color: #F4F1EA !important;
-}
-
-.zapi-hero-trust-icon {
-  width: 28px !important;
-  height: 28px !important;
-  border-radius: 50% !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-  margin-top: 2px !important;
-}
-
-.zapi-hero-trust-icon .material-symbols-outlined {
-  font-family: 'Material Symbols Outlined' !important;
-  font-size: 16px !important;
-  color: #F4F1EA !important;
-}
-
-.zapi-hero-trust-text strong {
-  color: #FFFFFF !important;
-}
 
 /* Responsivo para Móviles y Tabletas */
-@media (max-width: 850px) {
-  #servicios .service-header,
-  .zapi-hero-banner {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    padding: 28px 20px !important;
-  }
-  .zapi-hero-divider {
-    display: none !important;
-  }
-}
 
 /* Carrito de compras: las tarjetas del carrito usan la misma
    estructura visual que las tarjetas del catálogo para mantener
@@ -1693,134 +1258,7 @@ body.no-scroll {
     border-radius: 4px;
 }
 
-.cart-item-info .cart-item-desc {
-    font-size: .94rem;
-    color: var(--muted-texto);
-    line-height: 1.5;
-    margin: 0;
-}
-
-.cart-item-info .cart-item-benefit {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-    font-size: .94rem;
-    color: var(--muted-texto);
-}
-
-.cart-item-info .cart-item-benefit .benefit-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.2rem;
-    height: 1.2rem;
-    border-radius: 50%;
-    background: rgba(8, 255, 79, .2);
-    color: var(--leaf-texto);
-    font-size: .75rem;
-    font-weight: 600;
-    flex-shrink: 0;
-}
-
-.cart-item-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 1.25rem 1.4rem 1.5rem;
-    border-top: 1px solid #e4dccb;
-}
-
-.cart-item-precio-cta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.cart-item-precio {
-    display: flex;
-    align-items: baseline;
-    gap: .6rem;
-}
-
-.cart-item-precio .current {
-    font-family: var(--serif);
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: .03em;
-    color: var(--forest);
-}
-
-.cart-item-precio .since {
-    font-size: .75rem;
-    color: var(--muted-texto);
-}
-
-.cart-item-cta {
-    font-size: .94rem;
-    font-weight: 600;
-    color: var(--forest);
-    background: none;
-    border: 0;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-}
-
-.cart-item-cta:hover {
-    color: var(--moss);
-}
-
-.cart-item-cta:focus-visible {
-    outline: 2px solid var(--leaf-texto);
-    outline-offset: 3px;
-    border-radius: 4px;
-}
-
-.cart-add-cart {
-    width: 100%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: .5rem;
-    padding: .75rem 1.25rem;
-    min-height: 50px;
-    flex: 0 0 auto;
-    border-radius: 12px;
-    background: var(--forest);
-    color: var(--cream);
-    font-size: .94rem;
-    font-weight: 600;
-    text-align: center;
-    transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
-    cursor: pointer;
-}
-
-.cart-add-cart:hover {
-    background: var(--moss);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.cart-add-cart.added {
-    background: var(--leaf);
-}
-
-.cart-add-cart:disabled {
-    background: var(--sand);
-    color: var(--muted-texto);
-    cursor: not-allowed;
-}
-
-.cart-add-cart:disabled:hover {
-    background: var(--sand);
-    transform: none;
-    box-shadow: none;
-}
-
-
-.hero button,
-.contacto-acciones button {
+.hero button{
   display: inline-block;
   padding: .95rem 1.9rem;
   margin: .35rem .5rem .35rem 0;
@@ -1831,35 +1269,30 @@ body.no-scroll {
   transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
-.hero button:first-of-type,
-.contacto-acciones button:first-of-type {
+.hero button:first-of-type{
   background: var(--forest);
   color: var(--cream);
   box-shadow: var(--shadow-sm);
 }
 
-.hero button:first-of-type:hover,
-.contacto-acciones button:first-of-type:hover {
+.hero button:first-of-type:hover{
   background: var(--moss);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
-.hero button:last-of-type,
-.contacto-acciones button:last-of-type {
+.hero button:last-of-type{
   background: transparent;
   color: var(--forest);
   border: 1.5px solid var(--forest);
 }
 
-.hero button:last-of-type:hover,
-.contacto-acciones button:last-of-type:hover {
+.hero button:last-of-type:hover{
   background: var(--forest);
   color: var(--cream);
 }
 
-.hero button:focus-visible,
-.contacto-acciones button:focus-visible {
+.hero button:focus-visible{
   outline: 2px solid var(--leaf);
   outline-offset: 3px;
 }
@@ -1879,166 +1312,17 @@ body.no-scroll {
   color: var(--ink);
 }
 
-.service {
-  text-align: left;
-}
-
 /* Cabecera editorial: misma composicion que el "Catalogo vivo".
    En mobile se apila; en pantallas grandes el lema respira a la
    izquierda y la tarjeta de confianza lo acompana a la derecha,
    alineada abajo. Todo apoyado sobre una tarjeta suave. */
-.service-header {
-  display: grid;
-  gap: 2rem;
-  background: var(--sand);
-  border-radius: 24px;
-  padding: clamp(1.75rem, 4vw, 3rem);
-  margin-bottom: 3rem;
-  text-align: left;
-}
-
-.service-intro {
-  min-width: 0;
-}
 
 /* Sello de garantia: pastilla con icono, no una etiqueta suelta. */
-.service-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: .72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .22em;
-  color: var(--leaf-texto);
-  background: rgba(74, 124, 89, .10);
-  border: 1px solid rgba(74, 124, 89, .35);
-  padding: .4rem .95rem;
-  border-radius: 999px;
-  margin-bottom: 1.35rem;
-}
-
-.service-eyebrow .material-symbols-outlined {
-  font-size: 1.05rem;
-}
-
-.service-title {
-  font-size: clamp(2.4rem, 6vw, 4.2rem);
-  line-height: 1.1;
-  letter-spacing: .01em;
-  color: var(--forest);
-  margin: 0 0 .35rem;
-}
-
-.service-title-acento {
-  color: var(--leaf);
-}
-
-.service-lead {
-  font-size: clamp(1.02rem, 1.6vw, 1.2rem);
-  line-height: 1.5;
-  color: var(--moss);
-  max-width: 54ch;
-  margin: 0;
-}
 
 /* Tarjeta flotante blanca: garantia y proceso. */
-.service-trust {
-  align-self: end;
-  min-width: 0;
-  background: var(--white);
-  border-radius: 20px;
-  border-top: 3px solid var(--leaf);
-  box-shadow: var(--shadow-sm);
-  padding: 1.5rem 1.6rem;
-  transition: transform .3s ease, box-shadow .3s ease;
-}
-
-.service-trust:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
-.service-trust-title {
-  font-size: .72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .18em;
-  color: var(--moss);
-  margin: 0 0 1rem;
-}
-
-.service-trust ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: .85rem;
-}
-
-.service-trust li {
-  display: flex;
-  align-items: flex-start;
-  gap: .6rem;
-  font-size: .92rem;
-  line-height: 1.45;
-  color: var(--ink);
-  margin: 0;
-}
-
-.service-trust li strong {
-  color: var(--forest);
-}
-
-.service-trust .material-symbols-outlined {
-  font-size: 1.25rem;
-  color: var(--leaf);
-  flex-shrink: 0;
-  margin-top: .1rem;
-  transition: transform .25s ease, color .25s ease;
-}
-
-.service-trust li:hover .material-symbols-outlined {
-  transform: scale(1.1);
-  color: var(--moss);
-}
 
 /* Entrada escalonada, igual que el Catalogo: sello, luego titulo y
    bajada, luego la tarjeta desde la derecha y por ultimo la grilla. */
-.service-eyebrow,
-.service-title,
-.service-lead,
-.service-trust,
-.service-items {
-  animation-duration: .6s;
-  animation-timing-function: cubic-bezier(.22, 1, .36, 1);
-  animation-fill-mode: backwards;
-}
-
-.service-eyebrow {
-  animation-name: fadeInUp;
-  animation-delay: 0s;
-}
-
-.service-title {
-  animation-name: fadeInUp;
-  animation-delay: .15s;
-}
-
-.service-lead {
-  animation-name: fadeInUp;
-  animation-delay: .15s;
-}
-
-.service-trust {
-  animation-name: fadeInRight;
-  animation-delay: .3s;
-}
-
-.service-items {
-  animation-name: fadeInUp;
-  animation-delay: .45s;
-}
 
 @keyframes fadeInUp {
   from {
@@ -2064,148 +1348,11 @@ body.no-scroll {
   }
 }
 
-@media (min-width: 880px) {
-  .service-header {
-    grid-template-columns: minmax(0, 1.7fr) minmax(280px, .9fr);
-    gap: clamp(2rem, 5vw, 4.5rem);
-    align-items: end;
-  }
-}
-
-.service-items {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.25rem;
-}
-
-        .service-card {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  padding: clamp(1.5rem, 3.5vw, 2.1rem);
-  background: var(--white);
-  border: 1px solid #e4dccb;
-  border-radius: 18px;
-  box-shadow: var(--shadow-sm);
-  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
-}
-
-.service-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: rgba(74, 124, 89, .35);
-}
-
-.service-card-icono {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: rgba(143, 174, 145, .18);
-  color: var(--forest);
-  margin-bottom: 1.25rem;
-}
-
-.service-card-icono .material-symbols-outlined {
-  font-size: 26px;
-}
-
-.service-card-titulo {
-  font-family: var(--sans);
-  font-size: 1.1rem;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--forest);
-  margin: 0 0 .5rem;
-}
-
-.service-card-texto {
-  margin: 0 0 1.25rem;
-  font-size: .96rem;
-  line-height: 1.6;
-  color: var(--muted-texto);
-}
+        
 
 /* Enlace secundario "Consultar": se pega al pie de la tarjeta. */
-.service-card-cta {
-  margin-top: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-family: var(--sans);
-  font-size: .92rem;
-  font-weight: 600;
-  color: var(--leaf-texto);
-  cursor: pointer;
-  transition: color .2s ease, gap .2s ease;
-}
-
-.service-card-cta:hover {
-  color: var(--forest);
-  gap: .55rem;
-}
-
-.service-card-cta .material-symbols-outlined {
-  font-size: 18px;
-}
 
 /* Octava tarjeta: CTA destacada para completar la grilla 4x2. */
-.service-card--cta {
-  background: var(--forest);
-  border-color: var(--forest);
-}
-
-.service-card--cta .service-card-icono {
-  background: rgba(255, 255, 255, .15);
-  color: #ffffff;
-}
-
-.service-card--cta .service-card-titulo {
-  color: #ffffff;
-}
-
-.service-card--cta .service-card-texto {
-  color: #b6bcb3;
-}
-
-.service-card--cta .service-card-cta {
-  padding: .6rem 1.15rem;
-  border-radius: 999px;
-  background: var(--cream);
-  color: var(--forest);
-}
-
-.service-card--cta .service-card-cta:hover {
-  background: var(--white);
-  color: var(--forest);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .service-eyebrow,
-  .service-title,
-  .service-lead,
-  .service-trust,
-  .service-items {
-    animation: none;
-  }
-
-  .service-card,
-  .service-trust,
-  .service-trust .material-symbols-outlined {
-    transition: none;
-  }
-
-  .service-card:hover,
-  .service-trust:hover {
-    transform: none;
-  }
-}
 
 /* Padding vertical generoso para que la seccion respire, y crema
    suave de fondo (sobre el crema base del body). */
@@ -2215,189 +1362,21 @@ body.no-scroll {
   background: #f9f6f0;
 }
 
-.nosotros-inner {
-  max-width: 1120px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.nosotros-inner>*+* {
-  margin-top: clamp(3.5rem, 8vw, 6.5rem);
-}
-
 /* --- 1. Propuesta de valor --- */
-.nosotros-hero {
-  max-width: none;
-}
 
 /* Mobile: lema y manifiesto apilados. En pantallas grandes se
    reparten en dos columnas asimetricas (lema grande + nota lateral). */
-.nosotros-hero-grid {
-  display: grid;
-  gap: clamp(1.75rem, 4vw, 3rem);
-}
 
 /* Columna principal: el overline "Nosotros" pegado arriba del lema,
    los dos alineados a la izquierda. */
-.nosotros-hero-principal {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.nosotros-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: .6rem;
-  font-family: var(--sans);
-  font-size: .78rem;
-  font-weight: 700;
-  letter-spacing: .24em;
-  text-transform: uppercase;
-  color: var(--leaf-texto);
-  margin-bottom: 1rem;
-}
-
-.nosotros-eyebrow::before {
-  content: "";
-  width: 2.25rem;
-  height: 2px;
-  background: var(--leaf);
-}
-
-.nosotros-titulo {
-  font-family: var(--serif);
-  font-size: clamp(2.6rem, 6.5vw, 4.6rem);
-  line-height: 1.15;
-  letter-spacing: .005em;
-  color: var(--forest);
-  max-width: 22ch;
-  margin: 0;
-}
-
-.nosotros-manifiesto {
-  font-family: var(--serif);
-  font-size: clamp(1.4rem, 3vw, 2rem);
-  line-height: 1.2;
-  letter-spacing: .01em;
-  color: var(--moss);
-  max-width: 34ch;
-  margin: 0;
-  padding-left: 1.5rem;
-  border-left: 3px solid var(--sage);
-}
 
 /* Rotulo pequeno de bloque: mayusculas con aire, para dar jerarquia
    sin competir con los titulos. */
-.nosotros-rotulo {
-  display: block;
-  font-family: var(--sans);
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--leaf-texto);
-  margin-bottom: .6rem;
-}
-
-.nosotros-bloque-cabecera {
-  max-width: 48ch;
-  margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
-}
-
-.nosotros-bloque-titulo {
-  font-family: var(--serif);
-  font-size: clamp(1.9rem, 4vw, 2.6rem);
-  line-height: 1.15;
-  color: var(--forest);
-  margin: 0;
-}
 
 /* --- 2. El problema vs la solucion --- */
 .nosotros-duelo {
   display: grid;
   gap: 1.25rem;
-}
-
-.nosotros-panel {
-  border-radius: calc(var(--radius) + 2px);
-  padding: clamp(1.75rem, 4vw, 2.75rem);
-}
-
-.nosotros-panel-etiqueta {
-  display: inline-block;
-  font-family: var(--sans);
-  font-size: .75rem;
-  font-weight: 700;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  margin-bottom: 1.15rem;
-}
-
-.nosotros-panel-problema {
-  background: var(--white);
-  border: 1px solid rgba(107, 90, 68, .18);
-  box-shadow: var(--shadow-sm);
-}
-
-.nosotros-panel-problema .nosotros-panel-etiqueta {
-  color: var(--earth);
-}
-
-.nosotros-panel-problema p {
-  font-size: 1.02rem;
-  color: var(--muted-texto);
-}
-
-.nosotros-dudas {
-  display: grid;
-  gap: .3rem;
-  margin: 1.5rem 0;
-}
-
-.nosotros-dudas li {
-  font-family: var(--serif);
-  font-size: clamp(1.7rem, 4vw, 2.5rem);
-  line-height: 1.15;
-  letter-spacing: .01em;
-  color: var(--forest);
-}
-
-.nosotros-panel-solucion {
-  background: var(--forest);
-  color: rgba(247, 244, 236, .9);
-  box-shadow: var(--shadow-md);
-}
-
-.nosotros-panel-solucion .nosotros-panel-etiqueta {
-  color: var(--sage);
-}
-
-.nosotros-panel-solucion p {
-  font-size: 1.02rem;
-  color: rgba(247, 244, 236, .88);
-}
-
-.nosotros-solucion-lista {
-  display: grid;
-  gap: .9rem;
-  margin: 1.5rem 0 0;
-}
-
-.nosotros-solucion-lista li {
-  display: flex;
-  align-items: flex-start;
-  gap: .7rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: rgba(247, 244, 236, .92);
-}
-
-.nosotros-solucion-lista .material-symbols-outlined {
-  flex: 0 0 auto;
-  font-size: 1.3rem;
-  color: var(--sage);
-  margin-top: .05rem;
 }
 
 /* --- 3. Pilares --- */
@@ -2406,178 +1385,14 @@ body.no-scroll {
   gap: 1.25rem;
 }
 
-.nosotros-pilar {
-  background: var(--white);
-  border: 1px solid rgba(31, 58, 46, .08);
-  border-radius: calc(var(--radius) + 2px);
-  padding: clamp(1.5rem, 3.5vw, 2.1rem);
-  box-shadow: var(--shadow-sm);
-}
-
-.nosotros-pilar:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-  border-color: rgba(74, 124, 89, .35);
-}
-
-.nosotros-pilar-icono {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: rgba(143, 174, 145, .18);
-  color: var(--moss);
-  margin-bottom: 1.15rem;
-}
-
-.nosotros-pilar-icono .material-symbols-outlined {
-  font-size: 26px;
-}
-
-.nosotros-pilar-titulo {
-  font-family: var(--sans);
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--forest);
-  margin: 0 0 .4rem;
-}
-
-.nosotros-pilar p {
-  margin: 0;
-  font-size: .97rem;
-  color: var(--muted-texto);
-}
-
 /* --- 4. Por que elegirnos --- */
-.nosotros-banda {
-  background: var(--forest);
-  color: rgba(247, 244, 236, .85);
-  border-radius: calc(var(--radius) + 8px);
-  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 4rem);
-  box-shadow: var(--shadow-lg);
-}
-
-.nosotros-banda-cabecera {
-  max-width: 560px;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
-}
-
-.nosotros-banda .nosotros-rotulo {
-  color: var(--sage);
-}
-
-.nosotros-banda .nosotros-bloque-titulo {
-  color: var(--cream);
-}
-
-.nosotros-banda-lead {
-  margin: .75rem 0 0;
-  font-size: clamp(1.02rem, 1.8vw, 1.2rem);
-  color: rgba(247, 244, 236, .82);
-  max-width: 46ch;
-}
 
 .nosotros-razones {
   display: grid;
   gap: 1rem;
 }
 
-.nosotros-razon {
-  border: 1px solid rgba(247, 244, 236, .14);
-  border-radius: var(--radius);
-  background: rgba(247, 244, 236, .04);
-  padding: clamp(1.35rem, 3vw, 1.7rem);
-}
-
-.nosotros-razon:hover {
-  background: rgba(247, 244, 236, .08);
-  border-color: rgba(143, 174, 145, .5);
-  transform: translateY(-3px);
-}
-
-.nosotros-razon-numero {
-  display: block;
-  font-family: var(--serif);
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--sage);
-  margin-bottom: .75rem;
-}
-
-.nosotros-razon h4 {
-  margin: 0 0 .4rem;
-  font-family: var(--sans);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--cream);
-}
-
-.nosotros-razon p {
-  margin: 0;
-  font-size: .95rem;
-  color: rgba(247, 244, 236, .78);
-}
-
 /* --- 5. El equipo --- */
-.nosotros-personas {
-  display: grid;
-  gap: 1.25rem;
-}
-
-.nosotros-persona {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.25rem;
-  background: var(--white);
-  border: 1px solid rgba(31, 58, 46, .08);
-  border-radius: calc(var(--radius) + 2px);
-  padding: clamp(1.5rem, 3.5vw, 2rem);
-  box-shadow: var(--shadow-sm);
-}
-
-.nosotros-persona:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md);
-}
-
-.nosotros-avatar {
-  flex: 0 0 auto;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: rgba(143, 174, 145, .2);
-  color: var(--forest);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--serif);
-  font-size: 1.5rem;
-  letter-spacing: .06em;
-}
-
-.nosotros-persona-nombre {
-  margin: 0 0 .15rem;
-  font-size: 1.35rem;
-  color: var(--forest);
-}
-
-.nosotros-persona-rol {
-  margin: 0 0 .55rem;
-  font-family: var(--sans);
-  font-size: .78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .14em;
-  color: var(--leaf-texto);
-}
-
-.nosotros-persona-desc {
-  margin: 0;
-  font-size: .95rem;
-  color: var(--muted-texto);
-}
 
 /* --- 6. Ubicacion --- */
 .nosotros-ubicacion {
@@ -2588,60 +1403,6 @@ body.no-scroll {
   border-radius: calc(var(--radius) + 4px);
   padding: clamp(1.5rem, 3.5vw, 2.25rem);
   box-shadow: var(--shadow-sm);
-}
-
-.nosotros-ubicacion-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.nosotros-ubicacion-direccion {
-  display: flex;
-  align-items: center;
-  gap: .55rem;
-  margin: .25rem 0 1.5rem;
-  font-size: 1rem;
-  color: var(--muted-texto);
-}
-
-.nosotros-ubicacion-direccion .material-symbols-outlined {
-  font-size: 1.35rem;
-  color: var(--moss);
-}
-
-.nosotros-ubicacion-boton {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .8rem 1.35rem;
-  border-radius: 999px;
-  background: var(--forest);
-  color: var(--cream);
-  font-weight: 600;
-  font-size: .95rem;
-}
-
-.nosotros-ubicacion-boton:hover {
-  background: var(--moss);
-  transform: translateY(-2px);
-}
-
-.nosotros-ubicacion-boton .material-symbols-outlined {
-  font-size: 1.2rem;
-}
-
-.nosotros-mapa {
-  border-radius: var(--radius);
-  overflow: hidden;
-  border: 1px solid rgba(31, 58, 46, .1);
-}
-
-.nosotros-mapa-frame {
-  display: block;
-  width: 100%;
-  height: 320px;
-  border: 0;
 }
 
 @media (min-width: 768px) {
@@ -2660,9 +1421,7 @@ body.no-scroll {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .nosotros-personas {
-    grid-template-columns: 1fr 1fr;
-  }
+  
 
   .nosotros-ubicacion {
     grid-template-columns: .85fr 1.15fr;
@@ -2670,17 +1429,7 @@ body.no-scroll {
     gap: clamp(1.5rem, 4vw, 3rem);
   }
 
-  .nosotros-mapa-frame {
-    height: 380px;
-  }
-}
-
-@media (min-width: 900px) {
-  .nosotros-hero-grid {
-    grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
-    gap: clamp(2.5rem, 6vw, 5rem);
-    align-items: end;
-  }
+  
 }
 
 @media (min-width: 1040px) {
@@ -2688,17 +1437,6 @@ body.no-scroll {
     grid-template-columns: repeat(4, 1fr);
   }
 }
-
-@media (prefers-reduced-motion: reduce) {
-
-  .nosotros-pilar:hover,
-  .nosotros-razon:hover,
-  .nosotros-persona:hover,
-  .nosotros-ubicacion-boton:hover {
-    transform: none;
-  }
-}
-
 
 .testimonios-cabecera {
   max-width: 720px;
@@ -2711,12 +1449,6 @@ body.no-scroll {
   gap: 1.5rem;
   max-width: 1080px;
   margin: 0 auto;
-}
-
-.testimonios-vacio {
-  font-family: var(--sans);
-  color: var(--muted-texto);
-  margin: 0;
 }
 
 .testimonios-accion {
@@ -2749,11 +1481,6 @@ body.no-scroll {
 .btn-testimonio:focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 2px;
-}
-
-.btn-testimonio-bloque {
-  width: 100%;
-  margin-top: 1rem;
 }
 
 @media (min-width: 768px) {
@@ -2795,17 +1522,6 @@ body.no-scroll {
   font-size: 1.2rem;
   line-height: 1;
   color: var(--leaf-texto);
-}
-
-.estrella-vacia {
-  color: var(--sage);
-}
-
-.estrella-media {
-  background: linear-gradient(90deg, var(--leaf-texto) 50%, var(--sage) 50%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 .opinion-texto {
@@ -2909,10 +1625,6 @@ body.no-scroll {
   font-size: 1rem;
 }
 
-.call-to-actions-view {
-  padding-bottom: 100px;
-}
-
 .contacto {
   display: grid;
   gap: 2.5rem;
@@ -2946,62 +1658,7 @@ body.no-scroll {
   max-width: 45ch;
 }
 
-.contacto-nota {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  margin: 2rem 0 0;
-  padding: .85rem 1rem;
-  background: rgba(74, 124, 89, .08);
-  border: 1px solid rgba(74, 124, 89, .15);
-  border-radius: 12px;
-  font-size: .85rem;
-  color: var(--muted-texto);
-}
-
-.contacto-nota .material-symbols-outlined {
-  font-size: 1.2rem;
-  color: var(--leaf);
-  flex-shrink: 0;
-}
-
-.contacto-acciones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .75rem;
-  margin-top: 1.75rem;
-}
-
 /* En fila, con aire entre botones: que no parezcan botones de prueba. */
-.contacto-acciones button {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  margin: 0;
-}
-
-.contacto-acciones button .material-symbols-outlined {
-  font-size: 1.15rem;
-}
-
-.contacto-panel {
-  padding: 2.5rem;
-  background: var(--white);
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
-  border: 1px solid rgba(31, 58, 46, .06);
-}
-
-.contacto-panel-titulo {
-  margin-bottom: .35rem;
-}
-
-.contacto-panel-sub {
-  margin: 0 0 1.5rem;
-  font-family: var(--sans);
-  font-size: .95rem;
-  color: var(--muted-texto);
-}
 
 .formulario {
   display: grid;
@@ -3023,36 +1680,6 @@ body.no-scroll {
 }
 
 .campo-label span {
-  color: var(--leaf);
-}
-
-.campo-label .campo-opcional {
-  font-weight: 400;
-  color: var(--muted-texto);
-}
-
-.campo-control {
-  position: relative;
-  display: flex;
-}
-
-.campo-control .campo-input {
-  padding-left: 2.75rem;
-}
-
-.campo-icono {
-  position: absolute;
-  left: .95rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.15rem;
-  color: var(--moss);
-  pointer-events: none;
-  transition: color .18s ease;
-}
-
-.campo-control:focus-within .campo-icono,
-.campo-control:hover .campo-icono {
   color: var(--leaf);
 }
 
@@ -3094,12 +1721,6 @@ body.no-scroll {
   box-shadow: 0 0 0 3px rgba(163, 52, 31, .14);
 }
 
-.campo-area {
-  resize: vertical;
-  min-height: 140px;
-  line-height: 1.6;
-}
-
 .campo-error {
   display: block;
   min-height: 0;
@@ -3109,86 +1730,13 @@ body.no-scroll {
   color: var(--error);
 }
 
-.campo-ayuda {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.campo-contador {
-  font-family: var(--sans);
-  font-size: .78rem;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
 .contador-cerca {
   color: var(--error);
   font-weight: 600;
 }
 
-.formulario[hidden],
-.formulario-ok[hidden] {
+.formulario[hidden]{
   display: none;
-}
-
-.formulario-pie {
-  display: flex;
-  flex-direction: column;
-  gap: .6rem;
-  margin-top: .25rem;
-}
-
-.formulario-enviar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  min-height: 50px;
-  padding: .85rem 1.9rem;
-  border-radius: 999px;
-  background: var(--forest);
-  color: var(--cream);
-  font-size: .95rem;
-  font-weight: 500;
-  letter-spacing: .02em;
-  box-shadow: var(--shadow-sm);
-  transition: background .2s ease, transform .15s ease, box-shadow .2s ease;
-}
-
-.formulario-enviar:hover {
-  background: var(--moss);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-.formulario-enviar:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-sm);
-}
-
-.formulario-enviar:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-}
-
-.formulario-enviar:disabled {
-  background: var(--sage);
-  cursor: progress;
-  transform: none;
-  box-shadow: none;
-}
-
-.formulario-enviar .material-symbols-outlined {
-  font-size: 1.2rem;
-}
-
-.formulario-obligatorio {
-  margin: 0;
-  font-family: var(--sans);
-  font-size: .8rem;
-  color: var(--muted-texto);
 }
 
 .formulario-estado {
@@ -3222,73 +1770,6 @@ body.no-scroll {
   }
 }
 
-.formulario-ok {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: .5rem;
-  padding: 1.5rem .5rem;
-  animation: formularioAparicion .45s ease both;
-}
-
-.formulario-ok-icono {
-  display: grid;
-  place-items: center;
-  width: 4.5rem;
-  height: 4.5rem;
-  border-radius: 50%;
-  background: rgba(74, 124, 89, .12);
-  font-size: 2.4rem;
-  color: var(--leaf);
-}
-
-.formulario-ok-titulo {
-  margin: .5rem 0 0;
-}
-
-.formulario-ok-titulo:focus {
-  outline: none;
-}
-
-.formulario-ok p {
-  max-width: 34ch;
-  margin: 0 0 1rem;
-  font-size: .95rem;
-}
-
-.formulario-ok-boton {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  padding: .7rem 1.4rem;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--forest);
-  border: 1.5px solid var(--forest);
-  font-size: .9rem;
-  font-weight: 500;
-}
-
-.formulario-ok-boton:hover {
-  background: var(--forest);
-  color: var(--cream);
-}
-
-.formulario-ok-boton:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-}
-
-.formulario-trampa {
-  position: absolute;
-  left: -9999px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-}
-
 .aviso-flotante {
   position: fixed;
   right: 1.25rem;
@@ -3310,54 +1791,6 @@ body.no-scroll {
 
 .aviso-flotante[hidden] {
   display: none;
-}
-
-.aviso-flotante-icono {
-  flex: none;
-  font-size: 1.4rem;
-  color: var(--error);
-}
-
-.aviso-flotante-texto {
-  display: flex;
-  flex-direction: column;
-  gap: .2rem;
-  font-family: var(--sans);
-  font-size: .9rem;
-  line-height: 1.35;
-}
-
-.aviso-flotante-texto strong {
-  font-size: .95rem;
-  color: var(--forest);
-}
-
-.aviso-flotante-cerrar {
-  flex: none;
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: .15rem;
-  border: none;
-  background: transparent;
-  color: var(--muted-texto);
-  border-radius: 999px;
-  cursor: pointer;
-}
-
-.aviso-flotante-cerrar:hover {
-  background: var(--sand);
-  color: var(--forest);
-}
-
-.aviso-flotante-cerrar:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 2px;
-}
-
-.aviso-flotante-cerrar .material-symbols-outlined {
-  font-size: 1.2rem;
 }
 
 @keyframes aviso-entra {
@@ -3391,10 +1824,6 @@ footer P {
   color: rgba(247, 244, 236, .7);
 }
 
-footer .footer-direccion {
-  margin-top: .6rem;
-}
-
 footer nav {
   display: flex;
   justify-content: center;
@@ -3415,7 +1844,6 @@ footer nav a:focus-visible {
   color: var(--cream);
   border-bottom-color: var(--leaf);
 }
-
 
 @media (min-width: 900px) {
 
@@ -3442,12 +1870,7 @@ footer nav a:focus-visible {
     align-items: center;
   }
 
-  .formulario-pie {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
+  
 }
 
 @media (min-width: 1024px) {
@@ -3553,81 +1976,26 @@ footer nav a:focus-visible {
     background: #2d5a3f;
   }
 
-  .nav-cuenta {
-    order: 1;
-    padding: 0;
-    margin: 0;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: .85rem;
-    font-size: .88rem;
-    line-height: 1.5;
-  }
+  
 
-  .nav-cuenta > * {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
+  
 
   /* Sin "Ver carrito" en el menu de escritorio: el carrito vive en el
       menu de cuenta (con sesion) y en el icono/flotante en movil. Vence
       a .nav-bar li a por especificidad, sin !important. */
-  .nav-bar .nav-cuenta .nav-cta {
-    display: none;
-  }
+  
 
-  .nav-usuario {
-    width: auto;
-    display: flex;
-    align-items: center;
-    margin: 0;
-    font-size: .88rem;
-    line-height: 1.5;
-  }
+  
 
-  .nav-usuario-boton {
-    display: inline-flex;
-    align-items: center;
-    font-size: .88rem;
-    line-height: 1.5;
-    padding: .4rem 0;
-    margin: 0;
-    color: #1e3a2b;
-  }
+  
 
-  .nav-bar li a.nav-ingresar,
-  .nav-bar li .nav-ingresar {
-    font-size: 1rem !important;
-    padding: .5rem 1rem !important;
-    min-height: 36px !important;
-    white-space: nowrap !important;
-    overflow: visible !important;
-  }
+  
 
-  .nav-usuario-alineado {
-    display: inline-flex !important;
-    align-items: center !important;
-    align-self: center !important;
-    gap: 8px !important;
-    margin: 0 !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    line-height: 1 !important;
-    position: static !important;
-    top: auto !important;
-  }
+  
 
-  li.nav-cuenta,
-  div.nav-usuario {
-    display: flex;
-    align-items: center !important;
-    height: 100% !important;
-    margin: 0 !important;
-  }
+  
 
-  button#navUsuarioBoton,
-  .nav-usuario-boton,
-  .nav-usuario-alineado {
+  button#navUsuarioBoton{
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -3646,108 +2014,39 @@ footer nav a:focus-visible {
     margin-bottom: 0 !important;
   }
 
-  .nav-usuario-boton::after {
-    content: "person";
-    font-family: 'Material Symbols Outlined';
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    margin-left: .5rem;
-    border: 1px solid #e2decb;
-    border-radius: 50%;
-    background: #ffffff;
-    color: #1e3a2b;
-    font-size: 1.1rem;
-  }
+  
 
-  .nav-usuario-menu {
-    position: absolute;
-    top: calc(100% + .4rem);
-    right: 0;
-    width: 256px;
-    min-width: 256px;
-    padding: 12px;
-    background: #ffffff;
-    border: 1px solid #e2decb;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, .1);
-    z-index: 5;
-  }
+  
 
-  .nav-bar .nav-usuario-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: .9rem;
-    font-weight: 500;
-    color: #1e3a2b;
-    background: #f0ede1;
-    border-radius: 12px;
-    padding: 12px;
-    margin: .35rem 0;
-    transition: background-color .2s ease;
-  }
+  
 
-  .nav-bar .nav-usuario-item:hover {
-    background: #e5e1d1;
-    color: #1e3a2b;
-  }
+  
 
-  .nav-bar .nav-usuario-item::before {
-    font-family: 'Material Symbols Outlined';
-    font-size: 1.2rem;
-    color: #2d5a3f;
-    flex: 0 0 auto;
-  }
+  
 
-  .nav-bar .nav-link-carrito::before {
-    content: "shopping_cart";
-  }
+  
 
-  .nav-bar .nav-usuario-item[href*="pedidos"]::before {
-    content: "inventory_2";
-  }
+  
 
   .nav-bar #navSalir::before {
     content: "logout";
     color: #b42318;
   }
 
-  .nav-bar .nav-usuario-item .cart-count {
-    margin-left: auto;
-    background: #1e3a2b;
-    color: #f7f5ed;
-    border-radius: 999px;
-    padding: .15rem .5rem;
-    font-size: .75rem;
-    font-weight: 600;
-  }
+  
 
-  .nav-bar .nav-cuenta .nav-usuario-item {
-    background-color: #F4F1EA !important;
-    color: #1E3A2B !important;
-    border: none !important;
-  }
+  
 
-  .nav-bar .nav-cuenta .nav-usuario-item:hover {
-    background-color: #EBE6D8 !important;
-    color: #1E3A2B !important;
-  }
+  
 
-  .nav-bar .nav-cuenta .nav-usuario-item::before {
-    color: #1E3A2B !important;
-  }
+  
 
   .nav-bar li a::after,
   .nav-bar li .nav-link::after {
     bottom: -2px;
   }
 
-  body.no-scroll {
-    overflow: revert;
-  }
+  
 }
 
 @media (min-width: 1280px) {
@@ -3756,7 +2055,6 @@ footer nav a:focus-visible {
     padding: 1rem 2.5rem;
   }
 }
-
 
 @media (min-width: 1280px) {
 
@@ -3789,7 +2087,6 @@ footer nav a:focus-visible {
     height: 40px;
   }
 }
-
 
 body.con-testimonio-abierto {
   overflow: hidden;
@@ -3885,30 +2182,6 @@ body.con-testimonio-abierto {
   color: var(--forest);
 }
 
-.testimonio-estrellas {
-  display: flex;
-  gap: .2rem;
-}
-
-.testimonio-estrella {
-  padding: 0 .1rem;
-  font-size: 2rem;
-  line-height: 1;
-  color: var(--sand);
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color .15s ease, transform .15s ease;
-}
-
-.testimonio-estrella:hover {
-  transform: scale(1.1);
-}
-
-.testimonio-estrella.activa {
-  color: #e0a52b;
-}
-
 .testimonio-input,
 .testimonio-texto {
   width: 100%;
@@ -3931,17 +2204,6 @@ body.con-testimonio-abierto {
   outline: none;
   border-color: var(--leaf);
   box-shadow: 0 0 0 3px rgba(74, 124, 89, .18);
-}
-
-.testimonio-input.con-error,
-.testimonio-texto.con-error {
-  border-color: #b23b3b;
-}
-
-.testimonio-contador {
-  align-self: flex-end;
-  font-size: .75rem;
-  color: var(--muted);
 }
 
 .testimonio-error {
@@ -3993,13 +2255,6 @@ body.con-testimonio-abierto {
   background: var(--sand);
 }
 
-.testimonio-gracias {
-  padding: 1.5rem .5rem;
-  text-align: center;
-  color: var(--leaf-texto);
-  font-weight: 600;
-}
-
 .testimonio-modal :focus-visible {
   outline: 2px solid var(--leaf);
   outline-offset: 2px;
@@ -4036,21 +2291,15 @@ body.con-testimonio-abierto {
 
 @media (prefers-reduced-motion: reduce) {
 
-  .testimonio-estrella {
-    transition: none;
-  }
+  
 
-  .testimonio-estrella:hover {
-    transform: none;
-  }
+  
 
   .aviso-flotante {
     animation: none;
   }
 
-  .formulario-ok {
-    animation: none;
-  }
+  
 }
 
 /* ==========================================================================
@@ -4062,26 +2311,13 @@ body.con-testimonio-abierto {
    ========================================================================== */
 @media (max-width: 767px) {
 
-  .service-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    position: static !important;
-  }
+  
 
-  .service-intro,
-  .service-trust {
-    width: 100%;
-    min-width: 0;
-    position: static !important;
-  }
+  
 
-  .service-trust {
-    align-self: stretch;
-  }
+  
 
   .catalog,
-  .services-view,
   .nosotros {
     padding-bottom: 100px;
   }
@@ -4097,7 +2333,6 @@ body.con-testimonio-abierto {
 
   .nosotros-pilares,
   .nosotros-razones,
-  .nosotros-personas,
   .nosotros-ubicacion {
     display: flex !important;
     flex-direction: column !important;
@@ -4105,16 +2340,7 @@ body.con-testimonio-abierto {
     position: static !important;
   }
 
-  .nosotros-pilar,
-  .nosotros-razon,
-  .nosotros-persona,
-  .nosotros-ubicacion-info,
-  .nosotros-mapa {
-    position: static !important;
-    width: 100% !important;
-    transform: none !important;
-    box-sizing: border-box;
-  }
+  
 }
 
 /* --- FIX DEFINITIVO PARA SECCION NOSOTROS EN MOVIL --- */
@@ -4122,11 +2348,7 @@ body.con-testimonio-abierto {
 
   /* Contenedores generales (sin #nosotros: el section conserva su
      display natural para que .hidden pueda ocultarlo al navegar) */
-  .nosotros-inner,
-  .nosotros-hero,
-  .nosotros-hero-grid,
   .nosotros-duelo,
-  .nosotros-pilares-bloque,
   .nosotros-equipo {
     display: flex !important;
     flex-direction: column !important;
@@ -4135,7 +2357,6 @@ body.con-testimonio-abierto {
   }
 
   /* Tarjetas internas: fluyen una debajo de la otra sin superponerse */
-  .nosotros-hero-grid > *,
   .nosotros-duelo > * {
     position: static !important;
     width: 100% !important;
@@ -4144,16 +2365,9 @@ body.con-testimonio-abierto {
   }
 
   /* Los pseudoelementos decorativos no desbordan ni encimen el texto */
-  .nosotros-hero::before,
-  .nosotros-hero::after,
-  .nosotros-inner::before,
-  .nosotros-inner::after {
-    position: absolute !important;
-    z-index: 0 !important;
-  }
+  
 
   /* El contenido textual queda por encima de cualquier fondo */
-  .nosotros-hero-grid,
   .nosotros-duelo {
     z-index: 1 !important;
     position: relative !important;
@@ -4166,93 +2380,10 @@ body.con-testimonio-abierto {
    ========================================================================== */
 
 /* Botones base */
-.btn-primary,
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  padding: .75rem 1.25rem;
-  min-height: 44px;
-  border-radius: var(--radius-pill);
-  border: none;
-  font-family: var(--sans);
-  font-size: .95rem;
-  font-weight: 600;
-  line-height: 1.2;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background .2s ease, transform .2s ease, box-shadow .2s ease;
-  box-sizing: border-box;
-}
-
-.btn-primary {
-  background: var(--forest);
-  color: var(--white);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--forest);
-  border: 1.5px solid var(--forest);
-}
-
-.btn-primary:hover {
-  background: var(--moss);
-}
-
-.btn-secondary:hover {
-  background: var(--cream);
-}
-
-.btn-primary:focus-visible,
-.btn-secondary:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-}
 
 /* Chips secundarios */
-.chip-category,
-.chip-stock {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  font-size: .75rem;
-  font-weight: 600;
-  line-height: 1.2;
-  box-sizing: border-box;
-}
-
-.chip-category {
-  background: #f1ede2;
-  color: var(--leaf-texto);
-  border: 1px solid #e4dccb;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-}
-
-.chip-stock {
-  flex: none;
-  border: 1px solid transparent;
-}
 
 /* Estados de stock */
-.chip-stock.stock-ok {
-  background: var(--leaf-bg);
-  color: var(--forest);
-}
-
-.chip-stock.pocas {
-  background: rgba(255, 176, 91, .65);
-  color: #442000;
-}
-
-.chip-stock.agotado {
-  background: rgba(255, 103, 103, .65);
-  color: #270702;
-}
 
 /* Tarjeta base */
 .card {
@@ -4272,20 +2403,6 @@ body.con-testimonio-abierto {
 }
 
 /* Formularios base */
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-  margin-bottom: 1rem;
-}
-
-.form-label {
-  display: block;
-  font-size: .95rem;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: .25rem;
-}
 
 .campo-input {
   width: 100%;
@@ -4325,9 +2442,6 @@ footer:not(.pedido-pie) {
    ========================================================================== */
 
 /* Botones base */
-.nav-bar .nav-ingresar,
-.nav-bar .nav-salir,
-.nav-bar .nav-usuario-item,
 .nav-bar .nav-link,
 .nav-bar .nav-link.active,
 .nav-bar .nav-link:hover {
@@ -4351,83 +2465,9 @@ footer:not(.pedido-pie) {
   box-sizing: border-box;
 }
 
-.nav-bar .nav-cuenta .nav-ingresar,
-.nav-bar .nav-usuario-item {
-  background: var(--forest);
-  color: var(--white);
-  border: none;
-}
-
-.nav-bar .nav-cuenta .nav-ingresar:hover,
-.nav-bar .nav-usuario-item:hover {
-  background: var(--moss);
-  color: var(--white);
-}
-
-.nav-bar .nav-ingresar:focus-visible,
-.nav-bar .nav-usuario-item:focus-visible {
-  outline: 2px solid var(--leaf);
-  outline-offset: 3px;
-  border-radius: var(--radius-pill);
-}
-
-.nav-bar .nav-cuenta .nav-ingresar::after,
-.nav-bar .nav-usuario-item::after {
-  display: none;
-}
-
 /* Chips secundarios */
-.nav-bar .nav-usuario-item .cart-count {
-  min-width: 1.4rem;
-  height: 1.4rem;
-  padding: 0 .35rem;
-  font-size: .8rem;
-  font-weight: 700;
-  color: var(--forest);
-  background: var(--sand);
-  border-radius: 999px;
-}
-
-.nav-bar .nav-cuenta .nav-ingresar .cart-count,
-.nav-bar .nav-usuario-item .cart-count {
-  margin-left: auto;
-}
 
 /* Tarjeta base */
-.nav-bar .nav-cuenta .nav-usuario-item {
-  min-height: 48px;
-  padding: .7rem .85rem;
-}
-
-.nav-bar .nav-usuario-item {
-  justify-content: flex-start;
-}
-
-.nav-bar .nav-cuenta {
-  margin: 1rem 0 0;
-}
-
-@media (max-width: 1023px) {
-  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item {
-    justify-content: flex-start;
-    min-height: 48px;
-    padding: .75rem .35rem;
-    border: 0;
-    border-bottom: 1px solid rgba(61, 107, 79, .14);
-    border-radius: 0;
-    background: transparent;
-    color: var(--ink);
-  }
-
-  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item:last-child {
-    border-bottom: 0;
-  }
-
-  .nav-bar .nav-cuenta .nav-usuario-menu .nav-usuario-item:hover {
-    background: rgba(74, 124, 89, .12);
-    color: var(--forest);
-  }
-}
 
 /* Tarjeta base genérica */
 .card {
@@ -4450,20 +2490,6 @@ footer:not(.pedido-pie) {
 }
 
 /* Formularios base */
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-  margin-bottom: 1rem;
-}
-
-.form-label {
-  display: block;
-  font-size: .95rem;
-  font-weight: 600;
-  color: var(--ink);
-  margin-bottom: .25rem;
-}
 
 .campo-input {
   width: 100%;
@@ -4500,8 +2526,7 @@ footer:not(.pedido-pie) {
 /* Fin de estilos globales */
 
 /* Banner del Catálogo Full Width */
-#catalogo .catalog-header,
-.catalog-header.zapi-hero-banner {
+#catalogo .catalog-header{
   background-color: #1E3A2B !important;
   color: #F4F1EA !important;
   width: 100% !important;
@@ -4515,13 +2540,11 @@ footer:not(.pedido-pie) {
   box-sizing: border-box !important;
 }
 
-#catalogo .zapi-hero-content,
 #catalogo .catalog-intro {
   flex: 1 1 60% !important;
   max-width: 680px !important;
 }
 
-#catalogo .zapi-hero-title,
 #catalogo .catalog-title {
   font-size: 52px !important;
   font-weight: 800 !important;
@@ -4533,7 +2556,6 @@ footer:not(.pedido-pie) {
   line-height: 1.05 !important;
 }
 
-#catalogo .zapi-hero-description,
 #catalogo .catalog-lead {
   font-size: 16px !important;
   line-height: 1.5 !important;
@@ -4542,127 +2564,29 @@ footer:not(.pedido-pie) {
   max-width: 580px !important;
 }
 
-#catalogo .zapi-hero-trust,
-#catalogo .catalog-trust {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 16px !important;
-  flex: 0 0 auto !important;
-}
-
-#catalogo .zapi-hero-trust-item {
-  display: flex !important;
-  align-items: center !important;
-  gap: 14px !important;
-  font-size: 15px !important;
-  font-weight: 600 !important;
-  color: #F4F1EA !important;
-}
-
-#catalogo .zapi-hero-trust-icon {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-}
-
 #catalogo {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
 /* Banner de Servicios Full Width */
-#servicios .service-header,
-.service-header.zapi-hero-banner {
-  background-color: #1E3A2B !important;
-  color: #F4F1EA !important;
-  width: 100% !important;
-  margin: 0 0 28px 0 !important;
-  border-radius: 0 !important;
-  padding: 48px 64px !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  gap: 40px !important;
-  box-sizing: border-box !important;
-}
-
-#servicios .zapi-hero-content {
-  flex: 1 1 60% !important;
-  max-width: 680px !important;
-}
-
-#servicios .zapi-hero-title {
-  font-size: 52px !important;
-  font-weight: 800 !important;
-  font-family: inherit !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  color: #F4F1EA !important;
-  margin: 0 0 12px 0 !important;
-  line-height: 1.05 !important;
-}
-
-#servicios .zapi-hero-description {
-  font-size: 16px !important;
-  line-height: 1.5 !important;
-  color: rgba(244, 241, 234, 0.9) !important;
-  margin: 0 !important;
-  max-width: 580px !important;
-}
-
-#servicios .zapi-hero-trust {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 16px !important;
-  flex: 0 0 auto !important;
-}
-
-#servicios .zapi-hero-trust-item {
-  display: flex !important;
-  align-items: center !important;
-  gap: 14px !important;
-  font-size: 15px !important;
-  font-weight: 600 !important;
-  color: #F4F1EA !important;
-}
-
-#servicios .zapi-hero-trust-icon {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-}
 
 #servicios {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
-#catalogo .catalog-header,
-.catalog-header.zapi-hero-banner,
-#servicios .service-header,
-.service-header.zapi-hero-banner {
+#catalogo .catalog-header{
   border-radius: 0 !important;
 }
 
-#servicios,
-#servicios .service {
+#servicios{
   padding-top: 0 !important;
   margin-top: 0 !important;
 }
 
 /* 1. Anular restricciones del contenedor padre si es necesario */
-#servicios,
-.services-view {
+#servicios{
   width: 100% !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
@@ -4670,68 +2594,15 @@ footer:not(.pedido-pie) {
 }
 
 /* 2. Banner de ancho completo absoluto */
-#servicios .service-header,
-.services-view .zapi-hero-banner {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  border-radius: 0 !important;
-  box-sizing: border-box !important;
-  padding-left: 64px !important;
-  padding-right: 64px !important;
-}
 
 /* 3. Asegurar que los elementos internos mantengan su alineación */
-#servicios .service-header {
-  background-color: #1E3A2B !important;
-  color: #F4F1EA !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  gap: 40px !important;
-}
 
-#servicios,
-.services-view {
+#servicios{
   width: 100% !important;
   max-width: 100% !important;
   padding-left: 0 !important;
   padding-right: 0 !important;
   margin: 0 !important;
-  box-sizing: border-box !important;
-}
-
-#servicios .service-header,
-.services-view .zapi-hero-banner {
-  width: 100vw !important;
-  position: relative !important;
-  left: 50% !important;
-  right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  max-width: none !important;
-  border-radius: 0 !important;
-  box-sizing: border-box !important;
-  padding-left: max(6vw, 48px) !important;
-  padding-right: max(6vw, 48px) !important;
-  padding-top: 48px !important;
-  padding-bottom: 48px !important;
-  background-color: #1E3A2B !important;
-  color: #F4F1EA !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  gap: 40px !important;
-}
-
-#servicios .service-items,
-#servicios .container {
-  max-width: 1240px !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  padding-left: 24px !important;
-  padding-right: 24px !important;
   box-sizing: border-box !important;
 }
 
@@ -4747,155 +2618,14 @@ footer:not(.pedido-pie) {
 }
 
 /* Banner Verde Bosque Full-Bleed para la cabecera de Nosotros */
-#nosotros .nosotros-header,
-#nosotros .zapi-hero-banner.full-bleed {
-  width: 100vw !important;
-  position: relative !important;
-  left: 50% !important;
-  right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  max-width: none !important;
-  border-radius: 0 !important;
-  box-sizing: border-box !important;
-  padding-left: max(6vw, 48px) !important;
-  padding-right: max(6vw, 48px) !important;
-  padding-top: 56px !important;
-  padding-bottom: 56px !important;
-  background-color: #1E3A2B !important;
-  color: #F4F1EA !important;
-  display: block !important;
-  margin-bottom: 40px !important;
-}
 
 /* Columna izquierda: kicker + titular + cierre. Sin topes de ancho
    heredados, para que el titular corra 3-5 palabras por renglon. */
-#nosotros .zapi-hero-content {
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 0 !important;
-  flex: none !important;
-}
-
-#nosotros .zapi-hero-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  border-radius: 20px !important;
-  padding: 4px 12px !important;
-  font-size: 11px !important;
-  font-weight: 600 !important;
-  letter-spacing: 1px !important;
-  color: #F4F1EA !important;
-  margin-bottom: 16px !important;
-  text-transform: uppercase !important;
-}
-
-#nosotros .zapi-hero-title {
-  font-size: clamp(30px, 3.4vw, 44px) !important;
-  font-weight: 800 !important;
-  font-family: inherit !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  color: #F4F1EA !important;
-  margin: 0 0 20px 0 !important;
-  line-height: 1.12 !important;
-  max-width: 100% !important;
-  overflow-wrap: break-word !important;
-  word-break: normal !important;
-}
-
-#nosotros .zapi-hero-description {
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
-  text-transform: uppercase !important;
-  color: rgba(244, 241, 234, 0.85) !important;
-  margin: 0 !important;
-  line-height: 1.5 !important;
-  max-width: 52ch !important;
-}
 
 /* Columna derecha: lista de beneficios institucionales */
-#nosotros .zapi-hero-trust {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 14px !important;
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 0 !important;
-  flex: none !important;
-  margin: 0 !important;
-}
-
-#nosotros .zapi-hero-trust-item {
-  display: flex !important;
-  align-items: center !important;
-  gap: 16px !important;
-  padding: 16px 20px !important;
-  box-sizing: border-box !important;
-  background-color: rgba(255, 255, 255, 0.07) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  border-radius: 12px !important;
-}
-
-#nosotros .zapi-hero-trust-icon {
-  width: 42px !important;
-  height: 42px !important;
-  border-radius: 50% !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: #F4F1EA !important;
-  flex-shrink: 0 !important;
-}
-
-#nosotros .zapi-hero-trust-icon svg {
-  stroke: #F4F1EA !important;
-}
-
-#nosotros .zapi-hero-trust-text {
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  line-height: 1.35 !important;
-  color: #F4F1EA !important;
-}
 
 /* Escritorio / tablet ancha: las dos columnas equilibradas
    (ver bloque consolidado "HERO GLOBAL" al final del archivo) */
-
-@media (max-width: 850px) {
-  #nosotros .nosotros-header,
-  #nosotros .zapi-hero-banner.full-bleed {
-    align-items: flex-start !important;
-    padding: 32px 20px !important;
-    width: 100% !important;
-    left: 0 !important;
-    right: 0 !important;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-  #nosotros .zapi-hero-title {
-    font-size: clamp(26px, 7vw, 32px) !important;
-    line-height: 1.15 !important;
-  }
-  #nosotros .zapi-hero-description {
-    font-size: 16px !important;
-  }
-  #nosotros .zapi-hero-trust-item {
-    padding: 14px 16px !important;
-    gap: 14px !important;
-  }
-  #nosotros .zapi-hero-trust-icon {
-    width: 36px !important;
-    height: 36px !important;
-  }
-}
 
 #nosotros,
 .section.nosotros {
@@ -4903,18 +2633,8 @@ footer:not(.pedido-pie) {
   margin-top: 0 !important;
 }
 
-#nosotros .zapi-hero-kicker {
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  letter-spacing: 1px !important;
-  text-transform: uppercase !important;
-  color: rgba(244, 241, 234, 0.8) !important;
-  margin: 0 0 8px 0 !important;
-}
-
 /* Limpiar contenedor padre de contacto */
-#contacto,
-.call-to-actions-view {
+#contacto{
   width: 100% !important;
   max-width: 100% !important;
   padding: 0 !important;
@@ -4923,89 +2643,8 @@ footer:not(.pedido-pie) {
 }
 
 /* 1. Hero Banner Full-Bleed */
-#contacto .contacto-header.zapi-hero-banner.full-bleed {
-  width: 100vw !important;
-  position: relative !important;
-  left: 50% !important;
-  right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  max-width: none !important;
-  border-radius: 0 !important;
-  box-sizing: border-box !important;
-  padding: 48px max(6vw, 48px) !important;
-  background-color: #1E3A2B !important;
-  color: #F7F5ED !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  gap: 40px !important;
-}
-
-#contacto .zapi-hero-content {
-  flex: 1 1 55% !important;
-  max-width: 650px !important;
-}
-
-#contacto .zapi-hero-title {
-  font-size: 38px !important;
-  font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  color: #F7F5ED !important;
-  margin: 0 0 12px 0 !important;
-  line-height: 1.1 !important;
-}
-
-#contacto .zapi-hero-description {
-  font-size: 15px !important;
-  line-height: 1.5 !important;
-  color: rgba(247, 245, 237, 0.85) !important;
-  margin: 0 !important;
-}
-
-#contacto .zapi-hero-trust {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 16px !important;
-  flex: 1 1 40% !important;
-}
-
-#contacto .zapi-hero-trust-heading {
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  letter-spacing: 1px !important;
-  color: rgba(247, 245, 237, 0.7) !important;
-}
-
-#contacto .zapi-hero-trust-item {
-  display: flex !important;
-  align-items: center !important;
-  gap: 12px !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  color: #F7F5ED !important;
-}
-
-#contacto .zapi-hero-trust-icon {
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: 50% !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-}
 
 /* 2. Contenedor del Formulario */
-.contacto-card-container {
-  max-width: 900px !important;
-  margin: -30px auto 60px auto !important;
-  padding: 0 20px !important;
-  position: relative !important;
-  z-index: 2 !important;
-}
 
 .contacto-card {
   background-color: #FFFFFF !important;
@@ -5015,37 +2654,10 @@ footer:not(.pedido-pie) {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
 }
 
-.contacto-card-subtitle {
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  letter-spacing: 1px !important;
-  color: #1E3A2B !important;
-  text-transform: uppercase !important;
-}
-
-.contacto-card-title {
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  color: #555555 !important;
-  margin: 4px 0 24px 0 !important;
-}
-
 /* 3. Inputs del Formulario: borde delgado verde corporativo sobre
    fondo blanco (sin relleno crema), radio suave y aire interno.
    Cada input lleva su icono SVG nativo a la izquierda; el textarea
    conserva el mismo borde sin icono. */
-.contacto-form .form-row {
-  display: flex !important;
-  gap: 20px !important;
-  margin-bottom: 20px !important;
-}
-
-.contacto-form .form-group {
-  flex: 1 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 6px !important;
-}
 
 .contacto-form label {
   font-size: 13px !important;
@@ -5082,25 +2694,6 @@ footer:not(.pedido-pie) {
 
 /* Contenedor del icono: lo posiciona dentro del input sin alterar
    el flujo del label ni del mensaje de error */
-.campo-con-icono {
-  position: relative !important;
-  display: block !important;
-}
-
-.campo-con-icono .campo-icono {
-  position: absolute !important;
-  left: 14px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  color: #1f382b !important;
-  opacity: .7 !important;
-  display: flex !important;
-  pointer-events: none !important;
-}
-
-.campo-con-icono input {
-  padding-left: 44px !important;
-}
 
 /* Estado de error: contacto.js agrega/quita .campo-con-error */
 .contacto-form .campo-con-error {
@@ -5119,13 +2712,6 @@ footer:not(.pedido-pie) {
 }
 
 /* 4. Footer del Formulario */
-.contacto-form .form-footer {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  margin-top: 24px !important;
-  gap: 20px !important;
-}
 
 .contacto-form .privacy-note {
   font-size: 12px !important;
@@ -5134,62 +2720,18 @@ footer:not(.pedido-pie) {
   max-width: 500px !important;
 }
 
-.contacto-form .btn-submit {
-  background-color: #1E3A2B !important;
-  color: #F7F5ED !important;
-  border: none !important;
-  /* padding generoso: el botón queda alineado a la derecha en
-     .form-footer (justify-content: space-between) con su flecha */
-  padding: 14px 30px !important;
-  border-radius: 24px !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-  transition: background-color 0.2s !important;
-}
-
-.contacto-form .btn-submit:hover {
-  background-color: #152A1F !important;
-}
-
 /* Responsivo */
 @media (max-width: 768px) {
-  #contacto .contacto-header.zapi-hero-banner.full-bleed {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    padding: 28px 20px !important;
-  }
-  .contacto-card-container {
-    margin-top: 20px !important;
-  }
-  .contacto-form .form-row {
-    flex-direction: column !important;
-  }
-  .contacto-form .form-footer {
-    flex-direction: column !important;
-    align-items: stretch !important;
-  }
+  
+  
+  
+  
   /* En una sola columna el pie se apila, pero el botón mantiene
      su alineación a la derecha (no se estira al ancho completo) */
-  .contacto-form .btn-submit {
-    align-self: flex-end !important;
-  }
-}
-
-#contacto .zapi-hero-kicker {
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  letter-spacing: 1px !important;
-  text-transform: uppercase !important;
-  color: rgba(247, 245, 237, 0.8) !important;
-  margin: 0 0 8px 0 !important;
+  
 }
 
 /* Eliminar el texto fantasma ::before inyectado por CSS */
-.nav-link-carrito::before,
 a[href="carrito.html"]::before,
 .header-cart::before {
   content: none !important;
@@ -5197,27 +2739,9 @@ a[href="carrito.html"]::before,
 }
 
 /* Forzar Full-Bleed (100vw) en banners de encabezado */
-.zapi-hero-banner,
-.catalog-header.zapi-hero-banner {
-  width: 100vw !important;
-  position: relative !important;
-  left: 50% !important;
-  right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  box-sizing: border-box !important;
-  background-color: #1E3A2B !important;
-  border-radius: 0 !important;
-}
 
 /* Alineación del contenido interior del banner dentro del ancho estándar.
    El wrapper .zapi-hero-grid se excluye: lo centra su propia regla. */
-.zapi-hero-banner > div:not(.zapi-hero-grid),
-.catalog-header.zapi-hero-banner .catalog-header-content {
-  max-width: 1280px !important;
-  margin: 0 auto !important;
-  width: 100% !important;
-}
 
 /* ==========================================================================
    HERO GLOBAL — #servicios / #nosotros / #contacto
@@ -5226,43 +2750,17 @@ a[href="carrito.html"]::before,
    ========================================================================== */
 
 /* Wrapper de las dos columnas (mobile-first: apilado) */
-.zapi-hero-grid {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.75rem, 4vw, 3rem);
-  width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
 
 @media (min-width: 851px) {
-  .zapi-hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    align-items: stretch;
-    gap: clamp(2.5rem, 5vw, 4.5rem);
-  }
+  
   /* Nosotros: el titular tiene 75 caracteres en mayúscula y con la
      grilla general (1.6fr ≈ 680px) caía a 4 renglones. Columna
      izquierda más ancha (2fr ≈ 740px): baja a 3 renglones y la
      columna de beneficios (≈370px) sigue holgada. */
-  #nosotros .zapi-hero-grid {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  }
+  
 }
 
 /* Padding del banner consistente en las cuatro vistas */
-#servicios .service-header.zapi-hero-banner,
-#nosotros .nosotros-header.zapi-hero-banner,
-#contacto .contacto-header.zapi-hero-banner.full-bleed,
-#catalogo .catalog-header.zapi-hero-banner {
-  display: block !important;
-  padding-top: 56px !important;
-  padding-bottom: 56px !important;
-  padding-left: max(6vw, 48px) !important;
-  padding-right: max(6vw, 48px) !important;
-}
 
 /* Sin franja entre el header sticky y el hero: el banner arranca
    pegado a la barra de navegación. La sección conserva solo el
@@ -5285,177 +2783,27 @@ a[href="carrito.html"]::before,
    bloque quedaba corrido 50% a la derecha, dejando un hueco crema a la
    izquierda. Acá se reimpone a mayor especificidad. El degradado
    sutil da profundidad sin sumar assets externos. */
-#catalogo .catalog-header.zapi-hero-banner {
-  width: 100vw !important;
-  position: relative !important;
-  left: 50% !important;
-  right: 50% !important;
-  margin-left: -50vw !important;
-  margin-right: -50vw !important;
-  margin-top: 0 !important;
-  /* pegado a .catalog-filterbar: sin franja arena entre el verde y la
-     barra crema de categorías */
-  margin-bottom: 0 !important;
-  max-width: none !important;
-  border-radius: 0 !important;
-  box-sizing: border-box !important;
-  background-color: #1E3A2B !important;
-  background-image: radial-gradient(55rem 28rem at 88% -15%, rgba(247, 245, 237, 0.10), transparent 60%),
-    radial-gradient(40rem 24rem at 8% 115%, rgba(74, 124, 89, 0.38), transparent 65%) !important;
-  color: #F4F1EA !important;
-}
 
 /* Columna izquierda: ancho de columna acotado (≈3-5 palabras por renglón) */
-#servicios .zapi-hero-content,
-#nosotros .zapi-hero-content,
-#contacto .zapi-hero-content,
-#catalogo .zapi-hero-content {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 680px !important;
-  flex: none !important;
-}
 
 /* Excepción: el titular de Nosotros tiene 75 caracteres en mayúscula
    y con 680px caía a 4 renglones. Con la grilla 2fr (≈740px) y este
    tope baja a 3 renglones; la columna de beneficios queda en ≈370px,
    holgada para icono + texto. Va después de la regla general porque
    ambas usan !important. */
-#nosotros .zapi-hero-content {
-  max-width: 780px !important;
-}
 
 /* Titulares: jerarquía y line-height uniformes */
-#servicios .zapi-hero-title,
-#nosotros .zapi-hero-title,
-#contacto .zapi-hero-title,
-#catalogo .zapi-hero-title {
-  font-size: clamp(30px, 3.4vw, 46px) !important;
-  line-height: 1.12 !important;
-  margin: 0 0 18px 0 !important;
-  max-width: 100% !important;
-  overflow-wrap: break-word !important;
-}
 
 /* Bajada: medida de lectura pareja */
-#servicios .zapi-hero-description,
-#nosotros .zapi-hero-description,
-#contacto .zapi-hero-description,
-#catalogo .zapi-hero-description {
-  margin: 0 !important;
-  line-height: 1.55 !important;
-  max-width: 58ch !important;
-}
 
 /* Columna derecha: centrada en vertical, con línea divisoria por
    border-left que ocupa toda la altura de la fila */
-#servicios .zapi-hero-trust,
-#nosotros .zapi-hero-trust,
-#contacto .zapi-hero-trust,
-#catalogo .zapi-hero-trust {
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  gap: 1rem !important;
-  width: 100% !important;
-  max-width: none !important;
-  min-width: 0 !important;
-  flex: none !important;
-  margin: 0 !important;
-  align-self: stretch !important;
-  border-left: 1px solid rgba(247, 245, 237, 0.2) !important;
-  padding-left: clamp(1.5rem, 3vw, 2.5rem) !important;
-}
 
 /* Ítems de beneficios: espaciado y fondo consistentes */
-#servicios .zapi-hero-trust-item,
-#nosotros .zapi-hero-trust-item,
-#contacto .zapi-hero-trust-item,
-#catalogo .zapi-hero-trust-item {
-  display: flex !important;
-  align-items: center !important;
-  gap: 1rem !important;
-  padding: 14px 16px !important;
-  box-sizing: border-box !important;
-  background-color: rgba(255, 255, 255, 0.07) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  border-radius: 12px !important;
-  color: #F7F5ED !important;
-}
 
 /* Iconos: círculo idéntico en las cuatro secciones */
-#servicios .zapi-hero-trust-icon,
-#nosotros .zapi-hero-trust-icon,
-#contacto .zapi-hero-trust-icon,
-#catalogo .zapi-hero-trust-icon {
-  width: 40px !important;
-  height: 40px !important;
-  border-radius: 50% !important;
-  background-color: rgba(255, 255, 255, 0.12) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  flex-shrink: 0 !important;
-  color: #F7F5ED !important;
-}
-
-#servicios .zapi-hero-trust-icon .material-symbols-outlined,
-#catalogo .zapi-hero-trust-icon .material-symbols-outlined {
-  font-size: 20px !important;
-  color: #F7F5ED !important;
-}
-
-#nosotros .zapi-hero-trust-icon svg {
-  stroke: #F7F5ED !important;
-}
 
 /* Texto de beneficios */
-#servicios .zapi-hero-trust-text,
-#nosotros .zapi-hero-trust-text,
-#contacto .zapi-hero-trust-text,
-#catalogo .zapi-hero-trust-text {
-  font-size: 14px !important;
-  line-height: 1.4 !important;
-  color: #F7F5ED !important;
-}
 
 /* Móvil / tablet angosta: una sola columna, divisorio superior */
-@media (max-width: 850px) {
-  #servicios .service-header.zapi-hero-banner,
-  #nosotros .nosotros-header.zapi-hero-banner,
-  #contacto .contacto-header.zapi-hero-banner.full-bleed,
-  #catalogo .catalog-header.zapi-hero-banner {
-    padding: 36px 20px !important;
-  }
-  #servicios .zapi-hero-title,
-  #nosotros .zapi-hero-title,
-  #contacto .zapi-hero-title,
-  #catalogo .zapi-hero-title {
-    font-size: clamp(26px, 7vw, 34px) !important;
-    line-height: 1.15 !important;
-  }
-  #servicios .zapi-hero-trust,
-  #nosotros .zapi-hero-trust,
-  #contacto .zapi-hero-trust,
-  #catalogo .zapi-hero-trust {
-    border-left: none !important;
-    padding-left: 0 !important;
-    border-top: 1px solid rgba(247, 245, 237, 0.2) !important;
-    padding-top: 1.5rem !important;
-    justify-content: flex-start !important;
-  }
-  #servicios .zapi-hero-trust-item,
-  #nosotros .zapi-hero-trust-item,
-  #contacto .zapi-hero-trust-item,
-  #catalogo .zapi-hero-trust-item {
-    padding: 12px 14px !important;
-    gap: 0.875rem !important;
-  }
-  #servicios .zapi-hero-trust-icon,
-  #nosotros .zapi-hero-trust-icon,
-  #contacto .zapi-hero-trust-icon,
-  #catalogo .zapi-hero-trust-icon {
-    width: 36px !important;
-    height: 36px !important;
-  }
-}
+

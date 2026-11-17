@@ -118,7 +118,7 @@ export function resolverImagen(ruta) {
 
 // Pide algo a la API y devuelve el JSON. Si falla, lanza un Error con el mensaje.
 // En las llamadas del panel (no públicas) un 401 manda al login, como hacía el panel viejo.
-export async function pedirJson(ruta, { metodo = 'GET', cuerpo, publico = false, irAlLogin = !publico } = {}) {
+async function pedirJson(ruta, { metodo = 'GET', cuerpo, publico = false, irAlLogin = !publico } = {}) {
   const opciones = { method: metodo, headers: { Accept: 'application/json' } }
   if (!publico) opciones.credentials = 'include'
   if (cuerpo !== undefined) {
@@ -220,32 +220,6 @@ export async function subirImagenAdmin(blob) {
   let respuesta
   try {
     respuesta = await fetch(urlApi('/api/admin/imagenes'), {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'image/jpeg', Accept: 'application/json' },
-      body: blob
-    })
-  } catch {
-    throw new Error('No hay conexión con el servidor.')
-  }
-  if (!respuesta.ok) throw new Error('Error ' + respuesta.status)
-  return respuesta.json()
-}
-
-/* ---------- Estilo del sitio (borrador, publicación, historial, biblioteca de imágenes) ---------- */
-
-export const obtenerBorrador = () => pedirJson(ADMIN + '/publicacion/borrador')
-export const guardarBorradorApi = datos => pedirJson(ADMIN + '/publicacion/borrador', { metodo: 'POST', cuerpo: datos })
-export const publicarBorrador = () => pedirJson(ADMIN + '/publicacion/publicar', { metodo: 'POST' })
-export const obtenerHistorial = () => pedirJson(ADMIN + '/publicacion/historial')
-export const restaurarVersionApi = version => pedirJson(ADMIN + '/publicacion/restaurar/' + version, { metodo: 'POST' })
-export const obtenerImagenes = () => pedirJson(ADMIN + '/imagenes')
-
-// Sube una imagen a la biblioteca (con categoría y nombre). Devuelve los datos de la imagen (incluye "id").
-export async function subirImagenBiblioteca(blob, nombre, categoria) {
-  let respuesta
-  try {
-    respuesta = await fetch(urlApi('/api/admin/imagenes?' + consulta({ categoria, nombre })), {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'image/jpeg', Accept: 'application/json' },

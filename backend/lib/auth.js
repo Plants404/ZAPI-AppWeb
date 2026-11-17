@@ -112,7 +112,6 @@ function limpiarCookieSesion(res) {
 module.exports = {
     CLAVE_MINIMA,
     SESION_ADMIN_HORAS,
-    COOKIE_NOMBRE,
     hashPassword,
     verificarPassword,
     sessionIdDeCookie,

@@ -1,3 +1,4 @@
+// Página "Nosotros": quiénes somos y cómo trabajamos.
 import { NEGOCIO, formatearPrecio } from '../data/negocio.js'
 import { Link } from 'react-router-dom'
 

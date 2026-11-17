@@ -1,3 +1,4 @@
+// Rutas de la aplicación y carga de cada página.
 import { HOJAS } from './estilos/hojas.js'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Raiz from './components/Raiz.jsx'
